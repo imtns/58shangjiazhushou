@@ -1,0 +1,224 @@
+<template>
+    <view class="notice-container">
+        <view class="notice-header">
+            <view>全部通知</view>
+            <view class="clear-notice" bindtap="verify">清空</view>
+        </view>
+        <scroll-view class="notice-list">
+        <block wx:for="{{noticeList}}" wx:key="{{item.index}}">
+            <view class="notice-list-item">
+                <view class="notice-item">
+                    <image class="notice-img" src="{{item.image || ''}}"></image>
+                    <view class="notice-content">
+                        <view class="notice-detail">
+                            <view class="notice-name">
+                                <view class="notice-weixin-type {{item.type == 1 ? 'youxiang' : ''}}">{{item.type == 1 ? '优享' : '微信'}}</view>
+                                <view class="notice-weixin-name">{{item.name}}</view>
+                            </view>
+                            <view class="notice-msg">{{item.msg}}</view>
+                        </view>
+                        <view class="notice-state">
+                            <view class="notice-status">{{item.status == 1 ? '审核中' : '审核成功'}}</view>
+                            <view class="notice-time">{{item.time}}</view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+        </block>
+        </scroll-view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { sleep } from '../utils';
+
+export default class noticeList extends wepy.page {
+    config = {
+        navigationBarTitleText: '通知',
+        disableScroll: true,
+    }
+    data = {
+        noticeList: [],
+    }
+    async onLoad() {
+        await sleep();
+        console.log('onLoad');
+        const data = [{
+            index: 1,
+            type: 1,
+            image: '',
+            name: '美嘉合服务美嘉合服务',
+            msg: '审核成功后给您通知！审核成功后给您通知！',
+            status: 1,
+            time: '2018-06-12',
+        }, {
+            index: 2,
+            type: 2,
+            image: '',
+            name: '兄弟到家',
+            msg: '…………',
+            status: 1,
+            time: '2018-06-21',
+        }, {
+            index: 3,
+            type: 1,
+            image: '',
+            name: '美嘉合服务',
+            msg: '请重新上传素材~',
+            status: 1,
+            time: '2018-06-12',
+        }];
+        this.noticeList = data;
+        this.$apply();
+    }
+    verify() {
+        wepy.navigateToMiniProgram({
+            appId: 'wx2a9c6eeb1c44a284',
+            path: 'pages/index/index',
+            extraData: {},
+            envVersion: 'release', // trial release
+            success(res) {
+                console.log(res);
+                wepy.showModal({
+                    showCancel: false,
+                    title: '注意',
+                    content: 'aaaa',
+                    success(res1) {
+                        console.log(res1);
+                    },
+                });
+            },
+            fail() {
+            },
+            complete (resp) {
+                console.log(resp.errMsg);
+            },
+        });
+    }
+}
+</script>
+
+<style lang="scss">
+page{
+    width:100%;
+    height:100%;
+    background:#f5f5f5;
+}
+view,scroll-view{
+    box-sizing:border-box;
+}
+.notice-container{
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    .notice-header{
+        width:100%;
+        padding:24rpx 30rpx;
+        position:relative;
+        view{
+            font-size: 28rpx;
+            color: #999999;
+            letter-spacing: 0;
+        }
+        .clear-notice{
+            position:absolute;
+            right:30rpx;
+            top:24rpx;
+        }
+        .clear-notice::before{
+            position:absolute;
+            left:-40rpx;top:0;
+            content:'';
+            width:36rpx;
+            height:36rpx;
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAAGWB6gOAAAAAXNSR0IArs4c6QAAA2ZJREFUWAntWD2PGjEQXSAFDUiQiJa/cCU/IFFEvgqkdCeSjqPI7wFEdUmDdF0iILqGEiVKQ3EXGlCgOOlQBEgoShEEmWd2LNtrdvcWohSJJdae8Zu3Mx57vMJxLC0GXa1W2/JctVoVOqHcug2TcRdxzkj09/Agk9fUvcLY2jwvEQpwA97pdCS5MJ9Opzvier0uFOl0OrtzikRStsnyiZhRHtJx6BCR2YbDoXgfBwLcTzzU1uv1hChB8Xj8pQq481g6rq4ys7DT8nU8ofYU8SlkCTo7O3Py+bz8QaZoHwIkMoIB2mQy2Q3cJwVzgaFkWq/XGgBCpVJpo5eg0WgE2b+128iK3thC+kSZPado1J2yYFCoHskPBfwjINuu0iPeSbe3t1vCfmYn5EqyQu0pJCGaPZTj8djhnEH2JQJgX0MKN5uNSD4wHqJYLPZlNpvts5f61WqF8/6NFR4iWoELuH1wazQaD5rN5sa2wKxbLBZbWrfNwS/7+wRhdrYsJeyuraTwnNpTdjtUJJ6quqOMNY8ohFPKzLuwzFz8gJclwjV+UyqVnFwuF8jFx4aB2oYkb77SHuE5p9vtirHZS4Ay0IjoEF6pRFxYzV6xl0ONiLTX8/lcTt5loBHRadY8ikyE04xTHdTcq0K7MTWPggh4HuHThrxiGX0kIiSEMnwcInLiWvXIMw5T/HEJUt3SzpknNIp9u1wuPS9QFTc3N/hW+aTqzCPipFKp+61WC5dzRgUa47eU4e+G7r/ovwJIdtji6sek1UcbEGWf9rDna9aGDaujDdamav/MhvfsRhOEq4J0R7jAJfOYAvwoJWPgu0K0Opdk/KhQKDgnJyeGaTRxMBg4/X4fJeiSVumxyRK0Qr9gkM1mTbvIciYjT6/3Y5xYgxwSZct2p+BqVK/HIJkjULisJdHXIS7I6m3JxFF75mJuk8fXoUQiIW4IJjGNo8jMxdwmh69DyWRyb8pMorAyp4y5TTtfh8rl8g8ymOCGD/MlYJKbMjjcr4WJy21CAjc1DMQq8VJ7GO6gUDisGxpUvisEANULsY94qaGL2piDOW08nuveBPFpUKITEPwzoLYgGVjmYE7VnseBDhHQmrJiscgcog+SAWKHaLg3Zb5Xh3gTPajovaeonrN8SE/p+kBXxotDOP5t29/lY/k82n3mRQAAAABJRU5ErkJggg==);
+            background-size: 36rpx 36rpx;
+        }
+    }
+    .notice-list{
+        width:100%;
+        flex:1;
+        .notice-list-item{
+            padding:0 30rpx;
+            background:#fff;
+        }
+        .notice-item{
+            width:100%;
+            padding:30rpx 30rpx 30rpx 150rpx;
+            border-bottom:1rpx solid #f3f3f3;
+            position:relative;
+            .notice-img{
+                width:120rpx;
+                height:120rpx;
+                position:absolute;
+                left:0;
+                top:30rpx;
+                background:pink;
+            }
+            .notice-content{
+                display:flex;
+                .notice-detail{
+                    flex:1;
+                    margin-right:10rpx;
+                    .notice-name{
+                        line-height:45rpx;
+                        display:flex;
+                    }
+                    .notice-weixin-type{
+                        width:62rpx;
+                        height:36rpx;
+                        line-height:36rpx;
+                        text-align:center;
+                        background: rgba(32,133,255,0.10);
+                        border-radius: 8rpx;
+                        font-size: 24rpx;
+                        color: #2085FF;
+                        letter-spacing: 0.52rpx;
+                        margin:6rpx 8rpx 0 0;
+                    }
+                    .notice-weixin-type.youxiang{
+                        color: #FFA100;
+                        background: rgba(255,161,0,0.10);
+                    }
+                    .notice-weixin-name,.notice-msg{
+                        font-size: 32rpx;
+                        color: #333333;
+                        letter-spacing: 0.48rpx;
+                        line-height:45rpx;
+                        width:278rpx;
+                        overflow:hidden;
+                        white-space:nowrap;
+                        text-overflow:ellipsis;
+                    }
+                    .notice-msg{
+                        font-size: 24rpx;
+                        color: #999999;
+                        letter-spacing: 0;
+                        margin-top:42rpx;
+                        width:350rpx;
+                    }
+                }
+                .notice-state{
+                    width:140rpx;
+                    .notice-status{
+                        font-size: 28rpx;
+                        color: #333333;
+                        letter-spacing: 0;
+                        text-align: right;
+                    }
+                    .notice-time{
+                        font-size: 24rpx;
+                        color: #CCCCCC;
+                        letter-spacing: 0;
+                        margin-top:55rpx;
+                    }
+                }
+            }
+        }
+        
+    }
+}
+</style>
