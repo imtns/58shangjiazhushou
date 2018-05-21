@@ -8,7 +8,6 @@ export default class extends wepy.app {
             'pages/intro', // 没有登陆的介绍页面
             'pages/home', // 登陆之后的主页
             'pages/index',
-            'pages/indexLoaded',
             'pages/noticeList',
         ],
         window: {
