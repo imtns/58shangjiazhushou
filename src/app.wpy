@@ -8,7 +8,6 @@ export default class extends wepy.app {
             'pages/intro', // 没有登陆的介绍页面
             'pages/home', // 登陆之后的主页
             'pages/index',
-            'pages/indexLoaded',
             'pages/noticeList',
         ],
         window: {
@@ -21,7 +20,6 @@ export default class extends wepy.app {
     onLaunch() {
         console.log('on launch');
     }
-<<<<<<< HEAD
     onShow(options) {
         if (options.scene === 1038) {
             if (!options.referrerInfo) {
@@ -38,11 +36,6 @@ export default class extends wepy.app {
                 console.log(`获取PPU成功！ ${extraData.ppu}`);
             }
         }
-=======
-
-    onShow(param) {
-        console.log(param);
->>>>>>> 0ec2c4842b14cae4dfaaecb92c04e3393f5fe66a
     }
 }
 </script>
