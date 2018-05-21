@@ -5,6 +5,8 @@ import 'wepy-async-function';
 export default class extends wepy.app {
     config = {
         pages: [
+            'pages/intro', // 没有登陆的介绍页面
+            'pages/home', // 登陆之后的主页
             'pages/index',
         ],
         window: {
@@ -14,9 +16,25 @@ export default class extends wepy.app {
             navigationBarTextStyle: 'black',
         },
     }
-
     onLaunch() {
         console.log('on launch');
+    }
+    onShow(options) {
+        if (options.scene === 1038) {
+            if (!options.referrerInfo) {
+                console.log('options.referrerInfo为空');
+            }
+            if (!options.referrerInfo.extraData) {
+                console.log('options.referrerInfo.extraData为空');
+            }
+            let { extraData } = options.referrerInfo;
+            if (typeof extraData !== 'object') {
+                extraData = JSON.parse(extraData);
+            }
+            if (extraData.ppu !== undefined) { // 如果获取ppu成功
+                console.log(`获取PPU成功！ ${extraData.ppu}`);
+            }
+        }
     }
 }
 </script>
