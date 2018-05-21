@@ -21,7 +21,5 @@ export default class Index extends wepy.page {
 </script>
 
 <style lang="scss">
-.container{
-    background: url(/bg.png) no-repeat;
-}
+
 </style>

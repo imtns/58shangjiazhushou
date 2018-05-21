@@ -6,6 +6,8 @@ export default class extends wepy.app {
     config = {
         pages: [
             'pages/index',
+            'pages/indexLoaded',
+            'pages/noticeList',
         ],
         window: {
             backgroundTextStyle: 'light',
@@ -17,6 +19,10 @@ export default class extends wepy.app {
 
     onLaunch() {
         console.log('on launch');
+    }
+
+    onShow(param) {
+        console.log(param);
     }
 }
 </script>
