@@ -5,8 +5,8 @@ import 'wepy-async-function';
 export default class extends wepy.app {
     config = {
         pages: [
-            'pages/intro', // 没有登陆的介绍页面
             'pages/home', // 登陆之后的主页
+            'pages/intro', // 没有登陆的介绍页面
             'pages/index',
             'pages/unregist', // 当前小程序未注册
             'pages/registed', // 当前小程序已注册
@@ -38,6 +38,7 @@ export default class extends wepy.app {
             }
             if (extraData.ppu !== undefined) { // 如果获取ppu成功
                 console.log(`获取PPU成功！ ${extraData.ppu}`);
+                wepy.setStorageSync('ppu', extraData.ppu);
             }
         }
     }
