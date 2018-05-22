@@ -1,0 +1,177 @@
+<template>
+    <view class="container">
+        <!-- 提示步骤start -->
+        <view class="regist-remind-bar">
+            <block wx:for="{{steps}}" wx:key="index">
+                <view class="regist-remind-steps {{currentstep >= item.index ? 'current-step' : ''}} {{item.index == 2 ? 'regist-remind-horizontal' : ''}}">
+                    <view class="regist-remind-step">{{item.index}}</view>
+                    <view class="regist-remind-text">{{item.text}}</view>
+                </view>
+            </block>
+        </view>
+        <!-- 提示步骤end -->
+        <view class="main-success-box">
+            <image src="http://static.58.com/lbg/shangjiaxcxht/zhushou/img/main-success.png"></image>
+            <view class="main-success-tip">您的小程序资料已经提交！<br/>请等待微信审核</view>
+        </view>
+        <view class="main-remind-box">
+            <view class="main-remind-tips">审核注意事项：</view>
+            <view class="main-remind-tips">1、请保持电话通畅。腾讯会通过电话方式审核，审核电话为湖南长沙等地座机，不是咋骗电话，放心接听。</view>
+            <view class="main-remind-tips">2、发票问题。如有发票地址为北京，审核流程中还需进行对公众号/法人账号的小额打款验证，2毛钱左右。（注册过程中需缴纳300块钱，不需要客户支付，是由58北京总部支付的，故发票地址在北京。）</view>
+        </view>
+        <view class="main-button">返回首页</view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { sleep } from '../utils';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '注册',
+    }
+    data = {
+        currentstep: '2',
+        steps: [
+            {
+                index: '1',
+                text: '主体账户信息',
+                status: 1,
+            },
+            {
+                index: '2',
+                text: '管理员信息',
+                status: 0,
+            },
+            {
+                index: '3',
+                text: '注册完成',
+                status: 0,
+            },
+        ],
+    }
+    async onLoad() {
+        await sleep();
+        console.log('onLoad');
+        wepy.request({
+            type: 'POST',
+            dataType: 'json',
+            header: {
+                'content-type': 'application/x-www-form-urlencoded',
+            },
+            url: 'http://test.58.com/mplogic/msglist',
+            success(res) {
+                console.log(res);
+            },
+        });
+    }
+}
+</script>
+
+<style lang="scss">
+view{
+    box-sizing:border-box;
+}
+.regist-remind-bar{
+    width:100%;
+    padding:0 20rpx;
+    height:97rpx;
+    background: #EEF4FF;
+    line-height:97rpx;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    .regist-remind-steps.current-step{
+        .regist-remind-step{
+            background: #4E88FF;
+        }
+        .regist-remind-text{
+            color: #4E88FF;
+        }
+    }
+    .regist-remind-steps{
+        width:200rpx;
+        text-align:center;
+        .regist-remind-step{
+            display:inline-block;
+            width:30rpx;
+            height:30rpx;
+            background: rgba(78,136,255,0.50);
+            color:#fff;
+            text-align:center;
+            line-height:30rpx;
+            border-radius:50%;
+            font-size: 24rpx;
+            margin-right: 10rpx;
+        }
+        .regist-remind-text{
+            font-size: 26rpx;
+            color: #9dbdff;
+            letter-spacing: 0;
+            display:inline-block;
+        }
+    }
+    .regist-remind-steps.regist-remind-horizontal{
+        width:340rpx;
+        position:relative;
+        &::before{
+            content:"";
+            width:40rpx;
+            height:2rpx;
+            background: rgba(78,136,255,0.50);
+            position:absolute;
+            left:30rpx;
+            top:50rpx;
+        }
+        &::after{
+            content:"";
+            width:40rpx;
+            height:2rpx;
+            background: rgba(78,136,255,0.50);
+            position:absolute;
+            right:30rpx;
+            top:50rpx;
+        }
+    }
+}
+.main-success-box{
+    width:100%;
+    height:390rpx;
+    background:#fff;
+    text-align:center;
+    padding:60rpx 195rpx;
+    image{
+        width:144rpx;
+        height:144rpx;
+        margin-bottom:43rpx;
+    }
+    .main-success-tip{
+        font-size: 30rpx;
+        color: #333333;
+        letter-spacing: 0;
+        line-height:48rpx;
+    }
+}
+.main-remind-box{
+    padding:30rpx;
+    .main-remind-tips{
+        font-size: 26rpx;
+        color: #999999;
+        line-height:38rpx;
+    }
+}
+.main-button{
+    background: #4E88FF;
+    border-radius: 4rpx;
+    font-size: 32rpx;
+    color: #FFFFFF;
+    letter-spacing: 0;
+    text-align: center;
+    width:690rpx;
+    height:94rpx;
+    line-height:94rpx;
+    margin:70rpx auto;
+}
+</style>

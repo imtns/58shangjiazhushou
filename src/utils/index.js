@@ -4,6 +4,7 @@ export const sleep = (time = 300) => new Promise((resolve) => {
     setTimeout(() => { resolve(); }, time);
 });
 
+// alert
 export const alert = (content, title, callBack) => {
     wepy.showModal({
         showCancel: false,
@@ -15,5 +16,14 @@ export const alert = (content, title, callBack) => {
                 callBack && callBack();
             }
         }
+    });
+}
+
+// toast
+export const toast = (title) => {
+    wepy.showToast({
+        title,
+        icon: 'none',
+        duration: 2000,
     });
 }

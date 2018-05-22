@@ -74,28 +74,7 @@ export default class noticeList extends wepy.page {
         this.$apply();
     }
     verify() {
-        wepy.navigateToMiniProgram({
-            appId: 'wx2a9c6eeb1c44a284',
-            path: 'pages/index/index',
-            extraData: {},
-            envVersion: 'release', // trial release
-            success(res) {
-                console.log(res);
-                wepy.showModal({
-                    showCancel: false,
-                    title: '注意',
-                    content: 'aaaa',
-                    success(res1) {
-                        console.log(res1);
-                    },
-                });
-            },
-            fail() {
-            },
-            complete (resp) {
-                console.log(resp.errMsg);
-            },
-        });
+        console.log('verify');
     }
 }
 </script>
