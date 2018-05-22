@@ -1,0 +1,116 @@
+<template>
+    <view class="container">
+        <view class="regist-title">当前小程序</view>
+        <view class="pro-item">
+            <view class="pro-name">美嘉合服务<view class="pro-status pro-registed pro-authed">已注册</view></view>
+            <view class="pro-describe">买买买</view>
+            <view class="pro-button">使用</view>
+        </view>
+        <view class="regist-title">其他小程序</view>
+        <view class="pro-item">
+            <view class="pro-name">美嘉合服务</view>
+            <view class="pro-describe">买买买</view>
+            <view class="pro-button">去注册</view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { sleep } from '../utils';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '注册',
+    }
+    async onLoad() {
+        await sleep();
+        console.log('onLoad');
+    }
+}
+</script>
+
+<style lang="scss">
+view{
+    box-sizing:border-box;
+}
+page{
+    width:100%;
+    height:100%;
+    background:#f6f6f6;
+    position:relative;
+    .regist-title,.regist-remind{
+        width:100%;
+        height:60rpx;
+        line-height:60rpx;
+        padding:0 30rpx;
+        font-size: 28rpx;
+        color: #999999;
+        letter-spacing: 0;
+    }
+    .pro-item{
+        padding:30rpx;
+        background:#fff;
+        position:relative;
+        .pro-name,.pro-describe{
+            font-size: 30rpx;
+            color: #333333;
+            letter-spacing: 0;
+            position:relative;
+            .pro-status{
+                width:92rpx;
+                height:38rpx;
+                text-align:center;
+                line-height:38rpx;
+                background: rgba(153,153,153,0.10);
+                border-radius: 2rpx;
+                font-size: 26rpx;
+                color: #999999;
+                letter-spacing: 0;
+                position:absolute;
+                left:180rpx;
+                top:0;
+            }
+            .pro-status.pro-registed{
+                background: rgba(78,136,255,0.10);
+                color: #4E88FF;
+            }
+            .pro-status.pro-authed{
+                color:#FFA100;
+                background: #fff6e5;
+            }
+        }
+        .pro-describe{
+            margin-top:20rpx;
+        }
+        .pro-button{
+            width:148rpx;
+            height:58rpx;
+            text-align:center;
+            line-height:58rpx;
+            border: 1rpx solid #4E88FF;
+            border-radius: 2rpx;
+            color:#4E88FF;
+            font-size:28rpx;
+            position:absolute;
+            right:20rpx;
+            top:53rpx;
+        }
+    }
+    .pro-toregist{
+        width:690rpx;
+        height:94rpx;
+        text-align:center;
+        line-height:94rpx;
+        font-size: 32rpx;
+        color: #FFFFFF;
+        letter-spacing: 0;
+        background: #4E88FF;
+        border-radius: 4rpx;
+        position:absolute;
+        bottom:30rpx;
+        left:30rpx;
+    }
+}
+</style>

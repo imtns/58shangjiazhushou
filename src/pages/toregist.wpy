@@ -1,0 +1,366 @@
+<template>
+    <view class="container">
+        <!-- 提示步骤start -->
+        <view class="regist-remind-bar">
+            <block wx:for="{{steps}}" wx:key="index">
+                <view class="regist-remind-steps {{currentstep >= item.index ? 'current-step' : ''}} {{item.index == 2 ? 'regist-remind-horizontal' : ''}}">
+                    <view class="regist-remind-step">{{item.index}}</view>
+                    <view class="regist-remind-text">{{item.text}}</view>
+                </view>
+            </block>
+        </view>
+        <!-- 提示步骤end -->
+        <!-- 主体账户信息start -->
+        <view class="main-accont-info" style="display:none;">
+            <view class="main-title">主体信息登记</view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">企业类型（企业包括企业、分支机构、企业相关品牌）</view>
+                    <view class="main-body-button chosed">企业</view>
+                    <view class="main-body-button">个体工商户</view>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">企业名称</view>
+                    <input class="main-body-input" type="text" placeholder="请输入"></input>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">营业执照注册号/统一信用社代码</view>
+                    <input class="main-body-input" type="text" placeholder="请输入"></input>
+                </view>
+            </view>
+            <view class="main-title">银行账户</view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">企业开户名称/对外账户名</view>
+                    <input class="main-body-input" type="text" placeholder="对公账号需跟组织机构代码证上名称保持一致"></input>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">对公账户开会银行</view>
+                    <input class="main-body-input" type="text" placeholder="请输入"></input>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">对公银行账号</view>
+                    <input class="main-body-input" type="text" placeholder="请输入"></input>
+                </view>
+            </view>
+            <view class="main-title">企业资质</view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">企业工商营业执照</view>
+                    <view class="main-upload"></view>
+                    <!-- <view class="main-show-image">
+                        <image class="main-upload-image"></image>
+                        <view class="main-del-image"></view>
+                    </view> -->
+                    <view class="main-body-remind">只支持中国大陆工商局或市场监督管理局颁发的工商营业执照，且必须在有效期内</view>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">申请公函</view>
+                    <!-- <view class="main-upload"></view> -->
+                    <view class="main-show-image">
+                        <image class="main-upload-image"></image>
+                        <view class="main-del-image"></view>
+                    </view>
+                    <view class="main-body-remind">下载公函、填写空白区域内容后，按格式要求上传</view>
+                    <view class="main-download-button">下载公函</view>
+                </view>
+            </view>
+            <view class="main-title">注：原件照片、扫描件或加盖公章的复印件，支持jpg、jpeg、gif、png格式照片，大小不超过2M</view>
+            <view class="main-button">下一步</view>
+        </view>
+        <!-- 主体账户信息end -->
+        <!-- 管理员信息start -->
+        <view class="main-manage-info">
+            <view class="main-title">管理员信息登记</view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">管理员姓名</view>
+                    <input class="main-body-input" type="text" placeholder="请与申请公函上管理员姓名一致"></input>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">身份证号码</view>
+                    <input class="main-body-input" type="text" placeholder="请输入"></input>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">电话号码</view>
+                    <input class="main-body-input" type="text" placeholder="请输入正确手机号，认证审核过程中将与您联系"></input>
+                </view>
+            </view>
+            <view class="main-title">小程序信息</view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">命名</view>
+                    <input class="main-body-input" type="text" placeholder="提交前请用微信小程序检索检测名称是否可用"></input>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">命名类型</view>
+                    <view class="main-body-button chosed">基于商标</view>
+                    <view class="main-body-button">基于媒体</view>
+                    <view class="main-body-button">基于自选</view>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">商标注册证</view>
+                    <view class="main-upload"></view>
+                    <!-- <view class="main-show-image">
+                        <image class="main-upload-image"></image>
+                        <view class="main-del-image"></view>
+                    </view> -->
+                    <view class="main-body-remind">请上传小程序名称相关带的商标注册证，已证明你有权合理且善意使用该名称，否则审核不能通过</view>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">商标授权书（选填）</view>
+                    <view class="main-upload"></view>
+                    <!-- <view class="main-show-image">
+                        <image class="main-upload-image"></image>
+                        <view class="main-del-image"></view>
+                    </view> -->
+                    <view class="main-body-remind">请上传小程序名称相关带的商标注册证，已证明你有权合理且善意使用该名称，否则审核不能通过</view>
+                </view>
+            </view>
+            <view class="main-title">注：原件照片、扫描件或加盖公章的复印件，支持jpg、jpeg、gif、png格式照片，大小不超过2M</view>
+            <view class="main-button">完成</view>
+        </view>
+        <!-- 管理员信息end -->
+        <!-- 完成 -->
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { sleep } from '../utils';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '注册',
+    }
+    data = {
+        currentstep: '2',
+        steps: [
+            {
+                index: '1',
+                text: '主体账户信息',
+                status: 1,
+            },
+            {
+                index: '2',
+                text: '管理员信息',
+                status: 0,
+            },
+            {
+                index: '3',
+                text: '注册完成',
+                status: 0,
+            },
+        ],
+    }
+    async onLoad() {
+        await sleep();
+        console.log('onLoad');
+    }
+}
+</script>
+
+<style lang="scss">
+view{
+    box-sizing:border-box;
+}
+.regist-remind-bar{
+    width:100%;
+    padding:0 20rpx;
+    height:97rpx;
+    background: #EEF4FF;
+    line-height:97rpx;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    .regist-remind-steps.current-step{
+        .regist-remind-step{
+            background: #4E88FF;
+        }
+        .regist-remind-text{
+            color: #4E88FF;
+        }
+    }
+    .regist-remind-steps{
+        width:200rpx;
+        text-align:center;
+        .regist-remind-step{
+            display:inline-block;
+            width:30rpx;
+            height:30rpx;
+            background: rgba(78,136,255,0.50);
+            color:#fff;
+            text-align:center;
+            line-height:30rpx;
+            border-radius:50%;
+            font-size: 24rpx;
+            margin-right: 10rpx;
+        }
+        .regist-remind-text{
+            font-size: 26rpx;
+            color: #9dbdff;
+            letter-spacing: 0;
+            display:inline-block;
+        }
+    }
+    .regist-remind-steps.regist-remind-horizontal{
+        width:340rpx;
+        position:relative;
+        &::before{
+            content:"";
+            width:40rpx;
+            height:2rpx;
+            background: rgba(78,136,255,0.50);
+            position:absolute;
+            left:30rpx;
+            top:50rpx;
+        }
+        &::after{
+            content:"";
+            width:40rpx;
+            height:2rpx;
+            background: rgba(78,136,255,0.50);
+            position:absolute;
+            right:30rpx;
+            top:50rpx;
+        }
+    }
+}
+.main-accont-info,.main-manage-info{
+    padding-bottom:64rpx;
+}
+.main-title{
+    font-size: 26rpx;
+    color: #999999;
+    padding:18rpx 30rpx;
+}
+.main-body{
+    padding:23rpx 30rpx 0;
+    background:#fff;
+    position:relative;
+    .main-boy-line{
+        border-bottom:1rpx solid #f3f3f3;
+        padding-bottom:23rpx;
+    }
+    .main-body-title{
+        font-size: 26rpx;
+        color: #999999;
+        margin-bottom:16rpx;
+    }
+    .main-body-button{
+        padding:10rpx 20rpx;
+        border: 1px solid #CACACA;
+        border-radius: 2rpx;
+        font-size: 26rpx;
+        color: #666666;
+        display:inline-block;
+        margin-right:20rpx;
+    }
+    .main-body-button.chosed{
+        background: #4E88FF;
+        border:0;
+        color:#fff;
+    }
+    .main-body-input{
+        font-size: 30rpx;
+        color: #333333;
+    }
+    .main-upload{
+        width:160rpx;
+        height:160rpx;
+        border: 1rpx solid #CCCCCC;
+        border-radius: 2px;
+        position:relative;
+        display:inline-block;
+        &::before,&:after{
+            background:#d8d8d8;
+            position:absolute;
+            content: '';
+        }
+        &::before{
+            left:40rpx;
+            top:77rpx;
+            width:80rpx;
+            height:6rpx;
+        }
+        &::after{
+            top:40rpx;
+            left:77rpx;
+            width:6rpx;
+            height:80rpx;
+        }
+    }
+    .main-show-image{
+        width:160rpx;
+        height:160rpx;
+        background:pink;
+        position:relative;
+        .main-upload-image{
+            width:100%;
+            height:100%;
+        }
+        .main-del-image{
+            width:44rpx;
+            height:44rpx;
+            background:url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/main-del-img.png) no-repeat;
+            background-size:100% auto;
+            position:absolute;
+            right:-10rpx;
+            top:-10rpx;
+        }
+    }
+    .main-body-remind{
+        font-size: 26rpx;
+        color: #999999;
+        line-height:38rpx;
+        position:absolute;
+        left:220rpx;
+        top:85rpx;
+    }
+    .main-download-button{
+        border: 1rpx solid #4E88FF;
+        width:156rpx;
+        height:56rpx;
+        text-align:center;
+        line-height:56rpx;
+        color:#4E88FF;
+        font-size:30rpx;
+        position:absolute;
+        left:220rpx;
+        bottom:23rpx;
+    }
+}
+.main-button{
+    background: #4E88FF;
+    border-radius: 4rpx;
+    font-size: 32rpx;
+    color: #FFFFFF;
+    letter-spacing: 0;
+    text-align: center;
+    width:690rpx;
+    height:94rpx;
+    line-height:94rpx;
+    margin:70rpx auto;
+}
+</style>
