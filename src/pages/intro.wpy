@@ -208,8 +208,9 @@ export default class Index extends wepy.page {
                         & .#{$icon} {
                             background: url('http://static.58.com/lbg/shangjiaxcxht/zhushou/img/#{$icon}.png') center no-repeat;
                             background-size: 100% auto;
-                            width: 90rpx;
-                            height: 90rpx;
+                            width: 100rpx;
+                            height: 100rpx;
+                            margin-top: -5rpx;
                         }
                     }
                     .discription{
@@ -219,7 +220,7 @@ export default class Index extends wepy.page {
                         }
                         .dis_text{
                             font-size: 27rpx;
-                            color: #000000;
+                            color: #999999;
                         }
                         .dis_title{
                             font-size: 28rpx;
@@ -229,6 +230,7 @@ export default class Index extends wepy.page {
                 }
             }
             .part3{
+                padding: 0 40rpx;
                 .codeBox{
                     display: inline-block;
                     width: 33%;
