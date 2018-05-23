@@ -4,6 +4,7 @@
             <view class="buy-list">
                 <view class="buy-list-item buy-list-item-first">
                     <view class="buy-app-title">优享小程序</view>
+                    <view class="buy-app-bg"></view>
                     <view class="buy-app-feature-list">
                         <view class="buy-app-feature-list-item">
                             <view class="app-feature-img app-feature-img4"></view>
@@ -40,6 +41,7 @@
                 </view>
                 <view class="buy-list-item">
                     <view class="buy-app-title">优享小程序</view>
+                    <view class="buy-app-bg"></view>
                     <view class="buy-app-feature-list">
                         <view class="buy-app-feature-list-item">
                             <view class="app-feature-img app-feature-img11"></view>
@@ -136,13 +138,14 @@ page {
                 display: inline-block;
                 margin-right: 26rpx;
                 width: 600rpx;
+                position: relative;
                 .buy-app-title {
                     margin-bottom: 52rpx;
                     font-size: 38rpx;
                     color: #ffffff;
                     text-align: center;
                     position: relative;
-                    z-index: 99;
+                    z-index: 2;
                 }
                 .buy-app-title::before {
                     display: inline-block;
@@ -153,18 +156,17 @@ page {
                     transform: rotate(-315deg);
                     background: #ffffff;
                 }
-                .buy-app-title::after {
+                .buy-app-bg {
                     display: block;
-                    content: '';
                     width: 268rpx;
                     height: 28rpx;
                     background: rgba(112, 121, 255, 0.6);
                     border-radius: 55rpx;
                     position: absolute;
                     left: 50%;
-                    bottom: -10rpx;
+                    top: 27rpx;
                     transform: translateX(-50%);
-                    z-index: 0;
+                    z-index: 1;
                 }
                 .buy-app-feature-list {
                     height: 730rpx;
