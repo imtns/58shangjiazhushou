@@ -1,0 +1,218 @@
+<template>
+    <view class="container">
+        <!-- 提示步骤start -->
+        <view class="regist-remind-bar">
+            <block wx:for="{{steps}}" wx:key="index">
+                <view class="regist-remind-steps {{currentstep >= item.index ? 'current-step' : ''}} {{item.index == 2 ? 'regist-remind-horizontal' : ''}}">
+                    <view class="regist-remind-step">{{item.index}}</view>
+                    <view class="regist-remind-text">{{item.text}}</view>
+                </view>
+            </block>
+        </view>
+        <!-- 提示步骤end -->
+        <!-- 主体账户信息start -->
+        <view class="main-accont-info">
+            <view class="main-title">主体信息登记</view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">企业类型（企业包括企业、分支机构、企业相关品牌）</view>
+                    <view class="main-body-button {{form.enterpriseType === item.type ? 'chosed' : ''}}" wx:for="{{enterpriseTypeList}}" wx:key="{{index}}" bindtap="selectEnterpriseType" data-item="{{item}}">{{item.name}}</view>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">企业名称</view>
+                    <input class="main-body-input" type="text" placeholder="请输入" maxlength="100" bindblur="setText" data-name="enterpriseName"></input>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">营业执照注册号/统一信用社代码</view>
+                    <input class="main-body-input" type="text" placeholder="请输入" maxlength="100" bindblur="setText" data-name="enterpriseAccountName" placeholder-style="font-size: 26rpx; color: #CCCCCC;"></input>
+                </view>
+            </view>
+            <view class="main-title">银行账户</view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">企业开户名称/对外账户名</view>
+                    <input class="main-body-input" type="text" placeholder="对公账号需跟组织机构代码证上名称保持一致" maxlength="100" bindblur="setText" data-name="enterpriseAccountName" placeholder-style="font-size: 26rpx; color: #CCCCCC;"></input>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">对公账户开会银行</view>
+                    <input class="main-body-input" type="text" placeholder="请输入" maxlength="100" bindblur="setText" data-name="enterpriseBank" placeholder-style="font-size: 26rpx; color: #CCCCCC;"></input>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">对公银行账号</view>
+                    <input class="main-body-input" type="number" placeholder="请输入" maxlength="19" bindblur="setText" data-name="enterpriseAccount" placeholder-style="font-size: 26rpx; color: #CCCCCC;"></input>
+                </view>
+            </view>
+            <view class="main-title">企业资质</view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">企业工商营业执照</view>
+                    <view class="main-upload" bindtap="uploadLicense" data-key="enterpriseLicense" wx:if="{{!form.enterpriseLicense}}"></view>
+                    <view class="main-show-image" wx:else>
+                        <image class="main-upload-image" src="{{form.enterpriseLicense}}"></image>
+                        <view class="main-del-image" bindtap="delAuthPaper" data-key="enterpriseLicense"></view>
+                    </view>
+                    <view class="main-body-remind">只支持中国大陆工商局或市场监督管理局颁发的工商营业执照，且必须在有效期内</view>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">申请公函</view>
+                    <view class="main-upload" bindtap="uploadLicense" data-key="uploadLicense" wx:if="{{!form.enterpriseLetter}}"></view>
+                    <view class="main-show-image" wx:else>
+                        <image class="main-upload-image" src="{{form.enterpriseLetter}}"></image>
+                        <view class="main-del-image" bindtap="delAuthPaper" data-key="enterpriseLetter"></view>
+                    </view>
+                    <view class="main-body-remind">下载公函、填写空白区域内容后，按格式要求上传</view>
+                    <view class="main-download-button">下载公函</view>
+                </view>
+            </view>
+            <view class="main-title">注：原件照片、扫描件或加盖公章的复印件，支持jpg、jpeg、gif、png格式照片，大小不超过2M</view>
+            <view class="main-button" bindtap="nextStep">下一步</view>
+        </view>
+        <!-- 主体账户信息end -->
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { sleep, alert, toast } from '../utils';
+
+import { uploader } from '../utils/uploader';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '注册',
+    }
+    data = {
+        currentstep: '1',
+        steps: [
+            {
+                index: '1',
+                text: '主体账户信息',
+                status: 1,
+            },
+            {
+                index: '2',
+                text: '管理员信息',
+                status: 0,
+            },
+            {
+                index: '3',
+                text: '注册完成',
+                status: 0,
+            },
+        ],
+        form: {
+            enterpriseType: 0, // 企业类型
+            enterpriseName: '', // 企业名称
+            enterpriseCode: '', // 营业执照注册号
+            enterpriseAccountName: '', // 营业执照注册号
+            enterpriseAccount: '', // 企业开户名称/对外账户名
+            enterpriseBank: '', // 对公账户开会银行
+            enterpriseLicense: '1', // 企业工商营业执照
+            enterpriseLetter: '2', // 申请公函
+        },
+        enterpriseTypeList: [
+            {
+                type: 1,
+                name: '企业',
+            }, {
+                type: 2,
+                name: '个体工商户',
+            },
+        ],
+        enterpriseCodeReg: /^[0-9a-z]+$/,
+    }
+    async onLoad() {
+        await sleep();
+        console.log('onLoad');
+    }
+    // 选择企业类型
+    selectEnterpriseType(e) {
+        console.log(e);
+        const { type } = e.target.dataset.item;
+        this.form.enterpriseType = type;
+        this.$apply();
+    }
+    // 上传执照、公函
+    uploadLicense(license) {
+        wepy.chooseImage({
+            count: 1,
+            sizeType: ['compressed'],
+            success(res) {
+                console.log(res);
+                const { tempFilePaths } = res;
+                const url = tempFilePaths[0];
+                // uploader(url, (e, result) => {
+                //     if (e) {
+                //         toast('上传失败，请重试。');
+                //         return;
+                //     }
+                //     toast('上传成功。');
+                //     this.form[license] = result.data;
+                // });
+            },
+        });
+    }
+    // 输入框数据
+    setText(e) {
+        console.log(e);
+        const { name } = e.currentTarget.dataset;
+        this.form[name] = e.detail.value;
+        this.$apply();
+    }
+    // 删除图片
+    delAuthPaper(e) {
+        const { key } = e.target.dataset;
+        this.form[key] = '';
+    }
+    // 下一步
+    async nextStep() {
+        const {
+            enterpriseType,
+            enterpriseName,
+            enterpriseCode,
+            enterpriseAccountName,
+            enterpriseAccount,
+            enterpriseBank,
+            enterpriseLicense,
+            enterpriseLetter,
+        } = this.form;
+        const { enterpriseCodeReg } = this;
+        if (enterpriseType.length === 0 ||
+            enterpriseName.length === 0 ||
+            enterpriseCode.length === 0 ||
+            enterpriseAccountName.length === 0 ||
+            enterpriseAccount.length === 0 ||
+            enterpriseBank.length === 0 ||
+            enterpriseLicense.length === 0 ||
+            enterpriseLetter.length === 0) {
+            alert('请完善主体信息！');
+            // return;
+        } else if (enterpriseCode.length !== 18 || !enterpriseCodeReg.test(enterpriseCode)) {
+            alert('营业执照格式不正确！');
+            return;
+        } else if (enterpriseAccount.length !== 16 || enterpriseAccount !== 19) {
+            alert('银行卡格式不正确！');
+            return;
+        }
+        wepy.setStorageSync('registForm', this.form);
+        await sleep();
+        wepy.navigateTo({
+            url: './registManage',
+        });
+    }
+}
+</script>
+<style lang="scss">
+    @import '../css/regist.scss';
+</style>
