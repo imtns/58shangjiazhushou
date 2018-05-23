@@ -11,7 +11,6 @@ export const alert = (content, title, callBack) => {
         title: title || '注意',
         content,
         success(res) {
-            console.log(res);
             if (res.confirm) {
                 callBack && callBack();
             }

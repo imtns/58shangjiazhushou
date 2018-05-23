@@ -5,20 +5,22 @@
             <view class="clear-notice" bindtap="verify">清空</view>
         </view>
         <scroll-view class="notice-list">
-        <block wx:for="{{noticeList}}" wx:key="{{item.index}}">
+        <block wx:for="{{noticeList}}" wx:key="index">
             <view class="notice-list-item">
                 <view class="notice-item">
-                    <image class="notice-img" src="{{item.image || ''}}"></image>
+                    <view class="notice-img {{unreadcount > 0 ? 'new-msg' : ''}}">
+                        <image src="{{item.mpLogo || ''}}"></image>
+                    </view>
                     <view class="notice-content">
                         <view class="notice-detail">
                             <view class="notice-name">
                                 <view class="notice-weixin-type {{item.type == 1 ? 'youxiang' : ''}}">{{item.type == 1 ? '优享' : '微信'}}</view>
-                                <view class="notice-weixin-name">{{item.name}}</view>
+                                <view class="notice-weixin-name">{{item.mpName}}</view>
                             </view>
-                            <view class="notice-msg">{{item.msg}}</view>
+                            <view class="notice-msg">{{item.title}}</view>
                         </view>
                         <view class="notice-state">
-                            <view class="notice-status">{{item.status == 1 ? '审核中' : '审核成功'}}</view>
+                            <view class="notice-status">{{item.msgType === 1 ? '已授权' : item.msgType === 2 ? '注册成功' : item.msgType === 3 ? '审核中' : item.msgType === 4 ? '审核通过' : item.msgType === 5 ? '审核失败' : '已上线'}}</view>
                             <view class="notice-time">{{item.time}}</view>
                         </view>
                     </view>
@@ -32,49 +34,56 @@
 <script>
 import wepy from 'wepy';
 
-import { sleep } from '../utils';
+import { sleep } from '../utils/index';
 
-export default class noticeList extends wepy.page {
+import { get } from '../utils/ajax';
+
+export default class NoticeList extends wepy.page {
     config = {
         navigationBarTitleText: '通知',
         disableScroll: true,
     }
     data = {
         noticeList: [],
+        unreadcount: 0,
     }
     async onLoad() {
         await sleep();
         console.log('onLoad');
-        const data = [{
-            index: 1,
-            type: 1,
-            image: '',
-            name: '美嘉合服务美嘉合服务',
-            msg: '审核成功后给您通知！审核成功后给您通知！',
-            status: 1,
-            time: '2018-06-12',
-        }, {
-            index: 2,
-            type: 2,
-            image: '',
-            name: '兄弟到家',
-            msg: '…………',
-            status: 1,
-            time: '2018-06-21',
-        }, {
-            index: 3,
-            type: 1,
-            image: '',
-            name: '美嘉合服务',
-            msg: '请重新上传素材~',
-            status: 1,
-            time: '2018-06-12',
-        }];
-        this.noticeList = data;
-        this.$apply();
     }
-    verify() {
-        console.log('verify');
+    async onShow() {
+        this.loadList();
+    }
+    async onHide() {
+        if (this.unreadcount <= 0) {
+            return;
+        }
+        try {
+            await get('/mplogic/msgread');
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    async loadList() {
+        try {
+            const { data } = await get('/mplogic/msglist');
+            const { msglist, unreadcount } = data;
+            if (msglist && msglist.length > 0) {
+                this.noticeList = msglist;
+                this.unreadcount = unreadcount;
+                this.$apply();
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    async clearAll() {
+        try {
+            await get('/mplogic/msgclearal');
+            this.loadList();
+        } catch (e) {
+            console.log(e);
+        }
     }
 }
 </script>
@@ -135,7 +144,19 @@ view,scroll-view{
                 position:absolute;
                 left:0;
                 top:30rpx;
-                background:pink;
+                image{
+                    width:100%;
+                    height:100%;
+                }
+            }
+            .notice-img.new-msg::after{
+                width:20rpx;
+                height:20rpx;
+                background:red;
+                border-radius:50%;
+                content:'';
+                position:absolute;
+                right:-9rpx;top:-8rpx;
             }
             .notice-content{
                 display:flex;
@@ -163,6 +184,7 @@ view,scroll-view{
                         background: rgba(255,161,0,0.10);
                     }
                     .notice-weixin-name,.notice-msg{
+                        height:45rpx;
                         font-size: 32rpx;
                         color: #333333;
                         letter-spacing: 0.48rpx;
@@ -173,6 +195,8 @@ view,scroll-view{
                         text-overflow:ellipsis;
                     }
                     .notice-msg{
+                        height:48rpx;
+                        height:48rpx;
                         font-size: 24rpx;
                         color: #999999;
                         letter-spacing: 0;
@@ -201,3 +225,8 @@ view,scroll-view{
     }
 }
 </style>
+
+<!-- 
+# 时间格式化
+# 标识优选个微信小程序的状态没有
+-->
