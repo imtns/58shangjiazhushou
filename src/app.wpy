@@ -8,11 +8,12 @@ export default class extends wepy.app {
             'pages/home', // 登陆之后的主页
             'pages/intro', // 没有登陆的介绍页面
             'pages/index',
-            'pages/unregist', // 当前小程序未注册
-            'pages/registed', // 当前小程序已注册
-            'pages/registSuccess', // 注册完成
-            'pages/toregist', // 去注册
             'pages/noticeList', // 消息通知页面
+            'pages/registed', // 当前小程序已注册
+            'pages/unregist', // 当前小程序未注册
+            'pages/registMainAccount', // 主体账户信息
+            'pages/registManage', // 管理员信息
+            'pages/registSuccess', // 注册完成
         ],
         window: {
             backgroundTextStyle: 'light',

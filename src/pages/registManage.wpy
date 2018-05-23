@@ -1,0 +1,195 @@
+<template>
+    <view class="container">
+        <!-- 提示步骤start -->
+        <view class="regist-remind-bar">
+            <block wx:for="{{steps}}" wx:key="index">
+                <view class="regist-remind-steps {{currentstep >= item.index ? 'current-step' : ''}} {{item.index == 2 ? 'regist-remind-horizontal' : ''}}">
+                    <view class="regist-remind-step">{{item.index}}</view>
+                    <view class="regist-remind-text">{{item.text}}</view>
+                </view>
+            </block>
+        </view>
+        <!-- 提示步骤end -->
+        <!-- 管理员信息start -->
+        <view class="main-manage-info">
+            <view class="main-title">管理员信息登记</view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">管理员姓名</view>
+                    <input class="main-body-input" type="text" placeholder="请与申请公函上管理员姓名一致" maxlength="100" bindblur="setText" data-name="manager" placeholder-style="font-size: 26rpx; color: #CCCCCC;"></input>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">身份证号码</view>
+                    <input class="main-body-input" type="idcard" placeholder="请输入" maxlength="18" bindblur="setText" data-name="managerId" placeholder-style="font-size: 26rpx; color: #CCCCCC;"></input>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">电话号码</view>
+                    <input class="main-body-input" type="number" placeholder="请输入正确手机号，认证审核过程中将与您联系" maxlength="18" bindblur="setText" data-name="managerTel" placeholder-style="font-size: 26rpx; color: #CCCCCC;"></input>
+                </view>
+            </view>
+            <view class="main-title">小程序信息</view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">命名</view>
+                    <input class="main-body-input" type="text" placeholder="提交前请用微信小程序检索检测名称是否可用" maxlength="100" bindblur="setText" data-name="wechatName" placeholder-style="font-size: 26rpx; color: #CCCCCC;"></input>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">命名类型</view>
+                    <view class="main-body-button {{form.wechatNameType === item.type ? 'chosed' : ''}}" wx:for="{{wechatNameType}}" wx:key="index" bindtap="selectWechatNameType" data-item="{{item}}">{{item.name}}</view>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">商标注册证</view>
+                    <view class="main-upload" wx:if="{{!form.wechatBrandRegist}}"></view>
+                    <view class="main-show-image" wx:else>
+                        <image class="main-upload-image" src="{{form.wechatBrandRegist}}"></image>
+                        <view class="main-del-image" bindtap="delAuthPaper" data-key="wechatBrandRegist"></view>
+                    </view>
+                    <view class="main-body-remind">请上传小程序名称相关带的商标注册证，已证明你有权合理且善意使用该名称，否则审核不能通过</view>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">商标授权书（选填）</view>
+                    <view class="main-upload" wx:if="{{!form.wechatBrandAuth}}"></view>
+                    <view class="main-show-image" wx:else>
+                        <image class="main-upload-image" src="{{form.wechatBrandAuth}}"></image>
+                        <view class="main-del-image" bindtap="delAuthPaper" data-key="wechatBrandAuth"></view>
+                    </view>
+                    <view class="main-body-remind">请上传小程序名称相关带的商标注册证，已证明你有权合理且善意使用该名称，否则审核不能通过</view>
+                </view>
+            </view>
+            <view class="main-title">注：原件照片、扫描件或加盖公章的复印件，支持jpg、jpeg、gif、png格式照片，大小不超过2M</view>
+            <view class="main-button" bindtap="registSuccess">完成</view>
+        </view>
+        <!-- 管理员信息end -->
+        <!-- 完成 -->
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { sleep, alert } from '../utils';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '注册',
+    }
+    data = {
+        currentstep: '2',
+        steps: [
+            {
+                index: '1',
+                text: '主体账户信息',
+                status: 1,
+            },
+            {
+                index: '2',
+                text: '管理员信息',
+                status: 0,
+            },
+            {
+                index: '3',
+                text: '注册完成',
+                status: 0,
+            },
+        ],
+        wechatNameType: [
+            {
+                type: '1',
+                name: '基于商标',
+            },
+            {
+                type: '2',
+                name: '基于媒体',
+            },
+            {
+                type: '3',
+                name: '基于自选',
+            },
+        ],
+        form: {
+            manager: '',
+            managerId: '',
+            managerTel: '',
+            wechatName: '',
+            wechatNameType: '',
+            wechatBrandRegist: '1',
+            wechatBrandAuth: '2',
+        },
+        regTel: /^[1][3456789][0-9]{9}$/,
+        regiDCard1: /^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$/, // 15位
+        regiDCard2: /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/, // 18位
+    }
+    async onLoad() {
+        await sleep();
+        console.log('onLoad');
+    }
+    // 输入框数据
+    setText(e) {
+        console.log(e);
+        const { name } = e.currentTarget.dataset;
+        this.form[name] = e.detail.value;
+        this.$apply();
+    }
+    // 命名类型
+    selectWechatNameType(e) {
+        const { item } = e.currentTarget.dataset;
+        this.form.wechatNameType = item.type;
+        this.$apply();
+    }
+    delAuthPaper(e) {
+        const { key } = e.target.dataset;
+        this.form[key] = '';
+    }
+    registSuccess() {
+        const {
+            manager,
+            managerId,
+            managerTel,
+            wechatName,
+            wechatNameType,
+            wechatBrandRegist,
+        } = this.form;
+        const {
+            regTel,
+            regiDCard1,
+            regiDCard2,
+        } = this;
+        console.log(this.form);
+        if (manager.length === 0 ||
+            managerId.length === 0 ||
+            managerTel.length === 0 ||
+            wechatName.length === 0 ||
+            wechatNameType.length === 0 ||
+            wechatBrandRegist.length === 0
+        ) {
+            alert('请完善管理员信息！');
+            return;
+        } else if (!regiDCard1.test(managerId) || !regiDCard2.test(managerId)) {
+            alert('请填写正确身份证号码！');
+            return;
+        } else if (!regTel.test(managerTel)) {
+            alert('请填写正确的电话号码！');
+            return;
+        }
+        const registForm = wepy.getStorageSync('registForm');
+        Object.assign(this.form, registForm);
+        wepy.removeStorage('registForm');
+        wepy.navigateTo({
+            url: './registSuccess',
+        });
+    }
+}
+</script>
+<style lang="scss">
+    @import '../css/regist.scss';
+</style>
