@@ -6,6 +6,7 @@ export default class extends wepy.app {
     config = {
         pages: [
             'pages/home', // 登陆之后的主页
+            'pages/myMp', // 我的小程序
             'pages/intro', // 没有登陆的介绍页面
             'pages/index',
             'pages/unregist', // 当前小程序未注册

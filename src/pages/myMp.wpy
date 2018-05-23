@@ -1,0 +1,25 @@
+<template>
+    <view class="myMP">
+        Hello world
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { sleep } from '../utils';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '我的小程序',
+    }
+    async onLoad() {
+        await sleep();
+        console.log('onLoad');
+    }
+}
+</script>
+
+<style lang="scss">
+
+</style>
