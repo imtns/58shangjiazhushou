@@ -7,6 +7,7 @@ export default class extends wepy.app {
         pages: [
             'pages/buy', // 购买页面
             'pages/home', // 登陆之后的主页
+            'pages/myMp', // 我的小程序
             'pages/intro', // 没有登陆的介绍页面
             'pages/index',
             'pages/noticeList', // 消息通知页面

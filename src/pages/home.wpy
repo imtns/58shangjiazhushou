@@ -3,15 +3,15 @@
         <view class="index-loaded-header">
             <view class="welcome-block">
                 <view class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
-                <view :class="{'new-msg': business.noread}" class="msg-box'"></view>
+                <navigator url="noticeList" :class="{'new-msg': business.unread}" class="msg-box'"></navigator>
             </view>
             <view class="item-detail">
                 <view class="item-name">{{ business.miniProgramName }}</view>
                 <view class="item-title">可上传素材、提交注册信息到当前小程序</view>
-                <view wx:if="{{business.mpCount}}" class="item-switch">切换</view>
+                <view bindtap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">切换</view>
                 <view class="item-detail-progress">
                     <view class="current-progress">当前进度</view>
-                    <view class="remind-title">您还未添加小程序信息</view>
+                    <view bindtap="checkProgress" class="remind-title">{{ business.progressText}}</view>
                 </view>
             </view>
         </view>
@@ -21,15 +21,30 @@
                 <view class="item-text">{{item.text}}</view>
             </view>
         </view>
+        <view wx:if="{{business.changeMP}}" class="mask" bindtap="hideMask"></view>
+        <view wx:if="{{business.changeMP}}" class="mpBox">
+            <view class="default">
+                <view>{{business.miniProgramName}}</view>
+                <view>默认</view>
+            </view>
+            <view class="otherBox">
+                <repeat for="{{business.mps}}" key="index" index="index" item="item">
+                    <view bindtap="selectMp({{item}})" class="mpItem" data-appid="{{item.id}}" :class="{ 'active' : item.id === business.selected.id}">{{item.nickName}}</view>
+                </repeat>
+            </view>
+            <view class="btnBox">
+                <view class="cancle" bindtap="hideMask">取消</view>
+                <view class="confirm" :class="{ 'active' : business.canConfirm}" bindtap="confirmAction">确定</view>
+            </view>
+        </view>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
 
-import { sleep } from '../utils';
-// import { post } from '../utils/ajax';
-
+import { sleep, alert } from '../utils';
+import { post } from '../utils/ajax';
 
 export default class Index extends wepy.page {
     config = {
@@ -37,10 +52,18 @@ export default class Index extends wepy.page {
     }
     data = {
         business: {
+            mps: [],
             name: '111',
-            miniProgramName: '',
-            noread: 1,
-            mpCount: 0,
+            miniProgramName: '您还没购买小程序',
+            unread: 1,
+            mpCount: 3,
+            progressText: '您还没有小程序',
+            nexttask: 0,
+            changeMP: false,
+            canConfirm: false,
+            selected: {
+                id: 0,
+            },
         },
         items: [
             {
@@ -60,23 +83,129 @@ export default class Index extends wepy.page {
                 text: '意见反馈',
             },
         ],
-    };
+    }
     methods = {
         link(index) {
-            console.log(index);
+            if (index !== 4) { //   意见反馈不做判断
+                this.checkBeforeJump(index);
+            }
         },
-    };
+        fuck() {
+            console.log('fuck');
+        },
+        checkProgress() {
+            if (!this.business.mpCount) {
+                alert('请先购买小程序', '提示');
+            }
+            // todo：跳转所有页面
+            switch (this.business.nexttask) {
+            case 2:
+                wepy.navigateTo({
+                    url: 'intro',
+                });
+                break;
+            default:
+                break;
+            }
+            this.$apply();
+        },
+        async changeAction() {
+            this.business.changeMP = true;
+            const { data } = await post('/mplogic/mymplist');
+            data.mpinfos && (this.business.mps = data.mpinfos);
+            if (this.business.mps.length) {
+                this.business.mps.map((appinfo, index) => {
+                    if (appinfo.id === this.business.selected.id) {
+                        this.business.mps.splice(index, 1);
+                    }
+                    return '';
+                });
+            }
+            this.$apply();
+        },
+        hideMask() {
+            this.business.changeMP = false;
+            this.business.canConfirm = false;
+        },
+        selectMp(item) {
+            this.business.selected = item;
+            this.business.canConfirm = true;
+            this.$apply();
+        },
+        confirmAction() {
+            if (this.business.selected.id) {
+                this.setGlobalMpId(this.business.selected.id);
+                this.loadData();
+                this.hideMask();
+            }
+        },
+    }
+    hideMask() {
+        this.business.changeMP = false;
+        this.business.canConfirm = false;
+    }
     async onLoad() {
         await sleep();
         console.log('onLoad');
     }
-    // async onShow() {
-    //     const { data } = await post('/mplogic/index');
-    //     console.log(data.username);
-    //     this.business.name = data.username;
-    //     this.business.miniProgramName = data.mpinfo.nickName;
-    //     this.$apply();
-    // }
+    onShow() {
+        this.loadData();
+    }
+    async loadData() {
+        const subData = {
+            mpid: wepy.getStorageSync('current_mpid') || '',
+        };
+        const { data } = await post('/mplogic/index', subData);
+        data.username && (this.business.name = data.username);
+        data.mpinfo && (this.business.miniProgramName = data.mpinfo.nickName);
+        data.unread && (this.business.unread = data.unread);
+        data.count && (this.business.mpCount = data.count);
+        data.nexttask && this.setNextTask(data.nexttask);
+        data.mpinfo && (this.business.selected.id = data.mpinfo.id);
+        this.$apply();
+    }
+    setGlobalMpId(id) {
+        console.log(id, '++++++++++');
+        wepy.setStorageSync('current_mpid', id);
+    }
+    checkBeforeJump(index) {
+        if (!this.business.mpCount) {
+            alert('请先购买小程序', '提示');
+        }
+        console.log(index);
+    }
+    setNextTask(taskNum) {
+        this.business.nexttask = taskNum;
+        switch (taskNum) {
+        case 2:
+            this.business.progressText = '当前小程序未添加小程序信息';
+            break;
+        case 3:
+            this.business.progressText = '当前小程序还未上传素材';
+            break;
+        case 4:
+            this.business.progressText = '当前小程序还未填写注册信息';
+            break;
+        case 5: // 跳转我的小程序
+            this.business.progressText = '当前小程序还未授权';
+            break;
+        case 6: // 跳转到进度
+            this.business.progressText = '提示当前小程序正在制作中';
+            break;
+        case 7: // 消息列表
+            this.business.progressText = '提示当前小程序在审核状态';
+            break;
+        case 8: // 消息列表
+            this.business.progressText = '提示当前小程序在审核状态';
+            break;
+        case 9: // 完成度
+            this.business.progressText = '当前小程序信息已完善';
+            break;
+        default:
+            break;
+        }
+        this.$apply();
+    }
 }
 </script>
 
@@ -88,6 +217,70 @@ export default class Index extends wepy.page {
         width:100%;
         height:1206rpx;
         background:#f6f6f6;
+        .mask{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background: rgba(0,0,0,0.50);
+            top: 0;
+        }
+        .mpBox{
+            width: 540rpx;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate3d(-50%,-50%,0);
+            background: white;
+            border-radius: 2rpx;
+            .default,.otherBox{
+                padding: 0 40rpx;
+            }
+            .default{
+                height: 113rpx;
+                font-size: 28rpx;
+                color: #BDBDBD;
+                line-height: 113rpx;
+                display: flex;
+                justify-content:space-between;
+            }
+            .otherBox{
+                font-size: 32rpx;
+                color: #666666;
+                .mpItem{
+                    height: 113rpx;
+                    line-height: 113rpx;
+                    border-top: 1rpx solid #F6F6F6;
+                    padding-right: 80rpx;
+                }
+                .active{
+                    background:url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/correct-home.png) no-repeat right;
+                    background-size:34rpx 34rpx;
+                    color:#4E88FF;
+                }
+            }
+            .btnBox{
+                display: flex;
+                height: 113rpx;
+                line-height: 113rpx;
+                .active{
+                    color:#4E88FF !important;
+                }
+                view{
+                    flex:1;
+                    background: white;
+                    text-align: center;
+                    border: 1rpx solid #F6F6F6;
+                }
+                .cancle{
+                    font-size: 34rpx;
+                    color: #666666;
+                }
+                .confirm{
+                    font-size: 34rpx;
+                    color: #BDBDBD;
+                }
+            }
+        }
         .index-loaded-header{
             width:100%;
             height:444rpx;
