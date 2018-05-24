@@ -152,14 +152,14 @@ export default class Index extends wepy.page {
                 console.log(res);
                 const { tempFilePaths } = res;
                 const url = tempFilePaths[0];
-                // uploader(url, (e, result) => {
-                //     if (e) {
-                //         toast('上传失败，请重试。');
-                //         return;
-                //     }
-                //     toast('上传成功。');
-                //     this.form[license] = result.data;
-                // });
+                uploader(url, (e, result) => {
+                    if (e) {
+                        toast('上传失败，请重试。');
+                        return;
+                    }
+                    toast('上传成功。');
+                    this.form[license] = result.data;
+                });
             },
         });
     }

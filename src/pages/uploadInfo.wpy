@@ -1,0 +1,87 @@
+<template>
+    <view class="uploadInfo">
+        <view class="article">
+            <view class="title">
+                <view class="text">文本内容</view>
+                <view class="action">点击上传文本</view>
+            </view>
+            <view class="inputArea">
+                <textarea placeholder="请输入" maxLength="100" placeholder-style="font-size: 28rpx;color: #BDBDBD;"/>
+                <view class="numTip">0/100</view>
+            </view>
+        </view>
+        <view class="pic">
+            <view class="title">上传图片</view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">申请公函</view>
+                    <view class="main-upload" bindtap="uploadLicense" data-key="uploadLicense" wx:if="{{!form.enterpriseLetter}}"></view>
+                    <view class="main-show-image" wx:else>
+                        <image class="main-upload-image" src="{{form.enterpriseLetter}}"></image>
+                        <view class="main-del-image" bindtap="delAuthPaper" data-key="enterpriseLetter"></view>
+                    </view>
+                    <view class="main-body-remind">下载公函、填写空白区域内容后，按格式要求上传</view>
+                    <view class="main-download-button">下载公函</view>
+                </view>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { sleep } from '../utils';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '上传素材',
+    }
+    async onLoad() {
+        await sleep();
+        console.log('onLoad');
+    }
+}
+</script>
+
+<style lang="scss">
+    @import '../css/regist.scss';
+    .uploadInfo{
+        .article{
+            padding: 0 30rpx;
+            background: white;
+            margin-bottom: 20rpx;
+            border-top: 1rpx solid #E7E7E7;
+            .title{
+                height: 86rpx;
+                line-height: 86rpx;
+                display: flex;
+                justify-content: space-between;
+                .text{
+                    font-size: 30rpx;
+                    color: #999999;
+                }
+                .action{
+                    font-size: 30rpx;
+                    color: #4E88FF;
+                }
+            }
+            .inputArea{
+                height: 202rpx;
+                padding-bottom: 20rpx;
+                position: relative;
+                textarea{
+                    width: 100%;
+                    height: 202rpx;
+                }
+                .numTip{
+                    position: absolute;
+                    bottom: 20rpx;
+                    right: 0;
+                    font-size: 24rpx;
+                    color: #CCCCCC;
+                }
+            }
+        }
+    }   
+</style>
