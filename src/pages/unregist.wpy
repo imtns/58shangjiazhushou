@@ -12,7 +12,7 @@
             <view class="pro-button">已授权</view>
         </view>
         <view class="regist-remind">注：可以使用最近注册信息对当前小程序进行注册</view>
-        <view class="pro-toregist">新增注册信息</view>
+        <view class="pro-toregist" bindtap="toregist">新增注册信息</view>
     </view>
 </template>
 
@@ -28,6 +28,11 @@ export default class Index extends wepy.page {
     async onLoad() {
         await sleep();
         console.log('onLoad');
+    }
+    toregist() {
+        wepy.navigateTo({
+            url: './registMainAccount',
+        });
     }
 }
 </script>

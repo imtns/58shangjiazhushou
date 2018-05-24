@@ -2,16 +2,18 @@
     <view class="container">
         <view class="regist-title">当前小程序</view>
         <view class="pro-item">
-            <view class="pro-name">美嘉合服务<view class="pro-status pro-registed pro-authed">已注册</view></view>
+            <view class="pro-name">
+            <text>{{currentApp.nickName || currentApp.id}}</text>
+            <view class="pro-status {{currentApp.sign === 1 ? 'pro-registed' : '' }}">{{currentApp.sign === 1 ? '已' : '未' }}注册</view></view>
             <view class="pro-describe">买买买</view>
-            <view class="pro-button">使用</view>
         </view>
-        <view class="regist-title">其他小程序</view>
-        <view class="pro-item">
-            <view class="pro-name">美嘉合服务</view>
-            <view class="pro-describe">买买买</view>
-            <view class="pro-button">去注册</view>
+        <view class="regist-title" wx:if="{{currentApp.sign === 1 && otherlist.length > 0}}">其他小程序</view>
+        <view class="pro-item" wx:if="{{currentApp.sign === 1 && otherlist.length > 0}}" wx:for="{{otherlist}}">
+            <view class="pro-name"><text>{{item.nickName}}</text></view>
+            <view class="pro-describe">{{item.manager || ''}}</view>
+            <view class="pro-button" wx:if="{{item.sign === -1}}">去注册</view>
         </view>
+        <view class="pro-toregist" bindtap="toregist" wx:if="{{currentApp.sign===-1}}">新增注册信息</view>
     </view>
 </template>
 
@@ -20,20 +22,43 @@ import wepy from 'wepy';
 
 import { sleep } from '../utils';
 
+import { get } from '../utils/ajax';
+
 export default class Registed extends wepy.page {
     config = {
         navigationBarTitleText: '注册',
     }
-
-    async onLoad() {
-        await sleep();
-        console.log('onLoad');
+    data = {
+        currentApp: {},
+        otherlist: [],
+        current_mpid: '',
     }
-
+    async onLoad() {
+        wepy.setStorageSync('current_mpid', '123123123');
+        await sleep();
+    }
+    onShow() {
+        this.loadList();
+    }
     toregist() {
         wepy.navigateTo({
             url: './registMainAccount',
         });
+    }
+    async loadList() {
+        this.current_mpid = wepy.getStorageSync('current_mpid') || '';
+        const { data } = await get('/mplogic/mysignmplist');
+        const { mpinfos } = data;
+        if (mpinfos.length <= 0) return;
+        mpinfos.forEach((appinfo) => {
+            if (appinfo.id === this.current_mpid) {
+                this.currentApp = appinfo;
+            } else if (appinfo.nickName != '') {
+                this.otherlist.push(appinfo);
+            }
+        });
+        this.$apply();
+        console.log(this.currentApp);
     }
 }
 </script>

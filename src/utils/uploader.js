@@ -1,6 +1,6 @@
 import wepy from 'wepy';
 
-const uploadUrl = 'http://wanghongyue.qq.com/file/upload/';
+const uploadUrl = 'http://yaofa.58.com//fileUpload';
 
 module.exports.uploader = (tempFilePath, ...props) => {
     let [params, callback, noLoading] = props;
@@ -19,10 +19,11 @@ module.exports.uploader = (tempFilePath, ...props) => {
         name,
         formData,
         filePath: tempFilePath,
-        success({ data, statusCode }) {
-            data = JSON.parse(data);
-            if (statusCode === 200 && data.code == 0) {
-                callback(null, data);
+        success({ data }) {
+            const nData = JSON.parse(data);
+            console.log(nData);
+            if (nData.state === 100) {
+                callback(null, nData.data);
             } else {
                 callback('上传失败');
             }

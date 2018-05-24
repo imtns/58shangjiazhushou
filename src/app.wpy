@@ -5,10 +5,8 @@ import 'wepy-async-function';
 export default class extends wepy.app {
     config = {
         pages: [
-            'pages/uploadInfo', // 上传素材首页
-            'pages/intro', // 没有登陆的介绍页面
             'pages/home', // 登陆之后的主页
-            'pages/progress', // 完成度页面
+            'pages/buy', // 购买页面
             'pages/myMp', // 我的小程序
             'pages/buy', // 购买页面
             'pages/index',
@@ -18,6 +16,10 @@ export default class extends wepy.app {
             'pages/registMainAccount', // 主体账户信息
             'pages/registManage', // 管理员信息
             'pages/registSuccess', // 注册完成
+            'pages/feedback', // 意见反馈
+            'pages/feedbackDetail', // 意见反馈优选、微信问题介绍
+            'pages/uploadArticle', // 上传文章
+
         ],
         window: {
             backgroundTextStyle: 'light',
