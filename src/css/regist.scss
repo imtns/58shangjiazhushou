@@ -16,10 +16,20 @@ view{
     background:#fff;
     position:relative;
     .pro-name,.pro-describe{
+        height:42rpx;
+        line-height:42rpx;
         font-size: 30rpx;
         color: #333333;
         letter-spacing: 0;
         position:relative;
+        text{
+            max-width:394rpx;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            display:inline-block;
+            float:left;
+        }
         .pro-status{
             width:92rpx;
             height:38rpx;
@@ -30,9 +40,8 @@ view{
             font-size: 26rpx;
             color: #999999;
             letter-spacing: 0;
-            position:absolute;
-            left:180rpx;
-            top:5rpx;
+            display:inline-block;
+            margin-left:20rpx;
         }
         .pro-status.pro-registed{
             background: rgba(78,136,255,0.10);
@@ -151,7 +160,7 @@ view{
     background:#fff;
     position:relative;
     .main-boy-line{
-        border-bottom:1rpx solid #CCCCCC;
+        border-bottom:1rpx solid #eeeeee;
         padding-bottom:23rpx;
     }
     .main-body-title{
@@ -206,7 +215,6 @@ view{
     .main-show-image{
         width:160rpx;
         height:160rpx;
-        background:pink;
         position:relative;
         .main-upload-image{
             width:100%;
@@ -242,19 +250,20 @@ view{
         left:220rpx;
         bottom:23rpx;
     }
+
+    .main-body-textarea{
+        width:100%;
+        line-height:48rpx;
+        font-size: 30rpx;
+    }
+    .main-text-size{
+        padding-bottom:20rpx;
+        font-size: 24rpx;
+        color: #CCCCCC;
+        text-align:right;
+    }
 }
-.main-button{
-    background: #4E88FF;
-    border-radius: 4rpx;
-    font-size: 32rpx;
-    color: #FFFFFF;
-    letter-spacing: 0;
-    text-align: center;
-    width:690rpx;
-    height:94rpx;
-    line-height:94rpx;
-    margin:70rpx auto;
-}
+
 // 注册成功页面
 .regist-remind-bar{
     width:100%;
@@ -355,4 +364,22 @@ view{
     height:94rpx;
     line-height:94rpx;
     margin:70rpx auto;
+}
+
+// 意见反馈
+.main-body-item{
+    font-size: 30rpx;
+    color: #333333;
+    position:relative;
+    &::after{
+        display:block;
+        position:absolute;
+        right:20rpx;
+        top:7rpx;
+        content:'';
+        width:15rpx;
+        height:26rpx;
+        background:url('https://static.58.com/lbg/mengchong/image/icon/arrow-right.png') no-repeat center;
+        background-size: 100%;
+    }
 }

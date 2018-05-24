@@ -28,7 +28,7 @@
             <view class="main-body">
                 <view class="main-boy-line">
                     <view class="main-body-title">营业执照注册号/统一信用社代码</view>
-                    <input class="main-body-input" type="text" placeholder="请输入" maxlength="100" bindblur="setText" data-name="enterpriseAccountName" placeholder-style="font-size: 26rpx; color: #CCCCCC;"></input>
+                    <input class="main-body-input" type="text" placeholder="请输入" maxlength="100" bindblur="setText" data-name="enterpriseCode" placeholder-style="font-size: 26rpx; color: #CCCCCC;"></input>
                 </view>
             </view>
             <view class="main-title">银行账户</view>
@@ -40,7 +40,7 @@
             </view>
             <view class="main-body">
                 <view class="main-boy-line">
-                    <view class="main-body-title">对公账户开会银行</view>
+                    <view class="main-body-title">对公账户开户银行</view>
                     <input class="main-body-input" type="text" placeholder="请输入" maxlength="100" bindblur="setText" data-name="enterpriseBank" placeholder-style="font-size: 26rpx; color: #CCCCCC;"></input>
                 </view>
             </view>
@@ -55,26 +55,13 @@
                 <view class="main-boy-line">
                     <view class="main-body-title">企业工商营业执照</view>
                     <view class="main-upload" bindtap="uploadLicense" data-key="enterpriseLicense" wx:if="{{!form.enterpriseLicense}}"></view>
-                    <view class="main-show-image" wx:else>
+                    <view class="main-show-image" wx:if="{{form.enterpriseLicense}}">
                         <image class="main-upload-image" src="{{form.enterpriseLicense}}"></image>
                         <view class="main-del-image" bindtap="delAuthPaper" data-key="enterpriseLicense"></view>
                     </view>
                     <view class="main-body-remind">只支持中国大陆工商局或市场监督管理局颁发的工商营业执照，且必须在有效期内</view>
                 </view>
             </view>
-            <view class="main-body">
-                <view class="main-boy-line">
-                    <view class="main-body-title">申请公函</view>
-                    <view class="main-upload" bindtap="uploadLicense" data-key="uploadLicense" wx:if="{{!form.enterpriseLetter}}"></view>
-                    <view class="main-show-image" wx:else>
-                        <image class="main-upload-image" src="{{form.enterpriseLetter}}"></image>
-                        <view class="main-del-image" bindtap="delAuthPaper" data-key="enterpriseLetter"></view>
-                    </view>
-                    <view class="main-body-remind">下载公函、填写空白区域内容后，按格式要求上传</view>
-                    <view class="main-download-button">下载公函</view>
-                </view>
-            </view>
-            <view class="main-title">注：原件照片、扫描件或加盖公章的复印件，支持jpg、jpeg、gif、png格式照片，大小不超过2M</view>
             <view class="main-button" bindtap="nextStep">下一步</view>
         </view>
         <!-- 主体账户信息end -->
@@ -112,14 +99,13 @@ export default class Index extends wepy.page {
             },
         ],
         form: {
-            enterpriseType: 0, // 企业类型
+            enterpriseType: 0, // 企业类型 1企业，2个体
             enterpriseName: '', // 企业名称
             enterpriseCode: '', // 营业执照注册号
             enterpriseAccountName: '', // 营业执照注册号
             enterpriseAccount: '', // 企业开户名称/对外账户名
             enterpriseBank: '', // 对公账户开会银行
-            enterpriseLicense: '1', // 企业工商营业执照
-            enterpriseLetter: '2', // 申请公函
+            enterpriseLicense: '', // 企业工商营业执照
         },
         enterpriseTypeList: [
             {
@@ -144,7 +130,9 @@ export default class Index extends wepy.page {
         this.$apply();
     }
     // 上传执照、公函
-    uploadLicense(license) {
+    uploadLicense(target) {
+        const that = this;
+        const { key } = target.currentTarget.dataset;
         wepy.chooseImage({
             count: 1,
             sizeType: ['compressed'],
@@ -152,14 +140,16 @@ export default class Index extends wepy.page {
                 console.log(res);
                 const { tempFilePaths } = res;
                 const url = tempFilePaths[0];
-                // uploader(url, (e, result) => {
-                //     if (e) {
-                //         toast('上传失败，请重试。');
-                //         return;
-                //     }
-                //     toast('上传成功。');
-                //     this.form[license] = result.data;
-                // });
+                uploader(url, (e, result) => {
+                    console.log(result);
+                    if (e) {
+                        toast('上传失败，请重试。');
+                        return;
+                    }
+                    toast('上传成功。');
+                    that.form[key] = `http://pic1.58cdn.com.cn${result.content}`;
+                    that.$apply();
+                });
             },
         });
     }
@@ -185,8 +175,8 @@ export default class Index extends wepy.page {
             enterpriseAccount,
             enterpriseBank,
             enterpriseLicense,
-            enterpriseLetter,
         } = this.form;
+        console.log(this.form);
         const { enterpriseCodeReg } = this;
         if (enterpriseType.length === 0 ||
             enterpriseName.length === 0 ||
@@ -194,14 +184,13 @@ export default class Index extends wepy.page {
             enterpriseAccountName.length === 0 ||
             enterpriseAccount.length === 0 ||
             enterpriseBank.length === 0 ||
-            enterpriseLicense.length === 0 ||
-            enterpriseLetter.length === 0) {
+            enterpriseLicense.length === 0) {
             alert('请完善主体信息！');
-            // return;
-        } else if (enterpriseCode.length !== 18 || !enterpriseCodeReg.test(enterpriseCode)) {
+            return;
+        } else if (enterpriseCode.length !== 18 && !enterpriseCodeReg.test(enterpriseCode)) {
             alert('营业执照格式不正确！');
             return;
-        } else if (enterpriseAccount.length !== 16 || enterpriseAccount !== 19) {
+        } else if (enterpriseAccount.length !== 16 && enterpriseAccount !== 19) {
             alert('银行卡格式不正确！');
             return;
         }

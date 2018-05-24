@@ -47,8 +47,8 @@
             <view class="main-body">
                 <view class="main-boy-line">
                     <view class="main-body-title">商标注册证</view>
-                    <view class="main-upload" wx:if="{{!form.wechatBrandRegist}}"></view>
-                    <view class="main-show-image" wx:else>
+                    <view class="main-upload" wx:if="{{!form.wechatBrandRegist}}" bindtap="uploadLicense" data-key="wechatBrandRegist"></view>
+                    <view class="main-show-image" wx:if="{{form.wechatBrandRegist}}">
                         <image class="main-upload-image" src="{{form.wechatBrandRegist}}"></image>
                         <view class="main-del-image" bindtap="delAuthPaper" data-key="wechatBrandRegist"></view>
                     </view>
@@ -58,8 +58,8 @@
             <view class="main-body">
                 <view class="main-boy-line">
                     <view class="main-body-title">商标授权书（选填）</view>
-                    <view class="main-upload" wx:if="{{!form.wechatBrandAuth}}"></view>
-                    <view class="main-show-image" wx:else>
+                    <view class="main-upload" wx:if="{{!form.wechatBrandAuth}}" bindtap="uploadLicense" data-key="wechatBrandAuth"></view>
+                    <view class="main-show-image" wx:if="{{form.wechatBrandAuth}}">
                         <image class="main-upload-image" src="{{form.wechatBrandAuth}}"></image>
                         <view class="main-del-image" bindtap="delAuthPaper" data-key="wechatBrandAuth"></view>
                     </view>
@@ -77,7 +77,11 @@
 <script>
 import wepy from 'wepy';
 
-import { sleep, alert } from '../utils';
+import { sleep, alert, toast } from '../utils';
+
+import { post } from '../utils/ajax';
+
+import { uploader } from '../utils/uploader';
 
 export default class Index extends wepy.page {
     config = {
@@ -117,13 +121,13 @@ export default class Index extends wepy.page {
             },
         ],
         form: {
-            manager: '',
-            managerId: '',
-            managerTel: '',
-            wechatName: '',
-            wechatNameType: '',
-            wechatBrandRegist: '1',
-            wechatBrandAuth: '2',
+            manager: '', // 管理员姓名
+            managerId: '', // 身份证号码
+            managerTel: '', // 电话
+            wechatName: '', // 小程序命名
+            wechatNameType: '', // 命名类型
+            wechatBrandRegist: '', // 商标注册证
+            wechatBrandAuth: '', // 商标授权书（选填）
         },
         regTel: /^[1][3456789][0-9]{9}$/,
         regiDCard1: /^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$/, // 15位
@@ -150,43 +154,76 @@ export default class Index extends wepy.page {
         const { key } = e.target.dataset;
         this.form[key] = '';
     }
-    registSuccess() {
-        const {
-            manager,
-            managerId,
-            managerTel,
-            wechatName,
-            wechatNameType,
-            wechatBrandRegist,
-        } = this.form;
-        const {
-            regTel,
-            regiDCard1,
-            regiDCard2,
-        } = this;
-        console.log(this.form);
-        if (manager.length === 0 ||
-            managerId.length === 0 ||
-            managerTel.length === 0 ||
-            wechatName.length === 0 ||
-            wechatNameType.length === 0 ||
-            wechatBrandRegist.length === 0
-        ) {
-            alert('请完善管理员信息！');
-            return;
-        } else if (!regiDCard1.test(managerId) || !regiDCard2.test(managerId)) {
-            alert('请填写正确身份证号码！');
-            return;
-        } else if (!regTel.test(managerTel)) {
-            alert('请填写正确的电话号码！');
-            return;
-        }
-        const registForm = wepy.getStorageSync('registForm');
-        Object.assign(this.form, registForm);
-        wepy.removeStorage('registForm');
-        wepy.navigateTo({
-            url: './registSuccess',
+    // 上传执照、公函
+    uploadLicense(target) {
+        const that = this;
+        const { key } = target.currentTarget.dataset;
+        wepy.chooseImage({
+            count: 1,
+            sizeType: ['compressed'],
+            success(res) {
+                console.log(res);
+                const { tempFilePaths } = res;
+                const url = tempFilePaths[0];
+                uploader(url, (e, result) => {
+                    console.log(result);
+                    if (e) {
+                        toast('上传失败，请重试。');
+                        return;
+                    }
+                    toast('上传成功。');
+                    that.form[key] = `http://pic1.58cdn.com.cn${result.content}`;
+                    that.$apply();
+                });
+            },
         });
+    }
+    async registSuccess() {
+        try {
+            const {
+                manager,
+                managerId,
+                managerTel,
+                wechatName,
+                wechatNameType,
+                wechatBrandRegist,
+            } = this.form;
+            const {
+                regTel,
+                regiDCard1,
+                regiDCard2,
+            } = this;
+            console.log(this.form);
+            if (manager.length === 0 ||
+                managerId.length === 0 ||
+                managerTel.length === 0 ||
+                wechatName.length === 0 ||
+                wechatNameType.length === 0 ||
+                wechatBrandRegist.length === 0
+            ) {
+                alert('请完善管理员信息！');
+                return;
+            } else if (!regiDCard1.test(managerId) && !regiDCard2.test(managerId)) {
+                alert('请填写正确身份证号码！');
+                return;
+            } else if (!regTel.test(managerTel)) {
+                alert('请填写正确的电话号码！');
+                return;
+            }
+            const registForm = wepy.getStorageSync('registForm');
+            const currentMpid = '123123123';
+            Object.assign(this.form, registForm);
+            const url = `/data/registInfo/${currentMpid}`;
+            await post(url, this.form);
+            await sleep();
+            wepy.removeStorage('registForm');
+            wepy.removeStorage('currentMpid');
+            wepy.navigateTo({
+                url: './registSuccess',
+            });
+        } catch (e) {
+            console.log(e);
+        }
     }
 }
 </script>
