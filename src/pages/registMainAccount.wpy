@@ -149,6 +149,7 @@ export default class Index extends wepy.page {
                     toast('上传成功。');
                     that.form[key] = `http://pic1.58cdn.com.cn${result.content}`;
                     that.$apply();
+                    this.form[license] = result.data;
                 });
             },
         });

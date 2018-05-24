@@ -5,10 +5,17 @@ import 'wepy-async-function';
 export default class extends wepy.app {
     config = {
         pages: [
+<<<<<<< HEAD
             'pages/home', // 登陆之后的主页
             'pages/buy', // 购买页面
-            'pages/myMp', // 我的小程序
+=======
+            'pages/uploadInfo', // 上传素材首页
             'pages/intro', // 没有登陆的介绍页面
+            'pages/home', // 登陆之后的主页
+            'pages/progress', // 完成度页面
+>>>>>>> 489966c3580fc31abd8236a742cf748d9fcde542
+            'pages/myMp', // 我的小程序
+            'pages/buy', // 购买页面
             'pages/index',
             'pages/noticeList', // 消息通知页面
             'pages/registed', // 当前小程序已注册
@@ -32,6 +39,14 @@ export default class extends wepy.app {
         console.log('on launch');
     }
     onShow (options) {
+        console.log('onshow拉卡啊阿卡');
+        const ppu = wx.getStorageSync('ppu');
+        if (ppu) {
+            console.log('已经存在ppu');
+            wepy.navigateTo({
+                url: 'home',
+            });
+        }
         if (options.scene === 1038) {
             if (!options.referrerInfo) {
                 console.log('options.referrerInfo为空');
@@ -46,6 +61,9 @@ export default class extends wepy.app {
             if (extraData.ppu !== undefined) { // 如果获取ppu成功
                 console.log(`获取PPU成功！ ${extraData.ppu}`);
                 wepy.setStorageSync('ppu', extraData.ppu);
+                wepy.navigateTo({
+                    url: 'home',
+                });
             }
         }
     }
