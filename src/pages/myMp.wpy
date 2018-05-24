@@ -1,6 +1,57 @@
 <template>
     <view class="myMP">
-        Hello world
+        <view class="current">
+            <view class="tips">
+                <view>当前小程序</view>
+                <view>可在首页切换</view>
+            </view>
+            <view class="list">
+                <view class="infos">
+                    <view class="logBox">
+                        <image class="logo" mode="{{aspectFit}}" src="{{business.current.headImg}}"></image>
+                    </view>
+                    <view class="details">
+                        <view class="title"> 
+                            <image class="icon" mode="{{aspectFit}}" src="{{business.current.app_type === 1 ? 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png'}}"></image>
+                            <view class="name">{{business.current.nickName}}</view>
+                        </view>
+                        <view class="deadline">有效期至 {{business.current.expiryDate}}</view>
+                    </view>
+                </view>
+                <view class="btns">
+                    <view>去授权</view>
+                    <view>装修</view>
+                    <view>查看</view>
+                </view>
+            </view>
+        </view>
+        <view class="others">
+            <view class="tips">
+                <view>其他小程序</view>
+                <view></view>
+            </view>
+            <repeat for="{{business.mps}}" key="index" index="index" item="item">
+                <view class="list">
+                    <view class="infos">
+                        <view class="logBox">
+                            <image class="logo" mode="{{aspectFit}}" src="{{item.headImg}}"></image>
+                        </view>
+                        <view class="details">
+                            <view class="title"> 
+                                <image class="icon" mode="{{aspectFit}}" src="{{item.app_type === 1 ? 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png'}}"></image>
+                                <view class="name">{{item.nickName}}</view>
+                            </view>
+                            <view class="deadline">有效期至 {{item.expiryDate}}</view>
+                        </view>
+                    </view>
+                    <view class="btns">
+                        <view>去授权</view>
+                        <view>装修</view>
+                        <view>查看</view>
+                    </view>
+                </view>
+            </repeat>
+        </view>
     </view>
 </template>
 
@@ -8,10 +59,35 @@
 import wepy from 'wepy';
 
 import { sleep } from '../utils';
+import { post } from '../utils/ajax';
 
 export default class Index extends wepy.page {
+    data = {
+        business: {
+            mps: [1, 2],
+            current: {
+                src: 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/code7.png',
+                deadLine: '2018-09-98',
+            },
+        },
+    }
     config = {
         navigationBarTitleText: '我的小程序',
+    }
+    async onShow() {
+        const currentMpid = wepy.getStorageSync('current_mpid') || '';
+        const subData = {
+            mpid: currentMpid,
+        };
+        const { data } = await post('/mplogic/mymplist', subData);
+        const mps = data.mpinfos;
+        console.log(currentMpid);
+        const currentMp = mps.filter((item) => item.id === currentMpid);
+        [this.business.current] = currentMp;
+        console.log(this.business.current);
+        const othersMp = mps.filter((item) => item.id !== currentMpid);
+        this.business.mps = othersMp;
+        this.$apply();
     }
     async onLoad() {
         await sleep();
@@ -21,5 +97,76 @@ export default class Index extends wepy.page {
 </script>
 
 <style lang="scss">
-
+    .myMP{
+        padding: 0 30rpx;
+        .tips{
+            display: flex;
+            justify-content: space-between;
+            height: 80rpx;
+            line-height: 80rpx;
+            letter-spacing: 0;
+            view{
+                font-size: 28rpx;
+                color: #999999;
+                padding: 0 10rpx;
+            }
+        }
+        .list{
+            background: #FFFFFF;
+            box-shadow: 0 1px 10px 0 rgba(0,0,0,0.10);
+            height: 246rpx;
+            padding: 0 30rpx;
+            margin-bottom: 20rpx;
+            .infos{
+                height: 175rpx;
+                display: flex;
+                .logBox{
+                    width: 120rpx;
+                    .logo{
+                        width: 120rpx;
+                        height: 120rpx;
+                        margin-top: 24rpx;
+                        border: 1rpx solid #E7E7E7;
+                    }
+                }
+                .details{
+                    flex:1;
+                    padding-left: 20rpx;
+                    .title{
+                        height: 91rpx;
+                        line-height: 91rpx;
+                        image{
+                            display: inline-block;
+                            width: 66rpx;
+                            height: 38rpx;
+                            float: left;
+                            margin-top: 26.5rpx;
+                        }
+                        .name{
+                            display: inline-block;
+                            font-size: 32rpx;
+                            color: #333333;
+                            padding-left: 10rpx;
+                        }
+                    }
+                    .deadline{
+                        font-size: 26rpx;
+                        color: #999999;
+                    }
+                }
+            }
+            .btns{
+                display: flex;
+                border-top: 1rpx solid #F3F3F3;
+                height: 72rpx;
+                line-height: 72rpx;
+                font-size: 28rpx;
+                color: #333333;
+                view{
+                    flex:1;
+                    text-align: center;
+                }
+            }
+        }
+    }
 </style>

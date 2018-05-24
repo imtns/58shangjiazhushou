@@ -148,8 +148,9 @@ export default class Index extends wepy.page {
         await sleep();
         console.log('onLoad');
     }
-    onShow() {
-        this.loadData();
+    async onShow() {
+        await this.loadData();
+        this.setGlobalMpId(this.business.selected.id);
     }
     async loadData() {
         const subData = {
@@ -172,7 +173,18 @@ export default class Index extends wepy.page {
         if (!this.business.mpCount) {
             alert('请先购买小程序', '提示');
         }
-        console.log(index);
+        switch (index) {
+        case 0:
+            wepy.navigateTo({
+                url: 'myMp',
+            });
+            break;
+        case 3:
+            this.business.progressText = '当前小程序还未上传素材';
+            break;
+        default:
+            break;
+        }
     }
     setNextTask(taskNum) {
         this.business.nexttask = taskNum;
