@@ -5,13 +5,12 @@
             <view class="pro-name">
             <text>{{currentApp.nickName || currentApp.id}}</text>
             <view class="pro-status {{currentApp.sign === 1 ? 'pro-registed' : '' }}">{{currentApp.sign === 1 ? '已' : '未' }}注册</view></view>
-            <view class="pro-describe">买买买</view>
         </view>
         <view class="regist-title" wx:if="{{currentApp.sign === 1 && otherlist.length > 0}}">其他小程序</view>
-        <view class="pro-item" wx:if="{{currentApp.sign === 1 && otherlist.length > 0}}" wx:for="{{otherlist}}">
+        <view class="pro-item" wx:if="{{currentApp.sign === 1 && otherlist.length > 0}}" wx:for="{{otherlist}}" wx:key="index">
             <view class="pro-name"><text>{{item.nickName}}</text></view>
             <view class="pro-describe">{{item.manager || ''}}</view>
-            <view class="pro-button" wx:if="{{item.sign === -1}}">去注册</view>
+            <view class="pro-button" wx:if="{{item.sign === -1}}" data-item="{{item}}" bindtap="toregist">去注册</view>
         </view>
         <view class="pro-toregist" bindtap="toregist" wx:if="{{currentApp.sign===-1}}">新增注册信息</view>
     </view>
@@ -34,13 +33,16 @@ export default class Registed extends wepy.page {
         current_mpid: '',
     }
     async onLoad() {
-        wepy.setStorageSync('current_mpid', '123123123');
         await sleep();
     }
     onShow() {
         this.loadList();
     }
-    toregist() {
+    async toregist(e) {
+        const { id } = e.currentTarget.dataset;
+        const registMappid = id || this.current_mpid;
+        wepy.setStorageSync('registMappid', registMappid);
+        await sleep();
         wepy.navigateTo({
             url: './registMainAccount',
         });
@@ -58,7 +60,6 @@ export default class Registed extends wepy.page {
             }
         });
         this.$apply();
-        console.log(this.currentApp);
     }
 }
 </script>
