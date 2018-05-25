@@ -1,14 +1,7 @@
 <template>
     <view class="container">
         <!-- 提示步骤start -->
-        <view class="regist-remind-bar">
-            <block wx:for="{{steps}}" wx:key="index">
-                <view class="regist-remind-steps {{currentstep >= item.index ? 'current-step' : ''}} {{item.index == 2 ? 'regist-remind-horizontal' : ''}}">
-                    <view class="regist-remind-step">{{item.index}}</view>
-                    <view class="regist-remind-text">{{item.text}}</view>
-                </view>
-            </block>
-        </view>
+        <RemindBar :currentstep="currentstep"></RemindBar>
         <!-- 提示步骤end -->
         <!-- 主体账户信息start -->
         <view class="main-accont-info">
@@ -53,8 +46,7 @@
             <view class="main-title">企业资质</view>
             <view class="main-body">
                 <view class="main-boy-line">
-                    <view class="main-body-title">企业工商营业执照</view>
-                    <view class="main-upload" bindtap="uploadLicense" data-key="enterpriseLicense" wx:if="{{!form.enterpriseLicense}}"></view>
+                    <view class="main-body-title">企业工商营业执照</view><view class="main-upload" bindtap="uploadLicense" data-key="enterpriseLicense" wx:if="{{!form.enterpriseLicense}}"></view>
                     <view class="main-show-image" wx:if="{{form.enterpriseLicense}}">
                         <image class="main-upload-image" src="{{form.enterpriseLicense}}"></image>
                         <view class="main-del-image" bindtap="delAuthPaper" data-key="enterpriseLicense"></view>
@@ -75,29 +67,18 @@ import { sleep, alert, toast } from '../utils';
 
 import { uploader } from '../utils/uploader';
 
+import RemindBar from '../components/RemindBar';
+
+
 export default class Index extends wepy.page {
     config = {
         navigationBarTitleText: '注册',
     }
+    components = {
+        RemindBar,
+    }
     data = {
         currentstep: '1',
-        steps: [
-            {
-                index: '1',
-                text: '主体账户信息',
-                status: 1,
-            },
-            {
-                index: '2',
-                text: '管理员信息',
-                status: 0,
-            },
-            {
-                index: '3',
-                text: '注册完成',
-                status: 0,
-            },
-        ],
         form: {
             enterpriseType: 0, // 企业类型 1企业，2个体
             enterpriseName: '', // 企业名称

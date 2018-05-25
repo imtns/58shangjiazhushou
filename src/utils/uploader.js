@@ -1,6 +1,6 @@
 import wepy from 'wepy';
 
-const uploadUrl = 'http://yaofa.58.com//fileUpload';
+const uploadUrl = 'http://yaofa.58.com/fileUpload';
 
 module.exports.uploader = (tempFilePath, ...props) => {
     let [params, callback, noLoading] = props;

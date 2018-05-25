@@ -1,0 +1,48 @@
+<template>
+    <view class="main-upload" @tap="uploadLicense"></view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { sleep, toast } from '../utils';
+
+import { uploader } from '../utils/uploader';
+
+export default class Index extends wepy.page {
+    async onLoad() {
+        await sleep();
+        console.log('onLoad');
+        console.log('onLoad', this.$parent.key);
+    }
+
+    // 上传执照、公函
+    uploadLicense() {
+        const that = this;
+        const { key } = this.$parent;
+        wepy.chooseImage({
+            count: 1,
+            sizeType: ['compressed'],
+            success(res) {
+                console.log(res);
+                const { tempFilePaths } = res;
+                const url = tempFilePaths[0];
+                uploader(url, (e, result) => {
+                    console.log(result);
+                    if (e) {
+                        toast('上传失败，请重试。');
+                        return;
+                    }
+                    toast('上传成功。');
+                    that.form[key] = `http://pic1.58cdn.com.cn${result.content}`;
+                    that.$apply();
+                });
+            },
+        });
+    }
+}
+</script>
+
+<style lang="scss">
+
+</style>
