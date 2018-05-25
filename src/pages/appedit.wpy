@@ -1,0 +1,191 @@
+<template>
+    <view class="appedit-container">
+        <view class="appedit-header">
+            <text class="appedit-form-label">上传小程序标志</text>
+            <image class="appedit-form-logo" src="{{form.logo}}"/>
+            <text class="appedit-form-arrow"></text>
+        </view>
+        <view class="appedit-content-list">
+            <view class="appedit-content-list-item">
+                <text class="appedit-form-label">小程序名称</text>
+                <input class="appedit-form-input" type="text" placeholder="提交后优享小程序才可修改" placeholder-class=""/>
+            </view>
+            <view class="appedit-content-list-item">
+                <text class="appedit-form-label">联系电话</text>
+                <input class="appedit-form-input" type="text" placeholder="请输入" placeholder-class="appedit-form-spaceholder"/>
+            </view>
+            <view class="appedit-content-list-item">
+                <text class="appedit-form-label">小程序城市</text>
+                <input class="appedit-form-input" type="text" placeholder="请选择" placeholder-class="appedit-form-spaceholder"/>
+            </view>
+            <view class="appedit-content-list-item appedit-content-list-item-noborder">
+                <text class="appedit-form-label-address">小程序具体地点</text>
+                <view class="appedit-form-btn-location">定位</view>
+            </view>
+            <view class="appedit-content-list-item appedit-content-list-item-noborder">
+                <textarea name="" id="" cols="30" rows="10" class="appedit-form-input-addressdetail"  placeholder="请输入" placeholder-class="appedit-form-spaceholder"></textarea>
+            </view>
+        </view>   
+        <view class="appedit-map"></view>
+        <view class="appedit-submit">保存</view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { sleep } from '../utils';
+import { get, post } from '../utils/ajax';
+
+export default class AppEdit extends wepy.page {
+    config = {
+        disableScroll: true,
+        navigationBarTitleText: '小程序编辑',
+    }
+    data = {
+        form: {
+            logo: 'https://pic2.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png',
+        },
+    }
+    async onLoad (options) {
+        const { app_type } = options;
+
+        console.log('onLoad');
+    }
+}
+</script>
+
+<style lang="scss">
+.appedit-container {
+    box-sizing: border-box;
+    background: #f6f6f6;
+    width: 100vw;
+    height: 100vh;
+    padding-top: 20rpx;
+    .appedit-header {
+        height: 110rpx;
+        margin-bottom: 38rpx;
+        background: #fff;
+        padding: 0 30rpx;
+        &::after {
+            display: inline-block;
+            content: '';
+            width: 0;
+            height: 110rpx;
+            line-height: 110rpx;
+            vertical-align: middle;
+        }
+        .appedit-form-label {
+            font-family: PingFangSC-Regular;
+            font-size: 30rpx;
+            color: #999999;
+            vertical-align: middle;
+        }
+        .appedit-form-logo {
+            margin-left: 364rpx;
+            width: 72rpx;
+            height: 72rpx;
+            vertical-align: middle;
+            border-radius: 50%;
+        }
+        .appedit-form-arrow {
+            display: inline-block;
+            content: '';
+            width: 15rpx;
+            height: 25rpx;
+            vertical-align: middle;
+            margin-left: 25rpx;
+            background: url('https://static.58.com/lbg/mengchong/image/icon/arrow-right.png')
+                no-repeat;
+            background-size: 100%;
+        }
+    }
+    .appedit-content-list {
+        padding: 0 30rpx 40rpx;
+        background: #fff;
+        .appedit-content-list-item {
+            height: 90rpx;
+            border-bottom: 2rpx solid #f3f3f3;
+            &::after {
+                display: inline-block;
+                content: '';
+                width: 0;
+                height: 90rpx;
+                line-height: 90rpx;
+                vertical-align: middle;
+            }
+            .appedit-form-label {
+                display: inline-block;
+                width: 150rpx;
+                font-family: PingFangSC-Regular;
+                font-size: 30rpx;
+                color: #999999;
+                vertical-align: middle;
+            }
+            .appedit-form-spaceholder {
+                color: #ccc;
+            }
+            .appedit-form-input {
+                margin-left: 144rpx;
+                display: inline-block;
+                width: 396rpx;
+                font-family: PingFangSC-Regular;
+                font-size: 30rpx;
+                color: #333333;
+                text-align: right;
+                vertical-align: middle;
+            }
+            .appedit-form-label-address {
+                @extend .appedit-form-label;
+                width: 210rpx;
+            }
+            .appedit-form-btn-location {
+                display: inline-block;
+                margin-left: 392rpx;
+                font-family: PingFangSC-Regular;
+                font-size: 30rpx;
+                color: #4e88ff;
+                &::before {
+                    display: inline-block;
+                    content: '';
+                    width: 24rpx;
+                    height: 30rpx;
+                    background: url('https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/img/icon_location.png')
+                        no-repeat top left;
+                    background-size: 100%;
+                    margin-right: 4rpx;
+                    vertical-align: -4rpx;
+                }
+            }
+            .appedit-form-input-addressdetail {
+                display: block;
+                width: 100%;
+                height: 88rpx;
+                font-family: PingFangSC-Regular;
+                font-size: 30rpx;
+                color: #333333;
+            }
+        }
+        .appedit-content-list-item-noborder {
+            border: none;
+        }
+    }
+    .appedit-map {
+        height: 360rpx;
+    }
+    .appedit-submit {
+        width: 690rpx;
+        line-height: 94rpx;
+        margin: 62rpx auto 0;
+        background: #cccccc;
+        border-radius: 4rpx;
+        font-family: PingFangSC-Regular;
+        font-size: 3r2px;
+        color: #ffffff;
+        text-align: center;
+    }
+    .submit-enable {
+        background: #4e88ff;
+    }
+}
+</style>
