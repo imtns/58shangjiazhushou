@@ -11,7 +11,6 @@ export default class extends wepy.app {
             'pages/intro', // 没有登陆的介绍页面
             'pages/progress', // 完成度页面
             'pages/myMp', // 我的小程序
-            'pages/buy', // 购买页面
             'pages/index',
             'pages/noticeList', // 消息通知页面
             'pages/registed', // 当前小程序已注册
@@ -35,7 +34,7 @@ export default class extends wepy.app {
     }
     onShow (options) {
         console.log('onshow拉卡啊阿卡');
-        const ppu = wx.getStorageSync('ppu');
+        const ppu = wepy.getStorageSync('ppu');
         if (ppu) {
             console.log('已经存在ppu');
             wepy.navigateTo({
