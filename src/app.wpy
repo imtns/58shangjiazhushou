@@ -5,15 +5,10 @@ import 'wepy-async-function';
 export default class extends wepy.app {
     config = {
         pages: [
-<<<<<<< HEAD
-            'pages/home', // 登陆之后的主页
-            'pages/buy', // 购买页面
-=======
             'pages/uploadInfo', // 上传素材首页
             'pages/intro', // 没有登陆的介绍页面
             'pages/home', // 登陆之后的主页
             'pages/progress', // 完成度页面
->>>>>>> 489966c3580fc31abd8236a742cf748d9fcde542
             'pages/myMp', // 我的小程序
             'pages/buy', // 购买页面
             'pages/index',
