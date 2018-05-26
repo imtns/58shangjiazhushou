@@ -99,25 +99,25 @@ export default class Index extends wepy.page {
         ],
         enterpriseCodeReg: /^[0-9a-z]+$/,
     }
-    async onLoad() {
+    async onLoad () {
         await sleep();
         console.log('onLoad');
     }
     // 选择企业类型
-    selectEnterpriseType(e) {
+    selectEnterpriseType (e) {
         console.log(e);
         const { type } = e.target.dataset.item;
         this.form.enterpriseType = type;
         this.$apply();
     }
     // 上传执照、公函
-    uploadLicense(target) {
+    uploadLicense (target) {
         const that = this;
         const { key } = target.currentTarget.dataset;
         wepy.chooseImage({
             count: 1,
             sizeType: ['compressed'],
-            success(res) {
+            success (res) {
                 console.log(res);
                 const { tempFilePaths } = res;
                 const url = tempFilePaths[0];
@@ -135,19 +135,19 @@ export default class Index extends wepy.page {
         });
     }
     // 输入框数据
-    setText(e) {
+    setText (e) {
         console.log(e);
         const { name } = e.currentTarget.dataset;
         this.form[name] = e.detail.value;
         this.$apply();
     }
     // 删除图片
-    delAuthPaper(e) {
+    delAuthPaper (e) {
         const { key } = e.target.dataset;
         this.form[key] = '';
     }
     // 下一步
-    async nextStep() {
+    async nextStep () {
         const {
             enterpriseType,
             enterpriseName,
@@ -184,5 +184,5 @@ export default class Index extends wepy.page {
 }
 </script>
 <style lang="scss">
-    @import '../css/regist.scss';
+@import '../css/regist.scss';
 </style>
