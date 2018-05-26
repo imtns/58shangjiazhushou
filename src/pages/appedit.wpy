@@ -155,6 +155,76 @@ export default class AppEdit extends wepy.page {
         const res = await get(`${appinfoApi}/${appid}`);
         this.uploadForm(res);
     }
+    methods = {
+        async setLogo () {
+            const { tempFilePaths } = await wepy.chooseImage();
+            const filePath = tempFilePaths[0];
+            console.log({ filePath });
+            const logo = await wepy.uploadFile({
+                url: uploadApi,
+                filePath,
+                name: 'content',
+            });
+            this.uploadForm({ logo, logoUrl: picSrcDomain() + logo });
+        },
+        setAppName (e) {
+            const appName = e.detail.value;
+            this.uploadForm({ appName });
+        },
+        setMobile (e) {
+            const mobile = e.detail.value;
+            this.uploadForm({ mobile });
+        },
+        setCity (e) {
+            const city = e.detail.value;
+            this.uploadForm({ city });
+        },
+        async setLocation () {
+            const { address, latitude, longitude } = await wepy.chooseLocation();
+            this.uploadForm({ location: { address, latitude, longitude }, detailAddress: address });
+        },
+        setDetailAdress (e) {
+            const detailAddress = e.detail.value;
+            this.uploadForm({ detailAddress });
+        },
+        verify () {
+            const regPhone = /^1[3456789][0-9]{9}$/;
+            const { form } = this.data;
+            if (!form.appName) {
+                toast('输入小程序名称');
+                return false;
+            }
+            if (!form.mobile) {
+                toast('输入联系电话');
+                return false;
+            }
+            if (regPhone.test(form.mobile)) {
+                toast('输入联系电话');
+                return false;
+            }
+            if (form.City.length === 3) {
+                toast('选择城市');
+                return false;
+            }
+            if (!form.detailAddress) {
+                toast('输入详情地址');
+                return false;
+            }
+            return true;
+        },
+        bindSave () {
+            const { form } = this.data;
+            if (!this.verify()) return;
+            Object.assign(form, { cityStr: this.data.form.city.split('|') });
+            get('/mplogic/modifympinfo', { ...form }, (e) => {
+                if (e) {
+                    toast(e);
+                    return;
+                }
+                wepy.navigateBack();
+            });
+        },
+    }
     async onLoad (options) {
         const { appid = '123123124' } = options;
         this.appid = appid;
