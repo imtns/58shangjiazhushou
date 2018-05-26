@@ -52,10 +52,22 @@ export default class Index extends wepy.page {
         if (!this.content.trim()) return;
         try {
             const { content } = this;
-            await post('/suggestion/submit', content);
+            const nContent = this.filteremoji(content);
+            console.log(content, nContent);
+            await post('/suggestion/submit', nContent);
         } catch (e) {
             console.log(e);
         }
+    }
+    // 过滤微信表情
+    filteremoji(content) {
+        const ranges = [
+            '\ud83c[\udf00-\udfff]',
+            '\ud83d[\udc00-\ude4f]',
+            '\ud83d[\ude80-\udeff]',
+        ];
+        const emojireg = content.replace(new RegExp(ranges.join('|'), 'g'), '');
+        return emojireg;
     }
     tofeedbackDetail(e) {
         const { type } = e.currentTarget.dataset;
