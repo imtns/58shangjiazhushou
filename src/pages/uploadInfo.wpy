@@ -10,8 +10,8 @@
                 <view class="numTip">0/100</view>
             </view>
         </view>
-        <view class="main-body">
-        <view class="main-title">上传图片</view>
+        <!-- <view class="main-body">
+            <view class="main-title">上传图片</view>
             <view class="main-boy-line main-body-flex">
                 <view class="main-upload"></view>
                 <view class="main-show-image">
@@ -35,9 +35,10 @@
                     <view class="main-del-image"></view>
                 </view>
             </view>
-        </view>
+        </view> -->
+        <imageuploader @changeimages.user="setImages" :maxSize="maxImageSize" uploadtype="1"></imageuploader>
         <view class="main-title">注：最多上传10张，大小不超过4M</view>
-        <view class="main-body">
+        <!-- <view class="main-body">
         <view class="main-title">上传视频</view>
             <view class="main-boy-line main-body-flex">
                 <view class="main-upload"></view>
@@ -46,7 +47,8 @@
                     <view class="main-del-image"></view>
                 </view>
             </view>
-        </view>
+        </view> -->
+        <videouploader @changeimages.user="setVideo" :maxSize="maxVideoSize" uploadtype="2"></videouploader>
         <view class="main-title">注：最多上传5个，大小不超过200M</view>
         <view class="main-body">
             <view class="main-boy-line">
@@ -64,8 +66,8 @@
                 <view class="main-body-text" style="color:#333; font-size:30rpx;">文章标题2</view>
             </view>
         </view>
-        <imageuploader @changeimages.user="setImages" :maxSize="maxImageSize" uploadtype="1"></imageuploader>
-        <videouploader @changeimages.user="setVideo" :maxSize="maxVideoSize" uploadtype="2"></videouploader>
+        
+        
         <view class="main-button" @tap="submitSave">完成</view>
     </view>
 </template>
