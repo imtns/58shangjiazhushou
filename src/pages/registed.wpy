@@ -53,7 +53,7 @@ export default class Registed extends wepy.page {
         mpinfos.forEach((appinfo) => {
             if (appinfo.id === this.current_mpid) {
                 this.currentApp = appinfo;
-            } else if (appinfo.nickName != '') {
+            } else if (appinfo.nickName !== '') {
                 this.otherlist.push(appinfo);
             }
         });
