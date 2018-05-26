@@ -14,9 +14,9 @@ export const alert = (content, title, callBack) => {
             if (res.confirm) {
                 callBack && callBack();
             }
-        }
+        },
     });
-}
+};
 
 // toast
 export const toast = (title) => {
@@ -25,4 +25,10 @@ export const toast = (title) => {
         icon: 'none',
         duration: 2000,
     });
-}
+};
+
+// 图片域名
+export const picSrcDomain = () => {
+    const n = parseInt(Math.random() * 8) + 1;
+    return `https://pic${n}.58cdn.com.cn`;
+};

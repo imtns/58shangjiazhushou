@@ -1,6 +1,6 @@
 import wepy from 'wepy';
 
-const host = 'http://yaofa.58.com';
+const host = 'http://wanghongyue.58.com';
 
 const http = (method, ...props) => new Promise((resolve, reject) => {
     let [url, data, callback] = props;
