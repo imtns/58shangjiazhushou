@@ -2,40 +2,56 @@
     <view class="appedit-container">
         <view class="appedit-header">
             <text class="appedit-form-label">上传小程序标志</text>
-            <image class="appedit-form-logo" src="{{form.logo}}"/>
+            <image class="appedit-form-logo" src="{{form.logoUrl}}" @tap="setLogo"/>
             <text class="appedit-form-arrow"></text>
         </view>
         <view class="appedit-content-list">
             <view class="appedit-content-list-item">
                 <text class="appedit-form-label">小程序名称</text>
-                <input class="appedit-form-input" type="text" placeholder="提交后优享小程序才可修改" placeholder-class=""/>
+                <input class="appedit-form-input" type="text" bindinput="setAppName" placeholder="提交后优享小程序才可修改" placeholder-class="appedit-form-placeholder" wx:if="{{app_type==1}}"/>
+                <view class="appedit-form-input" type="text" placeholder="提交后优享小程序才可修改" placeholder-class="appedit-form-placeholder" wx:else></view>
             </view>
             <view class="appedit-content-list-item">
                 <text class="appedit-form-label">联系电话</text>
-                <input class="appedit-form-input" type="text" placeholder="请输入" placeholder-class="appedit-form-spaceholder"/>
+                <input class="appedit-form-input" maxlength='11' type="text" bindinput="setMobile" placeholder="请输入" placeholder-class="appedit-form-placeholder"/>
             </view>
-            <view class="appedit-content-list-item">
-                <text class="appedit-form-label">小程序城市</text>
-                <input class="appedit-form-input" type="text" placeholder="请选择" placeholder-class="appedit-form-spaceholder"/>
-            </view>
+            <picker mode="multiSelector" bindchange="setCity" bindcolumnchange="bindCity" range="{{areas}}">
+                <view class="appedit-content-list-item">
+                    <text class="appedit-form-label">小程序城市</text>
+                    <view class="appedit-form-picker" wx:if="{{form.city && form.city.length===2}}">
+                        {{form.city[0]}} {{form.city[1]}}
+                    </view>
+                    <view class="appedit-form-picker-placeholder" wx:else>
+                        请选择
+                    </view>
+                </view>
+            </picker>
             <view class="appedit-content-list-item appedit-content-list-item-noborder">
                 <text class="appedit-form-label-address">小程序具体地点</text>
-                <view class="appedit-form-btn-location">定位</view>
+                <view class="appedit-form-btn-location" @tap="setLocation">定位</view>
             </view>
             <view class="appedit-content-list-item appedit-content-list-item-noborder">
-                <textarea name="" id="" cols="30" rows="10" class="appedit-form-input-addressdetail"  placeholder="请输入" placeholder-class="appedit-form-spaceholder"></textarea>
+                <textarea name="" id="" cols="30" rows="10" class="appedit-form-input-addressdetail"  placeholder="请输入" placeholder-class="appedit-form-placeholder" bindiput="setDetailAdress" value="{{form.detailAddress}}"></textarea>
             </view>
+            
         </view>   
-        <view class="appedit-map"></view>
-        <view class="appedit-submit">保存</view>
+        <map class="appedit-map" longitude="{{form.location.longitude}}" latitude="{{form.location.latitude}}" scale="14"></map>
+        <view class="appedit-submit submit-enable" @tap="bindSave" wx:if="{{form.enableSave}}">保存</view>
+        <view class="appedit-submit" @tap="bindSave" wx:else>保存</view>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
+import { toast, picSrcDomain } from '../utils/index';
+import { get } from '../utils/ajax';
 
-import { sleep } from '../utils';
-import { get, post } from '../utils/ajax';
+const host = 'https://wanghongyue.58.com';
+const uploadApi = `${host}/fileUpload`;
+const provinceApi = '';
+const cityApi = '';
+const appinfoApi = '/mplogic/get';
+const saveAppApi = '/mplogic/modifympinfo';
 
 export default class AppEdit extends wepy.page {
     config = {
@@ -44,13 +60,181 @@ export default class AppEdit extends wepy.page {
     }
     data = {
         form: {
-            logo: 'https://pic2.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png',
+            logoUrl: 'https://pic2.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png',
+        },
+    }
+    methods = {
+        async bindCity (e) {
+            const { column, value } = e.detail;
+            if (column === 1) return;
+            const { provinceId } = this.form.province[value];
+            const citys = await get(cityApi, { provinceId });
+            this.areas = [this.areas[0], citys];
+        },
+        async setLogo () {
+            const { tempFilePaths } = await wepy.chooseImage();
+            const filePath = tempFilePaths[0];
+            console.log({ filePath });
+            const logo = await wepy.uploadFile({
+                url: uploadApi,
+                filePath,
+                name: 'content',
+            });
+            this.uploadForm({ logo, logoUrl: picSrcDomain() + logo });
+        },
+        setAppName (e) {
+            const appName = e.detail.value;
+            this.uploadForm({ appName });
+        },
+        setMobile (e) {
+            const mobile = e.detail.value;
+            this.uploadForm({ mobile });
+        },
+        setCity (e) {
+            const city = e.detail.value;
+            this.uploadForm({ city });
+        },
+        async setLocation () {
+            const { address, latitude, longitude } = await wepy.chooseLocation();
+            this.uploadForm({ location: { address, latitude, longitude }, detailAddress: address });
+        },
+        setDetailAdress (e) {
+            const detailAddress = e.detail.value;
+            this.uploadForm({ detailAddress });
+        },
+        verify () {
+            const regPhone = /^1[3456789][0-9]{9}$/;
+            const { form } = this.data;
+            if (!form.appName) {
+                toast('输入小程序名称');
+                return false;
+            }
+            if (!form.mobile) {
+                toast('输入联系电话');
+                return false;
+            }
+            if (regPhone.test(form.mobile)) {
+                toast('输入联系电话');
+                return false;
+            }
+            if (form.City.length === 3) {
+                toast('选择城市');
+                return false;
+            }
+            if (!form.detailAddress) {
+                toast('输入详情地址');
+                return false;
+            }
+            return true;
+        },
+        bindSave () {
+            const { form } = this.data;
+            if (!this.verify()) return;
+            Object.assign(form, { cityStr: this.data.form.city.split('|') });
+            get(saveAppApi, { ...form }, (e) => {
+                if (e) {
+                    toast(e);
+                    return;
+                }
+                wepy.navigateBack();
+            });
+        },
+    }
+    uploadForm (data) {
+        const { form } = this.data;
+        const enableSave = form.logo && form.appName && form.mobile && form.city
+            && form.city.length === 3 && form.detailAddress;
+        this.form = Object.assign({}, form, { ...data, enableSave });
+        this.$apply();
+    }
+    async getProvinces () {
+        const provinces = await get(provinceApi);
+        this.areas = [provinces, []];
+    }
+    async getAppInfo (appid) {
+        const res = await get(`${appinfoApi}/${appid}`);
+        this.uploadForm(res);
+    }
+    methods = {
+        async setLogo () {
+            const { tempFilePaths } = await wepy.chooseImage();
+            const filePath = tempFilePaths[0];
+            console.log({ filePath });
+            const logo = await wepy.uploadFile({
+                url: uploadApi,
+                filePath,
+                name: 'content',
+            });
+            this.uploadForm({ logo, logoUrl: picSrcDomain() + logo });
+        },
+        setAppName (e) {
+            const appName = e.detail.value;
+            this.uploadForm({ appName });
+        },
+        setMobile (e) {
+            const mobile = e.detail.value;
+            this.uploadForm({ mobile });
+        },
+        setCity (e) {
+            const city = e.detail.value;
+            this.uploadForm({ city });
+        },
+        async setLocation () {
+            const { address, latitude, longitude } = await wepy.chooseLocation();
+            this.uploadForm({ location: { address, latitude, longitude }, detailAddress: address });
+        },
+        setDetailAdress (e) {
+            const detailAddress = e.detail.value;
+            this.uploadForm({ detailAddress });
+        },
+        verify () {
+            const regPhone = /^1[3456789][0-9]{9}$/;
+            const { form } = this.data;
+            if (!form.appName) {
+                toast('输入小程序名称');
+                return false;
+            }
+            if (!form.mobile) {
+                toast('输入联系电话');
+                return false;
+            }
+            if (regPhone.test(form.mobile)) {
+                toast('输入联系电话');
+                return false;
+            }
+            if (form.City.length === 3) {
+                toast('选择城市');
+                return false;
+            }
+            if (!form.detailAddress) {
+                toast('输入详情地址');
+                return false;
+            }
+            return true;
+        },
+        bindSave () {
+            const { form } = this.data;
+            if (!this.verify()) return;
+            Object.assign(form, { cityStr: this.data.form.city.split('|') });
+            get('/mplogic/modifympinfo', { ...form }, (e) => {
+                if (e) {
+                    toast(e);
+                    return;
+                }
+                wepy.navigateBack();
+            });
         },
     }
     async onLoad (options) {
-        const { app_type } = options;
-
-        console.log('onLoad');
+        const { appid = '123123124' } = options;
+        this.appid = appid;
+    }
+    async onShow () {
+        if (!this.appid) {
+            wepy.navigateBack();
+        } else {
+            await this.getAppInfo(this.appid);
+        }
     }
 }
 </script>
@@ -122,10 +306,12 @@ export default class AppEdit extends wepy.page {
                 color: #999999;
                 vertical-align: middle;
             }
-            .appedit-form-spaceholder {
+            .appedit-form-placeholder {
                 color: #ccc;
             }
-            .appedit-form-input {
+            .appedit-form-input,
+            .appedit-form-picker,
+            .appedit-form-picker-placeholder {
                 margin-left: 144rpx;
                 display: inline-block;
                 width: 396rpx;
@@ -134,6 +320,9 @@ export default class AppEdit extends wepy.page {
                 color: #333333;
                 text-align: right;
                 vertical-align: middle;
+            }
+            .appedit-form-picker-placeholder {
+                color: #ccc;
             }
             .appedit-form-label-address {
                 @extend .appedit-form-label;

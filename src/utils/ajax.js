@@ -1,5 +1,6 @@
 import wepy from 'wepy';
-let host = 'http://yaofa.58.com';
+
+const host = 'http://wanghongyue.58.com';
 
 const http = (method, ...props) => new Promise((resolve, reject) => {
     let [url, data, callback] = props;
@@ -9,7 +10,7 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
     }
 
     const sendData = Object.assign({}, data);
-    //ppu加入header
+    // ppu加入header
     const ppu = wx.getStorageSync('ppu');
 
     wx.showLoading && wx.showLoading({ title: '加载中', mask: true });
@@ -19,20 +20,20 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
         method: method,
         dataType: 'json',
         header: {
-            "content-type": method === "GET" ? "application/json" : "application/x-www-form-urlencoded",
-            "PPU": ppu || 'wanghongyue',
+            'content-type': method === 'GET' ? 'application/json' : 'application/x-www-form-urlencoded',
+            PPU: ppu || 'wanghongyue',
         },
         success(response) {
             const { state, msg, data } = response.data;
             if (state == 100) {
-                resolve(response.data)
-                //callback && callback(null, response.data);
+                resolve(response.data);
+                // callback && callback(null, response.data);
             } else if (state == 1) {
-                resolve(response.data)
-                //callback && callback(null, response.data);
+                resolve(response.data);
+                // callback && callback(null, response.data);
             } else {
                 reject(msg);
-                //callback && callback(msg);
+                // callback && callback(msg);
             }
         },
         fail(e) {
@@ -41,14 +42,10 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
         },
         complete() {
             wx.hideLoading && wx.hideLoading();
-        }
+        },
     });
 });
 
-module.exports.get = (...props) => {
-    return http('GET', ...props);
-};
+module.exports.get = (...props) => http('GET', ...props);
 
-module.exports.post = (...props) => {
-    return http('POST', ...props);
-};
+module.exports.post = (...props) => http('POST', ...props);
