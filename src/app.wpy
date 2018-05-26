@@ -9,16 +9,16 @@ export default class extends wepy.app {
     }
     config = {
         pages: [
-            'pages/feedback', // 意见反馈
+            'pages/send', // 测试授权页面专用，勿删
+            'pages/intro', // 没有登陆的介绍页面
             'pages/home', // 登陆之后的主页
-            'pages/index',
-            'pages/noticeList', // 消息通知页面
-            'pages/appinfo', // 小程序信息
+            'pages/myMp', // 我的小程序
+            'pages/progress', // 完成度页面
             'pages/appedit', // 小程序编辑
             'pages/uploadInfo', // 上传素材首页
-            'pages/intro', // 没有登陆的介绍页面
-            'pages/progress', // 完成度页面
-            'pages/myMp', // 我的小程序
+            'pages/buy', // 购买页面
+            'pages/index',
+            'pages/noticeList', // 消息通知页面
             'pages/registed', // 当前小程序已注册
             'pages/registMainAccount', // 主体账户信息
             'pages/registManage', // 管理员信息
@@ -35,6 +35,20 @@ export default class extends wepy.app {
     }
     onLaunch () {
         console.log('on launch');
+        wepy.login({
+            success (res) {
+                if (res.code) {
+                    wepy.request({
+                        url: 'https://test.com/onLogin',
+                        data: {
+                            code: res.code,
+                        },
+                    });
+                } else {
+                    console.log(`登录失败！ ${res.errMsg}`);
+                }
+            },
+        });
     }
     onShow (options) {
         console.log('onshow拉卡啊阿卡');

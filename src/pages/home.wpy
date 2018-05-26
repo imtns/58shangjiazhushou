@@ -53,11 +53,11 @@ export default class Index extends wepy.page {
     data = {
         business: {
             mps: [],
-            name: '111',
+            name: '您的姓名',
             miniProgramName: '您还没购买小程序',
             unread: 1,
             mpCount: 3,
-            progressText: '您还没有小程序',
+            progressText: '您还没有购买小程序',
             nexttask: 0,
             changeMP: false,
             canConfirm: false,
@@ -88,20 +88,58 @@ export default class Index extends wepy.page {
         link(index) {
             if (index !== 4) { //   意见反馈不做判断
                 this.checkBeforeJump(index);
+            } else {
+                wepy.navigateTo({
+                    url: 'feedback',
+                });
             }
-        },
-        fuck() {
-            console.log('fuck');
         },
         checkProgress() {
             if (!this.business.mpCount) {
                 alert('请先购买小程序', '提示');
+                return;
             }
             // todo：跳转所有页面
             switch (this.business.nexttask) {
             case 2:
                 wepy.navigateTo({
-                    url: 'intro',
+                    url: 'uploadInfo', // todo 跳转到小程序编辑页面
+                });
+                break;
+            case 3:
+                wepy.navigateTo({
+                    url: 'uploadInfo',
+                });
+                break;
+            case 4:
+                wepy.navigateTo({
+                    url: 'progress',
+                });
+                break;
+            case 5:
+                if (this.business.selected.app_type === 1) {
+                    wepy.navigateTo({
+                        url: 'progress',
+                    });
+                } else {
+                    wepy.navigateTo({
+                        url: 'myMp',
+                    });
+                }
+                break;
+            case 6:
+                wepy.navigateTo({
+                    url: 'progress',
+                });
+                break;
+            case 7:
+                wepy.navigateTo({
+                    url: 'progress',
+                });
+                break;
+            case 8:
+                wepy.navigateTo({
+                    url: 'progress',
                 });
                 break;
             default:
@@ -129,10 +167,13 @@ export default class Index extends wepy.page {
         },
         selectMp(item) {
             this.business.selected = item;
+            console.log(this.business.selected);
             this.business.canConfirm = true;
             this.$apply();
         },
         confirmAction() {
+            console.log(this.business.selected.id);
+
             if (this.business.selected.id) {
                 this.setGlobalMpId(this.business.selected.id);
                 this.loadData();
@@ -170,8 +211,10 @@ export default class Index extends wepy.page {
         wepy.setStorageSync('current_mpid', id);
     }
     checkBeforeJump(index) {
+        console.log(index);
         if (!this.business.mpCount) {
             alert('请先购买小程序', '提示');
+            return;
         }
         switch (index) {
         case 0:
@@ -179,8 +222,29 @@ export default class Index extends wepy.page {
                 url: 'myMp',
             });
             break;
+        case 1:
+            wepy.navigateTo({
+                url: 'uploadInfo',
+            });
+            break;
+        case 2:
+            if (this.business.selected.app_type === 1) {
+                alert('当前小程序为优享小程序，不用提交注册信息', '提示');
+            } else {
+                wepy.navigateTo({
+                    url: 'registed',
+                });
+            }
+            break;
         case 3:
-            this.business.progressText = '当前小程序还未上传素材';
+            wepy.navigateTo({
+                url: 'progress',
+            });
+            break;
+        case 4:
+            wepy.navigateTo({
+                url: 'feedback',
+            });
             break;
         default:
             break;
@@ -196,19 +260,27 @@ export default class Index extends wepy.page {
             this.business.progressText = '当前小程序还未上传素材';
             break;
         case 4:
-            this.business.progressText = '当前小程序还未填写注册信息';
+            if (this.business.selected.app_type === 1) {
+                this.business.progressText = '当前小程序信息已完善';
+            } else {
+                this.business.progressText = '当前小程序还未填写注册信息';
+            }
             break;
         case 5: // 跳转我的小程序
-            this.business.progressText = '当前小程序还未授权';
+            if (this.business.selected.app_type === 1) {
+                this.business.progressText = '当前小程序信息已完善';
+            } else {
+                this.business.progressText = '当前小程序还未授权';
+            }
             break;
         case 6: // 跳转到进度
-            this.business.progressText = '提示当前小程序正在制作中';
+            this.business.progressText = '当前小程序信息已完善';
             break;
         case 7: // 消息列表
-            this.business.progressText = '提示当前小程序在审核状态';
+            this.business.progressText = '当前小程序信息已完善';
             break;
         case 8: // 消息列表
-            this.business.progressText = '提示当前小程序在审核状态';
+            this.business.progressText = '当前小程序信息已完善';
             break;
         case 9: // 完成度
             this.business.progressText = '当前小程序信息已完善';
