@@ -4,9 +4,9 @@
         <view class="title">当前小程序</view>
         <view class="mp">
             <view class="nameBox">
-                <view>美甲和服务</view>
+                <view>{{business.current.nickName}}</view>
                 <view class="type">
-                    <image class="logo" mode="{{aspectFit}}" src="http://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png"></image>
+                    <image class="logo" mode="{{aspectFit}}" src="{{business.current.app_type === 1 ? 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png'}}"></image>
                 </view>
             </view>
             <view class="date">有效期至 {{business.current.expiryDate}}</view>
@@ -15,10 +15,10 @@
             <view class="box">
                 <repeat for="{{progress}}" key="index" index="index" item="item">
                     <view class="tips">
-                        <view class="text">{{item.text}}</view>
-                        <view class="icon notyet"></view>
-                        <view class="time">{{item.successTime}}</view>
-                        <view class="line grey"></view>
+                        <view class="text">{{item.content}}</view>
+                        <view class="icon {{item.status === 1 && item.nodeType !== 8 ? 'success' : 'notyet'}} {{item.status === -1 && item.nodeType === 8 ? 'notyet' : ''}} {{item.status === 1 && item.nodeType === 8 ? 'success' : ''}} {{item.status === 2 && item.nodeType === 8 ? 'fail' : ''}}"></view>
+                        <view class="time">{{item.successTime ? item.successTime : ''}}</view>
+                        <view wx:if="{{item.content !== '上线'}}" class="line {{item.status === 1 ? 'blue' : 'grey'}}"></view>
                     </view>
                 </repeat>
             </view>
@@ -29,7 +29,8 @@
 <script>
 import wepy from 'wepy';
 
-import { sleep } from '../utils';
+import { sleep, alert } from '../utils';
+import { post } from '../utils/ajax';
 
 export default class Index extends wepy.page {
     data = {
@@ -38,43 +39,7 @@ export default class Index extends wepy.page {
                 expiryDate: '2018-29-23',
             },
         },
-        progress: [{
-            text: '开通',
-            successTime: '2012-23-23',
-            status: 1,
-        }, {
-            text: '添加信息',
-            successTime: '2012-23-23',
-            status: 2,
-        }, {
-            text: '提交素材',
-            successTime: '2012-23-23',
-            status: 3,
-        }, {
-            text: '提交注册资料',
-            successTime: '2012-23-23',
-            status: 4,
-        }, {
-            text: '授权',
-            successTime: '2012-23-23',
-            status: 5,
-        }, {
-            text: '客服制作',
-            successTime: '2012-23-23',
-            status: 6,
-        }, {
-            text: '提交审核',
-            successTime: '2012-23-23',
-            status: 7,
-        }, {
-            text: '审核',
-            successTime: '2012-23-23',
-            status: 8,
-        }, {
-            text: '上线',
-            successTime: '2012-23-23',
-            status: 9,
-        }],
+        progress: [],
     }
     config = {
         navigationBarTitleText: '完成度',
@@ -82,6 +47,36 @@ export default class Index extends wepy.page {
     async onLoad() {
         await sleep();
         console.log('onLoad');
+    }
+    onShow() {
+        this.loadData();
+    }
+    async loadData() {
+        const subData = {
+            mpid: wepy.getStorageSync('current_mpid') || '',
+        };
+        if (!subData.mpid) {
+            alert('无法获取当前小程序的appid', '提示');
+            return;
+        }
+        const { data } = await post('/mplogic/pgdetail', subData);
+        const mpInfo = await post('/mplogic/index', subData);
+        this.business.current = mpInfo.data.mpinfo;
+        this.progress = data.map((item) => {
+            const myitem = item;
+            if (myitem.successTime) {
+                myitem.successTime = `${myitem.successTime.split(':')[0]}:${myitem.successTime.split(':')[1]}`;
+            }
+            if (myitem.nodeType === 8 && myitem.status === 2) {
+                myitem.content = '审核失败';
+            } else if (myitem.nodeType === 8 && myitem.status === 1) {
+                myitem.content = '审核成功';
+            }
+            return myitem;
+        });
+        console.log(mpInfo);
+        console.log(data);
+        this.$apply();
     }
 }
 </script>
@@ -150,16 +145,16 @@ export default class Index extends wepy.page {
                         width: 40rpx;
                     }
                     .success{
-                        background:url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/sucess.png) no-repeat center;
-                        background-size: 100% auto;
+                        background:url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/sucess.png) no-repeat center !important;
+                        background-size: 100% auto !important;
                     }
                     .pending{
-                        background:url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/pending.png) no-repeat center;
-                        background-size: 100% auto;
+                        background:url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/pending.png) no-repeat center !important;
+                        background-size: 100% auto !important;
                     }
                     .fail{
-                        background:url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/fail.png) no-repeat center;
-                        background-size: 100% auto;
+                        background:url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/fail.png) no-repeat center !important;
+                        background-size: 100% auto !important;
                     }
                     .notyet{
                         background:url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/notyet.png) no-repeat center;
@@ -175,12 +170,13 @@ export default class Index extends wepy.page {
                         font-size: 30rpx;
                         color: #666666;
                         text-align: right;
-                        padding-right: 90rpx;
+                        padding-right: 70rpx;
+                        width: 180rpx;
                     }
                     .time{
                         font-size: 30rpx;
                         color: #666666;
-                        padding-left: 90rpx;
+                        padding-left: 70rpx;
                         text-align: left;
                     }
                 }
