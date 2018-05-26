@@ -14,7 +14,7 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
     const ppu = wx.getStorageSync('ppu');
 
     wx.showLoading && wx.showLoading({ title: '加载中', mask: true });
-    return wepy.request({
+    return wx.request({
         url: host + url + (~url.indexOf('?') ? '' : '?') + (+new Date()).toString(36).substr(3),
         data: sendData,
         method: method,
