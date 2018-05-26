@@ -7,7 +7,6 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
         callback = data;
         data = {};
     }
-
     const sendData = Object.assign({}, data);
     //ppu加入header
     const ppu = wx.getStorageSync('ppu');
@@ -21,6 +20,7 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
         header: {
             "content-type": method === "GET" ? "application/json" : "application/x-www-form-urlencoded",
             "PPU": ppu || 'wanghongyue',
+            "reqfrom": 'biz_assistant',
         },
         success(response) {
             const { state, msg, data } = response.data;

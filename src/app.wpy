@@ -5,12 +5,13 @@ import 'wepy-async-function';
 export default class extends wepy.app {
     config = {
         pages: [
-            'pages/appedit', // 小程序编辑
-            'pages/home', // 登陆之后的主页
-            'pages/uploadInfo', // 上传素材首页
+            'pages/send', // 测试授权页面专用，勿删
             'pages/intro', // 没有登陆的介绍页面
-            'pages/progress', // 完成度页面
+            'pages/home', // 登陆之后的主页
             'pages/myMp', // 我的小程序
+            'pages/progress', // 完成度页面
+            'pages/appedit', // 小程序编辑
+            'pages/uploadInfo', // 上传素材首页
             'pages/buy', // 购买页面
             'pages/index',
             'pages/noticeList', // 消息通知页面
@@ -32,10 +33,24 @@ export default class extends wepy.app {
     }
     onLaunch () {
         console.log('on launch');
+        wepy.login({
+            success(res) {
+                if (res.code) {
+                    wepy.request({
+                        url: 'https://test.com/onLogin',
+                        data: {
+                            code: res.code,
+                        },
+                    });
+                } else {
+                    console.log(`登录失败！ ${res.errMsg}`);
+                }
+            },
+        });
     }
     onShow (options) {
         console.log('onshow拉卡啊阿卡');
-        const ppu = wx.getStorageSync('ppu');
+        const ppu = wepy.getStorageSync('ppu');
         if (ppu) {
             console.log('已经存在ppu');
             wepy.navigateTo({
