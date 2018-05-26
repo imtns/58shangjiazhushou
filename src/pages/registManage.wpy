@@ -40,7 +40,8 @@
             <view class="main-body">
                 <view class="main-boy-line">
                     <view class="main-body-title">商标注册证</view>
-                    <view class="main-upload" wx:if="{{!form.wechatBrandRegist}}" bindtap="uploadLicense" data-key="wechatBrandRegist"></view>
+                    <!-- <view class="main-upload" wx:if="{{!form.wechatBrandRegist}}" bindtap="uploadLicense" data-key="wechatBrandRegist"></view> -->
+                    <UploaderCom @childFn.user="uploadFn" title="wechatBrandRegist" wx:if="{{!form.wechatBrandRegist}}"></UploaderCom>
                     <view class="main-show-image" wx:if="{{form.wechatBrandRegist}}">
                         <image class="main-upload-image" src="{{form.wechatBrandRegist}}"></image>
                         <view class="main-del-image" bindtap="delAuthPaper" data-key="wechatBrandRegist"></view>
@@ -51,7 +52,8 @@
             <view class="main-body">
                 <view class="main-boy-line">
                     <view class="main-body-title">商标授权书（选填）</view>
-                    <view class="main-upload" wx:if="{{!form.wechatBrandAuth}}" bindtap="uploadLicense" data-key="wechatBrandAuth"></view>
+                    <!-- <view class="main-upload" wx:if="{{!form.wechatBrandAuth}}" bindtap="uploadLicense" data-key="wechatBrandAuth"></view> -->
+                    <anotherUploaderCom @childFn.user="uploadFn" title="wechatBrandAuth" wx:if="{{!form.wechatBrandAuth}}"></anotherUploaderCom>
                     <view class="main-show-image" wx:if="{{form.wechatBrandAuth}}">
                         <image class="main-upload-image" src="{{form.wechatBrandAuth}}"></image>
                         <view class="main-del-image" bindtap="delAuthPaper" data-key="wechatBrandAuth"></view>
@@ -70,13 +72,13 @@
 <script>
 import wepy from 'wepy';
 
-import { sleep, alert, toast } from '../utils';
+import { sleep, alert } from '../utils';
 
 import { post } from '../utils/ajax';
 
-import { uploader } from '../utils/uploader';
-
 import RemindBar from '../components/RemindBar';
+
+import UploaderCom from '../components/UploaderCom';
 
 export default class Index extends wepy.page {
     config = {
@@ -84,6 +86,8 @@ export default class Index extends wepy.page {
     }
     components = {
         RemindBar,
+        UploaderCom: UploaderCom,
+        anotherUploaderCom: UploaderCom,
     }
     data = {
         currentstep: '2',
@@ -135,29 +139,13 @@ export default class Index extends wepy.page {
         const { key } = e.target.dataset;
         this.form[key] = '';
     }
-    // 上传执照、公函
-    uploadLicense(target) {
-        const that = this;
-        const { key } = target.currentTarget.dataset;
-        wepy.chooseImage({
-            count: 1,
-            sizeType: ['compressed'],
-            success(res) {
-                console.log(res);
-                const { tempFilePaths } = res;
-                const url = tempFilePaths[0];
-                uploader(url, (e, result) => {
-                    console.log(result);
-                    if (e) {
-                        toast('上传失败，请重试。');
-                        return;
-                    }
-                    toast('上传成功。');
-                    that.form[key] = `http://pic1.58cdn.com.cn${result.content}`;
-                    that.$apply();
-                });
-            },
-        });
+    methods = {
+        uploadFn (key, src) {
+            // console.log(key, src);
+            // console.log(`parent received emit event, number is:${src}`, `key${key}`);
+            this.form[key] = src;
+            this.$apply();
+        },
     }
     async registSuccess() {
         try {
@@ -192,7 +180,7 @@ export default class Index extends wepy.page {
                 return;
             }
             const registForm = wepy.getStorageSync('registForm');
-            const registMappid = wepy.setStorageSync('registMappid', registMappid);
+            const registMappid = wepy.getStorageSync('registMappid');
             Object.assign(this.form, registForm);
             const url = `/data/registInfo/${registMappid}`;
             await post(url, this.form);

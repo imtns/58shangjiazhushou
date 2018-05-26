@@ -46,7 +46,9 @@
             <view class="main-title">企业资质</view>
             <view class="main-body">
                 <view class="main-boy-line">
-                    <view class="main-body-title">企业工商营业执照</view><view class="main-upload" bindtap="uploadLicense" data-key="enterpriseLicense" wx:if="{{!form.enterpriseLicense}}"></view>
+                    <view class="main-body-title">企业工商营业执照</view>
+                    <!-- <view class="main-upload" bindtap="uploadLicense" data-key="enterpriseLicense" wx:if="{{!form.enterpriseLicense}}"></view> -->
+                    <UploaderCom @childFn.user="uploadFn" title="enterpriseLicense" wx:if="{{!form.enterpriseLicense}}"></UploaderCom>
                     <view class="main-show-image" wx:if="{{form.enterpriseLicense}}">
                         <image class="main-upload-image" src="{{form.enterpriseLicense}}"></image>
                         <view class="main-del-image" bindtap="delAuthPaper" data-key="enterpriseLicense"></view>
@@ -63,12 +65,11 @@
 <script>
 import wepy from 'wepy';
 
-import { sleep, alert, toast } from '../utils';
-
-import { uploader } from '../utils/uploader';
+import { sleep, alert } from '../utils';
 
 import RemindBar from '../components/RemindBar';
 
+import UploaderCom from '../components/UploaderCom';
 
 export default class Index extends wepy.page {
     config = {
@@ -76,6 +77,7 @@ export default class Index extends wepy.page {
     }
     components = {
         RemindBar,
+        UploaderCom,
     }
     data = {
         currentstep: '1',
@@ -110,29 +112,13 @@ export default class Index extends wepy.page {
         this.form.enterpriseType = type;
         this.$apply();
     }
-    // 上传执照、公函
-    uploadLicense(target) {
-        const that = this;
-        const { key } = target.currentTarget.dataset;
-        wepy.chooseImage({
-            count: 1,
-            sizeType: ['compressed'],
-            success(res) {
-                console.log(res);
-                const { tempFilePaths } = res;
-                const url = tempFilePaths[0];
-                uploader(url, (e, result) => {
-                    console.log(result);
-                    if (e) {
-                        toast('上传失败，请重试。');
-                        return;
-                    }
-                    toast('上传成功。');
-                    that.form[key] = `http://pic1.58cdn.com.cn${result.content}`;
-                    that.$apply();
-                });
-            },
-        });
+    methods = {
+        uploadFn (key, src) {
+            console.log(key, src);
+            console.log(`parent received emit event, number is:${src}`, `key${key}`);
+            this.form[key] = src;
+            this.$apply();
+        },
     }
     // 输入框数据
     setText(e) {

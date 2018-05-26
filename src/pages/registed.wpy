@@ -4,7 +4,7 @@
         <view class="pro-item">
             <view class="pro-name">
             <text>{{currentApp.nickName || currentApp.id}}</text>
-            <view class="pro-status {{currentApp.sign === 1 ? 'pro-registed' : '' }}">{{currentApp.sign === 1 ? '已' : '未' }}注册</view></view>
+            <view class="pro-status {{currentApp.sign === 1 ? 'pro-registed' : '' }}">{{currentApp.sign === 1 ? '已提交注册资料' : '未注册' }}</view></view>
         </view>
         <view class="regist-title" wx:if="{{currentApp.sign === 1 && otherlist.length > 0}}">其他小程序</view>
         <view class="pro-item" wx:if="{{currentApp.sign === 1 && otherlist.length > 0}}" wx:for="{{otherlist}}" wx:key="index">

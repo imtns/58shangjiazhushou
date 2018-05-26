@@ -2,7 +2,7 @@
     <view class="notice-container">
         <view class="notice-header">
             <view>全部通知</view>
-            <view class="clear-notice" bindtap="verify">清空</view>
+            <view class="clear-notice" bindtap="clearAll">清空</view>
         </view>
         <scroll-view class="notice-list">
         <block wx:for="{{noticeList}}" wx:key="index">
@@ -19,7 +19,7 @@
                             </view>
                             <view class="notice-msg">{{item.title}}</view>
                         </view>
-                        <view class="notice-state">
+                        <view class="notice-state" data-item="{{item}}" bindtap="touploadInfo">
                             <view class="notice-status">{{item.msgType === 1 ? '已授权' : item.msgType === 2 ? '注册成功' : item.msgType === 3 ? '审核中' : item.msgType === 4 ? '审核通过' : item.msgType === 5 ? '审核失败' : '已上线'}}</view>
                             <view class="notice-time">{{item.createTime}}</view>
                         </view>
@@ -76,6 +76,13 @@ export default class NoticeList extends wepy.page {
         } catch (e) {
             console.log(e);
         }
+    }
+    touploadInfo(e) {
+        const { item } = e.currentTarget.dataset;
+        if (item.msgType !== 5 && item.mpType !== 1) return;
+        wepy.navigateTo({
+            url: '../uploadInfo',
+        });
     }
     async clearAll() {
         try {

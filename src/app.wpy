@@ -5,6 +5,7 @@ import 'wepy-async-function';
 export default class extends wepy.app {
     config = {
         pages: [
+            'pages/index',
             'pages/noticeList', // 消息通知页面
             'pages/home', // 登陆之后的主页
             'pages/appedit', // 小程序编辑
@@ -12,7 +13,6 @@ export default class extends wepy.app {
             'pages/intro', // 没有登陆的介绍页面
             'pages/progress', // 完成度页面
             'pages/myMp', // 我的小程序
-            'pages/index',
             'pages/registed', // 当前小程序已注册
             'pages/registMainAccount', // 主体账户信息
             'pages/registManage', // 管理员信息
