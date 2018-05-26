@@ -1,25 +1,52 @@
 <template>
-    <view class="main-upload" @tap="uploadLicense"></view>
+    <view class="main-upload" @tap="tap"></view>
 </template>
 
 <script>
 import wepy from 'wepy';
 
-import { sleep, toast } from '../utils';
+import { toast } from '../utils';
 
 import { uploader } from '../utils/uploader';
 
-export default class Index extends wepy.page {
-    async onLoad() {
-        await sleep();
-        console.log('onLoad');
-        console.log('onLoad', this.$parent.key);
+export default class Index extends wepy.component {
+    props = {
+        title: {
+            type: String,
+        },
     }
-
+    onLoad() {
+        this.$apply();
+        console.log('onLoad1111', this.title);
+    }
+    methods = {
+        tap () {
+            console.log('2222', this.title);
+            console.log('child is clicked', this.title);
+            const that = this;
+            wepy.chooseImage({
+                count: 1,
+                sizeType: ['compressed'],
+                success(res) {
+                    console.log(res);
+                    const { tempFilePaths } = res;
+                    const url = tempFilePaths[0];
+                    uploader(url, (e, result) => {
+                        console.log(result);
+                        if (e) {
+                            toast('上传失败，请重试。');
+                            return;
+                        }
+                        toast('上传成功。');
+                        that.$emit('childFn', that.title, `http://pic1.58cdn.com.cn${result.content}`);
+                    });
+                },
+            });
+        },
+    }
     // 上传执照、公函
     uploadLicense() {
         const that = this;
-        const { key } = this.$parent;
         wepy.chooseImage({
             count: 1,
             sizeType: ['compressed'],
@@ -34,8 +61,9 @@ export default class Index extends wepy.page {
                         return;
                     }
                     toast('上传成功。');
-                    that.form[key] = `http://pic1.58cdn.com.cn${result.content}`;
-                    that.$apply();
+                    that.$emit('uploadLicense', `http://pic1.58cdn.com.cn${result.content}`);
+                    // that.form[key] = `http://pic1.58cdn.com.cn${result.content}`;
+                    // that.$apply();
                 });
             },
         });
