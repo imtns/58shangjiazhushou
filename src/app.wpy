@@ -9,16 +9,15 @@ export default class extends wepy.app {
     }
     config = {
         pages: [
-            'pages/appedit', // 小程序编辑
+            'pages/noticeList', // 消息通知页面
             'pages/home', // 登陆之后的主页
+            'pages/appedit', // 小程序编辑
             'pages/uploadInfo', // 上传素材首页
             'pages/intro', // 没有登陆的介绍页面
             'pages/progress', // 完成度页面
             'pages/myMp', // 我的小程序
             'pages/index',
-            'pages/noticeList', // 消息通知页面
             'pages/registed', // 当前小程序已注册
-            'pages/unregist', // 当前小程序未注册
             'pages/registMainAccount', // 主体账户信息
             'pages/registManage', // 管理员信息
             'pages/registSuccess', // 注册完成

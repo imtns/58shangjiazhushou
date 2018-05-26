@@ -63,6 +63,9 @@ export default class Index extends wepy.page {
         const { type } = option;
         this.text = type === '1' ? '优享' : '微信';
         this.type = type;
+        wepy.setNavigationBarTitle({
+            title: `${this.text}小程序介绍`,
+        });
         this.$apply();
     }
 }
