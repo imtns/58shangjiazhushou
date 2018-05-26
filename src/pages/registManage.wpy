@@ -118,24 +118,24 @@ export default class Index extends wepy.page {
         regiDCard1: /^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$/, // 15位
         regiDCard2: /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/, // 18位
     }
-    async onLoad() {
+    async onLoad () {
         await sleep();
         console.log('onLoad');
     }
     // 输入框数据
-    setText(e) {
+    setText (e) {
         console.log(e);
         const { name } = e.currentTarget.dataset;
         this.form[name] = e.detail.value;
         this.$apply();
     }
     // 命名类型
-    selectWechatNameType(e) {
+    selectWechatNameType (e) {
         const { item } = e.currentTarget.dataset;
         this.form.wechatNameType = item.type;
         this.$apply();
     }
-    delAuthPaper(e) {
+    delAuthPaper (e) {
         const { key } = e.target.dataset;
         this.form[key] = '';
     }
@@ -147,7 +147,7 @@ export default class Index extends wepy.page {
             this.$apply();
         },
     }
-    async registSuccess() {
+    async registSuccess () {
         try {
             const {
                 manager,
@@ -197,5 +197,5 @@ export default class Index extends wepy.page {
 }
 </script>
 <style lang="scss">
-    @import '../css/regist.scss';
+@import '../css/regist.scss';
 </style>
