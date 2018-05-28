@@ -15,7 +15,7 @@
 <script>
 import wepy from 'wepy';
 
-export default class UploadInfo extends wepy.page {
+export default class UploadInfoSuccess extends wepy.page {
     config = {
         navigationBarTitleText: '上传成功',
     }
