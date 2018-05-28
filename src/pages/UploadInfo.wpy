@@ -1,13 +1,13 @@
 <template>
     <view class="uploadInfo">
         <view class="article">
-            <view class="title">
+            <view class="title" @tap="bindUploadText">
                 <view class="text">文本内容</view>
                 <view class="action">点击上传文本</view>
             </view>
             <view class="inputArea">
-                <textarea placeholder="请输入" maxLength="100" placeholder-style="font-size: 28rpx;color: #BDBDBD;"/>
-                <view class="numTip">0/100</view>
+                <textarea placeholder="请输入" @input="setText" maxLength="100" placeholder-style="font-size: 28rpx;color: #BDBDBD;"/>
+                <view class="numTip">{{form.text.length||0}}/100</view>
             </view>
         </view>
         <!-- <view class="main-body">
@@ -99,7 +99,7 @@ export default class UploadInfo extends wepy.page {
     methods = {
         setText (e) {
             const text = e.detail.value;
-            this.updateForm(text);
+            this.updateForm({ text });
         },
         async setImages ({ uploading, images = [] }) {
             this.updateForm({ uploading });
@@ -125,15 +125,15 @@ export default class UploadInfo extends wepy.page {
                 toast(msg);
             }
         },
-        async uploadText () {
-            const { text } = this;
+        async bindUploadText () {
+            const { text } = this.form;
             if (!text) {
                 toast('文本内容不能为空');
                 return;
             }
-            const { state, msg } = await get(uploadText);
+            const { state, msg } = await get(uploadText, { text });
             if (state === 100) {
-                alert(msg);
+                alert('文本上传成功');
                 this.updateForm({ text: this.text += 1 });
             } else {
                 toast(msg);
@@ -156,6 +156,7 @@ export default class UploadInfo extends wepy.page {
     }
     updateForm (data) {
         this.form = Object.assign({}, this.form, data);
+        this.$apply();
     }
     verify () {
         const {
