@@ -1,0 +1,179 @@
+<template>
+    <view class="appinfo-container">
+        <view class="appinfo-base">
+            <image class="appinfo-logo" src="{{appInfo.logo}}"/>
+            <view class="appinfo-title-wrap">
+                <view class="appinfo-title">{{appInfo.title}}</view>
+                <view class="appinfo-date">{{appInfo.date}}</view>
+            </view>
+            <view class="appinfo-youxiang" wx:if="{{appInfo.app_type===1}}"></view>
+            <view class="appinfo-youxiang" wx:else></view>
+        </view>
+        <view class="appinfo-status">
+            <view class="appinfo-auth">授权状态：{{appInfo.auth===2?'已授权':'未授权'}}</view>
+            <view class="appinfo-verify">审核状态：{{verifyStatus[appInfo.verify]}}</view>
+            <view class="appinfo-telephone">联系电话：{{appInfo.telephone}}</view>
+            <view class="appinfo-address">小程序地址：{{appInfo.address}}</view>
+        </view>
+        <view class="appinfo-qrcode" wx:if="{{appInfo.online}}">
+            <view class="appinfo-qrcode-label">小程序码：</view>
+            <image class="appinfo-qrcode-img" src="{{appInfo.qrcode}}"/>
+        </view>
+        <view class="appinfo-qrcode-off" ex:else>
+            <view class="">小程序码：上线后展示</view>
+        </view>
+        <navigator url="/pages/appedit/appedit?id={{appInfo.id}}"><view class="appinfo-edit">编辑小程序</view></navigator>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { picSrcDomain } from '../utils/index';
+import { get } from '../utils/ajax';
+
+const appinfoApi = '/mplogic/get';
+
+export default class AppInfo extends wepy.page {
+    config = {
+        disableScroll: true,
+        navigationBarTitleText: '小程序信息',
+    }
+    data = {
+        verifyStatus: ['未审核', '审核中', '审核成功', '审核失败'],
+        appInfo: {
+            logoUrl: 'https://pic2.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png',
+        },
+    }
+    updateForm (data) {
+        const res = data;
+        if (res.logo) {
+            res.logo = picSrcDomain() + res.logo;
+        }
+        this.appInfo = Object.assign({}, this.appInfo, res);
+    }
+    async getAppInfo (appid) {
+        const res = await get(`${appinfoApi}/${appid}`);
+        this.updateForm(res);
+    }
+    async onLoad (options) {
+        const { appid = '123123124' } = options;
+        this.appid = appid;
+    }
+    async onShow () {
+        if (!this.appid) {
+            wepy.navigateBack();
+        } else {
+            await this.getAppInfo(this.appid);
+        }
+    }
+}
+</script>
+
+<style lang="scss">
+.appinfo-container {
+    width: 100vw;
+    height: 100vh;
+    .appinfo-base {
+        padding: 26rpx 30rpx;
+        overflow: hidden;
+        background: #fff;
+        border-top: 2rpx solid #f3f3f3;
+        border-bottom: 2rpx solid #f3f3f3;
+        .appinfo-logo {
+            float: left;
+            margin-right: 20rpx;
+            width: 128rpx;
+            height: 128rpx;
+            border: 1rpx solid #e7e7e7;
+        }
+        .appinfo-title-wrap {
+            display: inline-block;
+            overflow: hidden;
+            width: 450rpx;
+            height: 128rpx;
+        }
+        .appinfo-title {
+            max-width: 450rpx;
+            line-height: 48rpx;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-family: PingFangSC-Medium;
+            font-size: 34rpx;
+            color: #333333;
+            letter-spacing: 0.51rpx;
+        }
+        .appinfo-date {
+            margin-top: 18rpx;
+            line-height: 40rpx;
+            font-family: PingFangSC-Regular;
+            font-size: 28rpx;
+            color: #999999;
+        }
+        .appinfo-youxiang,
+        .appinfo-weixin {
+            display: inline-block;
+            vertical-align: top;
+            margin-left: 20rpx;
+            width: 66rpx;
+            height: 38rpx;
+        }
+    }
+    .appinfo-status {
+        padding: 20rpx 30rpx;
+        background: #fff;
+        margin-bottom: 20rpx;
+        .appinfo-auth,
+        .appinfo-verify,
+        .appinfo-telephone,
+        .appinfo-address {
+            overflow: hidden;
+            font-family: PingFangSC-Regular;
+            font-size: 30rpx;
+            color: #333333;
+        }
+        .appinfo-address {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webit-box-line-clamp: 2;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+    }
+    .appinfo-qrcode-off {
+        padding: 24rpx 30rpx;
+        background: #fff;
+        font-family: PingFangSC-Regular;
+        font-size: 28rpx;
+        color: #333333;
+    }
+    .appinfo-qrcode {
+        padding: 24rpx 30rpx 30rpx;
+        background: #fff;
+        .appinfo-qrcode-label {
+            display: inline-block;
+            margin-right: 20rpx;
+            width: 140rpx;
+            height: 40rpx;
+            vertical-align: top;
+            font-family: PingFangSC-Regular;
+            font-size: 28rpx;
+            color: #333333;
+        }
+        .appinfo-qrcode-img {
+            width: 180rpx;
+            height: 180rpx;
+        }
+    }
+    .appinfo-edit {
+        margin: 454rpx auto 0;
+        width: 690rpx;
+        line-height: 94rpx;
+        background: #4e88ff;
+        border-radius: 4rpx;
+        font-family: PingFangSC-Regular;
+        font-size: 32rpx;
+        color: #ffffff;
+        text-align: center;
+    }
+}
+</style>
