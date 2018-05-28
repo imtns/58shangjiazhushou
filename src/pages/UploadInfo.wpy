@@ -77,7 +77,7 @@ import wepy from 'wepy';
 
 import { sleep, toast, alert } from '../utils';
 import { get, post } from '../utils/ajax';
-import Uploader from '../components/uploader';
+import UploadFile from '../components/UploadFile';
 
 const complateApi = '/resource/complete';
 const uploadText = '/resource/upload/text';
@@ -88,8 +88,8 @@ export default class UploadInfo extends wepy.page {
         navigationBarTitleText: '上传素材',
     }
     components = {
-        imageuploader: Uploader,
-        videouploader: Uploader,
+        imageuploader: UploadFile,
+        videouploader: UploadFile,
     }
     data = {
         maxImageSize: 3,
