@@ -43,14 +43,6 @@ export default class extends wepy.app {
         // }
     }
     onShow (options) {
-        console.log('onshow拉卡啊阿卡');
-        const ppu = wepy.getStorageSync('ppu');
-        if (ppu) {
-            console.log('已经存在ppu');
-            wepy.navigateTo({
-                url: './pages/home',
-            });
-        }
         if (options.scene === 1038) {
             if (!options.referrerInfo) {
                 console.log('options.referrerInfo为空');
@@ -65,7 +57,7 @@ export default class extends wepy.app {
             if (extraData.ppu !== undefined) { // 如果获取ppu成功
                 console.log(`获取PPU成功！ ${extraData.ppu}`);
                 wepy.setStorageSync('ppu', extraData.ppu);
-                wepy.navigateTo({
+                wepy.redirectTo({
                     url: './pages/home',
                 });
             }
