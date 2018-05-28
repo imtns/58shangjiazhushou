@@ -46,7 +46,7 @@ import wepy from 'wepy';
 import { toast, picSrcDomain } from '../utils/index';
 import { get } from '../utils/ajax';
 
-const host = 'https://yaofa.58.com';
+const host = 'http://yaofa.58.com';
 const uploadApi = `${host}/fileUpload`;
 const provinceApi = '/local/provinces';
 const cityApi = '/local/citys/';
