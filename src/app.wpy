@@ -42,7 +42,7 @@ export default class extends wepy.app {
     onShow (options) {
         if (!wepy.getStorageSync('ppu')) {
             wepy.navigateTo({
-                url: 'intro',
+                url: '/pages/intro',
             });
         }
         if (options.scene === 1038) {
@@ -60,7 +60,7 @@ export default class extends wepy.app {
                 console.log(`获取PPU成功！ ${extraData.ppu}`);
                 wepy.setStorageSync('ppu', extraData.ppu);
                 wepy.redirectTo({
-                    url: 'home',
+                    url: '/pages/home',
                 });
             }
         }
