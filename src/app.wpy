@@ -9,8 +9,8 @@ export default class extends wepy.app {
     }
     config = {
         pages: [
-            'pages/home', // 登陆之后的主页
             'pages/intro', // 没有登陆的介绍页面
+            'pages/home', // 登陆之后的主页
             'pages/myMp', // 我的小程序
             'pages/AppInfo', // 小程序信息
             'pages/UploadInfo', // 上传素材首页
