@@ -25,6 +25,7 @@ export default class extends wepy.app {
             'pages/registSuccess', // 注册完成
             'pages/feedbackDetail', // 意见反馈优选、微信问题介绍
             'pages/uploadArticle', // 上传文章
+            'pages/appInfo/appInfo',
         ],
         window: {
             backgroundTextStyle: 'light',

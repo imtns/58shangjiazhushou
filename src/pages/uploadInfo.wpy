@@ -99,28 +99,28 @@ export default class Index extends wepy.page {
     methods = {
         setText (e) {
             const text = e.detail.value;
-            this.uploadForm(text);
+            this.updateForm(text);
         },
         async setImages ({ uploading, images = [] }) {
-            this.uploadForm({ uploading });
+            this.updateForm({ uploading });
             if (uploading || images.length === 0) return;
             const sendData = { resourceType: 1, resourceUrl: images[images.length - 1], resourceName: '' };
             const res = await get(saveUpload, sendData);
             const { state, msg } = res;
             if (state === 100) {
-                this.uploadForm({ images });
+                this.updateForm({ images });
             } else {
                 toast(msg);
             }
         },
         async setVideo ({ uploading, images = [] }) {
-            this.uploadForm({ uploading });
+            this.updateForm({ uploading });
             if (uploading) return;
             const sendData = { resourceType: 2, resourceUrl: images[images.length - 1], resourceName: '' };
             const res = await get(saveUpload, sendData);
             const { state, msg } = res;
             if (state === 100) {
-                this.uploadForm({ videos: images });
+                this.updateForm({ videos: images });
             } else {
                 toast(msg);
             }
@@ -134,7 +134,7 @@ export default class Index extends wepy.page {
             const { state, msg } = await get(uploadText);
             if (state === 100) {
                 alert(msg);
-                this.uploadForm({ text: this.text += 1 });
+                this.updateForm({ text: this.text += 1 });
             } else {
                 toast(msg);
             }
@@ -154,7 +154,7 @@ export default class Index extends wepy.page {
         const sendData = { resourceType, resourceUrl, resourceName: '' };
         return get(saveUpload, sendData);
     }
-    uploadForm (data) {
+    updateForm (data) {
         this.form = Object.assign({}, this.form, data);
     }
     verify () {
@@ -166,7 +166,7 @@ export default class Index extends wepy.page {
     async onLoad () {
         await sleep();
         const mpid = wepy.getStorageSync('current_mpid');
-        this.uploadForm({ mpid });
+        this.updateForm({ mpid });
     }
 }
 </script>
