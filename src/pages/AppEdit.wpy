@@ -2,24 +2,24 @@
     <view class="appedit-container">
         <view class="appedit-header">
             <text class="appedit-form-label">上传小程序标志</text>
-            <image class="appedit-form-logo" src="{{form.logoUrl}}" @tap="setLogo"/>
+            <image class="appedit-form-logo" src="{{form.logo}}" @tap="setLogo"/>
             <text class="appedit-form-arrow"></text>
         </view>
         <view class="appedit-content-list">
             <view class="appedit-content-list-item">
                 <text class="appedit-form-label">小程序名称</text>
-                <input class="appedit-form-input" type="text" bindinput="setAppName" placeholder="提交后优享小程序才可修改" placeholder-class="appedit-form-placeholder" wx:if="{{app_type==1}}"/>
-                <view class="appedit-form-input" type="text" placeholder="提交后优享小程序才可修改" placeholder-class="appedit-form-placeholder" wx:else></view>
+                <input class="appedit-form-input" type="text" @input="setAppName" placeholder="提交后优享小程序才可修改" placeholder-class="appedit-form-placeholder"  value="{{form.nickName}}" wx:if="{{form.app_type==1}}"/>
+                <view class="appedit-form-input appedit-form-placeholder" type="text" wx:else>{{form.nickName}}</view>
             </view>
             <view class="appedit-content-list-item">
                 <text class="appedit-form-label">联系电话</text>
-                <input class="appedit-form-input" maxlength='11' type="text" bindinput="setMobile" placeholder="请输入" placeholder-class="appedit-form-placeholder"/>
+                <input class="appedit-form-input" maxlength='11' type="text" @input="setMobile" placeholder="请输入" placeholder-class="appedit-form-placeholder" value="{{form.telphone}}"/>
             </view>
-            <picker mode="multiSelector" bindchange="setCity" bindcolumnchange="bindCity" range="{{areas}}">
+            <picker mode="multiSelector" @change="setCity" @columnchange="bindCity" range="{{areas}}" range-key="localName">
                 <view class="appedit-content-list-item">
                     <text class="appedit-form-label">小程序城市</text>
-                    <view class="appedit-form-picker" wx:if="{{form.city && form.city.length===2}}">
-                        {{form.city[0]}} {{form.city[1]}}
+                    <view class="appedit-form-picker" wx:if="{{form.city}}">
+                        {{selCity[0]}} {{selCity[1]}}
                     </view>
                     <view class="appedit-form-picker-placeholder" wx:else>
                         请选择
@@ -31,11 +31,11 @@
                 <view class="appedit-form-btn-location" @tap="setLocation">定位</view>
             </view>
             <view class="appedit-content-list-item appedit-content-list-item-noborder">
-                <textarea name="" id="" cols="30" rows="10" class="appedit-form-input-addressdetail"  placeholder="请输入" placeholder-class="appedit-form-placeholder" bindiput="setDetailAdress" value="{{form.detailAddress}}"></textarea>
+                <textarea name="" id="" cols="30" rows="10" class="appedit-form-input-addressdetail"  placeholder="请输入" placeholder-class="appedit-form-placeholder" @iput="setDetailAdress" value="{{form.address}}"></textarea>
             </view>
             
         </view>   
-        <map class="appedit-map" longitude="{{form.location.longitude}}" latitude="{{form.location.latitude}}" scale="14"></map>
+        <map class="appedit-map" longitude="{{form.addressLatitude}}" latitude="{{form.addressLatitude}}" scale="14"></map>
         <view class="appedit-submit submit-enable" @tap="bindSave" wx:if="{{form.enableSave}}">保存</view>
         <view class="appedit-submit" @tap="bindSave" wx:else>保存</view>
     </view>
@@ -46,10 +46,10 @@ import wepy from 'wepy';
 import { toast, picSrcDomain } from '../utils/index';
 import { get } from '../utils/ajax';
 
-const host = 'https://wanghongyue.58.com';
+const host = 'https://yaofa.58.com';
 const uploadApi = `${host}/fileUpload`;
-const provinceApi = '';
-const cityApi = '';
+const provinceApi = '/local/provinces';
+const cityApi = '/local/citys/';
 const appinfoApi = '/mplogic/get';
 const saveAppApi = '/mplogic/modifympinfo';
 
@@ -59,180 +59,142 @@ export default class appEdit extends wepy.page {
         navigationBarTitleText: '小程序编辑',
     }
     data = {
+        areas: [[], []],
+        selCity: ['北京', '北京'],
         form: {
+            city: 1,
+            province: 5001,
             logoUrl: 'https://pic2.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png',
         },
+    }
+
+    updateForm (data) {
+        const res = data;
+        const { form } = this.data;
+        if (res.headImg) {
+            res.logo = picSrcDomain() + res.headImg;
+        }
+        const enableSave = form.headImg && form.nickName && form.telphone && form.city
+            && form.address;
+        this.form = Object.assign({}, form, { ...res, enableSave });
+        this.$apply();
+    }
+    async getProvinces () {
+        const resProvince = await get(provinceApi);
+        const { dispLocalID = 5001 } = resProvince.data[0];
+        const resCity = await get(cityApi + dispLocalID);
+        this.areas = [resProvince.data, resCity.data];
+        this.$apply();
+    }
+    async getAppInfo (appid) {
+        const res = await get(`${appinfoApi}/${appid}`);
+        this.updateForm({ ...res.data });
+    }
+    verify () {
+        // const regPhone = /^1[3456789][0-9]{9}$/;
+        const { form } = this.data;
+        if (!form.nickName) {
+            toast('输入小程序名称');
+            return false;
+        }
+        if (!form.telphone) {
+            toast('输入联系电话');
+            return false;
+        }
+        // if (regPhone.test(form.telphone)) {
+        //     toast('输入正确的电话');
+        //     return false;
+        // }
+        if (!form.city) {
+            toast('选择城市');
+            return false;
+        }
+        if (!form.address) {
+            toast('输入详情地址');
+            return false;
+        }
+        return true;
     }
     methods = {
         async bindCity (e) {
             const { column, value } = e.detail;
-            if (column === 1) return;
-            const { provinceId } = this.form.province[value];
-            const citys = await get(cityApi, { provinceId });
-            this.areas = [this.areas[0], citys];
+            if (column === 1) {
+                return;
+            }
+            const { dispLocalID } = this.areas[0][value];
+            const resCity = await get(cityApi + dispLocalID);
+            this.areas = [this.areas[0], resCity.data];
+            this.$apply();
+        },
+        setCity (e) {
+            const arr = e.detail.value;
+            const cityIdx = arr[1] && 0;
+            const province = this.areas[0][arr[0]];
+            const city = this.areas[1][cityIdx];
+            this.selCity = [province.localName, city.localName];
+            this.updateForm({ province: province.dispLocalID, city: city.dispLocalID });
         },
         async setLogo () {
             const { tempFilePaths } = await wepy.chooseImage();
             const filePath = tempFilePaths[0];
             console.log({ filePath });
-            const logo = await wepy.uploadFile({
+            const { data } = await wepy.uploadFile({
                 url: uploadApi,
                 filePath,
                 name: 'content',
             });
-            this.updateForm({ logo, logoUrl: picSrcDomain() + logo });
+            const res = JSON.parse(data);
+            console.log(data);
+            console.log(res.data);
+            console.log(res.data.content);
+            this.updateForm({ headImg: res.data.content });
         },
         setAppName (e) {
-            const appName = e.detail.value;
-            this.updateForm({ appName });
+            const nickName = e.detail.value;
+            this.updateForm({ nickName });
         },
         setMobile (e) {
-            const mobile = e.detail.value;
-            this.updateForm({ mobile });
-        },
-        setCity (e) {
-            const city = e.detail.value;
-            this.updateForm({ city });
+            const telphone = e.detail.value;
+            this.updateForm({ telphone });
         },
         async setLocation () {
             const { address, latitude, longitude } = await wepy.chooseLocation();
-            this.updateForm({ location: { address, latitude, longitude }, detailAddress: address });
+            this.updateForm({ address, addressLatitude: latitude, addressLongitude: longitude });
         },
         setDetailAdress (e) {
-            const detailAddress = e.detail.value;
-            this.updateForm({ detailAddress });
+            const address = e.detail.value;
+            this.updateForm({ address });
         },
-        verify () {
-            const regPhone = /^1[3456789][0-9]{9}$/;
-            const { form } = this.data;
-            if (!form.appName) {
-                toast('输入小程序名称');
-                return false;
-            }
-            if (!form.mobile) {
-                toast('输入联系电话');
-                return false;
-            }
-            if (regPhone.test(form.mobile)) {
-                toast('输入联系电话');
-                return false;
-            }
-            if (form.City.length === 3) {
-                toast('选择城市');
-                return false;
-            }
-            if (!form.detailAddress) {
-                toast('输入详情地址');
-                return false;
-            }
-            return true;
-        },
-        bindSave () {
+
+        async bindSave () {
             const { form } = this.data;
             if (!this.verify()) return;
-            Object.assign(form, { cityStr: this.data.form.city.split('|') });
-            get(saveAppApi, { ...form }, (e) => {
-                if (e) {
-                    toast(e);
-                    return;
-                }
+            const sendData = {
+                mpid: wepy.getStorageSync('current_mpid'), // 小程序id
+                logo: form.headImg, // 小程序logo 只有优享小程序能改
+                telphone: form.telphone, // 电话
+                mpname: form.nickName, // 小程序名称 只有优享小程序能改
+                city: form.city, // 城市
+                address: form.address, // 地址
+                lat: form.addressLatitude, // 纬度
+                lnt: form.addressLongitude, // 经度
+            };
+            console.log(sendData);
+            const res = await get(saveAppApi, sendData);
+            if (res.state === 100) {
                 wepy.navigateBack();
-            });
-        },
-    }
-    updateForm (data) {
-        const { form } = this.data;
-        const enableSave = form.logo && form.appName && form.mobile && form.city
-            && form.city.length === 3 && form.detailAddress;
-        this.form = Object.assign({}, form, { ...data, enableSave });
-        this.$apply();
-    }
-    async getProvinces () {
-        const provinces = await get(provinceApi);
-        this.areas = [provinces, []];
-    }
-    async getAppInfo (appid) {
-        const res = await get(`${appinfoApi}/${appid}`);
-        this.updateForm(res);
-    }
-    methods = {
-        async setLogo () {
-            const { tempFilePaths } = await wepy.chooseImage();
-            const filePath = tempFilePaths[0];
-            console.log({ filePath });
-            const logo = await wepy.uploadFile({
-                url: uploadApi,
-                filePath,
-                name: 'content',
-            });
-            this.updateForm({ logo, logoUrl: picSrcDomain() + logo });
-        },
-        setAppName (e) {
-            const appName = e.detail.value;
-            this.updateForm({ appName });
-        },
-        setMobile (e) {
-            const mobile = e.detail.value;
-            this.updateForm({ mobile });
-        },
-        setCity (e) {
-            const city = e.detail.value;
-            this.updateForm({ city });
-        },
-        async setLocation () {
-            const { address, latitude, longitude } = await wepy.chooseLocation();
-            this.updateForm({ location: { address, latitude, longitude }, detailAddress: address });
-        },
-        setDetailAdress (e) {
-            const detailAddress = e.detail.value;
-            this.updateForm({ detailAddress });
-        },
-        verify () {
-            const regPhone = /^1[3456789][0-9]{9}$/;
-            const { form } = this.data;
-            if (!form.appName) {
-                toast('输入小程序名称');
-                return false;
+            } else {
+                toast(res.msg);
             }
-            if (!form.mobile) {
-                toast('输入联系电话');
-                return false;
-            }
-            if (regPhone.test(form.mobile)) {
-                toast('输入联系电话');
-                return false;
-            }
-            if (form.City.length === 3) {
-                toast('选择城市');
-                return false;
-            }
-            if (!form.detailAddress) {
-                toast('输入详情地址');
-                return false;
-            }
-            return true;
-        },
-        bindSave () {
-            const { form } = this.data;
-            if (!this.verify()) return;
-            Object.assign(form, { cityStr: this.data.form.city.split('|') });
-            get('/mplogic/modifympinfo', { ...form }, (e) => {
-                if (e) {
-                    toast(e);
-                    return;
-                }
-                wepy.navigateBack();
-            });
         },
     }
     async onLoad (options) {
         const { appid = '123123124' } = options;
         this.appid = appid;
-    }
-    async onShow () {
         if (!this.appid) {
             wepy.navigateBack();
         } else {
+            await this.getProvinces();
             await this.getAppInfo(this.appid);
         }
     }
@@ -360,6 +322,8 @@ export default class appEdit extends wepy.page {
         }
     }
     .appedit-map {
+        display: block;
+        width: 100%;
         height: 360rpx;
     }
     .appedit-submit {

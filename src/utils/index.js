@@ -6,7 +6,7 @@ export const sleep = (time = 300) => new Promise((resolve) => {
 
 // alert
 export const alert = (content, title, callBack) => {
-    wepy.showModal({
+    wx.showModal({
         showCancel: false,
         title: title || '注意',
         content,
