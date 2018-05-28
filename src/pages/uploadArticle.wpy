@@ -44,7 +44,6 @@ export default class Index extends wepy.page {
     methods = {
         setTitle (e) {
             const title = e.detail.value;
-<<<<<<< HEAD
             this.updateForm({ title });
         },
         setAuthor (e) {
@@ -58,21 +57,6 @@ export default class Index extends wepy.page {
         setContent (e) {
             const content = e.detail.value;
             this.updateForm({ content });
-=======
-            this.uploadForm({ title });
-        },
-        setAuthor (e) {
-            const author = e.detail.value;
-            this.uploadForm({ author });
-        },
-        setSource (e) {
-            const source = e.detail.value;
-            this.uploadForm({ source });
-        },
-        setContent (e) {
-            const content = e.detail.value;
-            this.uploadForm({ content });
->>>>>>> 040a8bbd00096ed5a987e5e3fcb1fdc812873ca5
         },
         async submitSave () {
             const res = await post(submitApi, this.form);
@@ -83,11 +67,7 @@ export default class Index extends wepy.page {
             }
         },
     }
-<<<<<<< HEAD
     updateForm (data) {
-=======
-    uploadForm (data) {
->>>>>>> 040a8bbd00096ed5a987e5e3fcb1fdc812873ca5
         this.form = Object.assign({}, this.form, data);
         this.$apply();
     }
