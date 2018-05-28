@@ -9,12 +9,12 @@ export default class extends wepy.app {
     }
     config = {
         pages: [
-            'pages/myMp', // 我的小程序
             'pages/home', // 登陆之后的主页
-            'pages/appInfo', // 小程序信息
+            'pages/intro', // 没有登陆的介绍页面
+            'pages/myMp', // 我的小程序
+            'pages/appinfo', // 小程序信息
             'pages/uploadInfo', // 上传素材首页
             'pages/send', // 测试授权页面专用，勿删
-            'pages/intro', // 没有登陆的介绍页面
             'pages/progress', // 完成度页面
             'pages/appedit', // 小程序编辑
             'pages/buy', // 购买页面
@@ -36,11 +36,11 @@ export default class extends wepy.app {
         },
     }
     onLaunch () {
-        if (!wepy.getStorageSync('ppu')) {
-            wepy.navigateTo({
-                url: './pages/intro',
-            });
-        }
+        // if (!wepy.getStorageSync('ppu')) {
+        //     wepy.navigateTo({
+        //         url: './pages/intro',
+        //     });
+        // }
     }
     onShow (options) {
         console.log('onshow拉卡啊阿卡');
@@ -66,7 +66,7 @@ export default class extends wepy.app {
                 console.log(`获取PPU成功！ ${extraData.ppu}`);
                 wepy.setStorageSync('ppu', extraData.ppu);
                 wepy.navigateTo({
-                    url: 'home',
+                    url: './pages/home',
                 });
             }
         }
