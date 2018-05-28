@@ -108,6 +108,9 @@ export default class RegistMainAccount extends wepy.page {
     selectEnterpriseType (e) {
         console.log(e);
         const { type } = e.target.dataset.item;
+        this.form = Object.assign({}, this.form, {
+            enterpriseType: type,
+        });
         this.form.enterpriseType = type;
         this.$apply();
     }
@@ -115,7 +118,10 @@ export default class RegistMainAccount extends wepy.page {
         uploadFn (key, src) {
             console.log(key, src);
             console.log(`parent received emit event, number is:${src}`, `key${key}`);
-            this.form[key] = src;
+            // this.form[key] = src;
+            const obj = {};
+            obj[key] = src;
+            this.form = Object.assign({}, this.form, obj);
             this.$apply();
         },
     }
@@ -123,13 +129,18 @@ export default class RegistMainAccount extends wepy.page {
     setText (e) {
         console.log(e);
         const { name } = e.currentTarget.dataset;
-        this.form[name] = e.detail.value;
+        const obj = {};
+        obj[name] = e.detail.value;
+        this.form = Object.assign({}, this.form, obj);
         this.$apply();
     }
     // 删除图片
     delAuthPaper (e) {
         const { key } = e.target.dataset;
-        this.form[key] = '';
+        const obj = {};
+        obj[key] = '';
+        this.form = Object.assign({}, this.form, obj);
+        this.$apply();
     }
     // 下一步
     async nextStep () {

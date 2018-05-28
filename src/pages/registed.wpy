@@ -34,6 +34,8 @@ export default class Registed extends wepy.page {
     }
     onShow () {
         this.current_mpid = wepy.getStorageSync('current_mpid') || '';
+        this.otherlist = [];
+        this.$apply();
         this.loadList();
     }
     toregist (e) {

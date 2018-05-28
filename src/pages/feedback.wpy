@@ -8,7 +8,7 @@
         </view>
         <view class="main-title">留言</view>
         <view class="main-body">
-            <textarea class="main-body-textarea" placeholder="您的留言会及时通知到相关助理及管理员" placeholder-style="font-size: 30rpx;color: #CCCCCC" maxlength="500" bindinput="input"></textarea>
+            <textarea class="main-body-textarea" placeholder="您的留言会及时通知到相关助理及管理员" placeholder-style="font-size: 30rpx;color: #CCCCCC" maxlength="500" bindinput="input" value="{{content}}"></textarea>
             <view class="main-text-size">{{content.length}}/500</view>
         </view>
         <view class="main-button" bindtap="submit" style="margin-top:420rpx;">提交</view>
@@ -49,6 +49,7 @@ export default class Feedback extends wepy.page {
         this.$apply();
     }
     async submit() {
+        console.log();
         if (!this.content.trim()) {
             alert('请编辑留言后提交！');
             return;
