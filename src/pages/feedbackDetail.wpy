@@ -49,7 +49,7 @@ import wepy from 'wepy';
 
 import { sleep } from '../utils';
 
-export default class Index extends wepy.page {
+export default class FeedbackDetail extends wepy.page {
     config = {
         navigationBarTitleText: '优享小程序介绍',
     }

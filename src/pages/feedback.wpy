@@ -22,7 +22,7 @@ import { sleep } from '../utils';
 
 import { post } from '../utils/ajax';
 
-export default class Index extends wepy.page {
+export default class Feedback extends wepy.page {
     config = {
         navigationBarTitleText: '意见反馈',
     }

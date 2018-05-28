@@ -9,7 +9,7 @@ import { toast } from '../utils';
 
 import { uploader } from '../utils/uploader';
 
-export default class Index extends wepy.component {
+export default class UploaderCom extends wepy.component {
     props = {
         title: {
             type: String,

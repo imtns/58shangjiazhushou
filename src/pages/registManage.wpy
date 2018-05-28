@@ -80,7 +80,7 @@ import RemindBar from '../components/RemindBar';
 
 import UploaderCom from '../components/UploaderCom';
 
-export default class Index extends wepy.page {
+export default class RegistManage extends wepy.page {
     config = {
         navigationBarTitleText: '注册',
     }

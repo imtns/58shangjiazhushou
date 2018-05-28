@@ -23,7 +23,7 @@ import { sleep } from '../utils';
 
 import RemindBar from '../components/RemindBar';
 
-export default class Index extends wepy.page {
+export default class RegistSuccess extends wepy.page {
     config = {
         navigationBarTitleText: '注册',
     }

@@ -14,7 +14,7 @@ import wepy from 'wepy';
 
 import { sleep } from '../utils';
 
-export default class Index extends wepy.page {
+export default class RemindBar extends wepy.page {
     data = {
         currentstep: 1,
         steps: [

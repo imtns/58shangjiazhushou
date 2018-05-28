@@ -4,7 +4,7 @@
             <view>全部通知</view>
             <view class="clear-notice" bindtap="clearAll">清空</view>
         </view>
-        <scroll-view class="notice-list">
+        <scroll-view class="notice-list" wx:if="{{noticeList.length>0}}">
         <block wx:for="{{noticeList}}" wx:key="index">
             <view class="notice-list-item">
                 <view class="notice-item">
@@ -28,6 +28,10 @@
             </view>
         </block>
         </scroll-view>
+        <view class="emptyBox" wx:if="{{noticeList.length<=0}}">
+            <image src="http://static.58.com/lbg/shangjiaxcxht/zhushou/img/empty.png" class="emptyIcon"></image>
+            <view class="emptyText">暂无通知</view>
+        </view>
     </view>
 </template>
 
@@ -232,7 +236,21 @@ view,scroll-view{
                 }
             }
         }
-        
+    }
+    .emptyBox{
+        width:100%;
+        height:50%;
+        text-align:center;
+        margin: auto;
+        .emptyIcon{
+            width:209rpx;
+            height:187rpx;
+        }
+        .emptyText{
+            margin-top: 20rpx;
+            color:#999999;
+            font-size:30rpx;
+        }
     }
 }
 </style>
