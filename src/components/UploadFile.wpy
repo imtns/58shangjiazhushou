@@ -1,13 +1,14 @@
 <template>
     <view class='mod-upload'>
         <view class="main-body">
-            <view class="main-title">上传图片</view>
+            <view class="main-title">上传{{titleStatus[uploadtype-1]}}</view>
             <view class="main-boy-line main-body-flex">
                 <view class="main-upload"  @tap='bindUploadImage' wx:if="{{uploadtype==='1' && vm.length<maxSize}}"></view>
-                <view class="main-upload"  @tap='bindUploadImage' wx:if="{{uploadtype==='2' && vm.length<maxSize}}"></view>
+                <view class="main-upload"  @tap='bindUploadVideo' wx:if="{{uploadtype==='2' && vm.length<maxSize}}"></view>
                 <view class="main-show-image" wx:for='{{vm}}' wx:key='index'>
-                    <image class="main-upload-image" data-index='{{index}}' src="{{item}}"/>
-                    <view class="main-del-image" hidden="{{loading}}"></view>
+                    <image class="main-upload-image" data-index='{{index}}' src="{{item}}" wx:if="{{uploadtype==='1'}}"/>
+                    <video class="main-upload-image" data-index='{{index}}' src="{{item}}" wx:else></video>
+                    <view class="main-del-image" hidden="{{loading ||uploadtype==='2'}}"></view>
                 </view>
             </view>
         </view>
@@ -22,6 +23,7 @@ export default class Uploader extends wepy.component {
         uploading: false,
         vm: [],
         images: [],
+        titleStatus: ['图片', '视频'],
     }
     props = {
         uploadtype: String,
@@ -78,7 +80,7 @@ export default class Uploader extends wepy.component {
                 const { state, msg, data } = res;
                 if (state !== 100) {
                     wepy.showToast({
-                        title: msg || '图片上传失败，请重试',
+                        title: msg || '上传失败，请重试',
                         icon: 'none',
                     });
                     sfileset.splice(start + i, 1); // 失败删除
@@ -128,6 +130,7 @@ export default class Uploader extends wepy.component {
                 images: self.images,
             });
             self.vm = [...sfileset];
+            self.$apply();
             tempFilePaths.map(async (file, i) => {
                 const response = await self.uploadVideo(file);
                 let res;
@@ -155,9 +158,11 @@ export default class Uploader extends wepy.component {
                     uploading: false,
                     images: self.images,
                 });
+                self.$apply();
                 // 所有图片上传完成
                 if (fileSize - 1 === i) {
                     self.uploading = false;
+                    self.$apply();
                 }
                 return file;
             });

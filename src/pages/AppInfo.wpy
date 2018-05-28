@@ -51,19 +51,19 @@ export default class AppInfo extends wepy.page {
         }
         this.appInfo = Object.assign({}, this.appInfo, res);
     }
-    async getAppInfo (appid) {
-        const res = await get(`${appinfoApi}/${appid}`);
+    async getAppInfo (mpid) {
+        const res = await get(`${appinfoApi}/${mpid}`);
         this.updateForm(res);
     }
     async onLoad (options) {
-        const { appid = '123123124' } = options;
-        this.appid = appid;
+        const mpid = options.mpid || wepy.getStorageSync('current_mpid');
+        this.updateForm({ mpid });
     }
     async onShow () {
-        if (!this.appid) {
+        if (!this.form.mpid) {
             wepy.navigateBack();
         } else {
-            await this.getAppInfo(this.appid);
+            await this.getAppInfo(this.form.mpid);
         }
     }
 }

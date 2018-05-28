@@ -46,14 +46,14 @@ import wepy from 'wepy';
 import { toast, picSrcDomain } from '../utils/index';
 import { get } from '../utils/ajax';
 
-const host = 'https://yaofa.58.com';
+const host = 'http://yaofa.58.com';
 const uploadApi = `${host}/fileUpload`;
 const provinceApi = '/local/provinces';
 const cityApi = '/local/citys/';
 const appinfoApi = '/mplogic/get';
 const saveAppApi = '/mplogic/modifympinfo';
 
-export default class appEdit extends wepy.page {
+export default class AppEdit extends wepy.page {
     config = {
         disableScroll: true,
         navigationBarTitleText: '小程序编辑',
@@ -86,8 +86,8 @@ export default class appEdit extends wepy.page {
         this.areas = [resProvince.data, resCity.data];
         this.$apply();
     }
-    async getAppInfo (appid) {
-        const res = await get(`${appinfoApi}/${appid}`);
+    async getAppInfo (mpid) {
+        const res = await get(`${appinfoApi}/${mpid}`);
         this.updateForm({ ...res.data });
     }
     verify () {
@@ -170,7 +170,7 @@ export default class appEdit extends wepy.page {
             const { form } = this.data;
             if (!this.verify()) return;
             const sendData = {
-                mpid: wepy.getStorageSync('current_mpid'), // 小程序id
+                mpid: form.mpid, // 小程序id
                 logo: form.headImg, // 小程序logo 只有优享小程序能改
                 telphone: form.telphone, // 电话
                 mpname: form.nickName, // 小程序名称 只有优享小程序能改
@@ -189,13 +189,13 @@ export default class appEdit extends wepy.page {
         },
     }
     async onLoad (options) {
-        const { appid = '123123124' } = options;
-        this.appid = appid;
-        if (!this.appid) {
+        const mpid = options.mpid || wepy.getStorageSync('current_mpid');
+        if (!mpid) {
             wepy.navigateBack();
         } else {
+            this.updateForm({ mpid });
             await this.getProvinces();
-            await this.getAppInfo(this.appid);
+            await this.getAppInfo(mpid);
         }
     }
 }
