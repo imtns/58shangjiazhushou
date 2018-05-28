@@ -50,6 +50,7 @@ export default class AppInfo extends wepy.page {
             res.logo = picSrcDomain() + res.logo;
         }
         this.appInfo = Object.assign({}, this.appInfo, res);
+        this.$apply();
     }
     async getAppInfo (mpid) {
         const res = await get(`${appinfoApi}/${mpid}`);
