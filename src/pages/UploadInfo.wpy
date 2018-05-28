@@ -147,7 +147,7 @@ export default class UploadInfo extends wepy.page {
         async submitSave () {
             if (!this.enable) return;
             const url = '/pages/UploadInfoSuccess/UploadInfoSuccess';
-            const res = await post(complateApi, { mpid: this.mpid });
+            const res = await post(complateApi, { mpid: this.form.mpid });
             if (res.state === 100) {
                 wepy.navigateTo({
                     url,

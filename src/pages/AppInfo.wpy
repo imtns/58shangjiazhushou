@@ -60,10 +60,10 @@ export default class AppInfo extends wepy.page {
         this.updateForm({ mpid });
     }
     async onShow () {
-        if (!this.mpid) {
+        if (!this.form.mpid) {
             wepy.navigateBack();
         } else {
-            await this.getAppInfo(this.mpid);
+            await this.getAppInfo(this.form.mpid);
         }
     }
 }

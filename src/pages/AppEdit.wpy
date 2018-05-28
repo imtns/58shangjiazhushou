@@ -190,7 +190,7 @@ export default class appEdit extends wepy.page {
     }
     async onLoad (options) {
         const mpid = options.mpid || wepy.getStorageSync('current_mpid');
-        if (!this.mpid) {
+        if (!this.form.mpid) {
             wepy.navigateBack();
         } else {
             this.updateForm({ mpid });
