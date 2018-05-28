@@ -1,4 +1,5 @@
 import wepy from 'wepy';
+import { toast } from '../utils';
 
 const host = 'http://wanghongyue.58.com';
 
@@ -25,10 +26,14 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
         },
         success(response) {
             const { state, msg, data } = response.data;
-            if (state == 100) {
+            if (state === 100) {
                 resolve(response.data);
                 // callback && callback(null, response.data);
-            } else if (state == 1) {
+            } else if (state == -10001) {
+                toast(msg);
+                wepy.navigateTo({
+                    url: 'intro',
+                });
                 resolve(response.data);
                 // callback && callback(null, response.data);
             } else {

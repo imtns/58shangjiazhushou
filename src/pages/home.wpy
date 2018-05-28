@@ -55,8 +55,8 @@ export default class Index extends wepy.page {
             mps: [],
             name: '您的姓名',
             miniProgramName: '您还没购买小程序',
-            unread: 1,
-            mpCount: 3,
+            unread: 0,
+            mpCount: 0,
             progressText: '您还没有购买小程序',
             nexttask: 0,
             changeMP: false,
@@ -99,11 +99,10 @@ export default class Index extends wepy.page {
                 alert('请先购买小程序', '提示');
                 return;
             }
-            // todo：跳转所有页面
             switch (this.business.nexttask) {
             case 2:
                 wepy.navigateTo({
-                    url: 'uploadInfo', // todo 跳转到小程序编辑页面
+                    url: 'appedit',
                 });
                 break;
             case 3:
@@ -207,11 +206,11 @@ export default class Index extends wepy.page {
         this.$apply();
     }
     setGlobalMpId(id) {
-        console.log(id, '++++++++++');
-        wepy.setStorageSync('current_mpid', id);
+        if (id) {
+            wepy.setStorageSync('current_mpid', id);
+        }
     }
     checkBeforeJump(index) {
-        console.log(index);
         if (!this.business.mpCount) {
             alert('请先购买小程序', '提示');
             return;
