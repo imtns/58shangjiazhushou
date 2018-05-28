@@ -1,5 +1,4 @@
 <template>
-    <image src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1527339745574&di=ab1f8a3fe1e0aca6770dfac05337d9c7&imgtype=0&src=http%3A%2F%2Fsrc.onlinedown.net%2Fimages%2Fxcs%2F10%2F2017-06-06_593677b93a3ac.jpg" bindtap="hello('https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1527339745574&di=ab1f8a3fe1e0aca6770dfac05337d9c7&imgtype=0&src=http%3A%2F%2Fsrc.onlinedown.net%2Fimages%2Fxcs%2F10%2F2017-06-06_593677b93a3ac.jpg')" mode="aspectFit"></image>
 </template>
 <script>
 import wepy from 'wepy';

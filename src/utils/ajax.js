@@ -32,7 +32,7 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
             } else if (state == -10001) {
                 toast(msg);
                 wepy.navigateTo({
-                    url: 'intro',
+                    url: 'pages/intro',
                 });
                 resolve(response.data);
                 // callback && callback(null, response.data);

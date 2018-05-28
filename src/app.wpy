@@ -38,7 +38,7 @@ export default class extends wepy.app {
     onLaunch () {
         if (!wepy.getStorageSync('ppu')) {
             wepy.navigateTo({
-                url: 'intro',
+                url: './pages/intro',
             });
         }
     }
@@ -48,7 +48,7 @@ export default class extends wepy.app {
         if (ppu) {
             console.log('已经存在ppu');
             wepy.navigateTo({
-                url: 'home',
+                url: './pages/home',
             });
         }
         if (options.scene === 1038) {

@@ -100,49 +100,49 @@ export default class Index extends wepy.page {
                 return;
             }
             switch (this.business.nexttask) {
-            case 2:
-                wepy.navigateTo({
-                    url: 'appedit',
-                });
-                break;
-            case 3:
-                wepy.navigateTo({
-                    url: 'uploadInfo',
-                });
-                break;
-            case 4:
-                wepy.navigateTo({
-                    url: 'progress',
-                });
-                break;
-            case 5:
-                if (this.business.selected.app_type === 1) {
+                case 2:
+                    wepy.navigateTo({
+                        url: 'appedit',
+                    });
+                    break;
+                case 3:
+                    wepy.navigateTo({
+                        url: 'uploadInfo',
+                    });
+                    break;
+                case 4:
                     wepy.navigateTo({
                         url: 'progress',
                     });
-                } else {
+                    break;
+                case 5:
+                    if (this.business.selected.app_type === 1) {
+                        wepy.navigateTo({
+                            url: 'progress',
+                        });
+                    } else {
+                        wepy.navigateTo({
+                            url: 'myMp',
+                        });
+                    }
+                    break;
+                case 6:
                     wepy.navigateTo({
-                        url: 'myMp',
+                        url: 'progress',
                     });
-                }
-                break;
-            case 6:
-                wepy.navigateTo({
-                    url: 'progress',
-                });
-                break;
-            case 7:
-                wepy.navigateTo({
-                    url: 'progress',
-                });
-                break;
-            case 8:
-                wepy.navigateTo({
-                    url: 'progress',
-                });
-                break;
-            default:
-                break;
+                    break;
+                case 7:
+                    wepy.navigateTo({
+                        url: 'progress',
+                    });
+                    break;
+                case 8:
+                    wepy.navigateTo({
+                        url: 'progress',
+                    });
+                    break;
+                default:
+                    break;
             }
             this.$apply();
         },
@@ -216,76 +216,76 @@ export default class Index extends wepy.page {
             return;
         }
         switch (index) {
-        case 0:
-            wepy.navigateTo({
-                url: 'myMp',
-            });
-            break;
-        case 1:
-            wepy.navigateTo({
-                url: 'uploadInfo',
-            });
-            break;
-        case 2:
-            if (this.business.selected.app_type === 1) {
-                alert('当前小程序为优享小程序，不用提交注册信息', '提示');
-            } else {
+            case 0:
                 wepy.navigateTo({
-                    url: 'registed',
+                    url: 'myMp',
                 });
-            }
-            break;
-        case 3:
-            wepy.navigateTo({
-                url: 'progress',
-            });
-            break;
-        case 4:
-            wepy.navigateTo({
-                url: 'feedback',
-            });
-            break;
-        default:
-            break;
+                break;
+            case 1:
+                wepy.navigateTo({
+                    url: 'uploadInfo',
+                });
+                break;
+            case 2:
+                if (this.business.selected.app_type === 1) {
+                    alert('当前小程序为优享小程序，不用提交注册信息', '提示');
+                } else {
+                    wepy.navigateTo({
+                        url: 'registed',
+                    });
+                }
+                break;
+            case 3:
+                wepy.navigateTo({
+                    url: 'progress',
+                });
+                break;
+            case 4:
+                wepy.navigateTo({
+                    url: 'feedback',
+                });
+                break;
+            default:
+                break;
         }
     }
     setNextTask(taskNum) {
         this.business.nexttask = taskNum;
         switch (taskNum) {
-        case 2:
-            this.business.progressText = '当前小程序未添加小程序信息';
-            break;
-        case 3:
-            this.business.progressText = '当前小程序还未上传素材';
-            break;
-        case 4:
-            if (this.business.selected.app_type === 1) {
+            case 2:
+                this.business.progressText = '当前小程序未添加小程序信息';
+                break;
+            case 3:
+                this.business.progressText = '当前小程序还未上传素材';
+                break;
+            case 4:
+                if (this.business.selected.app_type === 1) {
+                    this.business.progressText = '当前小程序信息已完善';
+                } else {
+                    this.business.progressText = '当前小程序还未填写注册信息';
+                }
+                break;
+            case 5: // 跳转我的小程序
+                if (this.business.selected.app_type === 1) {
+                    this.business.progressText = '当前小程序信息已完善';
+                } else {
+                    this.business.progressText = '当前小程序还未授权';
+                }
+                break;
+            case 6: // 跳转到进度
                 this.business.progressText = '当前小程序信息已完善';
-            } else {
-                this.business.progressText = '当前小程序还未填写注册信息';
-            }
-            break;
-        case 5: // 跳转我的小程序
-            if (this.business.selected.app_type === 1) {
+                break;
+            case 7: // 消息列表
                 this.business.progressText = '当前小程序信息已完善';
-            } else {
-                this.business.progressText = '当前小程序还未授权';
-            }
-            break;
-        case 6: // 跳转到进度
-            this.business.progressText = '当前小程序信息已完善';
-            break;
-        case 7: // 消息列表
-            this.business.progressText = '当前小程序信息已完善';
-            break;
-        case 8: // 消息列表
-            this.business.progressText = '当前小程序信息已完善';
-            break;
-        case 9: // 完成度
-            this.business.progressText = '当前小程序信息已完善';
-            break;
-        default:
-            break;
+                break;
+            case 8: // 消息列表
+                this.business.progressText = '当前小程序信息已完善';
+                break;
+            case 9: // 完成度
+                this.business.progressText = '当前小程序信息已完善';
+                break;
+            default:
+                break;
         }
         this.$apply();
     }
