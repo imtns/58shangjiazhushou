@@ -6,7 +6,7 @@
                 <view class="main-upload"  @tap='bindUploadImage' wx:if="{{uploadtype==='1' && vm.length<maxSize}}"></view>
                 <view class="main-upload"  @tap='bindUploadImage' wx:if="{{uploadtype==='2' && vm.length<maxSize}}"></view>
                 <view class="main-show-image" wx:for='{{vm}}' wx:key='index'>
-                    <image class="main-upload-image" src=""/>
+                    <image class="main-upload-image" data-index='{{index}}' src="{{item}}"/>
                     <view class="main-del-image" hidden="{{loading}}"></view>
                 </view>
             </view>
@@ -16,7 +16,7 @@
 <script>
 import wepy from 'wepy';
 
-const host = 'http://wanghongyue.58.com';
+const host = 'http://yaofa.58.com';
 export default class Uploader extends wepy.component {
     data = {
         uploading: false,
@@ -66,6 +66,7 @@ export default class Uploader extends wepy.component {
                 images: self.images,
             });
             self.vm = [...sfileset];
+            self.$apply();
             tempFilePaths.map(async (file, i) => {
                 const response = await self.uploadImage(file);
                 let res;
@@ -93,9 +94,11 @@ export default class Uploader extends wepy.component {
                     uploading: false,
                     images: self.images,
                 });
+                self.$apply();
                 // 所有图片上传完成
                 if (fileSize - 1 === i) {
                     self.uploading = false;
+                    self.$apply();
                 }
                 return file;
             });
