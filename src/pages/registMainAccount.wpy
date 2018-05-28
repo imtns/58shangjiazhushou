@@ -100,10 +100,9 @@ export default class RegistMainAccount extends wepy.page {
             },
         ],
         enterpriseCodeReg: /^[0-9a-z]+$/,
+        id: '',
     }
-    async onLoad () {
-        await sleep();
-        console.log('onLoad');
+    onLoad () {
     }
     // 选择企业类型
     selectEnterpriseType (e) {

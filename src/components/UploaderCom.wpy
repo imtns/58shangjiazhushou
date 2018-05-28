@@ -19,28 +19,23 @@ export default class UploaderCom extends wepy.component {
         console.log('onLoad1111', this.title);
     }
     methods = {
-        tap () {
-            console.log('2222', this.title);
-            console.log('child is clicked', this.title);
-            const that = this;
-            wepy.chooseImage({
-                count: 1,
-                sizeType: ['compressed'],
-                success(res) {
-                    console.log(res);
-                    const { tempFilePaths } = res;
-                    const url = tempFilePaths[0];
-                    uploader(url, (e, result) => {
-                        console.log(result);
-                        if (e) {
-                            toast('上传失败，请重试。');
-                            return;
-                        }
-                        toast('上传成功。');
-                        that.$emit('childFn', that.title, `http://pic1.58cdn.com.cn${result.content}`);
-                    });
-                },
-            });
+        async tap () {
+            try {
+                console.log('2222', this.title);
+                console.log('child is clicked', this.title);
+                const that = this;
+                const { tempFilePaths } = await wepy.chooseImage();
+                uploader(tempFilePaths[0], (e, result) => {
+                    if (e) {
+                        toast('上传失败，请重试。');
+                        return;
+                    }
+                    toast('上传成功。');
+                    that.$emit('childFn', this.title, `http://pic1.58cdn.com.cn${result.content}`);
+                });
+            } catch (e) {
+                console.log(e);
+            }
         },
     }
 }
