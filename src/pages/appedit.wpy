@@ -80,27 +80,27 @@ export default class AppEdit extends wepy.page {
                 filePath,
                 name: 'content',
             });
-            this.uploadForm({ logo, logoUrl: picSrcDomain() + logo });
+            this.updateForm({ logo, logoUrl: picSrcDomain() + logo });
         },
         setAppName (e) {
             const appName = e.detail.value;
-            this.uploadForm({ appName });
+            this.updateForm({ appName });
         },
         setMobile (e) {
             const mobile = e.detail.value;
-            this.uploadForm({ mobile });
+            this.updateForm({ mobile });
         },
         setCity (e) {
             const city = e.detail.value;
-            this.uploadForm({ city });
+            this.updateForm({ city });
         },
         async setLocation () {
             const { address, latitude, longitude } = await wepy.chooseLocation();
-            this.uploadForm({ location: { address, latitude, longitude }, detailAddress: address });
+            this.updateForm({ location: { address, latitude, longitude }, detailAddress: address });
         },
         setDetailAdress (e) {
             const detailAddress = e.detail.value;
-            this.uploadForm({ detailAddress });
+            this.updateForm({ detailAddress });
         },
         verify () {
             const regPhone = /^1[3456789][0-9]{9}$/;
@@ -140,7 +140,7 @@ export default class AppEdit extends wepy.page {
             });
         },
     }
-    uploadForm (data) {
+    updateForm (data) {
         const { form } = this.data;
         const enableSave = form.logo && form.appName && form.mobile && form.city
             && form.city.length === 3 && form.detailAddress;
@@ -153,7 +153,7 @@ export default class AppEdit extends wepy.page {
     }
     async getAppInfo (appid) {
         const res = await get(`${appinfoApi}/${appid}`);
-        this.uploadForm(res);
+        this.updateForm(res);
     }
     methods = {
         async setLogo () {
@@ -165,27 +165,27 @@ export default class AppEdit extends wepy.page {
                 filePath,
                 name: 'content',
             });
-            this.uploadForm({ logo, logoUrl: picSrcDomain() + logo });
+            this.updateForm({ logo, logoUrl: picSrcDomain() + logo });
         },
         setAppName (e) {
             const appName = e.detail.value;
-            this.uploadForm({ appName });
+            this.updateForm({ appName });
         },
         setMobile (e) {
             const mobile = e.detail.value;
-            this.uploadForm({ mobile });
+            this.updateForm({ mobile });
         },
         setCity (e) {
             const city = e.detail.value;
-            this.uploadForm({ city });
+            this.updateForm({ city });
         },
         async setLocation () {
             const { address, latitude, longitude } = await wepy.chooseLocation();
-            this.uploadForm({ location: { address, latitude, longitude }, detailAddress: address });
+            this.updateForm({ location: { address, latitude, longitude }, detailAddress: address });
         },
         setDetailAdress (e) {
             const detailAddress = e.detail.value;
-            this.uploadForm({ detailAddress });
+            this.updateForm({ detailAddress });
         },
         verify () {
             const regPhone = /^1[3456789][0-9]{9}$/;

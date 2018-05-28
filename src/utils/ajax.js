@@ -20,9 +20,9 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
         method: method,
         dataType: 'json',
         header: {
-            "content-type": method === "GET" ? "application/json" : "application/x-www-form-urlencoded",
-            "PPU": ppu || 'wanghongyue',
-            "reqfrom": 'biz_assistant',
+            'content-type': method === 'GET' ? 'application/json' : 'application/x-www-form-urlencoded',
+            PPU: ppu || 'wanghongyue',
+            'reqfrom': 'biz_assistant',
         },
         success(response) {
             const { state, msg, data } = response.data;
