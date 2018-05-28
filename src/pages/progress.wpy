@@ -61,7 +61,9 @@ export default class Index extends wepy.page {
         }
         const { data } = await post('/mplogic/pgdetail', subData);
         const mpInfo = await post('/mplogic/index', subData);
-        this.business.current = mpInfo.data.mpinfo;
+        this.business = Object.assign({}, this.business, {
+            current: mpInfo.data.mpinfo,
+        });
         this.progress = data.map((item) => {
             const myitem = item;
             if (myitem.successTime) {
@@ -74,8 +76,6 @@ export default class Index extends wepy.page {
             }
             return myitem;
         });
-        console.log(mpInfo);
-        console.log(data);
         this.$apply();
     }
 }

@@ -39,7 +39,7 @@ export default class Registed extends wepy.page {
         this.loadList();
     }
     toregist (e) {
-        const { id = '' } = e.currentTarget.dataset.item;
+        const { id = '' } = e.currentTarget.dataset;
         wepy.setStorageSync('registMappid', id);
         wepy.navigateTo({
             url: './registMainAccount',
