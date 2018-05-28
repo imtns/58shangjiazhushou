@@ -53,7 +53,7 @@ const cityApi = '';
 const appinfoApi = '/mplogic/get';
 const saveAppApi = '/mplogic/modifympinfo';
 
-export default class AppEdit extends wepy.page {
+export default class appEdit extends wepy.page {
     config = {
         disableScroll: true,
         navigationBarTitleText: '小程序编辑',

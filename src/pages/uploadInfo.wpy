@@ -83,7 +83,7 @@ const complateApi = '/resource/complete';
 const uploadText = '/resource/upload/text';
 const saveUpload = '/businessResource/insert'; // resourceType  1图片  2视频     resourceUrl  调用/fileUpload之后返回的url   resourceName资源名称
 
-export default class Index extends wepy.page {
+export default class UploadInfo extends wepy.page {
     config = {
         navigationBarTitleText: '上传素材',
     }

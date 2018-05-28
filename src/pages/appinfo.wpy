@@ -6,24 +6,23 @@
                 <view class="appinfo-title">{{appInfo.title}}</view>
                 <view class="appinfo-date">{{appInfo.date}}</view>
             </view>
-            <view class="appinfo-youxiang" wx:if="{{appInfo.app_type===1}}">优选</view>
-            <view class="appinfo-youxiang" wx:else>优选</view>
+            <view class="appinfo-youxiang" wx:if="{{appInfo.app_type===1}}"></view>
+            <view class="appinfo-youxiang" wx:else></view>
         </view>
         <view class="appinfo-status">
             <view class="appinfo-auth">授权状态：{{appInfo.auth===2?'已授权':'未授权'}}</view>
             <view class="appinfo-verify">审核状态：{{verifyStatus[appInfo.verify]}}</view>
             <view class="appinfo-telephone">联系电话：{{appInfo.telephone}}</view>
-            <view class="appinfo-address">小程序地址：北京市朝阳区酒仙桥北路甲IT产业园105号楼</view>
+            <view class="appinfo-address">小程序地址：{{appInfo.address}}</view>
         </view>
-        <view class="appinfo-qrcode">
+        <view class="appinfo-qrcode" wx:if="{{appInfo.online}}">
             <view class="appinfo-qrcode-label">小程序码：</view>
             <image class="appinfo-qrcode-img" src="{{appInfo.qrcode}}"/>
         </view>
-        <view class="appinfo-qrcode-off">
+        <view class="appinfo-qrcode-off" ex:else>
             <view class="">小程序码：上线后展示</view>
         </view>
-        <navigator class="appinfo-edit"
-         url="/pages/appedit/appedit?id={{appInfo.id}}">编辑小程序</navigator>
+        <navigator url="/pages/appedit/appedit?id={{appInfo.id}}"><view class="appinfo-edit">编辑小程序</view></navigator>
     </view>
 </template>
 
@@ -88,7 +87,10 @@ export default class AppInfo extends wepy.page {
             border: 1rpx solid #e7e7e7;
         }
         .appinfo-title-wrap {
+            display: inline-block;
             overflow: hidden;
+            width: 450rpx;
+            height: 128rpx;
         }
         .appinfo-title {
             max-width: 450rpx;
@@ -109,6 +111,8 @@ export default class AppInfo extends wepy.page {
         }
         .appinfo-youxiang,
         .appinfo-weixin {
+            display: inline-block;
+            vertical-align: top;
             margin-left: 20rpx;
             width: 66rpx;
             height: 38rpx;
@@ -150,6 +154,7 @@ export default class AppInfo extends wepy.page {
             margin-right: 20rpx;
             width: 140rpx;
             height: 40rpx;
+            vertical-align: top;
             font-family: PingFangSC-Regular;
             font-size: 28rpx;
             color: #333333;
@@ -162,7 +167,7 @@ export default class AppInfo extends wepy.page {
     .appinfo-edit {
         margin: 454rpx auto 0;
         width: 690rpx;
-        line-height: 94prx;
+        line-height: 94rpx;
         background: #4e88ff;
         border-radius: 4rpx;
         font-family: PingFangSC-Regular;

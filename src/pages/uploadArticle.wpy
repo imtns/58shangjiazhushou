@@ -37,7 +37,7 @@ import { sleep, toast } from '../utils';
 import { post } from '../utils/ajax';
 
 const submitApi = '/resource/upload/article';
-export default class Index extends wepy.page {
+export default class UploadArticle extends wepy.page {
     config = {
         navigationBarTitleText: '上传素材',
     }
