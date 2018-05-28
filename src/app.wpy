@@ -58,7 +58,7 @@ export default class extends wepy.app {
                 console.log(`获取PPU成功！ ${extraData.ppu}`);
                 wepy.setStorageSync('ppu', extraData.ppu);
                 wepy.redirectTo({
-                    url: './pages/home',
+                    url: 'home',
                 });
             }
         }
