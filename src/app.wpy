@@ -27,6 +27,7 @@ export default class extends wepy.app {
             'pages/feedback', // 意见反馈
             'pages/feedbackDetail', // 意见反馈优选、微信问题介绍
             'pages/UploadArticle', // 上传文章
+            'pages/UploadInfoSuccess', // 素材上传成功
         ],
         window: {
             backgroundTextStyle: 'light',

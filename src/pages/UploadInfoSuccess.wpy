@@ -1,0 +1,77 @@
+<template>
+    <view class="mod-uploadInfoSuccess">
+        <view class="uploadInfoSuccess-container">
+            <image class="uploadInfoSuccess-icon" src="https://img.58cdn.com.cn/lbg/jianzhan/images/paysuccess-icon.png"></image>
+            <view class="uploadInfoSuccess-title">提交成功</view>
+            <view class="uploadInfoSuccess-content">
+                助理会根据您提交的素材及模板安排时间进行制作，预计需要1-2天
+            </view>
+            
+        </view>
+        <view class="uploadInfoSuccess-desc">注：请在首页【完成度】查询进度，或使用账号密码登录PC端yaofa.58.com制作您的小程序</view>
+        <navigator class="uploadInfoSuccess-home" url='/pages/home/home'>返回首页</navigator>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+
+export default class UploadInfo extends wepy.page {
+    config = {
+        navigationBarTitleText: '上传成功',
+    }
+    data = {
+    }
+    onLoad () {
+
+    }
+}
+</script>
+<style lang="scss">
+.mod-uploadInfoSuccess {
+    font-family: PingFangSC-Regular;
+    height: 100vh;
+    background: #f6f6f6;
+}
+.uploadInfoSuccess-container {
+    padding: 80rpx 100rpx;
+    background: #fff;
+}
+.uploadInfoSuccess-icon {
+    display: block;
+    width: 144rpx;
+    height: 144rpx;
+    margin: 0 auto;
+}
+.uploadInfoSuccess-title {
+    margin-top: 45rpx;
+    text-align: center;
+    font-family: PingFangSC-Regular;
+    font-size: 32rpx;
+    color: #333333;
+}
+.uploadInfoSuccess-content {
+    margin-top: 10rpx;
+    width: 548rpx;
+    margin: 0 auto;
+    font-family: PingFangSC-Regular;
+    font-size: 28rpx;
+    color: #999999;
+    text-align: center;
+}
+.uploadInfoSuccess-desc {
+    margin: 20rpx 30rpx 432rpx;
+    font-family: PingFangSC-Regular;
+    font-size: 26rpx;
+    color: #999999;
+}
+.uploadInfoSuccess-home {
+    margin: 0 30rpx;
+    background: #4e88ff;
+    border-radius: 4rpx;
+    line-height: 94rpx;
+    font-family: PingFangSC-Regular;
+    font-size: 32rpx;
+    color: #ffffff;
+    text-align: center;
+}
+</style>
