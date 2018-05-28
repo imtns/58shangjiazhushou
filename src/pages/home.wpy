@@ -102,12 +102,12 @@ export default class Index extends wepy.page {
             switch (this.business.nexttask) {
                 case 2:
                     wepy.navigateTo({
-                        url: 'appedit',
+                        url: 'AppEdit',
                     });
                     break;
                 case 3:
                     wepy.navigateTo({
-                        url: 'uploadInfo',
+                        url: 'UploadInfo',
                     });
                     break;
                 case 4:
@@ -223,7 +223,7 @@ export default class Index extends wepy.page {
                 break;
             case 1:
                 wepy.navigateTo({
-                    url: 'uploadInfo',
+                    url: 'UploadInfo',
                 });
                 break;
             case 2:
