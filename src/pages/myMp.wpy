@@ -81,18 +81,18 @@ export default class Index extends wepy.page {
         decorate(type) {
             if (type.target.dataset.address) {
                 wepy.navigateTo({
-                    url: 'uploadInfo',
+                    url: 'UploadInfo',
                 });
             }
         },
         checkDetail(type) {
             if (type.target.dataset.address) {
                 wepy.navigateTo({
-                    url: 'appedit',
+                    url: 'AppEdit',
                 });
             } else {
                 wepy.navigateTo({
-                    url: 'appedit',
+                    url: 'AppEdit',
                 });
             }
         },

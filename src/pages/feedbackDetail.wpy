@@ -47,8 +47,6 @@
 <script>
 import wepy from 'wepy';
 
-import { sleep } from '../utils';
-
 export default class FeedbackDetail extends wepy.page {
     config = {
         navigationBarTitleText: '优享小程序介绍',
@@ -57,8 +55,7 @@ export default class FeedbackDetail extends wepy.page {
         type: '',
         text: '',
     }
-    async onLoad(option) {
-        await sleep();
+    onLoad(option) {
         console.log('onLoad');
         const { type } = option;
         this.text = type === '1' ? '优享' : '微信';

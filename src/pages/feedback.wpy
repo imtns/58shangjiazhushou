@@ -18,7 +18,7 @@
 <script>
 import wepy from 'wepy';
 
-import { sleep } from '../utils';
+import { sleep, alert } from '../utils';
 
 import { post } from '../utils/ajax';
 
@@ -49,12 +49,23 @@ export default class Feedback extends wepy.page {
         this.$apply();
     }
     async submit() {
-        if (!this.content.trim()) return;
+        if (!this.content.trim()) {
+            alert('请编辑留言后提交！');
+            return;
+        }
         try {
             const { content } = this;
             const nContent = this.filteremoji(content);
             console.log(content, nContent);
             await post('/suggestion/submit', nContent);
+            this.content = '';
+            this.$apply();
+            alert('提交成功，谢谢您的建议！', '提示', () => {
+                console.log('进入callback');
+                wepy.redirectTo({
+                    url: 'home',
+                });
+            });
         } catch (e) {
             console.log(e);
         }
