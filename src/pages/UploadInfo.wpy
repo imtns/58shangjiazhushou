@@ -64,7 +64,7 @@
             </view>
         </block>
         
-        <view class="main-button" @tap="submitSave">完成</view>
+        <view class="main-button {{form.enable?'':'main-button-disable'}}" @tap="submitSave">完成</view>
     </view>
 </template>
 
@@ -219,6 +219,9 @@ export default class UploadInfo extends wepy.page {
                 text-align: right;
             }
         }
+    }
+    .main-button-disable {
+        background: #ccc;
     }
 }
 </style>
