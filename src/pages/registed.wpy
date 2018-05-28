@@ -1,7 +1,7 @@
 <template>
     <view class="container">
-        <view class="regist-title" wx:if="{{!currentApp}}">当前小程序</view>
-        <view class="pro-item" wx:if="{{!currentApp}}">
+        <view class="regist-title" wx:if="{{currentApp}}">当前小程序</view>
+        <view class="pro-item" wx:if="{{currentApp}}">
             <view class="pro-name">
             <text>{{currentApp.nickName || currentApp.id}}</text>
             <view class="pro-status {{currentApp.sign === 1 ? 'pro-registed' : '' }}">{{currentApp.sign === 1 ? '已提交注册资料' : '未注册' }}</view></view>
@@ -10,16 +10,14 @@
         <view class="pro-item" wx:if="{{currentApp.sign === 1 && otherlist.length > 0}}" wx:for="{{otherlist}}">
             <view class="pro-name"><text>{{item.nickName}}</text></view>
             <view class="pro-describe">{{item.manager || ''}}</view>
-            <view class="pro-button" wx:if="{{item.sign === -1}}">去注册</view>
+            <view class="pro-button" wx:if="{{item.sign === -1}}" bindtap="toregist" data-id="{{item.id}}">去注册</view>
         </view>
-        <view class="pro-toregist" bindtap="toregist" wx:if="{{currentApp.sign===-1}}">新增注册信息</view>
+        <view class="pro-toregist" bindtap="toregist" data-id="{{current_mpid}}" wx:if="{{currentApp.sign===-1}}">新增注册信息</view>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
-
-import { sleep } from '../utils';
 
 import { get } from '../utils/ajax';
 
@@ -32,20 +30,20 @@ export default class Registed extends wepy.page {
         otherlist: [],
         current_mpid: '',
     }
-    async onLoad () {
-        wepy.setStorageSync('current_mpid', '123123123');
-        await sleep();
+    onLoad () {
     }
     onShow () {
+        this.current_mpid = wepy.getStorageSync('current_mpid') || '';
         this.loadList();
     }
-    toregist () {
+    toregist (e) {
+        const { id = '' } = e.currentTarget.dataset.item;
+        wepy.setStorageSync('registMappid', id);
         wepy.navigateTo({
             url: './registMainAccount',
         });
     }
     async loadList () {
-        this.current_mpid = wepy.getStorageSync('current_mpid') || '';
         const { data } = await get('/mplogic/mysignmplist');
         const { mpinfos } = data;
         if (mpinfos.length <= 0) return;

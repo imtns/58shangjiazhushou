@@ -1,5 +1,3 @@
-import wepy from 'wepy';
-
 const uploadUrl = 'http://yaofa.58.com/fileUpload';
 
 module.exports.uploader = (tempFilePath, ...props) => {
@@ -10,11 +8,11 @@ module.exports.uploader = (tempFilePath, ...props) => {
         params = {};
     }
 
-    const formData = params.data || {};
-    const name = params.name || 'content';
+    const formData = params && params.data || {};
+    const name = params && params.name || 'content';
 
-    !noLoading && wepy.showLoading && wepy.showLoading({ title: '上传中', mask: true });
-    return wepy.uploadFile({
+    !noLoading && wx.showLoading && wx.showLoading({ title: '上传中', mask: true });
+    return wx.uploadFile({
         url: uploadUrl,
         name,
         formData,
@@ -23,7 +21,7 @@ module.exports.uploader = (tempFilePath, ...props) => {
             const nData = JSON.parse(data);
             console.log(nData);
             if (nData.state === 100) {
-                callback(null, nData.data);
+                callback && callback(null, nData.data);
             } else {
                 callback('上传失败');
             }
@@ -32,7 +30,7 @@ module.exports.uploader = (tempFilePath, ...props) => {
             callback('上传失败');
         },
         complete() {
-            !noLoading && wepy.hideLoading && wepy.hideLoading();
+            !noLoading && wx.hideLoading && wx.hideLoading();
         },
     });
 };

@@ -186,7 +186,7 @@ export default class RegistManage extends wepy.page {
             await post(url, this.form);
             await sleep();
             wepy.removeStorage('registForm');
-            wepy.removeStorage('currentMpid');
+            wepy.removeStorage('registMappid');
             wepy.navigateTo({
                 url: './registSuccess',
             });
