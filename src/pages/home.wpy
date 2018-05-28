@@ -8,7 +8,7 @@
             <view class="item-detail">
                 <view class="item-name">{{ business.miniProgramName }}</view>
                 <view class="item-title">可上传素材、提交注册信息到当前小程序</view>
-                <view bindtap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">切换</view>
+                <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">切换</view>
                 <view class="item-detail-progress">
                     <view class="current-progress">当前进度</view>
                     <view bindtap="checkProgress" class="remind-title">{{ business.progressText}}</view>
@@ -21,8 +21,8 @@
                 <view class="item-text">{{item.text}}</view>
             </view>
         </view>
-        <view wx:if="{{business.changeMP}}" class="mask" bindtap="hideMask"></view>
-        <view wx:if="{{business.changeMP}}" class="mpBox">
+        <view wx:if="{{business.changeMP === true}}" class="mask" @tap="bindHideMask"></view>
+        <view wx:if="{{business.changeMP === true }}" class="mpBox">
             <view class="default">
                 <view>{{business.miniProgramName}}</view>
                 <view>默认</view>
@@ -33,7 +33,7 @@
                 </repeat>
             </view>
             <view class="btnBox">
-                <view class="cancle" bindtap="hideMask">取消</view>
+                <view class="cancle" @tap="bindHideMask">取消</view>
                 <view class="confirm" :class="{ 'active' : business.canConfirm}" bindtap="confirmAction">确定</view>
             </view>
         </view>
@@ -46,7 +46,7 @@ import wepy from 'wepy';
 import { sleep, alert } from '../utils';
 import { post } from '../utils/ajax';
 
-export default class Index extends wepy.page {
+export default class Home extends wepy.page {
     config = {
         navigationBarTitleText: '首页',
     }
@@ -147,10 +147,15 @@ export default class Index extends wepy.page {
             this.$apply();
         },
         async changeAction() {
-            this.business.changeMP = true;
+            this.business = Object.assign({}, this.business, {
+                changeMP: true,
+            });
             const { data } = await post('/mplogic/mymplist');
-            data.mpinfos && (this.business.mps = data.mpinfos);
-            if (this.business.mps.length) {
+            const { mpinfos } = data;
+            this.business = Object.assign({}, this.business, {
+                mps: mpinfos,
+            });
+            if (this.business.mps.length > 0) {
                 this.business.mps.map((appinfo, index) => {
                     if (appinfo.id === this.business.selected.id) {
                         this.business.mps.splice(index, 1);
@@ -160,19 +165,21 @@ export default class Index extends wepy.page {
             }
             this.$apply();
         },
-        hideMask() {
-            this.business.changeMP = false;
-            this.business.canConfirm = false;
+        bindHideMask() {
+            this.business = Object.assign({}, this.business, {
+                changeMP: false,
+                canConfirm: false,
+            });
+            this.$apply();
         },
         selectMp(item) {
-            this.business.selected = item;
-            console.log(this.business.selected);
-            this.business.canConfirm = true;
+            this.business = Object.assign({}, this.business, {
+                selected: item,
+                canConfirm: true,
+            });
             this.$apply();
         },
         confirmAction() {
-            console.log(this.business.selected.id);
-
             if (this.business.selected.id) {
                 this.setGlobalMpId(this.business.selected.id);
                 this.loadData();
@@ -181,8 +188,11 @@ export default class Index extends wepy.page {
         },
     }
     hideMask() {
-        this.business.changeMP = false;
-        this.business.canConfirm = false;
+        this.business = Object.assign({}, this.business, {
+            changeMP: false,
+            canConfirm: false,
+        });
+        this.$apply();
     }
     async onLoad() {
         await sleep();
@@ -197,12 +207,25 @@ export default class Index extends wepy.page {
             mpid: wepy.getStorageSync('current_mpid') || '',
         };
         const { data } = await post('/mplogic/index', subData);
-        data.username && (this.business.name = data.username);
-        data.mpinfo && (this.business.miniProgramName = data.mpinfo.nickName);
-        data.unread && (this.business.unread = data.unread);
-        data.count && (this.business.mpCount = data.count);
+        const {
+            username,
+            mpinfo,
+            unread,
+            count,
+        } = data;
+        // data.username && (this.business.name = data.username);
+        // data.mpinfo && (this.business.miniProgramName = data.mpinfo.nickName);
+        // data.unread && (this.business.unread = data.unread);
+        // data.count && (this.business.mpCount = data.count);
         data.nexttask && this.setNextTask(data.nexttask);
-        data.mpinfo && (this.business.selected.id = data.mpinfo.id);
+        // data.mpinfo && (this.business.selected.id = data.mpinfo.id);
+        this.business = Object.assign({}, this.business, {
+            name: username,
+            miniProgramName: mpinfo.nickName,
+            unread,
+            mpCount: count,
+            selected: { id: mpinfo.id },
+        });
         this.$apply();
     }
     setGlobalMpId(id) {
