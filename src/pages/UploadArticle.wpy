@@ -26,7 +26,7 @@
                 <view class="upload-textarea-size">{{form.content.length||0}}/5000</view>
             </view>
         </view>
-        <view class="main-button {{enableSubmit?'main-button-ok':''}}" @tap="submitSave">完成</view>
+        <view class="main-button {{form.enableSubmit?'main-button-ok':''}}" @tap="submitSave">完成</view>
     </view>
 </template>
 
@@ -40,6 +40,16 @@ const submitApi = '/resource/upload/article';
 export default class UploadArticle extends wepy.page {
     config = {
         navigationBarTitleText: '上传素材',
+
+    }
+    data = {
+        form: {
+            title: '',
+            author: '',
+            source: '',
+            content: '',
+            enableSubmit: false,
+        },
     }
     methods = {
         setTitle (e) {
@@ -59,6 +69,7 @@ export default class UploadArticle extends wepy.page {
             this.updateForm({ content });
         },
         async submitSave () {
+            if (!this.form.enableSubmit) return;
             const res = await post(submitApi, this.form);
             if (res.state === 100) {
                 wepy.navigateBack();
@@ -69,8 +80,9 @@ export default class UploadArticle extends wepy.page {
     }
     updateForm (data) {
         this.form = Object.assign({}, this.form, data);
-        const enableSubmit = this.form.title && this.form.author && this.source && this.content;
-        this.form = Object.assign({}, this.form, enableSubmit);
+        const enableSubmit = !!(this.form.title && this.form.author
+            && this.form.source && this.form.content);
+        this.form = Object.assign({}, this.form, { enableSubmit });
         this.$apply();
     }
     async onLoad (options) {
