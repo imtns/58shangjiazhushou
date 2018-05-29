@@ -111,7 +111,6 @@ export default class RegistMainAccount extends wepy.page {
         this.form = Object.assign({}, this.form, {
             enterpriseType: type,
         });
-        this.form.enterpriseType = type;
         this.$apply();
     }
     methods = {
