@@ -2,17 +2,25 @@
     <view class="container">
         <view class="regist-title" wx:if="{{currentApp.length>0}}">当前小程序</view>
         <view class="pro-item" wx:if="{{currentApp.length>0}}">
-            <view class="pro-name" wx:for="{{currentApp}}">
-            <text>{{item.nickName || item.id}}</text>
-            <view class="pro-status {{item.sign === 1 ? 'pro-registed' : '' }}">{{item.sign === 1 ? '已提交注册资料' : '未注册' }}</view></view>
+            <view class="pro-item-line" wx:for="{{currentApp}}">
+                <image src="{{item.headImg ||'http://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=100&h=100'}}" class="pro-img"></image>
+                <view class="pro-name">
+                    <view class="pro-name-text">{{item.nickName || item.id}}</view>
+                    <view class="pro-status">已提交注册资料</view>
+                </view>
+            </view>
         </view>
         <view class="regist-title" wx:if="{{currentApp.sign === 1 && otherlist.length > 0}}">其他小程序</view>
         <view class="pro-item" wx:if="{{currentApp.sign === 1 && otherlist.length > 0}}" wx:for="{{otherlist}}">
-            <view class="pro-name"><text>{{item.nickName}}</text></view>
-            <view class="pro-describe">{{item.manager || ''}}</view>
-            <view class="pro-button" wx:if="{{item.sign === -1}}" bindtap="toregist" data-id="{{item.id}}">去注册</view>
+            <view class="pro-item-line">
+                <image src="{{item.headImg || 'http://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=100&h=100'}}" class="pro-img"></image>
+                <view class="pro-name">
+                    <view class="pro-name-text">美嘉合服务</view>
+                    <view class="pro-status">已提交注册资料</view>
+                    <view class="pro-button" wx:if="{{item.sign === -1}}" bindtap="toregist" data-id="{{item.id}}">去注册</view>
+                </view>
+            </view>
         </view>
-        <view class="pro-toregist" bindtap="toregist" data-id="{{current_mpid}}" wx:if="{{currentApp.sign===-1}}">新增注册信息</view>
     </view>
 </template>
 
