@@ -46,8 +46,8 @@ export default class AppInfo extends wepy.page {
     }
     updateForm (data) {
         const res = data;
-        if (res.logo) {
-            res.logo = picSrcDomain() + res.logo;
+        if (res.headImg) {
+            res.logo = picSrcDomain() + res.headImg;
         }
         this.appInfo = Object.assign({}, this.appInfo, res);
         this.$apply();

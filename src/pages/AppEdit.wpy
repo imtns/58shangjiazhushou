@@ -43,7 +43,7 @@
 
 <script>
 import wepy from 'wepy';
-import { toast, picSrcDomain } from '../utils/index';
+import { toast, picSrcDomain, filteremoji } from '../utils';
 import { get } from '../utils/ajax';
 
 const host = 'http://yaofa.58.com';
@@ -150,8 +150,12 @@ export default class AppEdit extends wepy.page {
             this.updateForm({ headImg: res.data.content });
         },
         setAppName (e) {
-            const nickName = e.detail.value;
+            let nickName = e.detail.value;
+            nickName = filteremoji(nickName);
             this.updateForm({ nickName });
+            return {
+                value: nickName,
+            };
         },
         setMobile (e) {
             const telphone = e.detail.value;
@@ -162,8 +166,12 @@ export default class AppEdit extends wepy.page {
             this.updateForm({ address, addressLatitude: latitude, addressLongitude: longitude });
         },
         setDetailAdress (e) {
-            const address = e.detail.value;
+            let address = e.detail.value;
+            address = filteremoji(address);
             this.updateForm({ address });
+            return {
+                value: address,
+            };
         },
 
         async bindSave () {

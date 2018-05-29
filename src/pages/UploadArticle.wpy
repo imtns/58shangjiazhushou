@@ -33,7 +33,7 @@
 <script>
 import wepy from 'wepy';
 
-import { sleep, toast } from '../utils';
+import { sleep, toast, filteremoji } from '../utils';
 import { post } from '../utils/ajax';
 
 const submitApi = '/resource/upload/article';
@@ -53,20 +53,36 @@ export default class UploadArticle extends wepy.page {
     }
     methods = {
         setTitle (e) {
-            const title = e.detail.value;
+            let title = e.detail.value;
+            title = filteremoji(title);
             this.updateForm({ title });
+            return {
+                value: title,
+            };
         },
         setAuthor (e) {
-            const author = e.detail.value;
+            let author = e.detail.value;
+            author = filteremoji(author);
             this.updateForm({ author });
+            return {
+                value: author,
+            };
         },
         setSource (e) {
-            const source = e.detail.value;
+            let source = e.detail.value;
+            source = filteremoji(source);
             this.updateForm({ source });
+            return {
+                value: source,
+            };
         },
         setContent (e) {
-            const content = e.detail.value;
+            let content = e.detail.value;
+            content = filteremoji(content);
             this.updateForm({ content });
+            return {
+                value: content,
+            };
         },
         async submitSave () {
             if (!this.form.enableSubmit) return;
