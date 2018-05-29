@@ -261,6 +261,7 @@ export default class Home extends wepy.page {
                         url: 'registed',
                     });
                 } else {
+                    wepy.setStorageSync('registMappid', this.business.selected.id);
                     wepy.navigateTo({
                         url: 'registMainAccount',
                     });
