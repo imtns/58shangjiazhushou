@@ -90,6 +90,11 @@ export default class Index extends wepy.page {
             if (type.target.dataset.address) {
                 const { id } = type.target.dataset;
                 wepy.navigateTo({
+                    url: `AppInfo?mpid=${id}`,
+                });
+            } else {
+                const { id } = type.target.dataset;
+                wepy.navigateTo({
                     url: `AppEdit?mpid=${id}`,
                 });
             }
@@ -107,14 +112,14 @@ export default class Index extends wepy.page {
             currentMp.headImg = `https://yaofa.58.com${currentMp.headImg}`;
         }
         const othersMp = mps.filter((item) => item.id !== currentMpid);
-        // if (othersMp.length > 0) {
-        //     othersMp.forEach(element => {
-
-        //         if (element.headImg && element.headImg.indexOf('http') === -1) {
-        //             element.headImg = `https://yaofa.58.com${element.headImg}`;
-        //         }
-        //     });
-        // }
+        if (othersMp.length > 0) {
+            othersMp.forEach(element => {
+                if (element.headImg && element.headImg.indexOf('http') === -1) {
+                    // element.headImg = `https://yaofa.58.com${element.headImg}`;
+                    console.log(element);
+                }
+            });
+        }
         this.business = Object.assign({}, this.business, {
             current: currentMp,
             mps: othersMp,

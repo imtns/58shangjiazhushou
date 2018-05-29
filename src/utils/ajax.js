@@ -1,7 +1,7 @@
 import wepy from 'wepy';
 import { toast } from '../utils';
 
-const host = 'http://yaofa.58.com';
+const host = 'https://yaofa.58.com';
 
 const http = (method, ...props) => new Promise((resolve, reject) => {
     let [url, data, callback] = props;
@@ -9,10 +9,13 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
         callback = data;
         data = {};
     }
-    const sendData = Object.assign({}, data);
+    const sendData = Object.assign({}, data, {
+        test: 'test',
+    });
     // ppu加入header
     const ppu = wx.getStorageSync('ppu');
     console.log('请求接口', url);
+    console.log('请求参数', sendData);
     wx.showLoading && wx.showLoading({ title: '加载中', mask: true });
     return wx.request({
         url: host + url + (~url.indexOf('?') ? '' : '?') + (+new Date()).toString(36).substr(3),
