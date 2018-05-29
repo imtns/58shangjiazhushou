@@ -8,7 +8,7 @@
                 <view class="main-show-image" wx:for='{{vm}}' wx:key='index'>
                     <image class="main-upload-image" data-index='{{index}}' src="{{item}}" wx:if="{{uploadtype==='1'}}"/>
                     <video class="main-upload-image" data-index='{{index}}' src="{{item}}" wx:else></video>
-                    <view class="main-del-image" hidden="{{loading ||uploadtype==='2'}}"></view>
+                    <view class="main-del-image" hidden="{{loading ||uploadtype==='2'}}" @tap="onCancelImage"></view>
                 </view>
             </view>
         </view>
@@ -209,7 +209,7 @@ export default class Uploader extends wepy.component {
         return ret;
     }
     onLoad () {
-        console.log('aa$', this);
+        console.log('UploadFileComponent', this.data);
     }
 }
 </script>
