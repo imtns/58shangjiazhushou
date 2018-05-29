@@ -1,10 +1,10 @@
 <template>
     <view class="container">
-        <view class="regist-title" wx:if="{{currentApp}}">当前小程序</view>
-        <view class="pro-item" wx:if="{{currentApp}}">
-            <view class="pro-name">
-            <text>{{currentApp.nickName || currentApp.id}}</text>
-            <view class="pro-status {{currentApp.sign === 1 ? 'pro-registed' : '' }}">{{currentApp.sign === 1 ? '已提交注册资料' : '未注册' }}</view></view>
+        <view class="regist-title" wx:if="{{currentApp.length>0}}">当前小程序</view>
+        <view class="pro-item" wx:if="{{currentApp.length>0}}">
+            <view class="pro-name" wx:for="{{currentApp}}">
+            <text>{{item.nickName || item.id}}</text>
+            <view class="pro-status {{item.sign === 1 ? 'pro-registed' : '' }}">{{item.sign === 1 ? '已提交注册资料' : '未注册' }}</view></view>
         </view>
         <view class="regist-title" wx:if="{{currentApp.sign === 1 && otherlist.length > 0}}">其他小程序</view>
         <view class="pro-item" wx:if="{{currentApp.sign === 1 && otherlist.length > 0}}" wx:for="{{otherlist}}">
@@ -26,7 +26,7 @@ export default class Registed extends wepy.page {
         navigationBarTitleText: '注册',
     }
     data = {
-        currentApp: {},
+        currentApp: [],
         otherlist: [],
         current_mpid: '',
     }
@@ -51,7 +51,7 @@ export default class Registed extends wepy.page {
         if (mpinfos.length <= 0) return;
         mpinfos.forEach((appinfo) => {
             if (appinfo.id === this.current_mpid) {
-                this.currentApp = appinfo;
+                this.currentApp.push(appinfo);
             } else if (appinfo.nickName !== '') {
                 this.otherlist.push(appinfo);
             }
