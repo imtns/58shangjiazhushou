@@ -9,7 +9,7 @@
             
         </view>
         <view class="uploadInfoSuccess-desc">注：请在首页【完成度】查询进度，或使用账号密码登录PC端yaofa.58.com制作您的小程序</view>
-        <navigator class="uploadInfoSuccess-home" url='/pages/home/home'>返回首页</navigator>
+        <navigator class="uploadInfoSuccess-home" url='/pages/home'>返回首页</navigator>
     </view>
 </template>
 <script>
