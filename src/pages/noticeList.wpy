@@ -9,7 +9,7 @@
             <view class="notice-list-item">
                 <view class="notice-item">
                     <view class="notice-img {{unreadcount > 0 ? 'new-msg' : ''}}">
-                        <image src="{{item.mpLogo || ''}}"></image>
+                        <image src="{{item.mpLogo || 'http://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=120&h=120'}}"></image>
                     </view>
                     <view class="notice-content">
                         <view class="notice-detail">
