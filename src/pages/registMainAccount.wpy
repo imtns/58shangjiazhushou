@@ -163,10 +163,10 @@ export default class RegistMainAccount extends wepy.page {
             enterpriseLicense.length === 0) {
             alert('请完善主体信息！');
             return;
-        } else if (enterpriseCode.length !== 18 && !enterpriseCodeReg.test(enterpriseCode)) {
-            alert('营业执照格式不正确！');
+        } else if (enterpriseCode.length !== 15 && enterpriseCode.length !== 18 && !enterpriseCodeReg.test(enterpriseCode)) {
+            alert('营业执照或统一信用社代码格式不正确！');
             return;
-        } else if (enterpriseAccount.length !== 16 && enterpriseAccount !== 19) {
+        } else if (enterpriseAccount.length !== 16 && enterpriseAccount.length !== 19) {
             alert('银行卡格式不正确！');
             return;
         }
