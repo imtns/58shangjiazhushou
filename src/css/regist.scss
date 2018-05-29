@@ -27,6 +27,15 @@ view{
             border-radius:50%;
             border:1rpx solid #eeeeee;
         }
+        .pro-app-name{
+            line-height:100rpx;
+            color: #333333;
+            max-width:394rpx;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            font-size: 30rpx;
+        }
         .pro-name{
             flex:1;
             .pro-name-text{
@@ -49,7 +58,7 @@ view{
                 border-radius: 2rpx;
                 font-size: 26rpx;
                 letter-spacing: 0;
-                width:200rpx;
+                max-width:200rpx;
                 margin-top:13rpx;
             }
         }
