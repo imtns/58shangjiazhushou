@@ -70,18 +70,17 @@ export default class UploadArticle extends wepy.page {
         },
         async submitSave () {
             if (!this.form.enableSubmit) return;
-            const res = await post(submitApi, this.form);
-            if (res.state === 100) {
+            const { state, msg } = await post(submitApi, this.form);
+            if (state === 100) {
                 wepy.navigateBack();
             } else {
-                toast(res.msg);
+                toast(msg);
             }
         },
     }
     updateForm (data) {
         this.form = Object.assign({}, this.form, data);
-        const enableSubmit = !!(this.form.title && this.form.author
-            && this.form.source && this.form.content);
+        const enableSubmit = !!(this.form.title && this.form.content);
         this.form = Object.assign({}, this.form, { enableSubmit });
         this.$apply();
     }

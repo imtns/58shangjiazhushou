@@ -160,7 +160,8 @@ export default class UploadInfo extends wepy.page {
         return get(saveUpload, sendData);
     }
     updateForm (data) {
-        const enable = this.form.text && this.form.images && this.videos;
+        const enable = !!(this.form.text || this.form.images
+            || this.form.videos || this.form.articles);
         this.form = Object.assign({}, this.form, { enable }, data);
         this.$apply();
     }
@@ -177,9 +178,6 @@ export default class UploadInfo extends wepy.page {
     }
     async onShow () {
         await this.getArticles();
-    }
-    onUnload () {
-        wepy.removeStorageSycn('articles');
     }
 }
 </script>
