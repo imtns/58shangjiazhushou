@@ -35,3 +35,14 @@ export const picSrcDomain = () => {
     const n = parseInt(Math.random() * 8) + 1;
     return `https://pic${n}.58cdn.com.cn`;
 };
+
+// 过滤微信表情
+export const filteremoji = (content) => {
+    const ranges = [
+        '\ud83c[\udf00-\udfff]',
+        '\ud83d[\udc00-\ude4f]',
+        '\ud83d[\ude80-\udeff]',
+    ];
+    const emojireg = content.replace(new RegExp(ranges.join('|'), 'g'), '');
+    return emojireg;
+}

@@ -18,7 +18,7 @@
 <script>
 import wepy from 'wepy';
 
-import { sleep, alert } from '../utils';
+import { sleep, alert, filteremoji } from '../utils';
 
 import { post } from '../utils/ajax';
 
@@ -56,11 +56,12 @@ export default class Feedback extends wepy.page {
         }
         try {
             const { content } = this;
-            const nContent = this.filteremoji(content);
-            console.log(content, nContent);
-            await post('/suggestion/submit', nContent);
+            const nContent = filteremoji(content);
+            console.log('1', content, '2', nContent);
             this.content = '';
             this.$apply();
+            console.log('3', this.content, '4', nContent);
+            await post('/suggestion/submit', { content: nContent });
             alert('提交成功，谢谢您的建议！', '提示', () => {
                 console.log('进入callback');
                 wepy.redirectTo({
@@ -70,16 +71,6 @@ export default class Feedback extends wepy.page {
         } catch (e) {
             console.log(e);
         }
-    }
-    // 过滤微信表情
-    filteremoji(content) {
-        const ranges = [
-            '\ud83c[\udf00-\udfff]',
-            '\ud83d[\udc00-\ude4f]',
-            '\ud83d[\ude80-\udeff]',
-        ];
-        const emojireg = content.replace(new RegExp(ranges.join('|'), 'g'), '');
-        return emojireg;
     }
     tofeedbackDetail(e) {
         const { type } = e.currentTarget.dataset;
