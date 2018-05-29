@@ -10,12 +10,14 @@ view{
     font-size: 28rpx;
     color: #999999;
     letter-spacing: 0;
+    margin-bottom: 20rpx;
 }
 .pro-item{
     padding:30rpx;
     background:#fff;
     position:relative;
     border-bottom: 1rpx solid #cccccc;
+    margin-bottom: 20rpx;
     .pro-name,.pro-describe{
         height:42rpx;
         line-height:42rpx;
