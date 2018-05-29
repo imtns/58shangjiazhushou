@@ -28,6 +28,7 @@ export default class extends wepy.app {
             'pages/feedbackDetail', // 意见反馈优选、微信问题介绍
             'pages/UploadArticle', // 上传文章
             'pages/UploadInfoSuccess', // 素材上传成功
+            'pages/VideoPlay', // 视频播放页面
         ],
         window: {
             backgroundTextStyle: 'light',

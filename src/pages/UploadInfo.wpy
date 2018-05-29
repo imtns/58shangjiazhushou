@@ -6,7 +6,7 @@
                 <view class="action">点击上传文本</view>
             </view>
             <view class="inputArea">
-                <textarea placeholder="请输入" @input="setText" maxLength="100" placeholder-style="font-size: 28rpx;color: #BDBDBD;"/>
+                <textarea placeholder="请输入" @input="setText" maxLength="100" value="{{form.text}}" placeholder-style="font-size: 28rpx;color: #BDBDBD;"/>
                 <view class="numTip">{{form.text.length||0}}/100</view>
             </view>
         </view>
@@ -56,13 +56,13 @@
                 <navigator url="/pages/UploadArticle?mpid={{form.mpid}}"><view class="addArticle">+上传新文章</view></navigator>
             </view>
         </view>
-        <block wx:for="{{form.articles}}" wx:key="index">
+        <repeat for="{{form.articles}}">
             <view class="main-body">
                 <view class="main-boy-line">
-                    <view class="main-body-text" style="color:#333; font-size:30rpx;">{{item.name}}</view>
+                    <view class="main-body-text" style="color:#333; font-size:30rpx;">{{item.title}}</view>
                 </view>
             </view>
-        </block>
+        </repeat>
         
         <view class="main-button {{form.enable?'':'main-button-disable'}}" @tap="submitSave">完成</view>
     </view>
@@ -92,14 +92,17 @@ export default class UploadInfo extends wepy.page {
         maxImageSize: 3,
         maxVideoSize: 2,
         form: {
-            text: 0,
+            textSize: 0,
+            text: '',
             images: [],
             videos: [],
+            articles: [],
         },
     }
     async getArticles () {
         const res = await get(getArticles);
-        this.updateForm({ articles: res.data });
+        console.log('articles', res.data);
+        this.updateForm({ articles: res.data || [] });
     }
     methods = {
         setText (e) {
@@ -139,17 +142,17 @@ export default class UploadInfo extends wepy.page {
             const { state, msg } = await get(uploadText, { text });
             if (state === 100) {
                 alert('文本上传成功');
-                this.updateForm({ text: this.text += 1 });
+                this.updateForm({ textSize: this.form.textSize += 1 });
             } else {
                 toast(msg);
             }
         },
         async submitSave () {
-            if (!this.enable) return;
-            const url = '/pages/UploadInfoSuccess/UploadInfoSuccess';
+            if (!this.form.enable) return;
+            const url = '/pages/UploadInfoSuccess';
             const res = await post(complateApi, { mpid: this.form.mpid });
             if (res.state === 100) {
-                wepy.navigateTo({
+                wepy.redirectTo({
                     url,
                 });
             }
@@ -160,9 +163,10 @@ export default class UploadInfo extends wepy.page {
         return get(saveUpload, sendData);
     }
     updateForm (data) {
-        const enable = !!(this.form.text || this.form.images
-            || this.form.videos || this.form.articles);
+        const enable = !!(this.form.textSize || this.form.images.length
+            || this.form.videos.length || this.form.articles.length);
         this.form = Object.assign({}, this.form, { enable }, data);
+        console.log('form', this.form);
         this.$apply();
     }
     verify () {
@@ -216,6 +220,21 @@ export default class UploadInfo extends wepy.page {
                 color: #cccccc;
                 text-align: right;
             }
+        }
+    }
+    .main-body {
+        padding: 23rpx 30rpx 0;
+        background: #fff;
+        position: relative;
+        .main-boy-line {
+            border-bottom: 1rpx solid #eeeeee;
+            padding-bottom: 23rpx;
+            position: relative;
+        }
+        .main-body-title {
+            font-size: 26rpx;
+            color: #999999;
+            margin-bottom: 16rpx;
         }
     }
     .main-button-disable {
