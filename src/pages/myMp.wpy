@@ -102,11 +102,15 @@ export default class Index extends wepy.page {
         };
         const { data } = await post('/mplogic/mymplist', subData);
         const mps = data.mpinfos;
-        const currentMp = mps.filter((item) => item.id === currentMpid);
-        [this.business.current] = currentMp;
-        console.log(this.business.current);
+        const [currentMp] = mps.filter((item) => item.id === currentMpid);
+        this.business = Object.assign({}, this.business, {
+            current: currentMp,
+        });
+        this.$apply();
         const othersMp = mps.filter((item) => item.id !== currentMpid);
-        this.business.mps = othersMp;
+        this.business = Object.assign({}, this.business, {
+            mps: othersMp,
+        });
         this.$apply();
     }
     async onLoad() {
