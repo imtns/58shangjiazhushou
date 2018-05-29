@@ -8,7 +8,7 @@
             <view class="list">
                 <view class="infos">
                     <view class="logBox">
-                        <image class="logo" mode="{{aspectFit}}" src="{{business.current.headImg}}"></image>
+                        <image class="logo" mode="{{aspectFit}}" src="{{business.current.headImg || 'http://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
                     </view>
                     <view class="details">
                         <view class="title"> 
@@ -34,7 +34,7 @@
                 <view class="list">
                     <view class="infos">
                         <view class="logBox">
-                            <image class="logo" mode="{{aspectFit}}" src="{{item.headImg}}"></image>
+                            <image class="logo" mode="{{aspectFit}}" src="{{item.headImg || 'http://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
                         </view>
                         <view class="details">
                             <view class="title"> 
@@ -103,14 +103,23 @@ export default class Index extends wepy.page {
         const { data } = await post('/mplogic/mymplist', subData);
         const mps = data.mpinfos;
         const [currentMp] = mps.filter((item) => item.id === currentMpid);
+        if (currentMp.headImg && currentMp.headImg.indexOf('http') === -1) {
+            currentMp.headImg = `https://yaofa.58.com${currentMp.headImg}`;
+        }
+        const othersMp = mps.filter((item) => item.id !== currentMpid);
+        // if (othersMp.length > 0) {
+        //     othersMp.forEach(element => {
+
+        //         if (element.headImg && element.headImg.indexOf('http') === -1) {
+        //             element.headImg = `https://yaofa.58.com${element.headImg}`;
+        //         }
+        //     });
+        // }
         this.business = Object.assign({}, this.business, {
             current: currentMp,
-        });
-        this.$apply();
-        const othersMp = mps.filter((item) => item.id !== currentMpid);
-        this.business = Object.assign({}, this.business, {
             mps: othersMp,
         });
+        console.log('this.business', this.business);
         this.$apply();
     }
     async onLoad() {
