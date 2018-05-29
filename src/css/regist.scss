@@ -10,14 +10,59 @@ view{
     font-size: 28rpx;
     color: #999999;
     letter-spacing: 0;
-    margin-bottom: 20rpx;
 }
 .pro-item{
-    padding:30rpx;
+    padding:0 30rpx;
     background:#fff;
     position:relative;
-    border-bottom: 1rpx solid #cccccc;
-    margin-bottom: 20rpx;
+    .pro-item-line{
+        width:100%;
+        display:flex;
+        padding:30rpx 0;
+        border-bottom: 1rpx solid #eeeeee;
+        .pro-img{
+            width:100rpx;
+            height:100rpx;
+            margin-right:20rpx;
+            border-radius:50%;
+            border:1rpx solid #eeeeee;
+        }
+        .pro-app-name{
+            line-height:100rpx;
+            color: #333333;
+            max-width:394rpx;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            font-size: 30rpx;
+        }
+        .pro-name{
+            flex:1;
+            .pro-name-text{
+                height:48rpx;
+                line-height:48rpx;
+                color: #333333;
+                max-width:394rpx;
+                white-space:nowrap;
+                overflow:hidden;
+                text-overflow:ellipsis;
+                font-size: 30rpx;
+            }
+            .pro-status{
+                padding:0 10rpx;
+                height:38rpx;
+                text-align:center;
+                line-height:38rpx;
+                background: rgba(78,136,255,0.10);
+                color: #4E88FF;
+                border-radius: 2rpx;
+                font-size: 26rpx;
+                letter-spacing: 0;
+                max-width:200rpx;
+                margin-top:13rpx;
+            }
+        }
+    }
     .pro-name,.pro-describe{
         height:42rpx;
         line-height:42rpx;
@@ -33,30 +78,6 @@ view{
             display:inline-block;
             float:left;
         }
-        .pro-status{
-            padding:0 10rpx;
-            height:38rpx;
-            text-align:center;
-            line-height:38rpx;
-            background: rgba(153,153,153,0.10);
-            border-radius: 2rpx;
-            font-size: 26rpx;
-            color: #999999;
-            letter-spacing: 0;
-            display:inline-block;
-            margin-left:20rpx;
-        }
-        .pro-status.pro-registed{
-            background: rgba(78,136,255,0.10);
-            color: #4E88FF;
-        }
-        .pro-status.pro-authed{
-            color:#FFA100;
-            background: #fff6e5;
-        }
-    }
-    .pro-describe{
-        margin-top:20rpx;
     }
     .pro-button{
         width:148rpx;
@@ -69,7 +90,7 @@ view{
         font-size:28rpx;
         position:absolute;
         right:20rpx;
-        top:20%;
+        top:40%;
     }
 }
 .pro-toregist{

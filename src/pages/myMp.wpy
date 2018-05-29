@@ -8,7 +8,7 @@
             <view class="list">
                 <view class="infos">
                     <view class="logBox">
-                        <image class="logo" mode="{{aspectFit}}" src="{{business.current.headImg}}"></image>
+                        <image class="logo" mode="{{aspectFit}}" src="{{business.current.headImg || 'http://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
                     </view>
                     <view class="details">
                         <view class="title"> 
@@ -34,7 +34,7 @@
                 <view class="list">
                     <view class="infos">
                         <view class="logBox">
-                            <image class="logo" mode="{{aspectFit}}" src="{{item.headImg}}"></image>
+                            <image class="logo" mode="{{aspectFit}}" src="{{item.headImg || 'http://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
                         </view>
                         <view class="details">
                             <view class="title"> 
@@ -90,6 +90,11 @@ export default class Index extends wepy.page {
             if (type.target.dataset.address) {
                 const { id } = type.target.dataset;
                 wepy.navigateTo({
+                    url: `AppInfo?mpid=${id}`,
+                });
+            } else {
+                const { id } = type.target.dataset;
+                wepy.navigateTo({
                     url: `AppEdit?mpid=${id}`,
                 });
             }
@@ -103,14 +108,25 @@ export default class Index extends wepy.page {
         const { data } = await post('/mplogic/mymplist', subData);
         const mps = data.mpinfos;
         const [currentMp] = mps.filter((item) => item.id === currentMpid);
+        if (currentMp.headImg && currentMp.headImg.indexOf('http') === -1) {
+            currentMp.headImg = `https://pic1.58cdn.com.cn${currentMp.headImg}`;
+        }
+        const others = mps.filter((item) => item.id !== currentMpid);
+        let othersMp = [];
+        if (others.length > 0) {
+            othersMp = others.map(element => {
+                const item = element;
+                if (item.headImg && item.headImg.indexOf('http') === -1) {
+                    item.headImg = `https://pic1.58cdn.com.cn${item.headImg}`;
+                }
+                return item;
+            });
+        }
         this.business = Object.assign({}, this.business, {
             current: currentMp,
-        });
-        this.$apply();
-        const othersMp = mps.filter((item) => item.id !== currentMpid);
-        this.business = Object.assign({}, this.business, {
             mps: othersMp,
         });
+        console.log('this.business', this.business);
         this.$apply();
     }
     async onLoad() {
