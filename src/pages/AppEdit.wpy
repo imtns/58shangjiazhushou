@@ -8,7 +8,7 @@
         <view class="appedit-content-list">
             <view class="appedit-content-list-item">
                 <text class="appedit-form-label">小程序名称</text>
-                <input class="appedit-form-input" type="text" @input="setAppName" placeholder="提交后优享小程序才可修改" placeholder-class="appedit-form-placeholder"  value="{{form.nickName}}" wx:if="{{form.app_type==1}}"/>
+                <input class="appedit-form-input" type="text" @input="setAppName" placeholder="提交后优享小程序才可修改" placeholder-class="appedit-form-placeholder" maxlength="30" value="{{form.nickName}}" wx:if="{{form.app_type==1}}"/>
                 <view class="appedit-form-input appedit-form-placeholder" type="text" wx:else>{{form.nickName}}</view>
             </view>
             <view class="appedit-content-list-item">
@@ -97,14 +97,14 @@ export default class AppEdit extends wepy.page {
             toast('输入小程序名称');
             return false;
         }
+        if (form.nickName.length < 4) {
+            toast('小程序名称长度大于4');
+            return false;
+        }
         if (!form.telphone) {
             toast('输入联系电话');
             return false;
         }
-        // if (regPhone.test(form.telphone)) {
-        //     toast('输入正确的电话');
-        //     return false;
-        // }
         if (!form.city) {
             toast('选择城市');
             return false;

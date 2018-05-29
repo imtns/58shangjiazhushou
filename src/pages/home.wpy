@@ -177,6 +177,7 @@ export default class Home extends wepy.page {
                 selected: item,
                 canConfirm: true,
             });
+            console.log('点击', this.business);
             this.$apply();
         },
         confirmAction() {
@@ -224,7 +225,7 @@ export default class Home extends wepy.page {
             miniProgramName: mpinfo.nickName,
             unread,
             mpCount: count,
-            selected: { id: mpinfo.id },
+            selected: mpinfo,
         });
         this.$apply();
     }
@@ -234,6 +235,7 @@ export default class Home extends wepy.page {
         }
     }
     checkBeforeJump(index) {
+        console.log('this.business.selected.', this.business.selected);
         if (!this.business.mpCount) {
             alert('请先购买小程序', '提示');
             return;
@@ -252,9 +254,15 @@ export default class Home extends wepy.page {
             case 2:
                 if (this.business.selected.app_type === 1) {
                     alert('当前小程序为优享小程序，不用提交注册信息', '提示');
-                } else {
+                    return;
+                }
+                if (this.business.selected.sign === 1) {
                     wepy.navigateTo({
                         url: 'registed',
+                    });
+                } else {
+                    wepy.navigateTo({
+                        url: 'registMainAccount',
                     });
                 }
                 break;
@@ -273,7 +281,9 @@ export default class Home extends wepy.page {
         }
     }
     setNextTask(taskNum) {
-        this.business.nexttask = taskNum;
+        this.business = Object.assign({}, this.business, {
+            nexttask: taskNum,
+        });
         switch (taskNum) {
             case 2:
                 this.business.progressText = '当前小程序未添加小程序信息';

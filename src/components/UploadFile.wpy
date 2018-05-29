@@ -6,9 +6,9 @@
                 <view class="main-upload"  @tap='bindUploadImage' wx:if="{{uploadtype==='1' && vm.length<maxSize}}"></view>
                 <view class="main-upload"  @tap='bindUploadVideo' wx:if="{{uploadtype==='2' && vm.length<maxSize}}"></view>
                 <view class="main-show-image" wx:for='{{vm}}' wx:key='index'>
-                    <image class="main-upload-image" data-index='{{index}}' src="{{item}}" wx:if="{{uploadtype==='1'}}"/>
-                    <video class="main-upload-image" data-index='{{index}}' src="{{item}}" wx:else></video>
-                    <view class="main-del-image" hidden="{{loading ||uploadtype==='2'}}" @tap="onCancelImage"></view>
+                    <image class="main-upload-image" data-index='{{index}}' src="{{item}}" @tap="bindPreviewImage({{index}})" wx:if="{{uploadtype==='1'}}"/>
+                    <view class="main-upload-video" data-index='{{index}}' @tap="bindPlayVideo({{item}})" wx:else><image class="main-upload-video-arrow" src="https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/img/video-play.png"/></view>
+                    <view class="main-del-image" hidden="{{loading ||uploadtype==='2'}}" @tap.stop="onCancelImage"></view>
                 </view>
             </view>
         </view>
@@ -167,21 +167,31 @@ export default class Uploader extends wepy.component {
                 return file;
             });
         },
-        onCancelImage (e) {
+        onCancelImage (index) {
             if (this.data.uploading) return;
-            const { index } = e.currentTarget.dataset;
-            const self = this;
             const sfileset = this.data.vm;
             const simages = this.data.images;
             sfileset.splice(index, 1);
             simages.splice(index, 1);
-            self.setData({
-                vm: [...sfileset],
-                images: [...simages],
-            });
+            this.vm = [...sfileset];
+            this.images = [...simages];
+            this.$apply();
             // 触发图片更改事件
-            self.triggerEvent('changeImages', {
+            this.$emit('changeImages', {
                 images: this.data.images,
+            });
+        },
+        bindPlayVideo (url) {
+            if (url) {
+                wepy.navigateTo({
+                    url: `/pages/VideoPlay?url=${url}`,
+                });
+            }
+        },
+        bindPreviewImage (current) {
+            wepy.previewImage({
+                current,
+                urls: this.vm,
             });
         },
     }
@@ -248,6 +258,22 @@ export default class Uploader extends wepy.component {
                 color: #cccccc;
                 text-align: right;
             }
+        }
+    }
+    .main-upload-video {
+        width: 160rpx;
+        height: 160rpx;
+        border-radius: 2rpx;
+        background: rgba(0, 0, 0, 0.8);
+        position: relative;
+        .main-upload-video-arrow {
+            width: 65rpx;
+            height: 65rpx;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
         }
     }
 }
