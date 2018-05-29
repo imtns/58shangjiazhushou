@@ -28,6 +28,7 @@ export default class extends wepy.app {
             'pages/feedbackDetail', // 意见反馈优选、微信问题介绍
             'pages/UploadArticle', // 上传文章
             'pages/UploadInfoSuccess', // 素材上传成功
+            'pages/VideoPlay', // 视频播放页面
         ],
         window: {
             backgroundTextStyle: 'light',
@@ -41,7 +42,7 @@ export default class extends wepy.app {
     }
     onShow (options) {
         if (!wepy.getStorageSync('ppu')) {
-            wepy.reLaunch({
+            wepy.navigateTo({
                 url: '/pages/intro',
             });
         }
@@ -59,7 +60,7 @@ export default class extends wepy.app {
             if (extraData.ppu !== undefined) { // 如果获取ppu成功
                 console.log(`获取PPU成功！ ${extraData.ppu}`);
                 wepy.setStorageSync('ppu', extraData.ppu);
-                wepy.reLaunch({
+                wepy.navigateTo({
                     url: '/pages/home',
                 });
             }

@@ -1,0 +1,43 @@
+<template>
+    <view class='video-view'>
+        <video id="myVideo" bindfullscreenchange="fullscreenchange" class='video-view-video' src="{{videoPath}}"></video>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+
+export default class VideoPlay extends wepy.page {
+    config = {
+        enablePullDownRefresh: false,
+        disableScroll: true,
+        backgroundColor: '#000',
+        navigationBarBackgroundColor: '#000',
+        navigationBarTextStyle: '#000',
+        navigationBarTitleText: '视频播放',
+    }
+    data = {
+    }
+    onLoad (options) {
+        const { url } = options;
+        this.setData({
+            videoPath: url,
+        });
+    }
+    onShow () {
+        const videoContext = wepy.createVideoContext('myVideo');
+        videoContext.play();
+    }
+}
+</script>
+<style lang="scss">
+.video-view {
+    height: 100vh;
+    width: 750rpx;
+    background: #eee;
+}
+
+.video-view-video {
+    height: 100vh;
+    width: 750rpx;
+}
+</style>
