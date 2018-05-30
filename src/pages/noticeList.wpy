@@ -63,7 +63,7 @@ export default class NoticeList extends wepy.page {
             return;
         }
         try {
-            await get('/mplogic/msgread');
+            await get('/mplogic/msgreadall');
         } catch (e) {
             console.log(e);
         }
