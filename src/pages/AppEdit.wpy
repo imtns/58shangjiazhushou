@@ -33,10 +33,9 @@
             <view class="appedit-content-list-item appedit-content-list-item-noborder">
                 <textarea name="" id="" cols="30" rows="10" class="appedit-form-input-addressdetail"  placeholder="请输入" placeholder-class="appedit-form-placeholder" @iput="setDetailAdress" value="{{form.address}}"></textarea>
             </view>
-            
-        </view>   
-        <!-- <map class="appedit-map" markers="{{markers}}" longitude="{{form.addressLatitude}}" latitude="{{form.addressLatitude}}" scale="14"></map> -->
-        <map id="map" class="appedit-map" longitude="{{form.addressLongitude}}" latitude="{{form.addressLatitude}}" scale="14" controls="{{controls}}" bindcontroltap="controltap" markers="{{markers}}" show-location></map>
+        </view>
+        <map id="map" class="appedit-map" longitude="{{longitude}}" 
+        latitude="{{latitude}}" scale="14" markers="{{markers}}"></map>
         <view class="appedit-submit submit-enable" @tap="bindSave" wx:if="{{enableSave}}">保存</view>
         <view class="appedit-submit" @tap="bindSave" wx:else>保存</view>
     </view>
@@ -62,14 +61,7 @@ export default class AppEdit extends wepy.page {
     data = {
         areas: [[], []],
         selCityIndex: [0, 0],
-        markers: [{
-            iconPath: '/pages/assets/marker.png',
-            id: 0,
-            latitude: '',
-            longitude: '',
-            width: 22,
-            height: 32,
-        }],
+        markerId: 0,
         form: {
             city: '1',
             province: '5001',
@@ -80,6 +72,23 @@ export default class AppEdit extends wepy.page {
         enableSave () {
             return !!(this.form.headImg && this.form.nickName
                 && this.form.telphone && this.form.city && this.form.address);
+        },
+        markers () {
+            const markerId = this.markerId + 1;
+            return [{
+                iconPath: '/pages/assets/marker.png',
+                id: markerId,
+                latitude: this.form.addressLatitude || '',
+                longitude: this.form.addressLongitude || '',
+                width: 22,
+                height: 32,
+            }];
+        },
+        longitude () {
+            return this.form.addressLongitude;
+        },
+        latitude () {
+            return this.form.addressLatitude;
         },
     }
 
@@ -123,12 +132,9 @@ export default class AppEdit extends wepy.page {
             res.logo = picSrcDomain() + res.headImg;
         }
         // 经纬度
-        if (res.addressLatitude) {
-            const { addressLatitude, addressLongitude } = res;
-            this.markers = Object.assign(
-                {}, this.markers,
-                [{ ...this.markers[0], latitude: addressLatitude, longitude: addressLongitude }],
-            );
+        if (res.addressLatitude !== undefined && res.addressLatitude === '') {
+            delete res.addressLatitude;
+            delete res.addressLongitude;
         }
         this.form = Object.assign({}, form, { ...res });
         this.$apply();
@@ -265,18 +271,16 @@ export default class AppEdit extends wepy.page {
             }
         },
     }
-    async onShow () {
-        await this.getAppInfo(this.mpid);
-        await this.getProvinces();
-        this.defaultSelCityIndex();
-        await this.getLocation();
-    }
     async onLoad (options) {
         const mpid = options.mpid || wepy.getStorageSync('current_mpid');
         if (!mpid) {
             wepy.navigateBack();
         }
         this.mpid = mpid;
+        await this.getAppInfo(this.mpid);
+        await this.getLocation();
+        await this.getProvinces();
+        this.defaultSelCityIndex();
     }
 }
 </script>
