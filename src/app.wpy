@@ -42,8 +42,9 @@ export default class extends wepy.app {
     }
     onShow (options) {
         const { path } = options;
+        console.log(path);
         if (!wepy.getStorageSync('ppu') && path !== 'pages/intro') {
-            wepy.reLaunch({
+            wepy.navigateTo({
                 url: '/pages/intro',
             });
         }
@@ -61,7 +62,7 @@ export default class extends wepy.app {
             if (extraData.ppu !== undefined) { // 如果获取ppu成功
                 console.log(`获取PPU成功！ ${extraData.ppu}`);
                 wepy.setStorageSync('ppu', extraData.ppu);
-                wepy.reLaunch({
+                wepy.navigateTo({
                     url: '/pages/home',
                 });
             }
