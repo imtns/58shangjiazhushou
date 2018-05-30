@@ -59,6 +59,10 @@ export default class NoticeList extends wepy.page {
         this.loadList();
     }
     async onHide() {
+        console.log('onHide');
+    }
+    async onUnload() {
+        console.log('onUnLoad');
         if (this.unreadcount <= 0) {
             return;
         }
@@ -96,7 +100,7 @@ export default class NoticeList extends wepy.page {
                 toast('没有消息，无需清空~');
                 return;
             }
-            await get('/mplogic/msgclearal');
+            await get('/mplogic/msgclearall');
             this.loadList();
         } catch (e) {
             console.log(e);
