@@ -15,11 +15,11 @@
                 <text class="appedit-form-label">联系电话</text>
                 <input class="appedit-form-input" maxlength='11' type="number" @input="setMobile" placeholder="请输入" placeholder-class="appedit-form-placeholder" value="{{form.telphone}}"/>
             </view>
-            <picker mode="multiSelector" @change="setCity" @columnchange="bindCity" range="{{areas}}" range-key="localName">
+            <picker mode="multiSelector" @change="setCity" @columnchange="bindCity" range="{{areas}}" range-key="localName" value="{{selCityIndex}}">
                 <view class="appedit-content-list-item">
                     <text class="appedit-form-label">小程序城市</text>
                     <view class="appedit-form-picker" wx:if="{{form.city}}">
-                        {{selCity[0]}} {{selCity[1]}}
+                        {{form.provinceName}} {{form.cityName}}
                     </view>
                     <view class="appedit-form-picker-placeholder" wx:else>
                         请选择
@@ -37,7 +37,7 @@
         </view>   
         <!-- <map class="appedit-map" markers="{{markers}}" longitude="{{form.addressLatitude}}" latitude="{{form.addressLatitude}}" scale="14"></map> -->
         <map id="map" class="appedit-map" longitude="{{form.addressLongitude}}" latitude="{{form.addressLatitude}}" scale="14" controls="{{controls}}" bindcontroltap="controltap" markers="{{markers}}" show-location></map>
-        <view class="appedit-submit submit-enable" @tap="bindSave" wx:if="{{form.enableSave}}">保存</view>
+        <view class="appedit-submit submit-enable" @tap="bindSave" wx:if="{{enableSave}}">保存</view>
         <view class="appedit-submit" @tap="bindSave" wx:else>保存</view>
     </view>
 </template>
@@ -61,7 +61,7 @@ export default class AppEdit extends wepy.page {
     }
     data = {
         areas: [[], []],
-        selCity: ['北京', '北京'],
+        selCityIndex: [0, 0],
         markers: [{
             iconPath: '/pages/assets/marker.png',
             id: 0,
@@ -71,10 +71,48 @@ export default class AppEdit extends wepy.page {
             height: 32,
         }],
         form: {
-            city: 1,
-            province: 5001,
+            city: '1',
+            province: '5001',
             logoUrl: 'https://pic2.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png',
         },
+    }
+    computed = {
+        enableSave () {
+            return !!(this.form.headImg && this.form.nickName
+                && this.form.telphone && this.form.city && this.form.address);
+        },
+    }
+
+    defaultSelCityIndex () {
+        const { city, province } = this.form;
+        let pIndex = 0;
+        let cIndex = 0;
+        let item;
+        if (province) {
+            for (let i = 0, len = this.areas[0].length; i < len; i += 1) {
+                item = this.areas[0][i];
+                if (item.dispLocalID === province) {
+                    pIndex = i;
+                    break;
+                }
+            }
+        }
+        if (city) {
+            for (let i = 0, len = this.areas[1].length; i < len; i += 1) {
+                item = this.areas[1][i];
+                if (item.dispLocalID === province) {
+                    cIndex = i;
+                    break;
+                }
+            }
+        }
+        this.selCityIndex = [pIndex, cIndex];
+        this.updateForm({
+            city: this.areas[1][cIndex].dispLocalID,
+            cityName: this.areas[1][cIndex].localName,
+            province: this.areas[0][pIndex].dispLocalID,
+            provinceName: this.areas[0][pIndex].localName,
+        });
     }
 
     updateForm (data) {
@@ -92,16 +130,13 @@ export default class AppEdit extends wepy.page {
                 [{ ...this.markers[0], latitude: addressLatitude, longitude: addressLongitude }],
             );
         }
-        // 是否可保存
-        const enableSave = !!(form.headImg && form.nickName && form.telphone && form.city
-            && form.address);
-        this.form = Object.assign({}, form, { ...res, enableSave });
+        this.form = Object.assign({}, form, { ...res });
         this.$apply();
     }
     async getProvinces () {
         const resProvince = await get(provinceApi);
-        const { dispLocalID = 5001 } = resProvince.data[0];
-        const resCity = await get(cityApi + dispLocalID);
+        const province = this.form.province || '5001';
+        const resCity = await get(cityApi + province);
         this.areas = [resProvince.data, resCity.data];
         this.$apply();
     }
@@ -117,6 +152,9 @@ export default class AppEdit extends wepy.page {
     verify () {
         // const regPhone = /^1[3456789][0-9]{9}$/;
         const { form } = this.data;
+        if (!form.headImg) {
+            toast('请完善信息');
+        }
         if (!form.nickName) {
             toast('输入小程序名称');
             return false;
@@ -160,7 +198,12 @@ export default class AppEdit extends wepy.page {
             const province = this.areas[0][arr[0]];
             const city = this.areas[1][cityIdx];
             this.selCity = [province.localName, city.localName];
-            this.updateForm({ province: province.dispLocalID, city: city.dispLocalID });
+            this.updateForm({
+                province: province.dispLocalID,
+                provinceName: province.localName,
+                city: city.dispLocalID,
+                cityName: city.localName,
+            });
         },
         async setLogo () {
             const { tempFilePaths } = await wepy.chooseImage();
@@ -172,9 +215,6 @@ export default class AppEdit extends wepy.page {
                 name: 'content',
             });
             const res = JSON.parse(data);
-            console.log(data);
-            console.log(res.data);
-            console.log(res.data.content);
             this.updateForm({ headImg: res.data.content });
         },
         setAppName (e) {
@@ -206,10 +246,11 @@ export default class AppEdit extends wepy.page {
             const { form } = this.data;
             if (!this.verify()) return;
             const sendData = {
-                mpid: form.mpid, // 小程序id
+                mpid: this.mpid, // 小程序id
                 logo: form.headImg, // 小程序logo 只有优享小程序能改
                 telphone: form.telphone, // 电话
                 mpname: form.nickName, // 小程序名称 只有优享小程序能改
+                privince: form.province,
                 city: form.city, // 城市
                 address: form.address, // 地址
                 lat: form.addressLatitude, // 纬度
@@ -224,16 +265,18 @@ export default class AppEdit extends wepy.page {
             }
         },
     }
+    async onShow () {
+        await this.getAppInfo(this.mpid);
+        await this.getProvinces();
+        this.defaultSelCityIndex();
+        await this.getLocation();
+    }
     async onLoad (options) {
         const mpid = options.mpid || wepy.getStorageSync('current_mpid');
         if (!mpid) {
             wepy.navigateBack();
-        } else {
-            this.updateForm({ mpid });
-            await this.getProvinces();
-            await this.getAppInfo(mpid);
-            await this.getLocation();
         }
+        this.mpid = mpid;
     }
 }
 </script>
