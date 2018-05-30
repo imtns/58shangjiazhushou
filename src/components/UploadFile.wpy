@@ -3,8 +3,8 @@
         <view class="main-body">
             <view class="main-title">上传{{titleStatus[uploadtype-1]}}</view>
             <view class="main-boy-line main-body-flex">
-                <view class="main-upload"  @tap='bindUploadImage' wx:if="{{uploadtype==='1' && vm.length<maxSize}}"></view>
-                <view class="main-upload"  @tap='bindUploadVideo' wx:if="{{uploadtype==='2' && vm.length<maxSize}}"></view>
+                <view class="main-upload"  @tap='bindUploadImage' wx:if="{{uploadtype==='1' && vm.length<=maxSize}}"></view>
+                <view class="main-upload"  @tap='bindUploadVideo' wx:if="{{uploadtype==='2' && vm.length<=maxSize}}"></view>
                 <view class="main-show-image" wx:for='{{vm}}' wx:key='index'>
                     <image class="main-upload-image" data-index='{{index}}' src="{{item}}" @tap="bindPreviewImage({{index}})" wx:if="{{uploadtype==='1'}}"/>
                     <view class="main-upload-video" data-index='{{index}}' @tap="bindPlayVideo({{item}})" wx:else><image class="main-upload-video-arrow" src="https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/img/video-play.png"/></view>

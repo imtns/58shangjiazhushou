@@ -89,8 +89,8 @@ export default class UploadInfo extends wepy.page {
         videouploader: UploadFile,
     }
     data = {
-        maxImageSize: 3,
-        maxVideoSize: 2,
+        maxImageSize: 10,
+        maxVideoSize: 5,
         form: {
             textSize: 0,
             text: '',
