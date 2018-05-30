@@ -143,6 +143,8 @@ export default class Index extends wepy.page {
         height:20rpx;  
     }
     .intro{
+        background: white;
+        padding-bottom: 20rpx;
         .header{
             height: 498rpx;
             background: url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/intro_header.png) no-repeat center;
