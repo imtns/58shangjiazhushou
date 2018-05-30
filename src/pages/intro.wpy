@@ -74,7 +74,7 @@ export default class Index extends wepy.page {
             name: '电脑租赁',
         }, {
             src: 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/code7.png',
-            name: '微信服务',
+            name: '维修服务',
         }, {
             src: 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/code8.png',
             name: '家政保洁',
@@ -125,9 +125,10 @@ export default class Index extends wepy.page {
             }
         },
         preview(src) {
+            const largeSrc = src.replace('.png', '_large.png');
             wepy.previewImage({
-                current: src, // 当前显示图片的http链接
-                urls: [src], // 需要预览的图片http链接列表
+                current: largeSrc, // 当前显示图片的http链接
+                urls: [largeSrc], // 需要预览的图片http链接列表
             });
         },
     };
