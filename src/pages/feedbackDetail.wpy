@@ -1,7 +1,7 @@
 <template>
     <view class="container">
-        <view class="feedback-title">什么是{{text}}小程序？</view>
-        <view class="feedback-li {{type === '2' ? 'lo-circle' : ''}}">{{text}}小程序介绍？</view>
+        <view class="feedback-title">{{text}}小程序介绍</view>
+        <view class="feedback-li {{type === '2' ? 'lo-circle' : ''}}">什么是{{text}}小程序</view>
         <view class="feedback-text" wx:if="{{type === '1'}}">优享小程序是58同城为了帮广大商家更便捷快速地拥有自己的微信小程序，同时享受微信小程序开放的支付等功能推出的一款服务，购买优享小程序的用户将共享[同城优选服务]小程序的功能。适用于不会管理小程序、希望快速上线、需要操作便捷、享受功能自动更新的商家。</view>
         <view class="feedback-text" wx:if="{{type === '2'}}">微信小程序分为企业版小程序和个人版小程序。</view>
         <view class="feedback-text"  wx:if="{{type === '2'}}">企业版小程序适用于：企业、媒体、政府及其他组织，在注册时需要提供资质信息进行注册和认证审核，购买企业版小程序可享受微信对企业版小程序开放的所有功能。适用于时间相对宽裕，对小程序有自主运营意向，且资质符合腾讯企业版小程序要求的商家。</view>
