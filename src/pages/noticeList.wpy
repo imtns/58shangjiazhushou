@@ -38,7 +38,7 @@
 <script>
 import wepy from 'wepy';
 
-import { sleep } from '../utils/index';
+import { sleep, toast } from '../utils/index';
 
 import { get } from '../utils/ajax';
 
@@ -90,6 +90,11 @@ export default class NoticeList extends wepy.page {
     }
     async clearAll() {
         try {
+            console.log(this.noticeList.length <= 0);
+            if (this.noticeList.length <= 0) {
+                toast('没有消息，无需清空~');
+                return;
+            }
             await get('/mplogic/msgclearal');
             this.loadList();
         } catch (e) {
