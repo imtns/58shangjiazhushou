@@ -6,9 +6,10 @@
                 <navigator url="noticeList" :class="{'new-msg': business.unread}" class="msg-box'"></navigator>
             </view>
             <view class="item-detail">
-                <view class="item-name">{{ business.miniProgramName }}</view>
-                <view class="item-title">可上传素材、提交注册信息到当前小程序</view>
+                <view class="item-name" :class="{logoPadding : business.mpCount > 0 }">{{ business.miniProgramName }}</view>
+                <view class="item-title" :class="{logoPadding : business.mpCount > 0 }">可上传素材、提交注册信息到当前小程序</view>
                 <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">切换</view>
+                <image  class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
                 <view bindtap="checkProgress" class="item-detail-progress">
                     <view class="current-progress">当前进度</view>
                     <view class="remind-title">{{ business.progressText}}</view>
@@ -24,12 +25,16 @@
         <view wx:if="{{business.changeMP === true}}" class="mask" @tap="bindHideMask"></view>
         <view wx:if="{{business.changeMP === true }}" class="mpBox">
             <view class="default">
-                <view>{{business.miniProgramName}}</view>
+                <view class="name logoPadding">{{business.miniProgramName}}</view>
                 <view>默认</view>
+                <image  class="haslogo" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
             </view>
             <view class="otherBox">
                 <repeat for="{{business.mps}}" key="index" index="index" item="item">
-                    <view bindtap="selectMp({{item}})" class="mpItem" data-appid="{{item.id}}" :class="{ 'active' : item.id === business.selected.id}">{{item.nickName}}</view>
+                    <view class="mpbox">
+                        <view bindtap="selectMp({{item}})" class="mpItem logoPadding" data-appid="{{item.id}}" :class="{ 'active' : item.id === business.chosedId}">{{item.nickName}}</view>
+                        <image class="haslogo" mode="{{aspectFit}}" src="{{item.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+                    </view>
                 </repeat>
             </view>
             <view class="btnBox">
@@ -64,6 +69,7 @@ export default class Home extends wepy.page {
             selected: {
                 id: 0,
             },
+            chosedId: 0,
         },
         items: [
             {
@@ -161,14 +167,21 @@ export default class Home extends wepy.page {
                 mps: mpinfos,
             });
             if (this.business.mps.length > 0) {
-                this.business.mps.map((appinfo, index) => {
-                    if (appinfo.id === this.business.selected.id) {
-                        this.business.mps.splice(index, 1);
-                    }
-                    return '';
+                const others = this.business.mps.filter((appinfo) => appinfo.id !==
+                this.business.selected.id);
+                const formatedOther = others.map((item) => this.formatedMp(item));
+                this.business = Object.assign({}, this.business, {
+                    mps: formatedOther,
                 });
+                // this.business.mps.map((appinfo, index) => {
+                //     if (appinfo.id === this.business.selected.id) {
+                //         this.business.mps.splice(index, 1);
+                //     }
+                //     return '';
+                // });
             }
             this.$apply();
+            console.log('this.business.mps', this.business.mps);
         },
         bindHideMask() {
             this.business = Object.assign({}, this.business, {
@@ -179,7 +192,7 @@ export default class Home extends wepy.page {
         },
         selectMp(item) {
             this.business = Object.assign({}, this.business, {
-                selected: item,
+                chosedId: item.id,
                 canConfirm: true,
             });
             console.log('点击', this.business);
@@ -187,7 +200,7 @@ export default class Home extends wepy.page {
         },
         confirmAction() {
             if (this.business.selected.id) {
-                this.setGlobalMpId(this.business.selected.id);
+                this.setGlobalMpId(this.business.chosedId);
                 this.loadData();
                 this.hideMask();
             }
@@ -208,6 +221,13 @@ export default class Home extends wepy.page {
         await this.loadData();
         this.setGlobalMpId(this.business.selected.id);
     }
+    formatedMp(item) {
+        const mp = item;
+        if (mp.headImg && mp.headImg.indexOf('http') === -1) {
+            mp.headImg = `https://pic1.58cdn.com.cn${mp.headImg}`;
+        }
+        return mp;
+    }
     async loadData() {
         try {
             const subData = {
@@ -222,12 +242,13 @@ export default class Home extends wepy.page {
                 count = 0,
                 nexttask = '',
             } = data;
+            const formatedMpinfo = this.formatedMp(mpinfo);
             this.business = Object.assign({}, this.business, {
                 name: username,
                 miniProgramName: mpinfo.nickName || '您还没购买小程序',
                 unread,
                 mpCount: count,
-                selected: mpinfo,
+                selected: formatedMpinfo,
             });
             nexttask && this.setNextTask(nexttask);
             // data.username && (this.business.name = data.username);
@@ -361,10 +382,28 @@ export default class Home extends wepy.page {
             transform: translate3d(-50%,-50%,0);
             background: white;
             border-radius: 2rpx;
-            .default,.otherBox{
+            .name{
+                width: 400rpx;
+                white-space:nowrap;
+                text-overflow:ellipsis;
+                overflow:hidden;
+            }
+            .haslogo{
+                width: 54rpx;
+                height: 54rpx;
+                position: absolute;
+                left: 20rpx;
+                top: 30rpx;
+                border-radius: 100rpx;
+            }
+            .logoPadding{
+                padding-left: 45rpx;
+            }
+            .default{
                 padding: 0 40rpx;
             }
             .default{
+                position: relative;
                 height: 113rpx;
                 font-size: 28rpx;
                 color: #BDBDBD;
@@ -375,11 +414,21 @@ export default class Home extends wepy.page {
             .otherBox{
                 font-size: 32rpx;
                 color: #666666;
+                .mpbox{
+                    position: relative;
+                    padding: 0 40rpx;
+                }
                 .mpItem{
+                    .logoPadding{
+                        padding-left: 45rpx;
+                    }
                     height: 113rpx;
                     line-height: 113rpx;
                     border-top: 1rpx solid #F6F6F6;
                     padding-right: 80rpx;
+                    white-space:nowrap;
+                    text-overflow:ellipsis;
+                    overflow:hidden;
                 }
                 .active{
                     background:url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/correct-home.png) no-repeat right;
@@ -453,6 +502,17 @@ export default class Home extends wepy.page {
                 position:relative;
                 top:-144rpx;
                 padding:30rpx;
+                .haslogo{
+                    position:absolute;
+                    width:83rpx;
+                    height:83rpx;
+                    border-radius:100rpx;
+                    top:50rpx;
+                    left:20rpx;
+                }
+                .logoPadding{
+                    padding-left: 90rpx;
+                }
                 .item-name{
                     font-size: 32rpx;
                     color: #333333;
