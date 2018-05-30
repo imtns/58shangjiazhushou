@@ -27,20 +27,20 @@
             <view class="feedback-left">线下扫码</view>
             <view class="feedback-right">支持小程序太阳码线下展示，可印制小程序码进行宣传传播</view>
         </view>
-        <view class="feedback-li-flex" wx:if="{{type === '2'}}">
+        <view class="feedback-li-flex" wx:if="{{type === '1'}}">
             <view class="feedback-left">58自流量</view>
             <view class="feedback-right">可从58同城小程序內直接跳转，分享58小程序庞大流量（优享独有）</view>
         </view>
-        <view class="feedback-li-flex" wx:if="{{type === '2'}}">
+        <view class="feedback-li-flex" wx:if="{{type === '1'}}">
             <view class="feedback-left">自动更新</view>
             <view class="feedback-right">新功能、新组件自动升级更新，第一时间享受新变化（优享独有）</view>
         </view>
         <view class="feedback-li {{type === '2' ? 'lo-circle' : ''}}">{{text}}小程序从购买到上线需要经历那几个流程？</view>
         <view class="feedback-text" wx:if="{{type === '1'}}">提交58会员资质>搭建小程序>上线成功最短只需1天即可拥有自己的小程序</view>
         <view class="feedback-text" wx:if="{{type === '2'}}">企业版小程序</view>
-        <view class="feedback-text" wx:if="{{type === '2'}}">注册-提交企业资质-微信认证核-搭建小程序-微信审核-上线成功最短需要6天即可拥有自己的企业版小程序</view>
+        <view class="feedback-text" wx:if="{{type === '2'}}">注册-提交企业资质-微信认证审核-搭建小程序-微信审核-上线成功（最短需要6天即可拥有自己的企业版小程序）</view>
         <view class="feedback-text" wx:if="{{type === '2'}}">个人版小程序</view>
-        <view class="feedback-text" wx:if="{{type === '2'}}">注册-提交企业资质-微信认证核-搭建小程序-微信审核-上线成功最短需要6天即可拥有自己的企业版小程序</view>
+        <view class="feedback-text" wx:if="{{type === '2'}}">注册-搭建小程序-微信审核-上线成功（最短需要15-30天即可拥有自己的个人版小程序）</view>
     </view>
 </template>
 
