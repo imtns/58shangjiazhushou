@@ -317,7 +317,7 @@ export default class Home extends wepy.page {
                 this.business.progressText = '当前小程序信息已完善';
                 break;
             case 9: // 完成度
-                this.business.progressText = '当前小程序信息已完善';
+                this.business.progressText = '当前小程序信息已上线';
                 break;
             default:
                 break;
