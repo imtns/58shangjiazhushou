@@ -187,6 +187,10 @@ export default class Index extends wepy.page {
                             font-size: 32rpx;
                             color: #333333;
                             padding-left: 10rpx;
+                            width:500rpx;
+                            white-space:nowrap;
+                            text-overflow:ellipsis;
+                            overflow:hidden;
                         }
                     }
                     .deadline{
