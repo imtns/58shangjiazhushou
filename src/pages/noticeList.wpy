@@ -38,7 +38,7 @@
 <script>
 import wepy from 'wepy';
 
-import { sleep, toast } from '../utils/index';
+import { sleep } from '../utils/index';
 
 import { get } from '../utils/ajax';
 
@@ -79,7 +79,15 @@ export default class NoticeList extends wepy.page {
             this.unreadcount = unreadcount;
             this.$apply();
             if (msglist && msglist.length > 0) {
-                this.noticeList = msglist;
+                const arr = [];
+                msglist.forEach((item) => {
+                    const ele = item;
+                    if (ele.mpLogo && ele.mpLogo.indexOf('http') === -1) {
+                        ele.mpLogo = `https://pic1.58cdn.com.cn${ele.mpLogo}`;
+                    }
+                    arr.push(ele);
+                });
+                this.noticeList = arr;
                 this.$apply();
             }
         } catch (e) {
@@ -96,11 +104,12 @@ export default class NoticeList extends wepy.page {
     async clearAll() {
         try {
             console.log(this.noticeList.length <= 0);
-            if (this.noticeList.length <= 0) {
-                toast('没有消息，无需清空~');
-                return;
-            }
+            // if (this.noticeList.length <= 0) {
+            //     toast('没有消息，无需清空~');
+            //     return;
+            // }
             await get('/mplogic/msgclearall');
+            sleep();
             this.loadList();
         } catch (e) {
             console.log(e);
