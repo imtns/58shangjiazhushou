@@ -9,9 +9,9 @@
                 <view class="item-name">{{ business.miniProgramName }}</view>
                 <view class="item-title">可上传素材、提交注册信息到当前小程序</view>
                 <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">切换</view>
-                <view class="item-detail-progress">
+                <view bindtap="checkProgress" class="item-detail-progress">
                     <view class="current-progress">当前进度</view>
-                    <view bindtap="checkProgress" class="remind-title">{{ business.progressText}}</view>
+                    <view class="remind-title">{{ business.progressText}}</view>
                 </view>
             </view>
         </view>
@@ -141,6 +141,11 @@ export default class Home extends wepy.page {
                         url: 'progress',
                     });
                     break;
+                case 9:
+                    wepy.navigateTo({
+                        url: 'progress',
+                    });
+                    break;
                 default:
                     break;
             }
@@ -204,31 +209,37 @@ export default class Home extends wepy.page {
         this.setGlobalMpId(this.business.selected.id);
     }
     async loadData() {
-        const subData = {
-            mpid: wepy.getStorageSync('current_mpid') || '',
-        };
-        const { data } = await post('/mplogic/index', subData);
-        console.log('loadData', data);
-        const {
-            username,
-            mpinfo,
-            unread,
-            count,
-        } = data;
-        // data.username && (this.business.name = data.username);
-        // data.mpinfo && (this.business.miniProgramName = data.mpinfo.nickName);
-        // data.unread && (this.business.unread = data.unread);
-        // data.count && (this.business.mpCount = data.count);
-        data.nexttask && this.setNextTask(data.nexttask);
-        // data.mpinfo && (this.business.selected.id = data.mpinfo.id);
-        this.business = Object.assign({}, this.business, {
-            name: username,
-            miniProgramName: mpinfo.nickName,
-            unread,
-            mpCount: count,
-            selected: mpinfo,
-        });
-        this.$apply();
+        try {
+            const subData = {
+                mpid: wepy.getStorageSync('current_mpid') || '',
+            };
+            const { data } = await post('/mplogic/index', subData);
+            console.log('loadData', data);
+            const {
+                username = '',
+                mpinfo = {},
+                unread = '',
+                count = 0,
+                nexttask = '',
+            } = data;
+            this.business = Object.assign({}, this.business, {
+                name: username,
+                miniProgramName: mpinfo.nickName || '您还没购买小程序',
+                unread,
+                mpCount: count,
+                selected: mpinfo,
+            });
+            nexttask && this.setNextTask(nexttask);
+            // data.username && (this.business.name = data.username);
+            // data.mpinfo && (this.business.miniProgramName = data.mpinfo.nickName);
+            // data.unread && (this.business.unread = data.unread);
+            // data.count && (this.business.mpCount = data.count);
+            // data.mpinfo && (this.business.selected.id = data.mpinfo.id)
+            console.log('this.business', this.business);
+            this.$apply();
+        } catch (e) {
+            console.log('e', e);
+        }
     }
     setGlobalMpId(id) {
         if (id) {
@@ -447,6 +458,10 @@ export default class Home extends wepy.page {
                     color: #333333;
                     letter-spacing: 0;
                     line-height:65rpx;
+                    white-space:nowrap;
+                    overflow:hidden;
+                    text-overflow:ellipsis;
+                    width:560rpx;
                 }
                 .item-title,.item-switch{
                     font-size: 28rpx;
