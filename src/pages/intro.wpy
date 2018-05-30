@@ -98,8 +98,8 @@ export default class Index extends wepy.page {
             title: '微信生态',
             text: '公众号小程序连通，流量增长多途径',
         }, {
-            title: '自带流量',
-            text: '微信超9亿日活，聚拢大量潜在用户',
+            title: '使用无门槛',
+            text: '无需下载无需注册，即开即用难度低',
         }],
     };
     methods = {

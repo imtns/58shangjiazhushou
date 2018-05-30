@@ -109,15 +109,17 @@ export default class Index extends wepy.page {
         const mps = data.mpinfos;
         const [currentMp] = mps.filter((item) => item.id === currentMpid);
         if (currentMp.headImg && currentMp.headImg.indexOf('http') === -1) {
-            currentMp.headImg = `https://yaofa.58.com${currentMp.headImg}`;
+            currentMp.headImg = `https://pic1.58cdn.com.cn${currentMp.headImg}`;
         }
-        const othersMp = mps.filter((item) => item.id !== currentMpid);
-        if (othersMp.length > 0) {
-            othersMp.forEach(element => {
-                if (element.headImg && element.headImg.indexOf('http') === -1) {
-                    // element.headImg = `https://yaofa.58.com${element.headImg}`;
-                    console.log(element);
+        const others = mps.filter((item) => item.id !== currentMpid);
+        let othersMp = [];
+        if (others.length > 0) {
+            othersMp = others.map(element => {
+                const item = element;
+                if (item.headImg && item.headImg.indexOf('http') === -1) {
+                    item.headImg = `https://pic1.58cdn.com.cn${item.headImg}`;
                 }
+                return item;
             });
         }
         this.business = Object.assign({}, this.business, {

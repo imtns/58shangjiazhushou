@@ -6,7 +6,7 @@
                 <view class="action">点击上传文本</view>
             </view>
             <view class="inputArea">
-                <textarea placeholder="请输入" @input="setText" maxLength="100" value="{{form.text}}" placeholder-style="font-size: 28rpx;color: #BDBDBD;"/>
+                <textarea placeholder="请输入" @input="setText" maxLength="100" placeholder-style="font-size: 28rpx;color: #BDBDBD;"/>
                 <view class="numTip">{{form.text.length||0}}/100</view>
             </view>
         </view>
@@ -71,7 +71,7 @@
 <script>
 import wepy from 'wepy';
 
-import { sleep, toast, alert } from '../utils';
+import { sleep, toast, alert, filteremoji } from '../utils';
 import { get, post } from '../utils/ajax';
 import UploadFile from '../components/UploadFile';
 
@@ -106,8 +106,12 @@ export default class UploadInfo extends wepy.page {
     }
     methods = {
         setText (e) {
-            const text = e.detail.value;
+            let text = e.detail.value;
+            text = filteremoji(text);
             this.updateForm({ text });
+            return {
+                value: text,
+            };
         },
         async setImages ({ uploading, images = [] }) {
             this.updateForm({ uploading });
