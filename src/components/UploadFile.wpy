@@ -3,12 +3,12 @@
         <view class="main-body">
             <view class="main-title">上传{{titleStatus[uploadtype-1]}}</view>
             <view class="main-boy-line main-body-flex">
-                <view class="main-upload"  @tap='bindUploadImage' wx:if="{{uploadtype==='1' && vm.length<=maxSize}}"></view>
-                <view class="main-upload"  @tap='bindUploadVideo' wx:if="{{uploadtype==='2' && vm.length<=maxSize}}"></view>
+                <view class="main-upload"  @tap='bindUploadImage' wx:if="{{uploadtype=='1' && vm.length<maxCount-0}}"></view>
+                <view class="main-upload"  @tap='bindUploadVideo' wx:if="{{uploadtype=='2' && vm.length<maxCount-0}}"></view>
                 <view class="main-show-image" wx:for='{{vm}}' wx:key='index'>
                     <image class="main-upload-image" data-index='{{index}}' src="{{item}}" @tap="bindPreviewImage({{index}})" wx:if="{{uploadtype==='1'}}"/>
                     <view class="main-upload-video" data-index='{{index}}' @tap="bindPlayVideo({{item}})" wx:else><image class="main-upload-video-arrow" src="https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/img/video-play.png"/></view>
-                    <view class="main-del-image" hidden="{{loading ||uploadtype==='2'}}" @tap.stop="onCancelImage"></view>
+                    <view class="main-del-image" hidden="{{loading}}" @tap.stop="onCancelImage" wx:if="{{showDelete}}"></view>
                 </view>
             </view>
         </view>
@@ -27,9 +27,11 @@ export default class Uploader extends wepy.component {
     }
     props = {
         uploadtype: String,
-        maxSize: {
-            type: Number,
-            default: '3',
+        maxSize: String,
+        maxCount: String,
+        showDelete: {
+            type: Boolean,
+            default: true,
         },
         uploadingImage: {
             type: String,
@@ -44,12 +46,18 @@ export default class Uploader extends wepy.component {
             default: '/wosFileUpload',
         },
     }
+    computed = {
+        currentCount () {
+            const count = this.maxCount - this.vm.length;
+            return count > 0 ? count : 0;
+        },
+    }
     methods = {
         async bindUploadImage () {
             if (this.uploading) return;
             const self = this;
             const start = this.data.vm.length || 0;
-            const { tempFilePaths } = await wepy.chooseImage();
+            const { tempFilePaths } = await wepy.chooseImage({ count: this.currentCount, sizeType: 'compressed' });
             console.log(tempFilePaths);
             const fileSize = tempFilePaths.length;
             let sfileset = [...self.vm];

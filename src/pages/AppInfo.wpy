@@ -126,6 +126,7 @@ export default class AppInfo extends wepy.page {
             max-width: 450rpx;
             line-height: 48rpx;
             overflow: hidden;
+            white-space: nowrap;
             text-overflow: ellipsis;
             font-family: PingFangSC-Medium;
             font-size: 34rpx;
@@ -175,12 +176,13 @@ export default class AppInfo extends wepy.page {
             margin-bottom: 18rpx;
         }
         .appinfo-address {
+            line-height: 40rpx;
             margin-bottom: 0;
             display: -webkit-box;
-            -webkit-box-orient: vertical;
-            -webit-box-line-clamp: 2;
-            text-overflow: ellipsis;
             overflow: hidden;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            text-overflow: ellipsis;
         }
     }
     .appinfo-qrcode-off {
