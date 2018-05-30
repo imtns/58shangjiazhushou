@@ -77,7 +77,6 @@ export default class NoticeList extends wepy.page {
             const { data } = await get('/mplogic/msglist');
             const { msglist, unreadcount } = data;
             this.unreadcount = unreadcount;
-            this.$apply();
             if (msglist && msglist.length > 0) {
                 const arr = [];
                 msglist.forEach((item) => {
@@ -88,8 +87,10 @@ export default class NoticeList extends wepy.page {
                     arr.push(ele);
                 });
                 this.noticeList = arr;
-                this.$apply();
+            } else {
+                this.noticeList = [];
             }
+            this.$apply();
         } catch (e) {
             console.log(e);
         }
