@@ -93,8 +93,8 @@ export default class AppEdit extends wepy.page {
             );
         }
         // 是否可保存
-        const enableSave = form.headImg && form.nickName && form.telphone && form.city
-            && form.address;
+        const enableSave = !!(form.headImg && form.nickName && form.telphone && form.city
+            && form.address);
         this.form = Object.assign({}, form, { ...res, enableSave });
         this.$apply();
     }

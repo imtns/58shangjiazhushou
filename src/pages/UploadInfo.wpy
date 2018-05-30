@@ -36,7 +36,8 @@
                 </view>
             </view>
         </view> -->
-        <imageuploader @changeimages.user="setImages" :maxSize="maxImageSize" uploadtype="1"></imageuploader>
+        <imageuploader @changeimages.user="setImages" maxCount="10" maxSize="4"
+         uploadtype="1" :showDelete="showImageDelete"></imageuploader>
         <view class="main-title">注：最多上传10张，大小不超过4M</view>
         <!-- <view class="main-body">
         <view class="main-title">上传视频</view>
@@ -48,7 +49,8 @@
                 </view>
             </view>
         </view> -->
-        <videouploader @changeimages.user="setVideo" :maxSize="maxVideoSize" uploadtype="2"></videouploader>
+        <videouploader @changeimages.user="setVideo" maxCount="5" maxSize="200"
+         uploadtype="2" :showDelete="showVideoDelete"></videouploader>
         <view class="main-title">注：最多上传5个，大小不超过200M</view>
         <view class="main-body">
             <view class="main-boy-line">
@@ -89,8 +91,8 @@ export default class UploadInfo extends wepy.page {
         videouploader: UploadFile,
     }
     data = {
-        maxImageSize: 10,
-        maxVideoSize: 5,
+        showImageDelete: false,
+        showVideoDelete: false,
         form: {
             textSize: 0,
             text: '',
