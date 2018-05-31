@@ -17,10 +17,10 @@
                                 <view class="notice-weixin-type {{item.app_type === 1 ? 'youxiang' : ''}}">{{item.app_type === 1 ? '优享' : '微信'}}</view>
                                 <view class="notice-weixin-name">{{item.mpName}}</view>
                             </view>
-                            <view class="notice-msg">{{item.title}}</view>
+                            <view class="notice-msg">{{item.content}}</view>
                         </view>
                         <view class="notice-state" data-item="{{item}}" bindtap="touploadInfo">
-                            <view class="notice-status">{{item.msgType === 1 ? '已授权' : item.msgType === 2 ? '注册成功' : item.msgType === 3 ? '审核中' : item.msgType === 4 ? '审核通过' : item.msgType === 5 ? '审核失败' : '已上线'}}</view>
+                            <view class="notice-status">{{item.title}}</view>
                             <view class="notice-time">{{item.createTime}}</view>
                         </view>
                     </view>
@@ -105,10 +105,10 @@ export default class NoticeList extends wepy.page {
     async clearAll() {
         try {
             console.log(this.noticeList.length <= 0);
-            // if (this.noticeList.length <= 0) {
-            //     toast('没有消息，无需清空~');
-            //     return;
-            // }
+            if (this.noticeList.length <= 0) {
+                toast('没有消息，无需清空~');
+                return;
+            }
             await get('/mplogic/msgclearall');
             sleep();
             this.loadList();
