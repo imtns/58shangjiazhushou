@@ -55,31 +55,31 @@ export default class Index extends wepy.page {
     };
     data = {
         business: [{
-            src: 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/code1.png',
+            src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code1.png',
             name: '家装服务',
         }, {
-            src: 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/code2.png',
+            src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code2.png',
             name: '会展策划',
         }, {
-            src: 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/code3.png',
+            src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code3.png',
             name: '健身培训',
         }, {
-            src: 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/code4.png',
+            src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code4.png',
             name: '货运物流',
         }, {
-            src: 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/code5.png',
+            src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code5.png',
             name: '艺术培训',
         }, {
-            src: 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/code6.png',
+            src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code6.png',
             name: '电脑租赁',
         }, {
-            src: 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/code7.png',
+            src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code7.png',
             name: '维修服务',
         }, {
-            src: 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/code8.png',
+            src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code8.png',
             name: '家政保洁',
         }, {
-            src: 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/code9.png',
+            src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code9.png',
             name: '商务服务',
         }],
         advantage: [{
@@ -148,7 +148,7 @@ export default class Index extends wepy.page {
         padding-bottom: 20rpx;
         .header{
             height: 498rpx;
-            background: url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/intro_header.png) no-repeat center;
+            background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/intro_header.png) no-repeat center;
             background-size: 100% auto;
             text{
                 color: white;
@@ -197,7 +197,7 @@ export default class Index extends wepy.page {
                 .contnet-logo{
                     width: 321rpx;
                     height: 321rpx;
-                    background: url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/group.png) no-repeat center;
+                    background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/group.png) no-repeat center;
                     background-size:100% auto;
                 }
             }
@@ -209,7 +209,7 @@ export default class Index extends wepy.page {
                     margin: 30rpx 0;
                     @each $icon in icon0, icon1, icon2, icon3, icon4, icon5{
                         & .#{$icon} {
-                            background: url('http://static.58.com/lbg/shangjiaxcxht/zhushou/img/#{$icon}.png') center no-repeat;
+                            background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/#{$icon}.png') center no-repeat;
                             background-size: 100% auto;
                             width: 100rpx;
                             height: 100rpx;
@@ -265,7 +265,7 @@ export default class Index extends wepy.page {
                 margin-top: 59rpx;
                 display: block;
                 line-height: 74rpx;
-                background: url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/intro_title_bg.png) no-repeat center;
+                background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/intro_title_bg.png) no-repeat center;
                 background-size:100% auto;
             }
         }

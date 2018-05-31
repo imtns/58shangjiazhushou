@@ -73,19 +73,19 @@ export default class Home extends wepy.page {
         },
         items: [
             {
-                iconPath: 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-my.png',
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-my.png',
                 text: '我的小程序',
             }, {
-                iconPath: 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-upload.png',
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-upload.png',
                 text: '上传素材',
             }, {
-                iconPath: 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-register.png',
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-register.png',
                 text: '微信注册信息',
             }, {
-                iconPath: 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-progress.png',
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-progress.png',
                 text: '完成度',
             }, {
-                iconPath: 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-advice.png',
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-advice.png',
                 text: '意见反馈',
             },
         ],
@@ -431,7 +431,7 @@ export default class Home extends wepy.page {
                     overflow:hidden;
                 }
                 .active{
-                    background:url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/correct-home.png) no-repeat right;
+                    background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/correct-home.png) no-repeat right;
                     background-size:34rpx 34rpx;
                     color:#4E88FF;
                 }
@@ -465,7 +465,7 @@ export default class Home extends wepy.page {
             .welcome-block{
                 width:100%;
                 height:299rpx;
-                background:url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/welcome-block.png) no-repeat;
+                background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/welcome-block.png) no-repeat;
                 background-size:100% auto;
                 padding:50rpx 40rpx 0 40rpx;
                 position:relative;

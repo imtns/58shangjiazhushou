@@ -31,7 +31,7 @@ export default class UploaderCom extends wepy.component {
                         return;
                     }
                     toast('上传成功。');
-                    that.$emit('childFn', this.title, `http://pic1.58cdn.com.cn${result.content}`);
+                    that.$emit('childFn', this.title, `https://pic1.58cdn.com.cn${result.content}`);
                 });
             } catch (e) {
                 console.log(e);

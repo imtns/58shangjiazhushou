@@ -6,7 +6,7 @@
             <view class="nameBox">
                 <view class="name">{{business.current.nickName}}</view>
                 <view class="type">
-                    <image class="logo" mode="{{aspectFit}}" src="{{business.current.app_type === 1 ? 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png'}}"></image>
+                    <image class="logo" mode="{{aspectFit}}" src="{{business.current.app_type === 1 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png'}}"></image>
                 </view>
             </view>
             <view class="date">有效期至 {{business.current.expiryDate}}</view>
@@ -151,19 +151,19 @@ export default class Index extends wepy.page {
                         width: 40rpx;
                     }
                     .success{
-                        background:url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/sucess.png) no-repeat center !important;
+                        background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/sucess.png) no-repeat center !important;
                         background-size: 100% auto !important;
                     }
                     .pending{
-                        background:url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/pending.png) no-repeat center !important;
+                        background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/pending.png) no-repeat center !important;
                         background-size: 100% auto !important;
                     }
                     .fail{
-                        background:url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/fail.png) no-repeat center !important;
+                        background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/fail.png) no-repeat center !important;
                         background-size: 100% auto !important;
                     }
                     .notyet{
-                        background:url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/notyet.png) no-repeat center;
+                        background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/notyet.png) no-repeat center;
                         background-size: 100% auto;
                     }
                     .text,.time{
