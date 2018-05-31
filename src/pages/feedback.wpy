@@ -82,10 +82,11 @@ export default class Feedback extends wepy.page {
             wepy.navigateTo({
                 url: './PopQuestions',
             });
+        } else {
+            wepy.navigateTo({
+                url: `./feedbackDetail?type=${type}`,
+            });
         }
-        wepy.navigateTo({
-            url: `./feedbackDetail?type=${type}`,
-        });
     }
 }
 </script>
