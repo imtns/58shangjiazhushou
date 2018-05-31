@@ -7,20 +7,20 @@
         <scroll-view class="notice-list" wx:if="{{noticeList.length>0}}">
         <block wx:for="{{noticeList}}" wx:key="index">
             <view class="notice-list-item">
-                <view class="notice-item">
-                    <view class="notice-img {{unreadcount > 0 ? 'new-msg' : ''}}">
+                <view class="notice-item" bindtap="touploadInfo" data-item="{{item}}">
+                    <view class="notice-img {{item.status === 1 ? 'new-msg' : ''}}">
                         <image src="{{item.mpLogo || 'http://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=120&h=120'}}"></image>
                     </view>
                     <view class="notice-content">
                         <view class="notice-detail">
                             <view class="notice-name">
-                                <view class="notice-weixin-type {{item.mpType === 1 ? 'youxiang' : ''}}">{{item.mpType === 1 ? '优享' : '微信'}}</view>
+                                <view class="notice-weixin-type {{item.app_type === 1 ? 'youxiang' : ''}}">{{item.app_type === 1 ? '优享' : '微信'}}</view>
                                 <view class="notice-weixin-name">{{item.mpName}}</view>
                             </view>
-                            <view class="notice-msg">{{item.title}}</view>
+                            <view class="notice-msg">{{item.content}}</view>
                         </view>
-                        <view class="notice-state" data-item="{{item}}" bindtap="touploadInfo">
-                            <view class="notice-status">{{item.msgType === 1 ? '已授权' : item.msgType === 2 ? '注册成功' : item.msgType === 3 ? '审核中' : item.msgType === 4 ? '审核通过' : item.msgType === 5 ? '审核失败' : '已上线'}}</view>
+                        <view class="notice-state">
+                            <view class="notice-status">{{item.title}}</view>
                             <view class="notice-time">{{item.createTime}}</view>
                         </view>
                     </view>
@@ -38,7 +38,7 @@
 <script>
 import wepy from 'wepy';
 
-import { sleep } from '../utils/index';
+import { sleep, toast } from '../utils/index';
 
 import { get } from '../utils/ajax';
 
@@ -97,7 +97,8 @@ export default class NoticeList extends wepy.page {
     }
     touploadInfo(e) {
         const { item } = e.currentTarget.dataset;
-        if (item.msgType !== 5 && item.mpType !== 1) return;
+        // 微信小程序，审核失败，进 上传素材页面
+        if (item.msgType !== 5 && item.app_type !== 1) return;
         wepy.navigateTo({
             url: '../uploadInfo',
         });
@@ -105,10 +106,10 @@ export default class NoticeList extends wepy.page {
     async clearAll() {
         try {
             console.log(this.noticeList.length <= 0);
-            // if (this.noticeList.length <= 0) {
-            //     toast('没有消息，无需清空~');
-            //     return;
-            // }
+            if (this.noticeList.length <= 0) {
+                toast('没有消息，无需清空~');
+                return;
+            }
             await get('/mplogic/msgclearall');
             sleep();
             this.loadList();

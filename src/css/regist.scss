@@ -58,7 +58,7 @@ view{
                 border-radius: 2rpx;
                 font-size: 26rpx;
                 letter-spacing: 0;
-                max-width:200rpx;
+                max-width:230rpx;
                 margin-top:13rpx;
             }
         }
@@ -149,7 +149,7 @@ view{
         }
     }
     .regist-remind-steps.regist-remind-horizontal{
-        width:340rpx;
+        width:320rpx;
         position:relative;
         &::before{
             content:"";
@@ -157,7 +157,7 @@ view{
             height:2rpx;
             background: rgba(78,136,255,0.50);
             position:absolute;
-            left:30rpx;
+            left:25rpx;
             top:50rpx;
         }
         &::after{
@@ -166,7 +166,7 @@ view{
             height:2rpx;
             background: rgba(78,136,255,0.50);
             position:absolute;
-            right:30rpx;
+            right:25rpx;
             top:50rpx;
         }
     }
