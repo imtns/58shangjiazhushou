@@ -1,5 +1,5 @@
 <template>
-    <view class="appinfo-container">
+    <view class="appinfo-container" hidden="{{loading}}">
         <view class="appinfo-base">
             <image class="appinfo-logo" src="{{logo}}"/>
             <view class="appinfo-title-wrap">
@@ -39,6 +39,7 @@ export default class AppInfo extends wepy.page {
     }
     data = {
         verifyStatus: ['未审核', '审核中', '审核成功', '审核失败'],
+        loading: true,
         appInfo: {
             address: '北京市58赶集集团总部(北京市朝阳区)',
             addressLatitude: '39.98732882997409',
@@ -100,6 +101,7 @@ export default class AppInfo extends wepy.page {
     }
     async getAppInfo (mpid) {
         const { data } = await get(`${appinfoApi}/${mpid}`);
+        this.loading = false;
         this.updateAppInfo(data);
     }
     async onLoad (options) {

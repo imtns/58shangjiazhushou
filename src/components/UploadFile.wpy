@@ -16,8 +16,9 @@
 </template>
 <script>
 import wepy from 'wepy';
+import { toast } from '../utils';
 
-const host = 'http://yaofa.58.com';
+const host = 'https://yaofa.58.com';
 export default class Uploader extends wepy.component {
     data = {
         uploading: false,
@@ -78,7 +79,12 @@ export default class Uploader extends wepy.component {
             self.vm = [...sfileset];
             self.$apply();
             tempFilePaths.map(async (file, i) => {
-                const response = await self.uploadImage(file);
+                let response;
+                try {
+                    response = await self.uploadImage(file);
+                } catch ({ errMsg }) {
+                    toast(errMsg);
+                }
                 let res;
                 try {
                     res = JSON.parse(response.data);

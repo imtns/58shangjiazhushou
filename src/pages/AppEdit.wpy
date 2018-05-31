@@ -1,5 +1,5 @@
 <template>
-    <view class="appedit-container">
+    <view class="appedit-container" hidden="{{loading}}">
         <view class="appedit-header" @tap="setLogo" wx:if="{{form.app_type==1 || !form.headImg}}">
             <text class="appedit-form-label">上传小程序标志</text>
             <image class="appedit-form-logo" src="{{logoUrl}}" />
@@ -53,7 +53,7 @@ import wepy from 'wepy';
 import { picSrcDomain, filteremoji } from '../utils';
 import { get } from '../utils/ajaxP';
 
-const host = 'http://yaofa.58.com';
+const host = 'https://yaofa.58.com';
 const uploadApi = `${host}/fileUpload`;
 const provinceApi = '/local/provinces';
 const cityApi = '/local/citys/';
@@ -66,6 +66,7 @@ export default class AppEdit extends wepy.page {
         navigationBarTitleText: '小程序编辑',
     }
     data = {
+        loading: true,
         mpid: '',
         areas: [[], []],
         selCityIndex: [0, 0],
@@ -165,6 +166,7 @@ export default class AppEdit extends wepy.page {
         }
         console.log('provinces', data1, 'citys', data2);
         this.areas = [data1, data2];
+        this.loading = false;
         this.$apply();
     }
     async getLocation () {
@@ -270,8 +272,8 @@ export default class AppEdit extends wepy.page {
                 } else {
                     this.toast(msg);
                 }
-            } catch (e) {
-                this.toast(e.message);
+            } catch ({ errMsg }) {
+                this.toast(errMsg);
             }
         },
         setAppName (e) {
