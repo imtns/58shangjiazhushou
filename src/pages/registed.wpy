@@ -41,9 +41,13 @@ export default class Registed extends wepy.page {
     onLoad () {
     }
     onShow () {
-        console.log(this.currentApp);
-        this.current_mpid = wepy.getStorageSync('current_mpid') || '';
+        try {
+            this.current_mpid = wepy.getStorageSync('current_mpid') || '';
+        } catch (e) {
+            console.log(e);
+        }
         this.otherlist = [];
+        this.currentApp = [];
         this.$apply();
         this.loadList();
     }
@@ -55,22 +59,25 @@ export default class Registed extends wepy.page {
         });
     }
     async loadList () {
-        const { data } = await get('/mplogic/mysignmplist');
-        const { mpinfos } = data;
-        if (mpinfos.length <= 0) return;
-        mpinfos.forEach((appinfo) => {
-            const ele = appinfo;
-            if (ele.headImg && ele.headImg.indexOf('http') === -1) {
-                ele.headImg = `https://pic1.58cdn.com.cn${ele.headImg}`;
-            }
-            if (ele.id === this.current_mpid) {
-                this.currentApp.push(ele);
-            } else if (ele.nickName !== '') {
-                this.otherlist.push(ele);
-            }
-        });
-        this.$apply();
-        console.log(this.currentApp);
+        try {
+            const { data } = await get('/mplogic/mysignmplist');
+            const { mpinfos } = data;
+            if (mpinfos.length <= 0) return;
+            mpinfos.forEach((appinfo) => {
+                const ele = appinfo;
+                if (ele.headImg && ele.headImg.indexOf('http') === -1) {
+                    ele.headImg = `https://pic1.58cdn.com.cn${ele.headImg}`;
+                }
+                if (ele.id === this.current_mpid) {
+                    this.currentApp.push(ele);
+                } else if (ele.nickName !== '') {
+                    this.otherlist.push(ele);
+                }
+            });
+            this.$apply();
+        } catch (e) {
+            console.log(e);
+        }
     }
 }
 </script>

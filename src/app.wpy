@@ -43,19 +43,6 @@ export default class extends wepy.app {
     onShow (options) {
         const { path } = options;
         console.log(path);
-        if (!wepy.getStorageSync('ppu') && path !== 'pages/intro') {
-            setTimeout(() => {
-                wepy.reLaunch({
-                    url: '/pages/intro',
-                });
-            }, 1000);
-        } else {
-            setTimeout(() => {
-                wepy.reLaunch({
-                    url: '/pages/home',
-                });
-            }, 1000);
-        }
         if (options.scene === 1038) {
             if (!options.referrerInfo) {
                 console.log('options.referrerInfo为空');
