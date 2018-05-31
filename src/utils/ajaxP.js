@@ -11,7 +11,7 @@ const http = (method, ...props) => {
     console.log('请求接口', url);
     showLoading && wepy.showLoading && wepy.showLoading({ title: '加载中', mask: true });
     return new Promise((resolve) => {
-        wx.request({
+        wepy.request({
             url: host + url + (~url.indexOf('?') ? '' : '?') + (+new Date()).toString(36).substr(3),
             data: sendData,
             method: method,
@@ -21,27 +21,25 @@ const http = (method, ...props) => {
                 PPU: ppu || 'wanghongyue',
                 reqfrom: 'biz_assistant',
             },
-            success(response) {
-                console.log('response', response);
-                const { state, msg, data } = response.data;
-                if (state === 100) {
-                    resolve([null, data]);
-                } else if (state === -10001) {
-                    toast(msg);
-                    wepy.redirectTo({
+        }).then((response) => {
+            console.log('response', response);
+            showLoading && wepy.hideLoading && wepy.hideLoading();
+            const { state, msg, data } = response.data;
+            if (state === 100) {
+                resolve([null, data]);
+            } else if (state === -10001) {
+                toast(msg);
+                setTimeout(() => {
+                    wepy.reLaunch({
                         url: '../pages/intro',
                     });
-                    resolve([msg]);
-                } else {
-                    resolve([msg]);
-                }
-            },
-            fail(e) {
-                resolve([e]);
-            },
-            complete() {
-                showLoading && wepy.hideLoading && wepy.hideLoading();
-            },
+                }, 1000);
+            } else {
+                resolve([msg]);
+            }
+        }).catch((err) => {
+            showLoading && wepy.hideLoading && wepy.hideLoading();
+            resolve([err.message]);
         });
     });
 };
