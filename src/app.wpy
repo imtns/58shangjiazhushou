@@ -9,8 +9,8 @@ export default class extends wepy.app {
     }
     config = {
         pages: [
-            'pages/intro', // 没有登陆的介绍页面
             'pages/home', // 登陆之后的主页
+            'pages/intro', // 没有登陆的介绍页面
             'pages/myMp', // 我的小程序
             'pages/AppInfo', // 小程序信息
             'pages/UploadInfo', // 上传素材首页
@@ -44,29 +44,17 @@ export default class extends wepy.app {
         const { path } = options;
         console.log(path);
         if (!wepy.getStorageSync('ppu') && path !== 'pages/intro') {
-            try {
+            setTimeout(() => {
                 wepy.reLaunch({
                     url: '/pages/intro',
                 });
-            } catch (e) {
-                setTimeout(() => {
-                    wepy.reLaunch({
-                        url: '/pages/intro',
-                    });
-                }, 1000);
-            }
+            }, 1000);
         } else {
-            try {
+            setTimeout(() => {
                 wepy.reLaunch({
                     url: '/pages/home',
                 });
-            } catch (e) {
-                setTimeout(() => {
-                    wepy.reLaunch({
-                        url: '/pages/home',
-                    });
-                }, 1000);
-            }
+            }, 1000);
         }
         if (options.scene === 1038) {
             if (!options.referrerInfo) {
@@ -82,17 +70,11 @@ export default class extends wepy.app {
             if (extraData.ppu !== undefined) { // 如果获取ppu成功
                 console.log(`获取PPU成功！ ${extraData.ppu}`);
                 wepy.setStorageSync('ppu', extraData.ppu);
-                try {
+                setTimeout(() => {
                     wepy.reLaunch({
                         url: '/pages/home',
                     });
-                } catch (e) {
-                    setTimeout(() => {
-                        wepy.reLaunch({
-                            url: '/pages/home',
-                        });
-                    }, 1000);
-                }
+                }, 1000);
             }
         }
     }
