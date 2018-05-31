@@ -14,7 +14,7 @@
                     <view class="notice-content">
                         <view class="notice-detail">
                             <view class="notice-name">
-                                <view class="notice-weixin-type {{item.mpType == 1 ? 'youxiang' : ''}}">{{item.mpType == 1 ? '优享' : '微信'}}</view>
+                                <view class="notice-weixin-type {{item.mpType === 1 ? 'youxiang' : ''}}">{{item.mpType === 1 ? '优享' : '微信'}}</view>
                                 <view class="notice-weixin-name">{{item.mpName}}</view>
                             </view>
                             <view class="notice-msg">{{item.title}}</view>

@@ -11,7 +11,7 @@
             <textarea class="main-body-textarea" placeholder="您的留言会及时通知到相关助理及管理员" placeholder-style="font-size: 30rpx;color: #CCCCCC" maxlength="500" bindinput="input" value="{{content}}"></textarea>
             <view class="main-text-size">{{content.length}}/500</view>
         </view>
-        <view class="main-button" bindtap="submit" style="margin-top:420rpx;">提交</view>
+        <view class="main-button" bindtap="submit" style="margin-bottom:100rpx;">提交</view>
     </view>
 </template>
 
@@ -35,6 +35,10 @@ export default class Feedback extends wepy.page {
             {
                 type: '2',
                 text: '微信小程序介绍',
+            },
+            {
+                type: '3',
+                text: '登录常见问题',
             },
         ],
         content: '',
@@ -74,6 +78,11 @@ export default class Feedback extends wepy.page {
     }
     tofeedbackDetail(e) {
         const { type } = e.currentTarget.dataset;
+        if (type === '3') {
+            wepy.navigateTo({
+                url: './PopQuestions',
+            });
+        }
         wepy.navigateTo({
             url: `./feedbackDetail?type=${type}`,
         });
