@@ -229,6 +229,14 @@ export default class Uploader extends wepy.component {
     onLoad () {
         console.log('UploadFileComponent', this.data);
     }
+    onHide () {
+        this.vm = [];
+        this.images = [];
+    }
+    onUnload () {
+        this.vm = [];
+        this.images = [];
+    }
 }
 </script>
 <style lang="scss">
