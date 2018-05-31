@@ -35,7 +35,7 @@ export default class Uploader extends wepy.component {
         },
         uploadingImage: {
             type: String,
-            default: 'https://static.58.com/lbg/mengchong/image/element/upimg_loading_1.gif',
+            default: 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/img/upimg_loading_1.gif',
         },
         uploadImageApi: {
             type: String,
@@ -227,7 +227,9 @@ export default class Uploader extends wepy.component {
         return ret;
     }
     onLoad () {
-        console.log('UploadFileComponent', this.data);
+        this.vm = [];
+        this.images = [];
+        this.$apply();
     }
 }
 </script>
