@@ -1,6 +1,6 @@
 <template>
     <view class="appedit-container">
-        <view class="appedit-header" @tap="setLogo" wx:if="{{form.app_type==1}}">
+        <view class="appedit-header" @tap="setLogo" wx:if="{{form.app_type==1 || !form.headImg}}">
             <text class="appedit-form-label">上传小程序标志</text>
             <image class="appedit-form-logo" src="{{logoUrl}}" />
             <text class="appedit-form-arrow"></text>
@@ -50,7 +50,7 @@
 
 <script>
 import wepy from 'wepy';
-import { sleep, picSrcDomain, filteremoji } from '../utils';
+import { picSrcDomain, filteremoji } from '../utils';
 import { get } from '../utils/ajaxP';
 
 const host = 'http://yaofa.58.com';
@@ -78,12 +78,12 @@ export default class AppEdit extends wepy.page {
     }
     computed = {
         logoUrl () {
-            let { headImg = 'https://pic2.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png' } = this.form;
+            let { headImg = 'http://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=72&h=72' } = this.form;
             headImg = this.tempLogo || headImg;
             if (headImg.indexOf('http') >= 0 || headImg.indexOf('file:') >= 0) {
                 return headImg;
             }
-            return picSrcDomain() + headImg;
+            return `${picSrcDomain() + headImg}?w=72&h=72`;
         },
         enableSave () {
             return !!(this.form.nickName
@@ -193,7 +193,7 @@ export default class AppEdit extends wepy.page {
         const { form } = this.data;
         if (!form.headImg) {
             this.toast('请完善信息');
-            await sleep(1000);
+            return false;
         }
         if (!form.nickName) {
             this.toast('输入小程序名称');

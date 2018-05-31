@@ -1,7 +1,7 @@
 <template>
     <view class="appinfo-container">
         <view class="appinfo-base">
-            <image class="appinfo-logo" src="{{appInfo.logo}}"/>
+            <image class="appinfo-logo" src="{{logo}}"/>
             <view class="appinfo-title-wrap">
                 <view class="appinfo-title">{{appInfo.nickName}}</view>
                 <view class="appinfo-date">有效期至 {{appInfo.date}}</view>
@@ -40,7 +40,6 @@ export default class AppInfo extends wepy.page {
     data = {
         verifyStatus: ['未审核', '审核中', '审核成功', '审核失败'],
         appInfo: {
-            logo: 'https://pic2.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png',
             address: '北京市58赶集集团总部(北京市朝阳区)',
             addressLatitude: '39.98732882997409',
             addressLongitude: '116.50490223791194',
@@ -76,6 +75,13 @@ export default class AppInfo extends wepy.page {
             }
             return ret;
         },
+        logo () {
+            const { headImg = 'http://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png' } = this.appInfo;
+            if (headImg.indexOf('http') < 0) {
+                return `${picSrcDomain() + headImg}?w=128&h=128`;
+            }
+            return headImg;
+        },
     }
     methods = {
         bindScanQrcode (qrcodeUrl) {
@@ -86,9 +92,6 @@ export default class AppInfo extends wepy.page {
     }
     updateAppInfo (data) {
         const res = data;
-        if (res.headImg) {
-            res.logo = picSrcDomain() + res.headImg;
-        }
         if (res.expiryDate) {
             [res.date] = res.expiryDate.match(/\d{4}-\d{2}-\d{2}/);
         }
