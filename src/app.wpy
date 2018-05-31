@@ -1,6 +1,7 @@
 <script>
 import wepy from 'wepy';
 import 'wepy-async-function';
+// import { alert } from './utils';
 
 export default class extends wepy.app {
     constructor() {
@@ -44,7 +45,10 @@ export default class extends wepy.app {
     onShow (options) {
         const { path } = options;
         console.log(path);
-        if (options.scene === 1038) {
+        // const pages = getCurrentPages();
+        // const currPage = pages[pages.length - 1];
+        // console.log('currPage', currPage.route);
+        if (options.scene === 1038 && path === 'pages/intro') {
             if (!options.referrerInfo) {
                 console.log('options.referrerInfo为空');
             }
