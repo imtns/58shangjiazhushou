@@ -39,7 +39,7 @@ const http = (method, ...props) => {
             }
         }).catch((err) => {
             showLoading && wepy.hideLoading && wepy.hideLoading();
-            resolve([err.message]);
+            resolve([err.errMsg]);
         });
     });
 };

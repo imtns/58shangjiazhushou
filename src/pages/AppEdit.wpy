@@ -2,12 +2,12 @@
     <view class="appedit-container" hidden="{{loading}}">
         <view class="appedit-header" @tap="setLogo" wx:if="{{form.app_type==1 || !form.headImg}}">
             <text class="appedit-form-label">上传小程序标志</text>
-            <image class="appedit-form-logo" src="{{logoUrl}}" />
+            <image class="appedit-form-logo" mode="aspectFill" src="{{logoUrl}}" />
             <text class="appedit-form-arrow"></text>
         </view>
         <view class="appedit-header" wx:else>
             <text class="appedit-form-label">上传小程序标志</text>
-            <image class="appedit-form-logo" src="{{logoUrl}}" />
+            <image class="appedit-form-logo" mode="aspectFill" src="{{logoUrl}}" />
         </view>
         <view class="appedit-content-list">
             <view class="appedit-content-list-item">

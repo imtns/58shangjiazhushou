@@ -134,7 +134,7 @@ export default class AppInfo extends wepy.page {
             margin-right: 20rpx;
             width: 128rpx;
             height: 128rpx;
-            border: 1rpx solid #e7e7e7;
+            border: 2rpx solid #e7e7e7;
         }
         .appinfo-title-wrap {
             display: inline-block;
