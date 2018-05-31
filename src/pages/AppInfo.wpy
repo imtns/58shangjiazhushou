@@ -69,11 +69,13 @@ export default class AppInfo extends wepy.page {
     }
     computed = {
         qrcodeUrl () {
-            const { qrcodeUrl = '' } = this.appInfo;
-            if (qrcodeUrl && qrcodeUrl.indexOf('http') < 0) {
-                return picSrcDomain() + qrcodeUrl;
+            const { qrcodeUrl, wbQrcodeUrl } = this.appInfo;
+            const appType = this.appInfo.app_type;
+            const ret = appType === 1 ? wbQrcodeUrl : qrcodeUrl;
+            if (ret && ret.indexOf('http') < 0) {
+                return picSrcDomain() + ret;
             }
-            return qrcodeUrl;
+            return ret;
         },
     }
     methods = {
