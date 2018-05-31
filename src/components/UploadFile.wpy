@@ -35,7 +35,7 @@ export default class Uploader extends wepy.component {
         },
         uploadingImage: {
             type: String,
-            default: 'https://static.58.com/lbg/mengchong/image/element/upimg_loading_1.gif',
+            default: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png',
         },
         uploadImageApi: {
             type: String,
