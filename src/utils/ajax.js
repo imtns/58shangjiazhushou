@@ -35,7 +35,7 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
                 // callback && callback(null, response.data);
             } else if (state == -10001) {
                 toast(msg);
-                wepy.redirectTo({
+                wepy.reLaunch({
                     url: '../pages/intro',
                 });
                 reject(msg);
