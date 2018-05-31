@@ -117,8 +117,9 @@ export default class Home extends wepy.page {
                     });
                     break;
                 case 4:
+                    wepy.setStorageSync('registMappid', this.business.selected.id);
                     wepy.navigateTo({
-                        url: 'progress',
+                        url: 'registMainAccount',
                     });
                     break;
                 case 5:
