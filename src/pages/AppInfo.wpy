@@ -18,7 +18,7 @@
         </view>
         <view class="appinfo-qrcode" wx:if="{{appInfo.qrcodeUrl}}">
             <view class="appinfo-qrcode-label">小程序码：</view>
-            <image class="appinfo-qrcode-img" src="{{appInfo.qrcodeUrl}}"/>
+            <image class="appinfo-qrcode-img" src="{{qrcodeUrl}}" @tap="bindScanQrcode({{qrcodeUrl}})"/>
         </view>
         <view class="appinfo-qrcode-off" wx:else>
             <view class="">小程序码：上线后展示</view>
@@ -67,6 +67,22 @@ export default class AppInfo extends wepy.page {
             wbQrcodeUrl: '',
         },
     }
+    computed = {
+        qrcodeUrl () {
+            const { qrcodeUrl = '' } = this.appInfo;
+            if (qrcodeUrl && qrcodeUrl.indexOf('http') < 0) {
+                return picSrcDomain() + qrcodeUrl;
+            }
+            return qrcodeUrl;
+        },
+    }
+    methods = {
+        bindScanQrcode (qrcodeUrl) {
+            wepy.previewImage({
+                urls: [qrcodeUrl],
+            });
+        },
+    }
     updateAppInfo (data) {
         const res = data;
         if (res.headImg) {
@@ -74,9 +90,6 @@ export default class AppInfo extends wepy.page {
         }
         if (res.expiryDate) {
             [res.date] = res.expiryDate.match(/\d{4}-\d{2}-\d{2}/);
-        }
-        if (res.qrcodeUrl) {
-            res.qrcodeUrl = picSrcDomain() + res.qrcodeUrl;
         }
         this.appInfo = Object.assign({}, this.appInfo, res);
         this.$apply();
