@@ -173,6 +173,8 @@ export default class Home extends wepy.page {
                 const formatedOther = others.map((item) => this.formatedMp(item));
                 this.business = Object.assign({}, this.business, {
                     mps: formatedOther,
+                    chosedId: 0,
+                    canConfirm: false,
                 });
                 // this.business.mps.map((appinfo, index) => {
                 //     if (appinfo.id === this.business.selected.id) {
@@ -433,7 +435,7 @@ export default class Home extends wepy.page {
                 }
                 .active{
                     background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/correct-home.png) no-repeat right;
-                    background-size:34rpx 34rpx;
+                    background-size:34.5rpx 34.5rpx;
                     color:#4E88FF;
                 }
             }
