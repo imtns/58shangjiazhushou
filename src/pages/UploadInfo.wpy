@@ -195,7 +195,7 @@ export default class UploadInfo extends wepy.page {
 <style lang="scss">
 @import '../css/regist.scss';
 .uploadInfo {
-    padding-bottom: 70rpx;
+    padding-bottom: 30rpx;
     .article {
         padding: 30rpx;
         background: white;
@@ -242,6 +242,9 @@ export default class UploadInfo extends wepy.page {
             color: #999999;
             margin-bottom: 16rpx;
         }
+    }
+    .main-button {
+        margin: 60rpx auto 0;
     }
     .main-button-disable {
         background: #ccc;

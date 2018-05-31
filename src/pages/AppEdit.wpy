@@ -39,8 +39,10 @@
                 <textarea name="" id="" cols="30" rows="10" class="appedit-form-input-addressdetail"  placeholder="请输入" placeholder-class="appedit-form-placeholder" @input="setDetailAdress" value="{{form.address}}"></textarea>
             </view>
         </view>
-        <map id="map" class="appedit-map" longitude="{{longitude}}" 
-        latitude="{{latitude}}" scale="14" markers="{{markers}}"></map>
+        <view class="appedit-map">
+            <map id="map"  class="appedit-map-in" longitude="{{longitude}}" latitude="{{latitude}}"
+             scale="14" markers="{{markers}}"></map>
+        </view>
         <view class="appedit-submit submit-enable" @tap="bindSave" wx:if="{{enableSave}}">保存</view>
         <view class="appedit-submit" @tap="bindSave" wx:else>保存</view>
     </view>
@@ -340,7 +342,7 @@ export default class AppEdit extends wepy.page {
     background: #f6f6f6;
     width: 100vw;
     height: 100vh;
-    padding-top: 20rpx;
+    padding: 20rpx 0 30rpx;
     .appedit-header {
         height: 110rpx;
         margin-bottom: 38rpx;
@@ -464,13 +466,17 @@ export default class AppEdit extends wepy.page {
     }
     .appedit-map {
         display: block;
-        width: 100%;
         height: 360rpx;
+        .appedit-map-in {
+            display: block;
+            width: 100%;
+            height: 360rpx;
+        }
     }
     .appedit-submit {
         width: 690rpx;
         line-height: 94rpx;
-        margin: 62rpx auto 0;
+        margin: 60rpx auto 0;
         background: #cccccc;
         border-radius: 4rpx;
         font-family: PingFangSC-Regular;

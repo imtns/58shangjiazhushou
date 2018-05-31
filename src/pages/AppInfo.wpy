@@ -10,8 +10,7 @@
             <view class="appinfo-weixin" wx:else>微信</view>
         </view>
         <view class="appinfo-status">
-            <view class="appinfo-auth" wx:if="{{appInfo.app_type==2}}">
-                授权状态：{{appInfo.status_desc}}</view>
+            <view class="appinfo-auth" wx:if="{{appInfo.app_type==2}}">授权状态：{{appInfo.status_desc}}</view>
             <view class="appinfo-verify">审核状态：{{appInfo.lastpublishState_desc}}</view>
             <view class="appinfo-telephone">联系电话：{{appInfo.telphone}}</view>
             <view class="appinfo-address">小程序地址：{{appInfo.address}}</view>
@@ -118,6 +117,7 @@ export default class AppInfo extends wepy.page {
 .appinfo-container {
     width: 100vw;
     height: 100vh;
+    padding-bottom: 30rpx;
     .appinfo-base {
         padding: 26rpx 30rpx;
         overflow: hidden;
@@ -226,7 +226,7 @@ export default class AppInfo extends wepy.page {
         }
     }
     .appinfo-edit {
-        margin: 454rpx auto 0;
+        margin: 60rpx auto 0;
         width: 690rpx;
         line-height: 94rpx;
         background: #4e88ff;

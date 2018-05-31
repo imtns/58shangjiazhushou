@@ -59,13 +59,13 @@ export default class UploadInfoSuccess extends wepy.page {
     text-align: center;
 }
 .uploadInfoSuccess-desc {
-    margin: 20rpx 30rpx 432rpx;
+    margin: 20rpx 30rpx 0;
     font-family: PingFangSC-Regular;
     font-size: 26rpx;
     color: #999999;
 }
 .uploadInfoSuccess-home {
-    margin: 0 30rpx;
+    margin: 60rpx 30rpx 0;
     background: #4e88ff;
     border-radius: 4rpx;
     line-height: 94rpx;
