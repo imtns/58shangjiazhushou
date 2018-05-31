@@ -12,7 +12,7 @@
                     </view>
                     <view class="details">
                         <view class="title"> 
-                            <image class="icon" mode="{{aspectFit}}" src="{{business.current.app_type === 1 ? 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png'}}"></image>
+                            <image class="icon" mode="{{aspectFit}}" src="{{business.current.app_type === 1 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png'}}"></image>
                             <view class="name">{{business.current.nickName}}</view>
                         </view>
                         <view class="deadline">有效期至 {{business.current.expiryDate}}</view>
@@ -38,7 +38,7 @@
                         </view>
                         <view class="details">
                             <view class="title"> 
-                                <image class="icon" mode="{{aspectFit}}" src="{{item.app_type === 1 ? 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png'}}"></image>
+                                <image class="icon" mode="{{aspectFit}}" src="{{item.app_type === 1 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png'}}"></image>
                                 <view class="name">{{item.nickName}}</view>
                             </view>
                             <view class="deadline">有效期至 {{item.expiryDate}}</view>
@@ -66,7 +66,7 @@ export default class Index extends wepy.page {
         business: {
             mps: [],
             current: {
-                src: 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/code7.png',
+                src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code7.png',
                 deadLine: '2018-09-98',
             },
         },
@@ -187,7 +187,7 @@ export default class Index extends wepy.page {
                             font-size: 32rpx;
                             color: #333333;
                             padding-left: 10rpx;
-                            width:420rpx;
+                            width:400rpx;
                             white-space:nowrap;
                             text-overflow:ellipsis;
                             overflow:hidden;

@@ -44,11 +44,6 @@ export default class extends wepy.app {
     onShow (options) {
         const { path } = options;
         console.log(path);
-        if (!wepy.getStorageSync('ppu') && path !== 'pages/intro') {
-            wepy.navigateTo({
-                url: '/pages/intro',
-            });
-        }
         if (options.scene === 1038) {
             if (!options.referrerInfo) {
                 console.log('options.referrerInfo为空');
@@ -63,9 +58,11 @@ export default class extends wepy.app {
             if (extraData.ppu !== undefined) { // 如果获取ppu成功
                 console.log(`获取PPU成功！ ${extraData.ppu}`);
                 wepy.setStorageSync('ppu', extraData.ppu);
-                wepy.navigateTo({
-                    url: '/pages/home',
-                });
+                setTimeout(() => {
+                    wepy.reLaunch({
+                        url: '/pages/home',
+                    });
+                }, 1000);
             }
         }
     }

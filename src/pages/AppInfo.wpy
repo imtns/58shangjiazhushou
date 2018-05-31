@@ -6,20 +6,21 @@
                 <view class="appinfo-title">{{appInfo.nickName}}</view>
                 <view class="appinfo-date">有效期至 {{appInfo.date}}</view>
             </view>
-            <view class="appinfo-youxiang" wx:if="{{appInfo.app_type===1}}">优享</view>
+            <view class="appinfo-youxiang" wx:if="{{appInfo.app_type==1}}">优享</view>
             <view class="appinfo-weixin" wx:else>微信</view>
         </view>
         <view class="appinfo-status">
-            <view class="appinfo-auth">授权状态：{{appInfo.status_desc}}</view>
+            <view class="appinfo-auth" wx:if="{{appInfo.app_type==2}}">
+                授权状态：{{appInfo.status_desc}}</view>
             <view class="appinfo-verify">审核状态：{{appInfo.lastpublishState_desc}}</view>
             <view class="appinfo-telephone">联系电话：{{appInfo.telphone}}</view>
             <view class="appinfo-address">小程序地址：{{appInfo.address}}</view>
         </view>
         <view class="appinfo-qrcode" wx:if="{{appInfo.qrcodeUrl}}">
             <view class="appinfo-qrcode-label">小程序码：</view>
-            <image class="appinfo-qrcode-img" src="{{appInfo.qrcodeUrl}}"/>
+            <image class="appinfo-qrcode-img" src="{{qrcodeUrl}}" @tap="bindScanQrcode({{qrcodeUrl}})"/>
         </view>
-        <view class="appinfo-qrcode-off" ex:else>
+        <view class="appinfo-qrcode-off" wx:else>
             <view class="">小程序码：上线后展示</view>
         </view>
         <navigator url="/pages/AppEdit?mpid={{appInfo.mpid}}"><view class="appinfo-edit">编辑小程序</view></navigator>
@@ -35,7 +36,6 @@ const appinfoApi = '/mplogic/get';
 
 export default class AppInfo extends wepy.page {
     config = {
-        disableScroll: true,
         navigationBarTitleText: '小程序信息',
     }
     data = {
@@ -67,16 +67,29 @@ export default class AppInfo extends wepy.page {
             wbQrcodeUrl: '',
         },
     }
+    computed = {
+        qrcodeUrl () {
+            const { qrcodeUrl = '' } = this.appInfo;
+            if (qrcodeUrl && qrcodeUrl.indexOf('http') < 0) {
+                return picSrcDomain() + qrcodeUrl;
+            }
+            return qrcodeUrl;
+        },
+    }
+    methods = {
+        bindScanQrcode (qrcodeUrl) {
+            wepy.previewImage({
+                urls: [qrcodeUrl],
+            });
+        },
+    }
     updateAppInfo (data) {
         const res = data;
         if (res.headImg) {
             res.logo = picSrcDomain() + res.headImg;
         }
-        if (res.createTime) {
-            [res.date] = res.createTime.match(/\d{4}-\d{2}-\d{2}/);
-        }
-        if (res.qrcodeUrl) {
-            res.qrcodeUrl = picSrcDomain() + res.qrcodeUrl;
+        if (res.expiryDate) {
+            [res.date] = res.expiryDate.match(/\d{4}-\d{2}-\d{2}/);
         }
         this.appInfo = Object.assign({}, this.appInfo, res);
         this.$apply();

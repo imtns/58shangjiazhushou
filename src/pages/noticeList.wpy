@@ -29,7 +29,7 @@
         </block>
         </scroll-view>
         <view class="emptyBox" wx:if="{{noticeList.length<=0}}">
-            <image src="http://static.58.com/lbg/shangjiaxcxht/zhushou/img/empty.png" class="emptyIcon"></image>
+            <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/empty.png" class="emptyIcon"></image>
             <view class="emptyText">暂无通知</view>
         </view>
     </view>

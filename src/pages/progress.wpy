@@ -4,9 +4,9 @@
         <view class="title">当前小程序</view>
         <view class="mp">
             <view class="nameBox">
-                <view>{{business.current.nickName}}</view>
+                <view class="name">{{business.current.nickName}}</view>
                 <view class="type">
-                    <image class="logo" mode="{{aspectFit}}" src="{{business.current.app_type === 1 ? 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png'}}"></image>
+                    <image class="logo" mode="{{aspectFit}}" src="{{business.current.app_type === 1 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png'}}"></image>
                 </view>
             </view>
             <view class="date">有效期至 {{business.current.expiryDate}}</view>
@@ -105,6 +105,12 @@ export default class Index extends wepy.page {
                 justify-content: space-between;
                 font-size: 34rpx;
                 color: #333333;
+                .name{
+                    width:600rpx;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
                 .type{
                     float: right;
                     width: 54rpx;
@@ -131,7 +137,7 @@ export default class Index extends wepy.page {
                         width: 2rpx;
                         height: 44rpx;
                         position: absolute;
-                        left: 50%;
+                        left: 300rpx;
                         transform: translate3d(-50%,0,0);
                         bottom: -45rpx;
                     }
@@ -145,23 +151,22 @@ export default class Index extends wepy.page {
                         width: 40rpx;
                     }
                     .success{
-                        background:url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/sucess.png) no-repeat center !important;
+                        background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/sucess.png) no-repeat center !important;
                         background-size: 100% auto !important;
                     }
                     .pending{
-                        background:url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/pending.png) no-repeat center !important;
+                        background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/pending.png) no-repeat center !important;
                         background-size: 100% auto !important;
                     }
                     .fail{
-                        background:url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/fail.png) no-repeat center !important;
+                        background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/fail.png) no-repeat center !important;
                         background-size: 100% auto !important;
                     }
                     .notyet{
-                        background:url(http://static.58.com/lbg/shangjiaxcxht/zhushou/img/notyet.png) no-repeat center;
+                        background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/notyet.png) no-repeat center;
                         background-size: 100% auto;
                     }
                     .text,.time{
-                        flex:1;
                         line-height: 54rpx;
                         font-size: 30rpx;
                         color: #666666;
@@ -169,15 +174,17 @@ export default class Index extends wepy.page {
                     .text{
                         font-size: 30rpx;
                         color: #666666;
+                        width: 210rpx;
                         text-align: right;
                         padding-right: 70rpx;
-                        width: 180rpx;
                     }
                     .time{
+                        flex: 1;
                         font-size: 30rpx;
                         color: #666666;
                         padding-left: 70rpx;
                         text-align: left;
+                        white-space: nowrap;
                     }
                 }
             }

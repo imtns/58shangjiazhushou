@@ -4,7 +4,7 @@
         <RemindBar :currentstep="currentstep"></RemindBar>
         <!-- 提示步骤end -->
         <view class="main-success-box">
-            <image src="http://static.58.com/lbg/shangjiaxcxht/zhushou/img/main-success.png"></image>
+            <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/main-success.png"></image>
             <view class="main-success-tip">您的小程序资料已经提交！<br/>请等待微信审核</view>
         </view>
         <view class="main-remind-box">
