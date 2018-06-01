@@ -56,7 +56,6 @@
                         <image class="main-upload-image" src="{{form.wechatBrandAuth}}"></image>
                         <view class="main-del-image" bindtap="delAuthPaper" data-key="wechatBrandAuth"></view>
                     </view>
-                    <view class="main-body-remind">请上传小程序名称相关带的商标注册证，已证明你有权合理且善意使用该名称，否则审核不能通过</view>
                 </view>
             </view>
             <view class="main-title">注：原件照片、扫描件或加盖公章的复印件，支持jpg、jpeg、gif、png格式照片，大小不超过2M</view>
