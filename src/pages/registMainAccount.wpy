@@ -88,7 +88,7 @@ export default class RegistMainAccount extends wepy.page {
             enterpriseAccountName: '', // 对外账户名
             enterpriseAccount: '', // 企业开户名称/对外账号
             enterpriseBank: '', // 对公账户开户银行
-            enterpriseLicense: '', // 企业工商营业执照
+            enterpriseLicense: '', // 企业工商营业执照图片（上传）
         },
         enterpriseTypeList: [
             {
