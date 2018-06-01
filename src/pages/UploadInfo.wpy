@@ -74,7 +74,7 @@
 import wepy from 'wepy';
 
 import { sleep, toast, alert, filteremoji } from '../utils';
-import { get, post } from '../utils/ajax';
+import { get, post } from '../utils/ajaxP';
 import UploadFile from '../components/UploadFile';
 
 const complateApi = '/resource/complete';
@@ -102,9 +102,13 @@ export default class UploadInfo extends wepy.page {
         },
     }
     async getArticles () {
-        const res = await get(getArticles);
-        console.log('articles', res.data);
-        this.updateForm({ articles: res.data || [] });
+        const [e, articles = []] = await get(getArticles);
+        if (e) {
+            toast(e);
+            return;
+        }
+        console.log('articles', articles);
+        this.updateForm({ articles: articles });
     }
     methods = {
         setText (e) {
@@ -119,24 +123,22 @@ export default class UploadInfo extends wepy.page {
             this.updateForm({ uploading });
             if (uploading || images.length === 0) return;
             const sendData = { resourceType: 1, resourceUrl: images[images.length - 1], resourceName: '' };
-            const res = await get(saveUpload, sendData);
-            const { state, msg } = res;
-            if (state === 100) {
-                this.updateForm({ images });
+            const [e] = await get(saveUpload, sendData, false);
+            if (e) {
+                toast(e);
             } else {
-                toast(msg);
+                this.updateForm({ images });
             }
         },
         async setVideo ({ uploading, images = [] }) {
             this.updateForm({ uploading });
             if (uploading) return;
             const sendData = { resourceType: 2, resourceUrl: images[images.length - 1], resourceName: '' };
-            const res = await get(saveUpload, sendData);
-            const { state, msg } = res;
-            if (state === 100) {
-                this.updateForm({ videos: images });
+            const [e] = await get(saveUpload, sendData);
+            if (e) {
+                toast(e);
             } else {
-                toast(msg);
+                this.updateForm({ videos: images });
             }
         },
         async bindUploadText () {
@@ -145,28 +147,26 @@ export default class UploadInfo extends wepy.page {
                 toast('文本内容不能为空');
                 return;
             }
-            const { state, msg } = await get(uploadText, { text });
-            if (state === 100) {
+            const [e] = await get(uploadText, { text });
+            if (e) {
+                toast(e);
+            } else {
                 alert('文本上传成功');
                 this.updateForm({ textSize: this.form.textSize += 1 });
-            } else {
-                toast(msg);
             }
         },
         async submitSave () {
             if (!this.form.enable) return;
             const url = '/pages/UploadInfoSuccess';
-            const res = await post(complateApi, { mpid: this.form.mpid });
-            if (res.state === 100) {
-                wepy.redirectTo({
-                    url,
-                });
+            const [e] = await post(complateApi, { mpid: this.form.mpid });
+            if (e) {
+                toast(e);
+                return;
             }
+            wepy.redirectTo({
+                url,
+            });
         },
-    }
-    async insertFile (resourceType, resourceUrl) {
-        const sendData = { resourceType, resourceUrl, resourceName: '' };
-        return get(saveUpload, sendData);
     }
     updateForm (data) {
         const enable = !!(this.form.textSize || this.form.images.length

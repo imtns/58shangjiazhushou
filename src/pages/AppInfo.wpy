@@ -15,7 +15,7 @@
             <view class="appinfo-telephone">联系电话：{{appInfo.telphone}}</view>
             <view class="appinfo-address">小程序地址：{{appInfo.address}}</view>
         </view>
-        <view class="appinfo-qrcode" wx:if="{{appInfo.qrcodeUrl}}">
+        <view class="appinfo-qrcode" wx:if="{{qrcodeUrl}}">
             <view class="appinfo-qrcode-label">小程序码：</view>
             <image class="appinfo-qrcode-img" src="{{qrcodeUrl}}" @tap="bindScanQrcode({{qrcodeUrl}})"/>
         </view>
@@ -28,7 +28,7 @@
 
 <script>
 import wepy from 'wepy';
-import { picSrcDomain } from '../utils/index';
+import { picSrcDomain } from '../utils';
 import { get } from '../utils/ajax';
 
 const appinfoApi = '/mplogic/get';
