@@ -40,7 +40,6 @@
             <view class="main-body">
                 <view class="main-boy-line">
                     <view class="main-body-title">商标注册证</view>
-                    <!-- <view class="main-upload" wx:if="{{!form.wechatBrandRegist}}" bindtap="uploadLicense" data-key="wechatBrandRegist"></view> -->
                     <UploaderCom @childFn.user="uploadFn" title="wechatBrandRegist" wx:if="{{!form.wechatBrandRegist}}"></UploaderCom>
                     <view class="main-show-image" wx:if="{{form.wechatBrandRegist}}">
                         <image class="main-upload-image" src="{{form.wechatBrandRegist}}"></image>
@@ -52,7 +51,6 @@
             <view class="main-body">
                 <view class="main-boy-line">
                     <view class="main-body-title">商标授权书（选填）</view>
-                    <!-- <view class="main-upload" wx:if="{{!form.wechatBrandAuth}}" bindtap="uploadLicense" data-key="wechatBrandAuth"></view> -->
                     <anotherUploaderCom @childFn.user="uploadFn" title="wechatBrandAuth" wx:if="{{!form.wechatBrandAuth}}"></anotherUploaderCom>
                     <view class="main-show-image" wx:if="{{form.wechatBrandAuth}}">
                         <image class="main-upload-image" src="{{form.wechatBrandAuth}}"></image>

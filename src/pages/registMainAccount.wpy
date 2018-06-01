@@ -15,7 +15,7 @@
             <view class="main-body">
                 <view class="main-boy-line">
                     <view class="main-body-title">企业名称</view>
-                    <input class="main-body-input" type="text" placeholder="请输入" maxlength="100" bindblur="setText" data-name="enterpriseName"></input>
+                    <input class="main-body-input" type="text" placeholder="请输入" maxlength="100" bindblur="setText" placeholder-style="font-size: 26rpx; color: #CCCCCC;" data-name="enterpriseName"></input>
                 </view>
             </view>
             <view class="main-body">
@@ -47,7 +47,6 @@
             <view class="main-body">
                 <view class="main-boy-line">
                     <view class="main-body-title">企业工商营业执照</view>
-                    <!-- <view class="main-upload" bindtap="uploadLicense" data-key="enterpriseLicense" wx:if="{{!form.enterpriseLicense}}"></view> -->
                     <UploaderCom @childFn.user="uploadFn" title="enterpriseLicense" wx:if="{{!form.enterpriseLicense}}"></UploaderCom>
                     <view class="main-show-image" wx:if="{{form.enterpriseLicense}}">
                         <image class="main-upload-image" src="{{form.enterpriseLicense}}"></image>
