@@ -6,7 +6,7 @@ export const sleep = (time = 300) => new Promise((resolve) => {
 
 // alert
 export const alert = (content, title, callBack) => {
-    wx.showModal({
+    wepy.showModal({
         showCancel: false,
         title: title || '注意',
         content,
@@ -29,6 +29,11 @@ export const toast = (title) => {
         duration: 2000,
     });
 };
+export const toastSync = (title) => wepy.showToast({
+    title: title.toString(),
+    icon: 'none',
+    duration: 2000,
+});
 
 // 图片域名
 export const picSrcDomain = () => {
@@ -45,4 +50,4 @@ export const filteremoji = (content) => {
     ];
     const emojireg = content.replace(new RegExp(ranges.join('|'), 'g'), '');
     return emojireg;
-}
+};

@@ -50,7 +50,7 @@
 
 <script>
 import wepy from 'wepy';
-import { picSrcDomain, filteremoji } from '../utils';
+import { picSrcDomain, filteremoji, toastSync } from '../utils';
 import { get } from '../utils/ajaxP';
 
 const host = 'https://yaofa.58.com';
@@ -82,6 +82,23 @@ export default class AppEdit extends wepy.page {
         enableSave () {
             return !!(this.form.nickName && this.form.headImg
                 && this.form.telphone && this.form.city && this.form.address);
+        },
+        markers () {
+            const markerId = this.markerId + 1;
+            return [{
+                iconPath: '/pages/assets/marker.png',
+                id: markerId,
+                latitude: this.form.addressLatitude || '',
+                longitude: this.form.addressLongitude || '',
+                width: 22,
+                height: 32,
+            }];
+        },
+        longitude () {
+            return this.form.addressLongitude;
+        },
+        latitude () {
+            return this.form.addressLatitude;
         },
     }
 
@@ -133,18 +150,6 @@ export default class AppEdit extends wepy.page {
         if (res.addressLatitude !== undefined && res.addressLatitude === '') {
             delete res.addressLatitude;
             delete res.addressLongitude;
-        } else if (res.addressLatitude) {
-            const markerId = this.markerId + 1;
-            this.longitude = res.addressLongitude;
-            this.latitude = res.addressLatitude;
-            this.markers = [{
-                iconPath: '/pages/assets/marker.png',
-                id: markerId,
-                latitude: this.form.addressLatitude || '',
-                longitude: this.form.addressLongitude || '',
-                width: 22,
-                height: 32,
-            }];
         }
         this.form = Object.assign({}, form, { ...res });
         this.$apply();
@@ -188,7 +193,7 @@ export default class AppEdit extends wepy.page {
         });
     }
     async verify () {
-        // const regPhone = /^1[3456789][0-9]{9}$/;
+        const regPhone = /^1[3456789][0-9]{9}$/;
         const { form } = this.data;
         if (!form.headImg) {
             this.toast('请完善信息');
@@ -206,8 +211,8 @@ export default class AppEdit extends wepy.page {
             this.toast('输入联系电话');
             return false;
         }
-        if (form.telphone.length < 11) {
-            this.toast('手机号不正确');
+        if (form.telphone.length < 11 && regPhone.test(form.telphone)) {
+            await toastSync('手机号不正确');
             return false;
         }
         if (!form.city) {
@@ -317,6 +322,7 @@ export default class AppEdit extends wepy.page {
             if (e) {
                 this.toast(res.msg);
             } else {
+                console.log(res);
                 wepy.navigateBack();
             }
         },

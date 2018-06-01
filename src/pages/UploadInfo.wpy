@@ -169,9 +169,10 @@ export default class UploadInfo extends wepy.page {
         },
     }
     updateForm (data) {
+        this.form = Object.assign({}, this.form, data);
         const enable = !!(this.form.textSize || this.form.images.length
             || this.form.videos.length || this.form.articles.length);
-        this.form = Object.assign({}, this.form, { enable }, data);
+        this.form = Object.assign({}, this.form, { enable });
         console.log('form', this.form);
         this.$apply();
     }
