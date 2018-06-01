@@ -108,7 +108,7 @@ export default class UploadInfo extends wepy.page {
             return;
         }
         console.log('articles', articles);
-        this.updateForm({ articles: articles });
+        this.updateForm({ articles: articles || [] });
     }
     methods = {
         setText (e) {
