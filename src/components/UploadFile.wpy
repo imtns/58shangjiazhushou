@@ -16,7 +16,7 @@
 </template>
 <script>
 import wepy from 'wepy';
-import { toast } from '../utils';
+import { toastSync } from '../utils';
 
 const host = 'https://yaofa.58.com';
 export default class Uploader extends wepy.component {
@@ -59,7 +59,6 @@ export default class Uploader extends wepy.component {
             const self = this;
             const start = this.data.vm.length || 0;
             const { tempFilePaths } = await wepy.chooseImage({ count: this.currentCount, sizeType: 'compressed' });
-            console.log(tempFilePaths);
             const fileSize = tempFilePaths.length;
             let sfileset = [...self.vm];
             const simages = [...self.images];
@@ -79,24 +78,9 @@ export default class Uploader extends wepy.component {
             self.vm = [...sfileset];
             self.$apply();
             tempFilePaths.map(async (file, i) => {
-                let response;
-                try {
-                    response = await self.uploadImage(file);
-                } catch ({ errMsg }) {
-                    toast(errMsg);
-                }
-                let res;
-                try {
-                    res = JSON.parse(response.data);
-                } catch (e) {
-                    throw e;
-                }
-                const { state, msg, data } = res;
-                if (state !== 100) {
-                    wepy.showToast({
-                        title: msg || '上传失败，请重试',
-                        icon: 'none',
-                    });
+                const [e, data] = await self.uploadImage(file);
+                if (e) {
+                    await toastSync(e);
                     sfileset.splice(start + i, 1); // 失败删除
                 } else {
                     sfileset.splice(start + i, 1, file); // 成功替换
@@ -105,17 +89,14 @@ export default class Uploader extends wepy.component {
                 // 每张照片上传成功调用
                 self.images = [...simages];
                 self.vm = [...sfileset];
-                // 触发图片更改事件
-                self.$emit('changeimages', {
-                    uploading: false,
-                    images: self.images,
-                });
-                self.$apply();
                 // 所有图片上传完成
                 if (fileSize - 1 === i) {
-                    self.uploading = false;
-                    self.$apply();
+                    self.$emit('changeimages', {
+                        uploading: false,
+                        images: self.images,
+                    });
                 }
+                self.$apply();
                 return file;
             });
         },
@@ -146,19 +127,9 @@ export default class Uploader extends wepy.component {
             self.vm = [...sfileset];
             self.$apply();
             tempFilePaths.map(async (file, i) => {
-                const response = await self.uploadVideo(file);
-                let res;
-                try {
-                    res = JSON.parse(response.data);
-                } catch (e) {
-                    throw e;
-                }
-                const { state, msg, data } = res;
-                if (state !== 100) {
-                    wepy.showToast({
-                        title: msg || '图片上传失败，请重试',
-                        icon: 'none',
-                    });
+                const [e, data] = await self.uploadVideo(file);
+                if (e) {
+                    await toastSync(e);
                     sfileset.splice(start + i, 1); // 失败删除
                 } else {
                     sfileset.splice(start + i, 1, file); // 成功替换
@@ -210,17 +181,59 @@ export default class Uploader extends wepy.component {
         },
     }
     uploadImage (file) {
-        return wepy.uploadFile({
-            url: host + this.uploadImageApi,
-            filePath: file,
-            name: 'content',
+        return new Promise((resolve) => {
+            wepy.uploadFile({
+                url: host + this.uploadImageApi,
+                filePath: file,
+                name: 'content',
+            }).then((response) => {
+                try {
+                    console.log(response);
+                    const res = JSON.parse(response.data);
+                    const { state, msg, data } = res;
+                    if (state === 100) {
+                        resolve([null, data]);
+                    } else {
+                        resolve([msg]);
+                    }
+                    console.log(res);
+                } catch (e) {
+                    console.log(e);
+                    resolve([e]);
+                }
+            }).catch((e) => {
+                console.log(e);
+                const { errMsg } = e;
+                resolve([errMsg]);
+            });
         });
     }
     uploadVideo (file) {
-        return wepy.uploadFile({
-            url: host + this.uploadVideoApi,
-            filePath: file,
-            name: 'content',
+        return new Promise((resolve) => {
+            wepy.uploadFile({
+                url: host + this.uploadVideoApi,
+                filePath: file,
+                name: 'content',
+            }).then((response) => {
+                try {
+                    console.log(response);
+                    const res = JSON.parse(response.data);
+                    const { state, msg, data } = res;
+                    if (state === 100) {
+                        resolve([null, data]);
+                    } else {
+                        resolve([msg]);
+                    }
+                    console.log(res);
+                } catch (e) {
+                    console.log(e);
+                    resolve([e]);
+                }
+            }).catch((e) => {
+                console.log(e);
+                const { errMsg } = e;
+                resolve([errMsg]);
+            });
         });
     }
     batchAddArray (array, size, value) {

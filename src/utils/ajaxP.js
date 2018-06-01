@@ -25,6 +25,10 @@ const http = (method, ...props) => {
             console.log('response', response);
             showLoading && wepy.hideLoading && wepy.hideLoading();
             const { state, msg, data } = response.data;
+            if (data === null || data.toString() === 'null') {
+                resolve(['接口数据异常null']);
+                return;
+            }
             if (state === 100) {
                 resolve([null, data]);
             } else if (state === -10001) {

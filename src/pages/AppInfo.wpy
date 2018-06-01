@@ -28,8 +28,8 @@
 
 <script>
 import wepy from 'wepy';
-import { picSrcDomain } from '../utils';
-import { get } from '../utils/ajax';
+import { picSrcDomain, toastSync } from '../utils';
+import { get } from '../utils/ajaxP';
 
 const appinfoApi = '/mplogic/get';
 
@@ -100,7 +100,11 @@ export default class AppInfo extends wepy.page {
         this.$apply();
     }
     async getAppInfo (mpid) {
-        const { data } = await get(`${appinfoApi}/${mpid}`);
+        const [e, data] = await get(`${appinfoApi}/${mpid}`);
+        if (e) {
+            await toastSync(e);
+            return;
+        }
         this.loading = false;
         this.updateAppInfo(data);
     }
