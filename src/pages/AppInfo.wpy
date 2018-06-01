@@ -77,7 +77,7 @@ export default class AppInfo extends wepy.page {
             return ret;
         },
         logo () {
-            const { headImg = 'http://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png' } = this.appInfo;
+            const { headImg = 'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png' } = this.appInfo;
             if (headImg.indexOf('http') < 0) {
                 return `${picSrcDomain() + headImg}?w=128&h=128`;
             }
