@@ -79,7 +79,7 @@ export default class AppEdit extends wepy.page {
     }
     computed = {
         logoUrl () {
-            let { headImg = 'http://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=72&h=72' } = this.form;
+            let { headImg = 'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=72&h=72' } = this.form;
             headImg = this.tempLogo || headImg;
             if (headImg.indexOf('http') >= 0 || headImg.indexOf('file:') >= 0) {
                 return headImg;
