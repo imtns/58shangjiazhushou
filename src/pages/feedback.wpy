@@ -53,19 +53,16 @@ export default class Feedback extends wepy.page {
         this.$apply();
     }
     async submit() {
-        console.log();
-        if (!this.content.trim()) {
+        const con = filteremoji(this.content);
+        if (!con.trim()) {
             alert('请编辑留言后提交！');
             return;
         }
         try {
-            const { content } = this;
-            const nContent = filteremoji(content);
-            console.log('1', content, '2', nContent);
             this.content = '';
             this.$apply();
-            console.log('3', this.content, '4', nContent);
-            await post('/suggestion/submit', { content: nContent });
+            console.log('3', this.content, '4', con);
+            await post('/suggestion/submit', { content: con });
             alert('提交成功，谢谢您的建议！', '提示', () => {
                 console.log('进入callback');
                 wepy.redirectTo({

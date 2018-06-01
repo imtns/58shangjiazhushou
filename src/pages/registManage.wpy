@@ -111,8 +111,8 @@ export default class RegistManage extends wepy.page {
             managerTel: '', // 电话
             wechatName: '', // 小程序命名
             wechatNameType: '', // 命名类型
-            wechatBrandRegist: '', // 商标注册证
-            wechatBrandAuth: '', // 商标授权书（选填）
+            wechatBrandRegist: '', // 商标注册证（上传)
+            wechatBrandAuth: '', // 商标授权书（上传，选填）
         },
         regTel: /^[1][3456789][0-9]{9}$/,
         regiDCard1: /^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$/, // 15位
