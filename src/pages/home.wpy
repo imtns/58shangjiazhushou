@@ -32,7 +32,7 @@
             <view class="otherBox">
                 <repeat for="{{business.mps}}" key="index" index="index" item="item">
                     <view class="mpbox">
-                        <view bindtap="selectMp({{item}})" class="mpItem logoPadding" data-appid="{{item.id}}" :class="{ 'active' : item.id === business.chosedId}">{{item.nickName}}</view>
+                        <view bindtap="selectMp({{item}})" class="mpItem logoPadding" data-appid="{{item.id}}" :class="{ 'active' : item.id === business.chosedId}">{{item.nickName || item.id}}</view>
                         <image class="haslogo" mode="{{aspectFit}}" src="{{item.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
                     </view>
                 </repeat>
@@ -54,6 +54,7 @@ import { post } from '../utils/ajax';
 export default class Home extends wepy.page {
     config = {
         navigationBarTitleText: '首页',
+        disableScroll: true,
     }
     data = {
         business: {
@@ -423,6 +424,8 @@ export default class Home extends wepy.page {
             .otherBox{
                 font-size: 32rpx;
                 color: #666666;
+                overflow: scroll;
+                max-height: 320rpx;
                 .mpbox{
                     position: relative;
                     padding: 0 40rpx;
@@ -448,6 +451,7 @@ export default class Home extends wepy.page {
             .btnBox{
                 display: flex;
                 height: 113rpx;
+                width: 100%;
                 line-height: 113rpx;
                 .active{
                     color:#4E88FF !important;
