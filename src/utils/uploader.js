@@ -1,4 +1,4 @@
-const uploadUrl = 'http://yaofa.58.com/fileUpload';
+const uploadUrl = 'https://yaofa.58.com/fileUpload';
 
 module.exports.uploader = (tempFilePath, ...props) => {
     let [params, callback, noLoading] = props;
