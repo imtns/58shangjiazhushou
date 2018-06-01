@@ -102,7 +102,7 @@ export default class Home extends wepy.page {
         },
         checkProgress() {
             if (!this.business.mpCount) {
-                alert('请先购买小程序', '提示');
+                alert('您还未购买小程序，请登录e.58.com进行购买', '提示');
                 return;
             }
             switch (this.business.nexttask) {
@@ -117,10 +117,16 @@ export default class Home extends wepy.page {
                     });
                     break;
                 case 4:
-                    wepy.setStorageSync('registMappid', this.business.selected.id);
-                    wepy.navigateTo({
-                        url: 'registMainAccount',
-                    });
+                    if (this.business.selected.app_type === 2) {
+                        wepy.setStorageSync('registMappid', this.business.selected.id);
+                        wepy.navigateTo({
+                            url: 'registMainAccount',
+                        });
+                    } else {
+                        wepy.navigateTo({
+                            url: 'progress',
+                        });
+                    }
                     break;
                 case 5:
                     if (this.business.selected.app_type === 1) {
@@ -273,7 +279,7 @@ export default class Home extends wepy.page {
     checkBeforeJump(index) {
         console.log('this.business.selected.', this.business.selected);
         if (!this.business.mpCount) {
-            alert('请先购买小程序', '提示');
+            alert('您还未购买小程序，请登录e.58.com进行购买', '提示');
             return;
         }
         switch (index) {
@@ -352,7 +358,7 @@ export default class Home extends wepy.page {
                 this.business.progressText = '当前小程序信息已完善';
                 break;
             case 9: // 完成度
-                this.business.progressText = '当前小程序信息已上线';
+                this.business.progressText = '当前小程序信息已完善';
                 break;
             default:
                 break;

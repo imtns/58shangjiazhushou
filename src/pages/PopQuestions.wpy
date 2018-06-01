@@ -18,11 +18,11 @@ export default class Index extends wepy.page {
     config = {
         navigationBarTitleText: '登录常见问题',
     }
-    async onLoad() {
+    async onLoad () {
         await sleep();
         console.log('onLoad');
     }
-    preview() {
+    preview () {
         const urls = [
             'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/info.jpeg',
         ];
@@ -35,13 +35,13 @@ export default class Index extends wepy.page {
 </script>
 
 <style lang="scss">
-page{
-    width:100%;
-    height:100%;
-    background:#fff;
+page {
+    width: 100%;
+    height: 100%;
+    background: #fff;
 }
 @import '../css/feedbackDetail.scss';
-.feedback-text.pop-text{
-    padding:0 30rpx;
+.feedback-text.pop-text {
+    padding: 0 30rpx;
 }
 </style>
