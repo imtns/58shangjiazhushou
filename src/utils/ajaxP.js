@@ -4,7 +4,7 @@ import { toast } from './index';
 const test = 'test';
 const host = 'https://yaofa.58.com';
 const http = (method, ...props) => {
-    const [url, param, showLoading] = props;
+    const [url, param, showLoading = true] = props;
     const sendData = Object.assign({}, param, { test });
     // ppu加入header
     const ppu = wepy.getStorageSync('ppu');

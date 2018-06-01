@@ -5,7 +5,7 @@
         <view class="feedback-text pop-text">这种情况请检查用户名和密码，也可以“找回密码”，重试登录</view>
         <view class="feedback-text pop-text">PC端修改密码后，在小程序登录时，忘记密码，需到PC端进行密码修改操作</view>
         <view class="feedback-li lo-circle">微信绑定登录账号，需换绑、解绑，需到PC端个人中心进行操作</view>
-        <image class="feedback-img" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/info.jpeg" bindtap="preview" data-index="0"></image>
+        <image class="feedback-img" src="http://static.58.com/lbg/shangjiaxcxht/zhushou/img/info.jpeg" bindtap="preview"></image>
     </view>
 </template>
 
@@ -16,15 +16,13 @@ import { sleep } from '../utils';
 
 export default class Index extends wepy.page {
     config = {
-        navigationBarTitleText: '常见问题',
+        navigationBarTitleText: '登录常见问题',
     }
-    async onLoad() {
+    async onLoad () {
         await sleep();
         console.log('onLoad');
     }
-    preview(e) {
-        const { index } = e.currentTarget.dataset;
-        console.log(index);
+    preview () {
         const urls = [
             'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/info.jpeg',
         ];
@@ -37,13 +35,13 @@ export default class Index extends wepy.page {
 </script>
 
 <style lang="scss">
-page{
-    width:100%;
-    height:100%;
-    background:#fff;
+page {
+    width: 100%;
+    height: 100%;
+    background: #fff;
 }
 @import '../css/feedbackDetail.scss';
-.feedback-text.pop-text{
-    padding:0 30rpx;
+.feedback-text.pop-text {
+    padding: 0 30rpx;
 }
 </style>
