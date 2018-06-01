@@ -66,6 +66,7 @@ export default class AppEdit extends wepy.page {
         navigationBarTitleText: '小程序编辑',
     }
     data = {
+        logoUrl: '',
         loading: true,
         mpid: '',
         areas: [[], []],
@@ -78,34 +79,9 @@ export default class AppEdit extends wepy.page {
         tempLogo: '',
     }
     computed = {
-        logoUrl () {
-            let { headImg = 'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=72&h=72' } = this.form;
-            headImg = this.tempLogo || headImg;
-            if (headImg.indexOf('http') >= 0 || headImg.indexOf('file:') >= 0) {
-                return headImg;
-            }
-            return `${picSrcDomain() + headImg}?w=72&h=72`;
-        },
         enableSave () {
-            return !!(this.form.nickName
+            return !!(this.form.nickName && this.form.headImg
                 && this.form.telphone && this.form.city && this.form.address);
-        },
-        markers () {
-            const markerId = this.markerId + 1;
-            return [{
-                iconPath: '/pages/assets/marker.png',
-                id: markerId,
-                latitude: this.form.addressLatitude || '',
-                longitude: this.form.addressLongitude || '',
-                width: 22,
-                height: 32,
-            }];
-        },
-        longitude () {
-            return this.form.addressLongitude;
-        },
-        latitude () {
-            return this.form.addressLatitude;
         },
     }
 
@@ -144,10 +120,31 @@ export default class AppEdit extends wepy.page {
     updateForm (data) {
         const res = data;
         const { form } = this.data;
+        // 头像
+        if (res.headImg === '' || res.headImg) {
+            let { headImg = 'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=72&h=72' } = res;
+            headImg = this.tempLogo || headImg;
+            if (headImg.indexOf('http') < 0 && headImg.indexOf('file:') < 0) {
+                headImg = `${picSrcDomain() + headImg}?w=72&h=72`;
+            }
+            this.logoUrl = headImg;
+        }
         // 经纬度，过滤空赋值
         if (res.addressLatitude !== undefined && res.addressLatitude === '') {
             delete res.addressLatitude;
             delete res.addressLongitude;
+        } else if (res.addressLatitude) {
+            const markerId = this.markerId + 1;
+            this.longitude = res.addressLongitude;
+            this.latitude = res.addressLatitude;
+            this.markers = [{
+                iconPath: '/pages/assets/marker.png',
+                id: markerId,
+                latitude: this.form.addressLatitude || '',
+                longitude: this.form.addressLongitude || '',
+                width: 22,
+                height: 32,
+            }];
         }
         this.form = Object.assign({}, form, { ...res });
         this.$apply();
