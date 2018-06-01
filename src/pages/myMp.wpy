@@ -8,7 +8,7 @@
             <view class="list">
                 <view class="infos">
                     <view class="logBox">
-                        <image class="logo" mode="{{aspectFit}}" src="{{business.current.headImg || 'http://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+                        <image class="logo" mode="{{aspectFit}}" src="{{business.current.headImg || 'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
                     </view>
                     <view class="details">
                         <view class="title"> 
@@ -34,7 +34,7 @@
                 <view class="list">
                     <view class="infos">
                         <view class="logBox">
-                            <image class="logo" mode="{{aspectFit}}" src="{{item.headImg || 'http://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+                            <image class="logo" mode="{{aspectFit}}" src="{{item.headImg || 'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
                         </view>
                         <view class="details">
                             <view class="title"> 
@@ -76,7 +76,7 @@ export default class Index extends wepy.page {
     }
     methods = {
         shouquan() {
-            alert('请您登录电脑端，打开http://yaofa.58.com，到授权管理页点击右上角授权按钮去授权', '提示');
+            alert('请您登录电脑端，打开https://yaofa.58.com，到授权管理页点击右上角授权按钮去授权', '提示');
         },
         decorate(type) {
             if (type.target.dataset.address) {

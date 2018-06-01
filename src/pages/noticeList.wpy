@@ -9,7 +9,7 @@
             <view class="notice-list-item">
                 <view class="notice-item" bindtap="touploadInfo" data-item="{{item}}">
                     <view class="notice-img {{item.status === 1 ? 'new-msg' : ''}}">
-                        <image src="{{item.mpLogo || 'http://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=120&h=120'}}"></image>
+                        <image src="{{item.mpLogo || 'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=120&h=120'}}"></image>
                     </view>
                     <view class="notice-content">
                         <view class="notice-detail">
