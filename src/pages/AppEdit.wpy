@@ -211,7 +211,7 @@ export default class AppEdit extends wepy.page {
             this.toast('输入联系电话');
             return false;
         }
-        if (form.telphone.length < 11 && regPhone.test(form.telphone)) {
+        if (form.telphone.length < 11 && !regPhone.test(form.telphone)) {
             await toastSync('手机号不正确');
             return false;
         }
