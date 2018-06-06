@@ -1,11 +1,36 @@
 <script>
 import wepy from 'wepy';
 import 'wepy-async-function';
+// import { alert } from './utils';
 
 export default class extends wepy.app {
+    constructor() {
+        super();
+        this.use('promisify');
+    }
     config = {
         pages: [
+            'pages/home', // 登陆之后的主页
+            'pages/intro', // 没有登陆的介绍页面
+            'pages/myMp', // 我的小程序
+            'pages/AppInfo', // 小程序信息
+            'pages/UploadInfo', // 上传素材首页
+            'pages/send', // 测试授权页面专用，勿删
+            'pages/progress', // 完成度页面
+            'pages/AppEdit', // 小程序编辑
+            'pages/buy', // 购买页面
             'pages/index',
+            'pages/noticeList', // 消息通知页面
+            'pages/registed', // 当前小程序已注册
+            'pages/registMainAccount', // 主体账户信息
+            'pages/registManage', // 管理员信息
+            'pages/registSuccess', // 注册完成
+            'pages/feedback', // 意见反馈
+            'pages/feedbackDetail', // 意见反馈优选、微信问题介绍
+            'pages/PopQuestions', // 意见反馈优选、微信问题介绍
+            'pages/UploadArticle', // 上传文章
+            'pages/UploadInfoSuccess', // 素材上传成功
+            'pages/VideoPlay', // 视频播放页面
         ],
         window: {
             backgroundTextStyle: 'light',
@@ -14,9 +39,36 @@ export default class extends wepy.app {
             navigationBarTextStyle: 'black',
         },
     }
-
-    onLaunch() {
-        console.log('on launch');
+    onLaunch () {
+        console.log('onlainch');
+    }
+    onShow (options) {
+        const { path } = options;
+        console.log(path);
+        // const pages = getCurrentPages();
+        // const currPage = pages[pages.length - 1];
+        // console.log('currPage', currPage.route);
+        if (options.scene === 1038 && path === 'pages/intro') {
+            if (!options.referrerInfo) {
+                console.log('options.referrerInfo为空');
+            }
+            if (!options.referrerInfo.extraData) {
+                console.log('options.referrerInfo.extraData为空');
+            }
+            let { extraData } = options.referrerInfo;
+            if (typeof extraData !== 'object') {
+                extraData = JSON.parse(extraData);
+            }
+            if (extraData.ppu !== undefined) { // 如果获取ppu成功
+                console.log(`获取PPU成功！ ${extraData.ppu}`);
+                wepy.setStorageSync('ppu', extraData.ppu);
+                setTimeout(() => {
+                    wepy.reLaunch({
+                        url: '/pages/home',
+                    });
+                }, 1000);
+            }
+        }
     }
 }
 </script>

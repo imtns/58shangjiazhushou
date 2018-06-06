@@ -1,0 +1,45 @@
+
+    <view class="home">
+        <view class="index-loaded-header">
+            <view class="welcome-block">
+                <view class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
+                <navigator url="noticeList"  class="msg-box' {{business.unread ? 'new-msg' : ''}}"/>
+            </view>
+            <view class="item-detail">
+                <view class="item-name {{business.mpCount > 0 ? 'logoPadding ' : ''}}">{{ business.miniProgramName }}</view>
+                <view class="item-title {{business.mpCount > 0 ? 'logoPadding ' : ''}}">可上传素材、提交注册信息到当前小程序</view>
+                <view bindtap="changeAction"  wx:if="{{business.mpCount >= 2}}" class="item-switch">切换</view>
+                <image class="haslogo"  wx:if="{{business.mpCount > 0 }}" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"/>
+                <view bindtap="checkProgress" class="item-detail-progress">
+                    <view class="current-progress">当前进度</view>
+                    <view class="remind-title">{{ business.progressText}}</view>
+                </view>
+            </view>
+        </view>
+        <view class="index-loaded-body">
+            <view bindtap="link" class="index-loaded-item" wx:for="{{items}}" wx:key="index" data-wpylink-a="{{index}}">
+                <image src="{{item.iconPath}}" class="item-img"/>
+                <view class="item-text">{{item.text}}</view>
+            </view>
+        </view>
+        <view wx:if="{{business.changeMP === true}}" class="mask" bindtap="bindHideMask"/>
+        <view wx:if="{{business.changeMP === true }}" class="mpBox">
+            <view class="default">
+                <view class="name logoPadding">{{business.miniProgramName}}</view>
+                <view>默认</view>
+                <image class="haslogo" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"/>
+            </view>
+            <view class="otherBox">
+                <block wx:for="{{business.mps}}" wx:for-index="index" wx:for-item="item" wx:key="index">
+                    <view class="mpbox">
+                        <view bindtap="selectMp" class="mpItem logoPadding {{item.id === business.chosedId ? 'active' : ''}}" data-appid="{{item.id}}" data-wpyselectmp-a="{{item}}">{{item.nickName || item.id}}</view>
+                        <image class="haslogo" mode="{{aspectFit}}" src="{{item.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"/>
+                    </view>
+                </block>
+            </view>
+            <view class="btnBox">
+                <view class="cancle" bindtap="bindHideMask">取消</view>
+                <view class="confirm {{business.canConfirm ? 'active' : ''}}" bindtap="confirmAction">确定</view>
+            </view>
+        </view>
+    </view>

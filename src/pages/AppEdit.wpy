@@ -1,0 +1,496 @@
+<template>
+    <view class="appedit-container" hidden="{{loading}}">
+        <view class="appedit-header" @tap="setLogo" wx:if="{{form.app_type==1 || !form.headImg}}">
+            <text class="appedit-form-label">上传小程序标志</text>
+            <image class="appedit-form-logo" mode="aspectFill" src="{{logoUrl}}" />
+            <text class="appedit-form-arrow"></text>
+        </view>
+        <view class="appedit-header" wx:else>
+            <text class="appedit-form-label">上传小程序标志</text>
+            <image class="appedit-form-logo" mode="aspectFill" src="{{logoUrl}}" />
+        </view>
+        <view class="appedit-content-list">
+            <view class="appedit-content-list-item">
+                <text class="appedit-form-label">小程序名称</text>
+                <input class="appedit-form-input" type="text" @input="setAppName" placeholder="提交后优享小程序才可修改" placeholder-class="appedit-form-placeholder" maxlength="30" confirm-type="done"
+                value="{{form.nickName}}" wx:if="{{form.app_type==1}}"/>
+                <view class="appedit-form-appname appedit-form-placeholder" type="text" wx:else>{{form.nickName}}</view>
+            </view>
+            <view class="appedit-content-list-item">
+                <text class="appedit-form-label">联系电话</text>
+                <input class="appedit-form-input" maxlength='11' type="number" @input="setMobile" placeholder="请输入" placeholder-class="appedit-form-placeholder" value="{{form.telphone}}"/>
+            </view>
+            <picker mode="multiSelector" @change="setCity" @columnchange="bindCity" range="{{areas}}" range-key="localName" value="{{selCityIndex}}">
+                <view class="appedit-content-list-item">
+                    <text class="appedit-form-label">小程序城市</text>
+                    <view class="appedit-form-picker" wx:if="{{form.city}}">
+                        {{form.provinceName}} {{form.cityName}}
+                    </view>
+                    <view class="appedit-form-picker-placeholder" wx:else>
+                        请选择
+                    </view>
+                </view>
+            </picker>
+            <view class="appedit-content-list-item appedit-content-list-item-noborder">
+                <text class="appedit-form-label-address">小程序具体地点</text>
+                <view class="appedit-form-btn-location" @tap="setLocation">定位</view>
+            </view>
+            <view class="appedit-content-list-item appedit-content-list-item-noborder">
+                <textarea name="" id="" cols="30" rows="10" class="appedit-form-input-addressdetail"  placeholder="请输入" placeholder-class="appedit-form-placeholder" @input="setDetailAdress" value="{{form.address}}"></textarea>
+            </view>
+        </view>
+        <view class="appedit-map">
+            <map id="map"  class="appedit-map-in" longitude="{{longitude}}" latitude="{{latitude}}"
+             scale="14" markers="{{markers}}"></map>
+        </view>
+        <view class="appedit-submit submit-enable" @tap="bindSave" wx:if="{{enableSave}}">保存</view>
+        <view class="appedit-submit" @tap="bindSave" wx:else>保存</view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { picSrcDomain, filteremoji, toastSync } from '../utils';
+import { get } from '../utils/ajaxP';
+
+const host = 'https://yaofa.58.com';
+const uploadApi = `${host}/fileUpload`;
+const provinceApi = '/local/provinces';
+const cityApi = '/local/citys/';
+const appinfoApi = '/mplogic/get';
+const saveAppApi = '/mplogic/modifympinfo';
+
+export default class AppEdit extends wepy.page {
+    config = {
+        disableScroll: true,
+        navigationBarTitleText: '小程序编辑',
+    }
+    data = {
+        logoUrl: '',
+        loading: true,
+        mpid: '',
+        areas: [[], []],
+        selCityIndex: [0, 0],
+        markerId: 0,
+        form: {
+            city: '1',
+            province: '5001',
+        },
+        tempLogo: '',
+    }
+    computed = {
+        enableSave () {
+            return !!(this.form.nickName && this.form.headImg
+                && this.form.telphone && this.form.city && this.form.address);
+        },
+        markers () {
+            const markerId = this.markerId + 1;
+            return [{
+                iconPath: '/pages/assets/marker.png',
+                id: markerId,
+                latitude: this.form.addressLatitude || '',
+                longitude: this.form.addressLongitude || '',
+                width: 22,
+                height: 32,
+            }];
+        },
+        longitude () {
+            return this.form.addressLongitude;
+        },
+        latitude () {
+            return this.form.addressLatitude;
+        },
+    }
+
+    defaultSelCityIndex () {
+        const { city, province } = this.form;
+        let pIndex = 0;
+        let cIndex = 0;
+        let item;
+        if (province) {
+            for (let i = 0, len = this.areas[0].length; i < len; i += 1) {
+                item = this.areas[0][i];
+                if (item.dispLocalID === province) {
+                    pIndex = i;
+                    break;
+                }
+            }
+        }
+        if (city) {
+            for (let i = 0, len = this.areas[1].length; i < len; i += 1) {
+                item = this.areas[1][i];
+                if (item.dispLocalID === province) {
+                    cIndex = i;
+                    break;
+                }
+            }
+        }
+        this.selCityIndex = [pIndex, cIndex];
+        this.updateForm({
+            city: this.areas[1][cIndex].dispLocalID,
+            cityName: this.areas[1][cIndex].localName,
+            province: this.areas[0][pIndex].dispLocalID,
+            provinceName: this.areas[0][pIndex].localName,
+        });
+    }
+
+    updateForm (data) {
+        const res = data;
+        const { form } = this.data;
+        // 头像
+        if (res.headImg === '' || res.headImg) {
+            let { headImg = 'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=72&h=72' } = res;
+            headImg = this.tempLogo || headImg;
+            if (headImg.indexOf('http') < 0 && headImg.indexOf('file:') < 0) {
+                headImg = `${picSrcDomain() + headImg}?w=72&h=72`;
+            }
+            this.logoUrl = headImg;
+        }
+        // 经纬度，过滤空赋值
+        if (res.addressLatitude !== undefined && res.addressLatitude === '') {
+            delete res.addressLatitude;
+            delete res.addressLongitude;
+        }
+        this.form = Object.assign({}, form, { ...res });
+        this.$apply();
+    }
+    async getProvinces () {
+        const [e1, data1] = await get(provinceApi);
+        if (e1) {
+            this.toast(e1);
+            return;
+        }
+        const province = this.form.province || '5001';
+        const [e2, data2] = await get(cityApi + province);
+        if (e2) {
+            this.toast(e2);
+            return;
+        }
+        console.log('provinces', data1, 'citys', data2);
+        this.areas = [data1, data2];
+        this.loading = false;
+        this.$apply();
+    }
+    async getLocation () {
+        const { latitude, longitude } = await wepy.getLocation({ type: 'wgs84' });
+        if (this.form.addressLatitude) return;
+        this.updateForm({ addressLatitude: latitude, addressLongitude: longitude });
+    }
+    async getAppInfo (mpid) {
+        const [e, data] = await get(`${appinfoApi}/${mpid}`);
+        if (e) {
+            this.toast(e);
+            return;
+        }
+        this.updateForm({ ...data });
+    }
+    toast (...params) {
+        const [title, duration = 2000] = params;
+        return wepy.showToast({
+            title,
+            icon: 'none',
+            duration,
+        });
+    }
+    async verify () {
+        const regPhone = /^1[3456789][0-9]{9}$/;
+        const { form } = this.data;
+        if (!form.headImg) {
+            this.toast('请完善信息');
+            return false;
+        }
+        if (!form.nickName) {
+            this.toast('输入小程序名称');
+            return false;
+        }
+        if (form.nickName.length < 4) {
+            this.toast('小程序名称不得小于4个');
+            return false;
+        }
+        if (!form.telphone) {
+            this.toast('输入联系电话');
+            return false;
+        }
+        if (form.telphone.length < 11 && !regPhone.test(form.telphone)) {
+            await toastSync('手机号不正确');
+            return false;
+        }
+        if (!form.city) {
+            this.toast('选择城市');
+            return false;
+        }
+        if (!form.address) {
+            this.toast('输入详情地址');
+            return false;
+        }
+        return true;
+    }
+    methods = {
+        async bindCity (e) {
+            const { column, value } = e.detail;
+            if (column === 1) {
+                return;
+            }
+            const { dispLocalID } = this.areas[0][value];
+            const [err, data] = await get(cityApi + dispLocalID);
+            if (err) {
+                this.toast(err);
+                return;
+            }
+            this.areas = [this.areas[0], data];
+            this.$apply();
+        },
+        setCity (e) {
+            const arr = e.detail.value;
+            const cityIdx = arr[1] && 0;
+            const province = this.areas[0][arr[0]];
+            const city = this.areas[1][cityIdx];
+            this.selCity = [province.localName, city.localName];
+            this.updateForm({
+                province: province.dispLocalID,
+                provinceName: province.localName,
+                city: city.dispLocalID,
+                cityName: city.localName,
+            });
+        },
+        async setLogo () {
+            const { tempFilePaths } = await wepy.chooseImage({
+                count: 1,
+                sizeType: 'compressed ',
+            });
+            const filePath = tempFilePaths[0];
+            console.log({ filePath });
+            try {
+                const response = await wepy.uploadFile({
+                    url: uploadApi,
+                    filePath,
+                    name: 'content',
+                });
+                const res = JSON.parse(response.data);
+                const { state, msg, data } = res;
+                if (state === 100) {
+                    this.tempLogo = filePath;
+                    this.updateForm({ headImg: data.content });
+                } else {
+                    this.toast(msg);
+                }
+            } catch ({ errMsg }) {
+                this.toast(errMsg);
+            }
+        },
+        setAppName (e) {
+            let nickName = e.detail.value;
+            nickName = filteremoji(nickName);
+            this.updateForm({ nickName });
+            return {
+                value: nickName,
+            };
+        },
+        setMobile (e) {
+            const telphone = e.detail.value;
+            this.updateForm({ telphone });
+        },
+        async setLocation () {
+            const { address, latitude, longitude } = await wepy.chooseLocation();
+            this.updateForm({ address, addressLatitude: latitude, addressLongitude: longitude });
+        },
+        setDetailAdress (e) {
+            let address = e.detail.value;
+            address = filteremoji(address);
+            this.updateForm({ address });
+            return {
+                value: address,
+            };
+        },
+        async bindSave () {
+            const { form } = this.data;
+            const verify = await this.verify();
+            if (!verify) return;
+            const sendData = {
+                mpid: this.mpid, // 小程序id
+                logo: form.headImg, // 小程序logo 只有优享小程序能改
+                telphone: form.telphone, // 电话
+                mpname: form.nickName, // 小程序名称 只有优享小程序能改
+                privince: form.province,
+                city: form.city, // 城市
+                address: form.address, // 地址
+                lat: form.addressLatitude, // 纬度
+                lnt: form.addressLongitude, // 经度
+            };
+            console.log(sendData);
+            const [e, res] = await get(saveAppApi, sendData);
+            if (e) {
+                this.toast(res.msg);
+            } else {
+                console.log(res);
+                wepy.navigateBack();
+            }
+        },
+    }
+    async onLoad (options) {
+        const mpid = options.mpid || wepy.getStorageSync('current_mpid');
+        if (!mpid) {
+            wepy.navigateBack();
+        }
+        this.mpid = mpid;
+        await this.getAppInfo(this.mpid);
+        await this.getLocation();
+        await this.getProvinces();
+        this.defaultSelCityIndex();
+    }
+}
+</script>
+
+<style lang="scss">
+.appedit-container {
+    box-sizing: border-box;
+    background: #f6f6f6;
+    width: 100vw;
+    height: 100vh;
+    padding: 20rpx 0 30rpx;
+    .appedit-header {
+        height: 110rpx;
+        margin-bottom: 38rpx;
+        background: #fff;
+        padding: 0 30rpx;
+        &::after {
+            display: inline-block;
+            content: '';
+            width: 0;
+            height: 110rpx;
+            line-height: 110rpx;
+            vertical-align: middle;
+        }
+        .appedit-form-label {
+            font-family: PingFangSC-Regular;
+            font-size: 30rpx;
+            color: #999999;
+            vertical-align: middle;
+        }
+        .appedit-form-logo {
+            margin-left: 364rpx;
+            width: 72rpx;
+            height: 72rpx;
+            vertical-align: middle;
+            border-radius: 50%;
+        }
+        .appedit-form-arrow {
+            display: inline-block;
+            content: '';
+            width: 15rpx;
+            height: 25rpx;
+            vertical-align: middle;
+            margin-left: 25rpx;
+            background: url('https://static.58.com/lbg/mengchong/image/icon/arrow-right.png')
+                no-repeat;
+            background-size: 100%;
+        }
+    }
+    .appedit-content-list {
+        padding: 0 30rpx 40rpx;
+        background: #fff;
+        .appedit-content-list-item {
+            height: 90rpx;
+            border-bottom: 2rpx solid #f3f3f3;
+            &::after {
+                display: inline-block;
+                content: '';
+                width: 0;
+                height: 90rpx;
+                line-height: 90rpx;
+                vertical-align: middle;
+            }
+            .appedit-form-label {
+                display: inline-block;
+                width: 150rpx;
+                font-family: PingFangSC-Regular;
+                font-size: 30rpx;
+                color: #999999;
+                vertical-align: middle;
+            }
+            .appedit-form-placeholder {
+                color: #ccc;
+            }
+            .appedit-form-input,
+            .appedit-form-picker,
+            .appedit-form-appname,
+            .appedit-form-picker-placeholder {
+                margin-left: 144rpx;
+                display: inline-block;
+                width: 396rpx;
+                font-family: PingFangSC-Regular;
+                font-size: 30rpx;
+                color: #333333;
+                text-align: right;
+                vertical-align: middle;
+            }
+            .appedit-form-appname {
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+            .appedit-form-picker-placeholder {
+                color: #ccc;
+            }
+            .appedit-form-label-address {
+                @extend .appedit-form-label;
+                width: 210rpx;
+            }
+            .appedit-form-btn-location {
+                display: inline-block;
+                margin-left: 392rpx;
+                font-family: PingFangSC-Regular;
+                font-size: 30rpx;
+                color: #4e88ff;
+                &::before {
+                    display: inline-block;
+                    content: '';
+                    width: 24rpx;
+                    height: 30rpx;
+                    background: url('https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/img/icon_location.png')
+                        no-repeat top left;
+                    background-size: 100%;
+                    margin-right: 4rpx;
+                    vertical-align: -4rpx;
+                }
+            }
+            .appedit-form-input-addressdetail {
+                display: block;
+                width: 100%;
+                height: 88rpx;
+                padding-left: 0;
+                text-indent: 0;
+                font-family: PingFangSC-Regular;
+                font-size: 30rpx;
+                color: #333333;
+            }
+        }
+        .appedit-content-list-item-noborder {
+            border: none;
+        }
+    }
+    .appedit-map {
+        display: block;
+        height: 360rpx;
+        .appedit-map-in {
+            display: block;
+            width: 100%;
+            height: 360rpx;
+        }
+    }
+    .appedit-submit {
+        width: 690rpx;
+        line-height: 94rpx;
+        margin: 60rpx auto 0;
+        background: #cccccc;
+        border-radius: 4rpx;
+        font-family: PingFangSC-Regular;
+        font-size: 3r2px;
+        color: #ffffff;
+        text-align: center;
+    }
+    .submit-enable {
+        background: #4e88ff;
+    }
+}
+</style>

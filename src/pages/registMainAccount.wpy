@@ -1,0 +1,185 @@
+<template>
+    <view class="container">
+        <!-- 提示步骤start -->
+        <RemindBar :currentstep="currentstep"></RemindBar>
+        <!-- 提示步骤end -->
+        <!-- 主体账户信息start -->
+        <view class="main-accont-info">
+            <view class="main-title">主体信息登记</view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">企业类型（企业包括企业、分支机构、企业相关品牌）</view>
+                    <view class="main-body-button {{form.enterpriseType === item.type ? 'chosed' : ''}}" wx:for="{{enterpriseTypeList}}" wx:key="{{index}}" bindtap="selectEnterpriseType" data-item="{{item}}">{{item.name}}</view>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">企业名称</view>
+                    <input class="main-body-input" type="text" placeholder="请输入" maxlength="100" bindblur="setText" placeholder-style="font-size: 26rpx; color: #CCCCCC;" data-name="enterpriseName"></input>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">营业执照注册号/统一信用社代码</view>
+                    <input class="main-body-input" type="text" placeholder="请输入" maxlength="100" bindblur="setText" data-name="enterpriseCode" placeholder-style="font-size: 26rpx; color: #CCCCCC;"></input>
+                </view>
+            </view>
+            <view class="main-title">银行账户</view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">企业开户名称/对外账户名</view>
+                    <input class="main-body-input" type="text" placeholder="对公账号需跟组织机构代码证上名称保持一致" maxlength="100" bindblur="setText" data-name="enterpriseAccountName" placeholder-style="font-size: 26rpx; color: #CCCCCC;"></input>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">对公账户开户银行</view>
+                    <input class="main-body-input" type="text" placeholder="请输入" maxlength="100" bindblur="setText" data-name="enterpriseBank" placeholder-style="font-size: 26rpx; color: #CCCCCC;"></input>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">对公银行账号</view>
+                    <input class="main-body-input" type="number" placeholder="请输入" maxlength="19" bindblur="setText" data-name="enterpriseAccount" placeholder-style="font-size: 26rpx; color: #CCCCCC;"></input>
+                </view>
+            </view>
+            <view class="main-title">企业资质</view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">企业工商营业执照</view>
+                    <UploaderCom @childFn.user="uploadFn" title="enterpriseLicense" wx:if="{{!form.enterpriseLicense}}"></UploaderCom>
+                    <view class="main-show-image" wx:if="{{form.enterpriseLicense}}">
+                        <image class="main-upload-image" src="{{form.enterpriseLicense}}"></image>
+                        <view class="main-del-image" bindtap="delAuthPaper" data-key="enterpriseLicense"></view>
+                    </view>
+                    <view class="main-body-remind">只支持中国大陆工商局或市场监督管理局颁发的工商营业执照，且必须在有效期内</view>
+                </view>
+            </view>
+            <view class="main-button" bindtap="nextStep">下一步</view>
+        </view>
+        <!-- 主体账户信息end -->
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { sleep, alert } from '../utils';
+
+import RemindBar from '../components/RemindBar';
+
+import UploaderCom from '../components/UploaderCom';
+
+export default class RegistMainAccount extends wepy.page {
+    config = {
+        navigationBarTitleText: '注册',
+    }
+    components = {
+        RemindBar,
+        UploaderCom,
+    }
+    data = {
+        currentstep: '1',
+        form: {
+            enterpriseType: 0, // 企业类型 1企业，2个体
+            enterpriseName: '', // 企业名称
+            enterpriseCode: '', // 营业执照注册号
+            enterpriseAccountName: '', // 对外账户名
+            enterpriseAccount: '', // 企业开户名称/对外账号
+            enterpriseBank: '', // 对公账户开户银行
+            enterpriseLicense: '', // 企业工商营业执照图片（上传）
+        },
+        enterpriseTypeList: [
+            {
+                type: 1,
+                name: '企业',
+            }, {
+                type: 2,
+                name: '个体工商户',
+            },
+        ],
+        enterpriseCodeReg: /^[0-9a-z]+$/,
+        id: '',
+    }
+    onLoad () {
+    }
+    // 选择企业类型
+    selectEnterpriseType (e) {
+        console.log(e);
+        const { type } = e.target.dataset.item;
+        this.form = Object.assign({}, this.form, {
+            enterpriseType: type,
+        });
+        this.$apply();
+    }
+    methods = {
+        uploadFn (key, src) {
+            console.log(key, src);
+            console.log(`parent received emit event, number is:${src}`, `key${key}`);
+            // this.form[key] = src;
+            const obj = {};
+            obj[key] = src;
+            this.form = Object.assign({}, this.form, obj);
+            this.$apply();
+        },
+    }
+    // 输入框数据
+    setText (e) {
+        console.log(e);
+        const { name } = e.currentTarget.dataset;
+        const obj = {};
+        obj[name] = e.detail.value;
+        this.form = Object.assign({}, this.form, obj);
+        this.$apply();
+    }
+    // 删除图片
+    delAuthPaper (e) {
+        const { key } = e.target.dataset;
+        const obj = {};
+        obj[key] = '';
+        this.form = Object.assign({}, this.form, obj);
+        this.$apply();
+    }
+    // 下一步
+    async nextStep () {
+        const {
+            enterpriseType,
+            enterpriseName,
+            enterpriseCode,
+            enterpriseAccountName,
+            enterpriseAccount,
+            enterpriseBank,
+            enterpriseLicense,
+        } = this.form;
+        console.log(this.form);
+        const { enterpriseCodeReg } = this;
+        if (enterpriseType.length === 0 ||
+            enterpriseName.length === 0 ||
+            enterpriseCode.length === 0 ||
+            enterpriseAccountName.length === 0 ||
+            enterpriseAccount.length === 0 ||
+            enterpriseBank.length === 0 ||
+            enterpriseLicense.length === 0) {
+            alert('请完善主体信息！');
+            return;
+        } else if (
+            enterpriseCode.length !== 15 &&
+            enterpriseCode.length !== 18 &&
+            !enterpriseCodeReg.test(enterpriseCode)) {
+            alert('营业执照或统一信用社代码格式不正确！');
+            return;
+        } else if (enterpriseAccount.length !== 16 && enterpriseAccount.length !== 19) {
+            alert('银行卡格式不正确！');
+            return;
+        }
+        wepy.setStorageSync('registForm', this.form);
+        await sleep();
+        wepy.navigateTo({
+            url: './registManage',
+        });
+    }
+}
+</script>
+<style lang="scss">
+@import '../css/regist.scss';
+</style>

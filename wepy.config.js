@@ -25,7 +25,7 @@ const config = {
   },
   plugins: {
     parsecss: {
-      filter: /\.scss$/,
+      filter: /\.(wxss|scss)$/,
       base64Config: {
         maxSize: 60,
         basePath: __dirname + '/bgimages'

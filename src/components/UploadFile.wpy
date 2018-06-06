@@ -1,0 +1,310 @@
+<template>
+    <view class='mod-upload'>
+        <view class="main-body">
+            <view class="main-title">上传{{titleStatus[uploadtype-1]}}</view>
+            <view class="main-boy-line main-body-flex">
+                <view class="main-upload"  @tap='bindUploadImage' wx:if="{{uploadtype=='1' && vm.length<maxCount-0}}"></view>
+                <view class="main-upload"  @tap='bindUploadVideo' wx:if="{{uploadtype=='2' && vm.length<maxCount-0}}"></view>
+                <view class="main-show-image" wx:for='{{vm}}' wx:key='index'>
+                    <image class="main-upload-image" data-index='{{index}}' src="{{item}}" @tap="bindPreviewImage({{index}})" wx:if="{{uploadtype==='1'}}"/>
+                    <view class="main-upload-video" data-index='{{index}}' @tap="bindPlayVideo({{item}})" wx:else><image class="main-upload-video-arrow" src="https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/img/video-play.png"/></view>
+                    <view class="main-del-image" hidden="{{loading}}" @tap.stop="onCancelImage" wx:if="{{showDelete}}"></view>
+                </view>
+            </view>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+import { toastSync } from '../utils';
+
+const host = 'https://yaofa.58.com';
+export default class Uploader extends wepy.component {
+    data = {
+        uploading: false,
+        vm: [],
+        images: [],
+        titleStatus: ['图片', '视频'],
+    }
+    props = {
+        uploadtype: String,
+        maxSize: String,
+        maxCount: String,
+        showDelete: {
+            type: Boolean,
+            default: true,
+        },
+        uploadingImage: {
+            type: String,
+            default: 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/img/upimg_loading_1.gif',
+        },
+        uploadImageApi: {
+            type: String,
+            default: '/fileUpload',
+        },
+        uploadVideoApi: {
+            type: String,
+            default: '/wosFileUpload',
+        },
+    }
+    computed = {
+        currentCount () {
+            const count = this.maxCount - this.vm.length;
+            return count > 0 ? count : 0;
+        },
+    }
+    methods = {
+        async bindUploadImage () {
+            if (this.uploading) return;
+            const self = this;
+            const start = this.data.vm.length || 0;
+            const { tempFilePaths } = await wepy.chooseImage({ count: this.currentCount, sizeType: 'compressed' });
+            const fileSize = tempFilePaths.length;
+            let sfileset = [...self.vm];
+            const simages = [...self.images];
+            sfileset = self.batchAddArray(
+                sfileset,
+                fileSize,
+                self.uploadingImage,
+            );
+            // 上传中图片
+            self.uploading = true;
+            self.vm = [...sfileset];
+            // 触发图片更改事件
+            self.$emit('changeimages', {
+                uploading: self.uploading,
+                images: self.images,
+            });
+            self.vm = [...sfileset];
+            self.$apply();
+            tempFilePaths.map(async (file, i) => {
+                const [e, data] = await self.uploadImage(file);
+                if (e) {
+                    await toastSync(e);
+                    sfileset.splice(start + i, 1); // 失败删除
+                } else {
+                    sfileset.splice(start + i, 1, file); // 成功替换
+                    simages.push(data.content);
+                }
+                // 每张照片上传成功调用
+                self.images = [...simages];
+                self.vm = [...sfileset];
+                // 所有图片上传完成
+                if (fileSize - 1 === i) {
+                    self.$emit('changeimages', {
+                        uploading: false,
+                        images: self.images,
+                    });
+                }
+                self.$apply();
+                return file;
+            });
+        },
+        async bindUploadVideo () {
+            if (this.uploading) return;
+            const self = this;
+            const start = this.data.vm.length || 0;
+            let { tempFilePath } = await wepy.chooseVideo();
+            const tempFilePaths = [tempFilePath];
+            tempFilePath = null;
+            console.log(tempFilePaths);
+            const fileSize = tempFilePaths.length;
+            let sfileset = [...self.vm];
+            const simages = [...self.images];
+            sfileset = self.batchAddArray(
+                sfileset,
+                fileSize,
+                self.uploadingImage,
+            );
+            // 上传中图片
+            self.uploading = true;
+            self.vm = [...sfileset];
+            // 触发图片更改事件
+            self.$emit('changeimages', {
+                uploading: self.uploading,
+                images: self.images,
+            });
+            self.vm = [...sfileset];
+            self.$apply();
+            tempFilePaths.map(async (file, i) => {
+                const [e, data] = await self.uploadVideo(file);
+                if (e) {
+                    await toastSync(e);
+                    sfileset.splice(start + i, 1); // 失败删除
+                } else {
+                    sfileset.splice(start + i, 1, file); // 成功替换
+                    simages.push(data.content);
+                }
+                // 每张照片上传成功调用
+                self.images = [...simages];
+                self.vm = [...sfileset];
+                // 触发图片更改事件
+                self.$emit('changeimages', {
+                    uploading: false,
+                    images: self.images,
+                });
+                self.$apply();
+                // 所有图片上传完成
+                if (fileSize - 1 === i) {
+                    self.uploading = false;
+                    self.$apply();
+                }
+                return file;
+            });
+        },
+        onCancelImage (index) {
+            if (this.data.uploading) return;
+            const sfileset = this.data.vm;
+            const simages = this.data.images;
+            sfileset.splice(index, 1);
+            simages.splice(index, 1);
+            this.vm = [...sfileset];
+            this.images = [...simages];
+            this.$apply();
+            // 触发图片更改事件
+            this.$emit('changeImages', {
+                images: this.data.images,
+            });
+        },
+        bindPlayVideo (url) {
+            if (url) {
+                wepy.navigateTo({
+                    url: `/pages/VideoPlay?url=${url}`,
+                });
+            }
+        },
+        bindPreviewImage (current) {
+            wepy.previewImage({
+                current,
+                urls: this.vm,
+            });
+        },
+    }
+    uploadImage (file) {
+        return new Promise((resolve) => {
+            wepy.uploadFile({
+                url: host + this.uploadImageApi,
+                filePath: file,
+                name: 'content',
+            }).then((response) => {
+                try {
+                    console.log(response);
+                    const res = JSON.parse(response.data);
+                    const { state, msg, data } = res;
+                    if (state === 100) {
+                        resolve([null, data]);
+                    } else {
+                        resolve([msg]);
+                    }
+                    console.log(res);
+                } catch (e) {
+                    console.log(e);
+                    resolve([e]);
+                }
+            }).catch((e) => {
+                console.log(e);
+                const { errMsg } = e;
+                resolve([errMsg]);
+            });
+        });
+    }
+    uploadVideo (file) {
+        return new Promise((resolve) => {
+            wepy.uploadFile({
+                url: host + this.uploadVideoApi,
+                filePath: file,
+                name: 'content',
+            }).then((response) => {
+                try {
+                    console.log(response);
+                    const res = JSON.parse(response.data);
+                    const { state, msg, data } = res;
+                    if (state === 100) {
+                        resolve([null, data]);
+                    } else {
+                        resolve([msg]);
+                    }
+                    console.log(res);
+                } catch (e) {
+                    console.log(e);
+                    resolve([e]);
+                }
+            }).catch((e) => {
+                console.log(e);
+                const { errMsg } = e;
+                resolve([errMsg]);
+            });
+        });
+    }
+    batchAddArray (array, size, value) {
+        const ret = array;
+        if (ret instanceof Array) {
+            for (let i = 0; i < size; i += 1) {
+                ret.push(value);
+            }
+        }
+        return ret;
+    }
+    onLoad () {
+        this.vm = [];
+        this.images = [];
+        this.uploading = false;
+        this.$apply();
+    }
+}
+</script>
+<style lang="scss">
+/* 上传区 */
+@import '../css/regist.scss';
+.uploadInfo {
+    padding-bottom: 70rpx;
+    .article {
+        padding: 30rpx;
+        background: white;
+        margin-bottom: 20rpx;
+        border-top: 1rpx solid #e7e7e7;
+        .title {
+            height: 86rpx;
+            line-height: 86rpx;
+            display: flex;
+            justify-content: space-between;
+            .text {
+                font-size: 30rpx;
+                color: #999999;
+            }
+            .action {
+                font-size: 30rpx;
+                color: #4e88ff;
+            }
+        }
+        .inputArea {
+            textarea {
+                width: 100%;
+                height: 202rpx;
+            }
+            .numTip {
+                padding-top: 20rpx;
+                font-size: 24rpx;
+                color: #cccccc;
+                text-align: right;
+            }
+        }
+    }
+    .main-upload-video {
+        width: 160rpx;
+        height: 160rpx;
+        border-radius: 2rpx;
+        background: rgba(0, 0, 0, 0.8);
+        position: relative;
+        .main-upload-video-arrow {
+            width: 65rpx;
+            height: 65rpx;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+        }
+    }
+}
+</style>

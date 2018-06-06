@@ -1,0 +1,13 @@
+
+    <view class="mod-uploadInfoSuccess">
+        <view class="uploadInfoSuccess-container">
+            <image class="uploadInfoSuccess-icon" src="https://img.58cdn.com.cn/lbg/jianzhan/images/paysuccess-icon.png"/>
+            <view class="uploadInfoSuccess-title">提交成功</view>
+            <view class="uploadInfoSuccess-content">
+                助理会根据您提交的素材及模板安排时间进行制作，预计需要1-2天
+            </view>
+            
+        </view>
+        <view class="uploadInfoSuccess-desc">注：请在首页【完成度】查询进度，或使用账号密码登录PC端yaofa.58.com制作您的小程序</view>
+        <navigator class="uploadInfoSuccess-home" url="/pages/home" open-type="reLaunch">返回首页</navigator>
+    </view>

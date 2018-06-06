@@ -1,0 +1,617 @@
+<template>
+    <view class="home">
+        <view class="index-loaded-header">
+            <view class="welcome-block">
+                <view class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
+                <navigator url="noticeList" :class="{'new-msg': business.unread}" class="msg-box'"></navigator>
+            </view>
+            <view class="item-detail">
+                <view class="item-name" :class="{logoPadding : business.mpCount > 0 }">{{ business.miniProgramName }}</view>
+                <view class="item-title" :class="{logoPadding : business.mpCount > 0 }">可上传素材、提交注册信息到当前小程序</view>
+                <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">切换</view>
+                <image  class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+                <view bindtap="checkProgress" class="item-detail-progress">
+                    <view class="current-progress">当前进度</view>
+                    <view class="remind-title">{{ business.progressText}}</view>
+                </view>
+            </view>
+        </view>
+        <view class="index-loaded-body">
+            <view bindtap="link({{index}})" class="index-loaded-item" wx:for="{{items}}" wx:key="index">
+                <image src="{{item.iconPath}}" class="item-img"></image>
+                <view class="item-text">{{item.text}}</view>
+            </view>
+        </view>
+        <view wx:if="{{business.changeMP === true}}" class="mask" @tap="bindHideMask"></view>
+        <view wx:if="{{business.changeMP === true }}" class="mpBox">
+            <view class="default">
+                <view class="name logoPadding">{{business.miniProgramName}}</view>
+                <view>默认</view>
+                <image  class="haslogo" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+            </view>
+            <view class="otherBox">
+                <repeat for="{{business.mps}}" key="index" index="index" item="item">
+                    <view class="mpbox">
+                        <view bindtap="selectMp({{item}})" class="mpItem logoPadding" data-appid="{{item.id}}" :class="{ 'active' : item.id === business.chosedId}">{{item.nickName || item.id}}</view>
+                        <image class="haslogo" mode="{{aspectFit}}" src="{{item.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+                    </view>
+                </repeat>
+            </view>
+            <view class="btnBox">
+                <view class="cancle" @tap="bindHideMask">取消</view>
+                <view class="confirm" :class="{ 'active' : business.canConfirm}" bindtap="confirmAction">确定</view>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { sleep, alert } from '../utils';
+import { post } from '../utils/ajax';
+
+export default class Home extends wepy.page {
+    config = {
+        navigationBarTitleText: '首页',
+        disableScroll: true,
+    }
+    data = {
+        business: {
+            mps: [],
+            name: '您的姓名',
+            miniProgramName: '您还没购买小程序',
+            unread: 0,
+            mpCount: 0,
+            progressText: '您还没有购买小程序',
+            nexttask: 0,
+            changeMP: false,
+            canConfirm: false,
+            selected: {
+                id: 0,
+            },
+            chosedId: 0,
+        },
+        items: [
+            {
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-my.png',
+                text: '我的小程序',
+            }, {
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-upload.png',
+                text: '上传素材',
+            }, {
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-register.png',
+                text: '微信注册信息',
+            }, {
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-progress.png',
+                text: '完成度',
+            }, {
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-advice.png',
+                text: '意见反馈',
+            },
+        ],
+    }
+    methods = {
+        link(index) {
+            if (index !== 4) { //   意见反馈不做判断
+                this.checkBeforeJump(index);
+            } else {
+                wepy.navigateTo({
+                    url: 'feedback',
+                });
+            }
+        },
+        checkProgress() {
+            if (!this.business.mpCount) {
+                alert('您还未购买小程序，请登录e.58.com进行购买', '提示');
+                return;
+            }
+            switch (this.business.nexttask) {
+                case 2:
+                    wepy.navigateTo({
+                        url: 'AppEdit',
+                    });
+                    break;
+                case 3:
+                    wepy.navigateTo({
+                        url: 'UploadInfo',
+                    });
+                    break;
+                case 4:
+                    if (this.business.selected.app_type === 2) {
+                        wepy.setStorageSync('registMappid', this.business.selected.id);
+                        wepy.navigateTo({
+                            url: 'registMainAccount',
+                        });
+                    } else {
+                        wepy.navigateTo({
+                            url: 'progress',
+                        });
+                    }
+                    break;
+                case 5:
+                    if (this.business.selected.app_type === 1) {
+                        wepy.navigateTo({
+                            url: 'progress',
+                        });
+                    } else {
+                        wepy.navigateTo({
+                            url: 'myMp',
+                        });
+                    }
+                    break;
+                case 6:
+                    wepy.navigateTo({
+                        url: 'progress',
+                    });
+                    break;
+                case 7:
+                    wepy.navigateTo({
+                        url: 'progress',
+                    });
+                    break;
+                case 8:
+                    wepy.navigateTo({
+                        url: 'progress',
+                    });
+                    break;
+                case 9:
+                    wepy.navigateTo({
+                        url: 'progress',
+                    });
+                    break;
+                default:
+                    break;
+            }
+            this.$apply();
+        },
+        async changeAction() {
+            this.business = Object.assign({}, this.business, {
+                changeMP: true,
+            });
+            const { data } = await post('/mplogic/mymplist');
+            const { mpinfos } = data;
+            this.business = Object.assign({}, this.business, {
+                mps: mpinfos,
+            });
+            if (this.business.mps.length > 0) {
+                const others = this.business.mps.filter((appinfo) => appinfo.id !==
+                this.business.selected.id);
+                const formatedOther = others.map((item) => this.formatedMp(item));
+                this.business = Object.assign({}, this.business, {
+                    mps: formatedOther,
+                    chosedId: 0,
+                    canConfirm: false,
+                });
+                // this.business.mps.map((appinfo, index) => {
+                //     if (appinfo.id === this.business.selected.id) {
+                //         this.business.mps.splice(index, 1);
+                //     }
+                //     return '';
+                // });
+            }
+            this.$apply();
+            console.log('this.business.mps', this.business.mps);
+        },
+        bindHideMask() {
+            this.business = Object.assign({}, this.business, {
+                changeMP: false,
+                canConfirm: false,
+            });
+            this.$apply();
+        },
+        selectMp(item) {
+            this.business = Object.assign({}, this.business, {
+                chosedId: item.id,
+                canConfirm: true,
+            });
+            console.log('点击', this.business);
+            this.$apply();
+        },
+        confirmAction() {
+            if (this.business.selected.id) {
+                this.setGlobalMpId(this.business.chosedId);
+                this.loadData();
+                this.hideMask();
+            }
+        },
+    }
+    hideMask() {
+        this.business = Object.assign({}, this.business, {
+            changeMP: false,
+            canConfirm: false,
+        });
+        this.$apply();
+    }
+    async onLoad() {
+        await sleep();
+        console.log('onLoad');
+    }
+    async onShow() {
+        await this.loadData();
+        this.setGlobalMpId(this.business.selected.id);
+    }
+    formatedMp(item) {
+        const mp = item;
+        if (mp.headImg && mp.headImg.indexOf('http') === -1) {
+            mp.headImg = `https://pic1.58cdn.com.cn${mp.headImg}`;
+        }
+        return mp;
+    }
+    async loadData() {
+        try {
+            const subData = {
+                mpid: wepy.getStorageSync('current_mpid') || '',
+            };
+            const { data } = await post('/mplogic/index', subData);
+            console.log('loadData', data);
+            const {
+                username = '',
+                mpinfo = {},
+                unread = '',
+                count = 0,
+                nexttask = '',
+            } = data;
+            const formatedMpinfo = this.formatedMp(mpinfo);
+            this.business = Object.assign({}, this.business, {
+                name: username,
+                miniProgramName: mpinfo.nickName || '您还没购买小程序',
+                unread,
+                mpCount: count,
+                selected: formatedMpinfo,
+            });
+            nexttask && this.setNextTask(nexttask);
+            // data.username && (this.business.name = data.username);
+            // data.mpinfo && (this.business.miniProgramName = data.mpinfo.nickName);
+            // data.unread && (this.business.unread = data.unread);
+            // data.count && (this.business.mpCount = data.count);
+            // data.mpinfo && (this.business.selected.id = data.mpinfo.id)
+            console.log('this.business', this.business);
+            this.$apply();
+        } catch (e) {
+            console.log('e', e);
+        }
+    }
+    setGlobalMpId(id) {
+        if (id) {
+            wepy.setStorageSync('current_mpid', id);
+        }
+    }
+    checkBeforeJump(index) {
+        console.log('this.business.selected.', this.business.selected);
+        if (!this.business.mpCount) {
+            alert('您还未购买小程序，请登录e.58.com进行购买', '提示');
+            return;
+        }
+        switch (index) {
+            case 0:
+                wepy.navigateTo({
+                    url: 'myMp',
+                });
+                break;
+            case 1:
+                wepy.navigateTo({
+                    url: 'UploadInfo',
+                });
+                break;
+            case 2:
+                if (this.business.selected.app_type === 1) {
+                    alert('当前小程序为优享小程序，不用提交注册信息', '提示');
+                    return;
+                }
+                if (this.business.selected.sign === 1) {
+                    wepy.navigateTo({
+                        url: 'registed',
+                    });
+                } else {
+                    wepy.setStorageSync('registMappid', this.business.selected.id);
+                    wepy.navigateTo({
+                        url: 'registMainAccount',
+                    });
+                }
+                break;
+            case 3:
+                wepy.navigateTo({
+                    url: 'progress',
+                });
+                break;
+            case 4:
+                wepy.navigateTo({
+                    url: 'feedback',
+                });
+                break;
+            default:
+                break;
+        }
+    }
+    setNextTask(taskNum) {
+        this.business = Object.assign({}, this.business, {
+            nexttask: taskNum,
+        });
+        switch (taskNum) {
+            case 2:
+                this.business.progressText = '当前小程序未添加小程序信息';
+                break;
+            case 3:
+                this.business.progressText = '当前小程序还未上传素材';
+                break;
+            case 4:
+                if (this.business.selected.app_type === 1) {
+                    this.business.progressText = '当前小程序信息已完善';
+                } else {
+                    this.business.progressText = '当前小程序还未填写注册信息';
+                }
+                break;
+            case 5: // 跳转我的小程序
+                if (this.business.selected.app_type === 1) {
+                    this.business.progressText = '当前小程序信息已完善';
+                } else {
+                    this.business.progressText = '当前小程序还未授权';
+                }
+                break;
+            case 6: // 跳转到进度
+                this.business.progressText = '当前小程序信息已完善';
+                break;
+            case 7: // 消息列表
+                this.business.progressText = '当前小程序信息已完善';
+                break;
+            case 8: // 消息列表
+                this.business.progressText = '当前小程序信息已完善';
+                break;
+            case 9: // 完成度
+                this.business.progressText = '当前小程序信息已完善';
+                break;
+            default:
+                break;
+        }
+        this.$apply();
+    }
+}
+</script>
+
+<style lang="scss">
+    view,scroll-view{
+        box-sizing:border-box;
+    }
+    .home{
+        width:100%;
+        height:1206rpx;
+        background:#f6f6f6;
+        .mask{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background: rgba(0,0,0,0.50);
+            top: 0;
+        }
+        .mpBox{
+            width: 540rpx;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate3d(-50%,-50%,0);
+            background: white;
+            border-radius: 2rpx;
+            .name{
+                width: 400rpx;
+                white-space:nowrap;
+                text-overflow:ellipsis;
+                overflow:hidden;
+            }
+            .haslogo{
+                width: 54rpx;
+                height: 54rpx;
+                position: absolute;
+                left: 20rpx;
+                top: 30rpx;
+                border-radius: 100rpx;
+            }
+            .logoPadding{
+                padding-left: 45rpx;
+            }
+            .default{
+                padding: 0 40rpx;
+            }
+            .default{
+                position: relative;
+                height: 113rpx;
+                font-size: 28rpx;
+                color: #BDBDBD;
+                line-height: 113rpx;
+                display: flex;
+                justify-content:space-between;
+            }
+            .otherBox{
+                font-size: 32rpx;
+                color: #666666;
+                overflow: scroll;
+                max-height: 320rpx;
+                .mpbox{
+                    position: relative;
+                    padding: 0 40rpx;
+                }
+                .mpItem{
+                    .logoPadding{
+                        padding-left: 45rpx;
+                    }
+                    height: 113rpx;
+                    line-height: 113rpx;
+                    border-top: 1rpx solid #F6F6F6;
+                    padding-right: 80rpx;
+                    white-space:nowrap;
+                    text-overflow:ellipsis;
+                    overflow:hidden;
+                }
+                .active{
+                    background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/correct-home.png) no-repeat right;
+                    background-size:34.5rpx 34.5rpx;
+                    color:#4E88FF;
+                }
+            }
+            .btnBox{
+                display: flex;
+                height: 113rpx;
+                width: 100%;
+                line-height: 113rpx;
+                .active{
+                    color:#4E88FF !important;
+                }
+                view{
+                    flex:1;
+                    background: white;
+                    text-align: center;
+                    border: 1rpx solid #F6F6F6;
+                }
+                .cancle{
+                    font-size: 34rpx;
+                    color: #666666;
+                }
+                .confirm{
+                    font-size: 34rpx;
+                    color: #BDBDBD;
+                }
+            }
+        }
+        .index-loaded-header{
+            width:100%;
+            height:444rpx;
+            .welcome-block{
+                width:100%;
+                height:299rpx;
+                background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/welcome-block.png) no-repeat;
+                background-size:100% auto;
+                padding:50rpx 40rpx 0 40rpx;
+                position:relative;
+                .welcome-title{
+                    font-size: 36rpx;
+                    color: #FFFFFF;
+                    letter-spacing: 0;
+                }
+                .msg-box{
+                    position:absolute;
+                    right:40rpx;
+                    top:50rpx;
+                    width:41rpx;
+                    height:31rpx;
+                    background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAAfCAYAAAB6Q+RGAAAAAXNSR0IArs4c6QAAAzpJREFUWAnNmMdP1GEQhhcwerDXgyC2owePYoktnowxGmOMsRy88Ccgij0GoxHFFhs2bAcvnvGgwRCMRqKRk11PerImiyD4DJmXfKy7vy2wsJO8mfm+aU8Wthb19PTMicVijagCFaNCsW5AWtHWIiCbCFYVClkSjiaDjJMY5clOfDX64ufhcCUsPYxKfXk8BqTsrwft+GnDQcfeEnTXOfpcCLmD27hnXuGnDiUo+wzwju83V684hJzO5WrU4cmX+ClDAcoeA7zte83tRKU694M0IBJrkEBfEE/OJyjzDfAWktlzwjhSQ3rBWor+eFcbflI+QJlbjG76HnO7tIc4GtJB11Eo0OfEEzVgMDzzDLARyXaHc7lMD+mg6ynu9CnP8BPCQbnGzDHAGz7XXE3iLO4yg3TQDTQI9CnxgEDpN8DrSLYnEdD3Zg7pDRuZ2OVTn+DHJxuc7o4+A7zmc8ztTdVDLjtIB91Eo0BbicelWpDsnnoDvIpk+5LV6Y6i7CGtmcbNSKAtxGM1NMpTZ2+/V5Bsf1S95SjMDdKbtzBAb6GPicdELSRvgA1IdiCqXjmKc4d00EPaiG9GozU89Nwb4GUkaw7zUTENuUPSvAB901b3j/D9QDkb4CXPh84+4aQ1GnKDpLECffeNn/FVSH/6h8S9L/j4kSj8E9dyDh/R2nSU1GcPSdNCFALOtUXcbUcC/Up8H71Dsl4gDvbIXtQl/kgUKPnsIGlYhH4gs0/IvnL0GWd7HU38F7C31Kq+IgLOBnoByY6G+TCmIHNIihcjAX4knh0OU8x9OapG9onmIJqvXOi5N9DzSHYszCsmmRkkhUvQT5/2AT9LQwbimWOg53yuueOJ87hLD0nRUiTA98SDAigY5hnoWSSrU848l9GQFCxDv5CZPQlmhgMGM2b2GVvidlKzOaeGJLkcCfAtcbka8+XZcQrJ6m0Ph+SQJFag315tgDPyBZY4l131vtfcaVSmsxHLthEI8A1xWeKgfJ/ZeUIw+HuKQ8guv3yN1xfzfHP9N5/ddYKTH0FVB7JfMOyXgy7UgFZSgBsWa2NrO5rn2+P2MtDEoZB/C3pgv6JVohbUjQrJjMe4Kv8BnZkdhMJllJAAAAAASUVORK5CYII=);
+                    background-size:100% auto;
+                }
+                .msg-box.new-msg::after{
+                    width:20rpx;
+                    height:20rpx;
+                    background:red;
+                    border-radius:50%;
+                    content:'';
+                    position:absolute;
+                    right:-9rpx;top:-8rpx;
+                }
+            }
+            .item-detail{
+                width:698rpx;
+                height:300rpx;
+                background:#fff;
+                border-radius: 16rpx;
+                margin:0 26rpx;
+                position:relative;
+                top:-144rpx;
+                padding:30rpx;
+                .haslogo{
+                    position:absolute;
+                    width:83rpx;
+                    height:83rpx;
+                    border-radius:100rpx;
+                    top:50rpx;
+                    left:20rpx;
+                }
+                .logoPadding{
+                    padding-left: 90rpx;
+                }
+                .item-name{
+                    font-size: 32rpx;
+                    color: #333333;
+                    letter-spacing: 0;
+                    line-height:65rpx;
+                    white-space:nowrap;
+                    overflow:hidden;
+                    text-overflow:ellipsis;
+                    width:560rpx;
+                }
+                .item-title,.item-switch{
+                    font-size: 28rpx;
+                    color: #999999;
+                    letter-spacing: 0;
+                    line-height:60rpx;
+                }
+                .item-switch{
+                    color: #4E88FF;
+                    position:absolute;
+                    right:30rpx;top:30rpx;
+                }
+            }
+            .item-detail-progress{
+                width:646rpx;
+                height:100rpx;
+                line-height:100rpx;
+                background: #F6F6F6;
+                border-radius: 16rpx;
+                margin-top:24rpx;
+                position:relative;
+                &::after{
+                    display:block;
+                    position:absolute;
+                    right:20rpx;
+                    top:37rpx;
+                    content:'';
+                    width:15rpx;
+                    height:26rpx;
+                    background:url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png') no-repeat center;
+                    background-size: 100%;
+                }
+                .current-progress{
+                    border: 1rpx solid rgba(78,136,255,0.80);
+                    border-radius: 4rpx;
+                    width:108rpx;
+                    height:38rpx;
+                    color: #4E88FF;
+                    font-size:24rpx;
+                    text-align:center;
+                    line-height:38rpx;
+                    float:left;
+                    margin:30rpx 16rpx 0 18rpx;
+                }
+            }
+            .remind-title{
+                color: #9B9B9B;
+                border:0;
+                font-size:28rpx;
+            }
+        }
+        .index-loaded-body{
+            width:698rpx;
+            height:430rpx;
+            padding:60rpx 30rpx;
+            margin:30rpx 26rpx;
+            background:#fff;
+            border-radius: 16rpx;
+            display:flex;
+            flex-wrap:wrap;
+            .index-loaded-item{
+                width:33%;
+                margin-bottom: 70rpx;
+                text-align: center;
+                .item-img{
+                    width:72rpx;
+                    height:72rpx;
+                }
+                .item-text{
+                    font-size: 26rpx;
+                    color: #333333;
+                    letter-spacing: 0;
+                    text-align: center;
+                    line-height:32rpx;
+                    margin-top:6rpx;
+                }
+            }
+        }
+    }
+</style>

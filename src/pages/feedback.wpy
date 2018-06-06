@@ -1,0 +1,93 @@
+<template>
+    <view class="container">
+        <view class="main-title">常见问题</view>
+        <view class="main-body" wx:for="{{list}}" wx:key="index">
+            <view class="main-boy-line">
+                <view class="main-body-item" data-type="{{item.type}}" bindtap="tofeedbackDetail">{{item.text}}</view>
+            </view>
+        </view>
+        <view class="main-title">留言</view>
+        <view class="main-body">
+            <textarea class="main-body-textarea" placeholder="您的留言会及时通知到相关助理及管理员" placeholder-style="font-size: 30rpx;color: #CCCCCC" maxlength="500" bindinput="input" value="{{content}}"></textarea>
+            <view class="main-text-size">{{content.length}}/500</view>
+        </view>
+        <view class="main-button" bindtap="submit" style="margin-bottom:100rpx;">提交</view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { sleep, alert, filteremoji } from '../utils';
+
+import { post } from '../utils/ajax';
+
+export default class Feedback extends wepy.page {
+    config = {
+        navigationBarTitleText: '意见反馈',
+    }
+    data = {
+        list: [
+            {
+                type: '1',
+                text: '优享小程序介绍',
+            },
+            {
+                type: '2',
+                text: '微信小程序介绍',
+            },
+            {
+                type: '3',
+                text: '登录常见问题',
+            },
+        ],
+        content: '',
+    }
+    async onLoad() {
+        await sleep();
+        console.log('onLoad');
+    }
+    input(e) {
+        const val = e.detail.value;
+        this.content = val;
+        this.$apply();
+    }
+    async submit() {
+        const con = filteremoji(this.content);
+        if (!con.trim()) {
+            alert('请编辑留言后提交！');
+            return;
+        }
+        try {
+            this.content = '';
+            this.$apply();
+            console.log('3', this.content, '4', con);
+            await post('/suggestion/submit', { content: con });
+            alert('提交成功，谢谢您的建议！', '提示', () => {
+                console.log('进入callback');
+                wepy.redirectTo({
+                    url: 'home',
+                });
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    tofeedbackDetail(e) {
+        const { type } = e.currentTarget.dataset;
+        if (type === '3') {
+            wepy.navigateTo({
+                url: './PopQuestions',
+            });
+        } else {
+            wepy.navigateTo({
+                url: `./feedbackDetail?type=${type}`,
+            });
+        }
+    }
+}
+</script>
+
+<style lang="scss">
+@import '../css/regist.scss';
+</style>

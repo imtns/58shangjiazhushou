@@ -1,0 +1,273 @@
+<template>
+    <view class="buy-container">
+        <scroll-view scroll-x>
+            <view class="buy-list">
+                <view class="buy-list-item buy-list-item-first">
+                    <view class="buy-app-title">优享小程序</view>
+                    <view class="buy-app-bg"></view>
+                    <view class="buy-app-feature-list">
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img app-feature-img11"></view>
+                            <view class="app-feature-desc">开通仅需</view>
+                            <view class="app-feature-desc">网邻通资质</view>
+                        </view>
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img  app-feature-img10"></view>
+                            <view class="app-feature-desc">58平台</view>
+                            <view class="app-feature-desc">审核速度快</view>
+                        </view>
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img app-feature-img7"></view>
+                            <view class="app-feature-desc">支持600+行业</view>
+                            <view class="app-feature-desc">微信4项功能</view>
+                        </view>
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img app-feature-img6"></view>
+                            <view class="app-feature-desc">1-3个工作日</view>
+                            <view class="app-feature-desc">等待时间</view>
+                        </view>
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img  app-feature-img8"></view>
+                            <view class="app-feature-desc">版本功能</view>
+                            <view class="app-feature-desc">自动更新</view>
+                        </view>
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img app-feature-img9"></view>
+                            <view class="app-feature-desc">审核成功率</view>
+                            <view class="app-feature-desc">几乎100%</view>
+                        </view>
+                    </view>
+                    <view class="buy-app-pay" @tap="bindBuy">立即购买</view>
+                </view>
+                <view class="buy-list-item">
+                    <view class="buy-app-title">微信小程序</view>
+                    <view class="buy-app-bg"></view>
+                    <view class="buy-app-feature-list">
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img app-feature-img4"></view>
+                            <view class="app-feature-desc">开通微信</view>
+                            <view class="app-feature-desc">企业/个人资质</view>
+                        </view>
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img app-feature-img5"></view>
+                            <view class="app-feature-desc">微信审核</view>
+                            <view class="app-feature-desc">速度较快</view>
+                        </view>
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img app-feature-img12"></view>
+                            <view class="app-feature-desc">企业版400+行业</view>
+                            <view class="app-feature-desc">微信7项功能</view>
+                        </view>
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img app-feature-img3"></view>
+                            <view class="app-feature-desc">企业版仅需</view>
+                            <view class="app-feature-desc">1-7个工作日</view>
+                        </view>
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img app-feature-img2"></view>
+                            <view class="app-feature-desc">版本功能</view>
+                            <view class="app-feature-desc">自动更新</view>
+                        </view>
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img app-feature-img1"></view>
+                            <view class="app-feature-desc">企业版审核</view>
+                            <view class="app-feature-desc">成功率高</view>
+                        </view>
+                    </view>
+                    <view class="buy-app-pay" @tap="bindBuy">立即购买</view>
+                </view>
+            </view>    
+        </scroll-view>
+        
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { sleep } from '../utils';
+
+export default class Buy extends wepy.page {
+    config = {
+        navigationBarTitleText: '小程序购买',
+        disableScroll: true,
+    }
+    data = {
+
+    }
+    async onLoad () {
+        await sleep();
+        console.log('onLoad');
+    }
+    methods = {
+        bindBuy () {
+            wepy.navigateToMiniProgram({
+                url: '',
+            });
+        },
+    }
+}
+</script>
+
+<style lang="scss">
+view,
+scroll-view {
+    box-sizing: border-box;
+}
+page {
+    width: 100%;
+    height: 100%;
+    background: #f6f6f6;
+    .buy-container {
+        font-family: PingFangSC-Medium;
+        width: 100vw;
+        height: 100vh;
+        padding: 56rpx 0 0;
+        background-image: linear-gradient(-205deg, #47b0ff 0%, #786dff 100%);
+        background: url('https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/img/bg_buy.jpg')
+            no-repeat;
+        background-size: 100% 100%;
+        .buy-list {
+            width: 100%;
+            margin-right: -26rpx;
+            white-space: nowrap;
+            .buy-list-item-first {
+                margin-left: 75rpx;
+            }
+            .buy-list-item {
+                display: inline-block;
+                margin-right: 26rpx;
+                width: 600rpx;
+                position: relative;
+                .buy-app-title {
+                    margin-bottom: 52rpx;
+                    font-size: 38rpx;
+                    color: #ffffff;
+                    text-align: center;
+                    position: relative;
+                    z-index: 2;
+                }
+                .buy-app-title::before {
+                    display: inline-block;
+                    content: '';
+                    width: 17rpx;
+                    height: 17rpx;
+                    margin-right: 10rpx;
+                    transform: rotate(-315deg);
+                    background: #ffffff;
+                }
+                .buy-app-bg {
+                    display: block;
+                    width: 268rpx;
+                    height: 28rpx;
+                    background: rgba(112, 121, 255, 0.6);
+                    border-radius: 55rpx;
+                    position: absolute;
+                    left: 50%;
+                    top: 27rpx;
+                    transform: translateX(-50%);
+                    z-index: 1;
+                }
+                .buy-app-feature-list {
+                    height: 730rpx;
+                    padding: 46rpx 30rpx 0;
+                    background: #ffffff;
+                    border-radius: 25rpx;
+                    white-space: normal;
+                    .buy-app-feature-list-item {
+                        display: inline-block;
+                        width: 270rpx;
+                        margin-bottom: 56rpx;
+                        vertical-align: top;
+                        .app-feature-img {
+                            display: block;
+                            margin: 0 auto 10rpx;
+                            width: 70rpx;
+                            height: 70rpx;
+                            background: url('https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/img/appbuy_sprites.png')
+                                no-repeat -10rpx -910rpx;
+                            background-size: 90rpx 1080rpx;
+                            border-radius: 16rpx;
+                        }
+                        .app-feature-img1 {
+                            background-position: -10rpx -100rpx;
+                        }
+
+                        .app-feature-img2 {
+                            background-position: -10rpx -550rpx;
+                        }
+
+                        .app-feature-img3 {
+                            background-position: -10rpx -190rpx;
+                        }
+
+                        .app-feature-img4 {
+                            background-position: -10rpx -280rpx;
+                        }
+
+                        .app-feature-img5 {
+                            background-position: -10rpx -370rpx;
+                        }
+
+                        .app-feature-img6 {
+                            background-position: -10rpx -460rpx;
+                        }
+
+                        .app-feature-img7 {
+                            background-position: -10rpx -10rpx;
+                        }
+
+                        .app-feature-img8 {
+                            background-position: -10rpx -640rpx;
+                        }
+
+                        .app-feature-img9 {
+                            background-position: -10rpx -730rpx;
+                        }
+
+                        .app-feature-img10 {
+                            background-position: -10rpx -820rpx;
+                        }
+
+                        .app-feature-img11 {
+                            background-position: -10rpx -910rpx;
+                        }
+
+                        .app-feature-img12 {
+                            background-position: -10rpx -1000rpx;
+                        }
+                        .app-feature-desc {
+                            display: block;
+                            margin: 0 auto;
+                            line-height: 40rpx;
+                            font-family: PingFangSC-Regular;
+                            font-size: 28rpx;
+                            color: #666666;
+                            text-align: center;
+                        }
+                    }
+                }
+                .buy-app-pay {
+                    position: relative;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 360rpx;
+                    line-height: 88rpx;
+                    background-image: linear-gradient(
+                        -180deg,
+                        #ffd700 0%,
+                        #ff9b00 100%
+                    );
+                    box-shadow: 0 0 9rpx 0 rgba(116, 127, 152, 0.5),
+                        inset 0 -15rpx 20rpx 0 #fbb100;
+                    border-radius: 100rpx;
+                    font-family: PingFangSC-Medium;
+                    font-size: 32rpx;
+                    color: #ffffff;
+                    text-align: center;
+                }
+            }
+        }
+    }
+}
+</style>

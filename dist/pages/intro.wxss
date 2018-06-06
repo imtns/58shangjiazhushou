@@ -1,0 +1,199 @@
+.previewimg image {
+  width: 20rpx;
+  height: 20rpx;
+}
+
+.intro {
+  background: white;
+  padding-bottom: 20rpx;
+}
+
+.intro .header {
+  height: 498rpx;
+  background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/intro_header.png) no-repeat center;
+  background-size: 100% auto;
+}
+
+.intro .header text {
+  color: white;
+  display: block;
+  padding-left: 60rpx;
+  font-family: PingFangSC-Regular;
+}
+
+.intro .header .welcome {
+  padding-top: 78rpx;
+  font-size: 40rpx;
+  line-height: 56rpx;
+}
+
+.intro .header .text {
+  font-size: 32rpx;
+  line-height: 45rpx;
+}
+
+.intro .header .btn-login {
+  background: #FFFFFF;
+  box-shadow: 0 0 12rpx 0 rgba(164, 170, 190, 0.4), inset 0 0 10rpx 0 rgba(164, 170, 190, 0.2);
+  border-radius: 100rpx;
+  width: 550rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  margin-top: 78rpx;
+  font-size: 32rpx;
+  color: #5F62F9;
+}
+
+.intro .intro-content .box {
+  margin-top: 55rpx;
+}
+
+.intro .intro-content .part1 {
+  padding: 0 20rpx;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+}
+
+.intro .intro-content .part1 .textbox {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
+  text-align: center;
+  font-size: 26rpx;
+  padding: 20rpx 0;
+  color: #333333;
+}
+
+.intro .intro-content .part1 .contnet-logo {
+  width: 321rpx;
+  height: 321rpx;
+  background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/group.png) no-repeat center;
+  background-size: 100% auto;
+}
+
+.intro .intro-content .part2 .disbox {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  height: 90rpx;
+  padding-left: 62rpx;
+  margin: 30rpx 0;
+}
+
+.intro .intro-content .part2 .disbox .icon0 {
+  background: url("https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon0.png") center no-repeat;
+  background-size: 100% auto;
+  width: 100rpx;
+  height: 100rpx;
+  margin-top: -5rpx;
+}
+
+.intro .intro-content .part2 .disbox .icon1 {
+  background: url("https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon1.png") center no-repeat;
+  background-size: 100% auto;
+  width: 100rpx;
+  height: 100rpx;
+  margin-top: -5rpx;
+}
+
+.intro .intro-content .part2 .disbox .icon2 {
+  background: url("https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon2.png") center no-repeat;
+  background-size: 100% auto;
+  width: 100rpx;
+  height: 100rpx;
+  margin-top: -5rpx;
+}
+
+.intro .intro-content .part2 .disbox .icon3 {
+  background: url("https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon3.png") center no-repeat;
+  background-size: 100% auto;
+  width: 100rpx;
+  height: 100rpx;
+  margin-top: -5rpx;
+}
+
+.intro .intro-content .part2 .disbox .icon4 {
+  background: url("https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon4.png") center no-repeat;
+  background-size: 100% auto;
+  width: 100rpx;
+  height: 100rpx;
+  margin-top: -5rpx;
+}
+
+.intro .intro-content .part2 .disbox .icon5 {
+  background: url("https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon5.png") center no-repeat;
+  background-size: 100% auto;
+  width: 100rpx;
+  height: 100rpx;
+  margin-top: -5rpx;
+}
+
+.intro .intro-content .part2 .disbox .discription {
+  padding-left: 65rpx;
+}
+
+.intro .intro-content .part2 .disbox .discription text {
+  display: block;
+}
+
+.intro .intro-content .part2 .disbox .discription .dis_text {
+  font-size: 27rpx;
+  color: #999999;
+}
+
+.intro .intro-content .part2 .disbox .discription .dis_title {
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.intro .intro-content .part3 {
+  padding: 0 40rpx;
+}
+
+.intro .intro-content .part3 .codeBox {
+  display: inline-block;
+  width: 33%;
+  text-align: center;
+}
+
+.intro .intro-content .part3 text {
+  display: block;
+  text-align: center;
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.intro .intro-content .login {
+  width: 550rpx;
+  height: 88rpx;
+  background: #FFFFFF;
+  box-shadow: 0 0 12rpx 0 rgba(164, 170, 190, 0.2), inset 0 0 10rpx 0 rgba(164, 170, 190, 0.1);
+  border-radius: 100rpx;
+  margin: 96rpx auto 91rpx auto;
+  font-size: 32rpx;
+  color: #5F62F9;
+}
+
+.intro .intro-content .title {
+  font-size: 34rpx;
+  width: 343rpx;
+  height: 61rpx;
+  text-align: center;
+  margin: 0 auto;
+  margin-top: 59rpx;
+  display: block;
+  line-height: 74rpx;
+  background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/intro_title_bg.png) no-repeat center;
+  background-size: 100% auto;
+}

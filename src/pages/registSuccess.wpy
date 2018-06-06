@@ -1,0 +1,49 @@
+<template>
+    <view class="container">
+        <!-- 提示步骤start -->
+        <RemindBar :currentstep="currentstep"></RemindBar>
+        <!-- 提示步骤end -->
+        <view class="main-success-box">
+            <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/main-success.png"></image>
+            <view class="main-success-tip">您的小程序资料已经提交！<br/>请等待微信审核</view>
+        </view>
+        <view class="main-remind-box">
+            <view class="main-remind-tips">审核注意事项：</view>
+            <view class="main-remind-tips">1、请保持电话通畅。腾讯会通过电话方式审核，审核电话为湖南长沙等地座机，不是诈骗电话，放心接听。</view>
+            <view class="main-remind-tips">2、发票问题。如有发票地址为北京，审核流程中还需进行对公账号/法人账号的小额打款验证，2毛钱左右。（注册过程中需缴纳300块钱不需要客户支付，是由58北京总部支付的，故发票地址在北京。）</view>
+        </view>
+        <view class="main-button" bindtap="backToIndex">返回首页</view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { sleep } from '../utils';
+
+import RemindBar from '../components/RemindBar';
+
+export default class RegistSuccess extends wepy.page {
+    config = {
+        navigationBarTitleText: '注册',
+    }
+    components = {
+        RemindBar,
+    }
+    data = {
+        currentstep: '3',
+    }
+    async onLoad() {
+        await sleep();
+        console.log('onLoad');
+    }
+    backToIndex() {
+        wepy.reLaunch({
+            url: './home',
+        });
+    }
+}
+</script>
+<style lang="scss">
+    @import '../css/regist.scss';
+</style>

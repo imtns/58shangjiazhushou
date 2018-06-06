@@ -1,0 +1,46 @@
+<template>
+    <view class="main-upload" @tap="tap"></view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { toast } from '../utils';
+
+import { uploader } from '../utils/uploader';
+
+export default class UploaderCom extends wepy.component {
+    props = {
+        title: {
+            type: String,
+        },
+    }
+    onLoad() {
+        console.log('onLoad1111', this.title);
+    }
+    methods = {
+        async tap () {
+            try {
+                console.log('2222', this.title);
+                console.log('child is clicked', this.title);
+                const that = this;
+                const { tempFilePaths } = await wepy.chooseImage();
+                uploader(tempFilePaths[0], (e, result) => {
+                    if (e) {
+                        toast('上传失败，请重试。');
+                        return;
+                    }
+                    toast('上传成功。');
+                    that.$emit('childFn', this.title, `https://pic1.58cdn.com.cn${result.content}`);
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        },
+    }
+}
+</script>
+
+<style lang="scss">
+
+</style>

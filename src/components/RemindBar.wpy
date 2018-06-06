@@ -1,0 +1,49 @@
+<template>
+    <view class="regist-remind-bar">
+        <block wx:for="{{steps}}" wx:key="index">
+            <view class="regist-remind-steps {{currentstep >= item.index ? 'current-step' : ''}} {{item.index == 2 ? 'regist-remind-horizontal' : ''}}">
+                <view class="regist-remind-step">{{item.index}}</view>
+                <view class="regist-remind-text">{{item.text}}</view>
+            </view>
+        </block>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { sleep } from '../utils';
+
+export default class RemindBar extends wepy.component {
+    data = {
+        currentstep: 1,
+        steps: [
+            {
+                index: '1',
+                text: '主体账户信息',
+                status: 1,
+            },
+            {
+                index: '2',
+                text: '管理员信息',
+                status: 0,
+            },
+            {
+                index: '3',
+                text: '注册完成',
+                status: 0,
+            },
+        ],
+    }
+    async onLoad() {
+        await sleep();
+        this.currentstep = this.$parent.currentstep;
+        this.$apply();
+        console.log('onLoad', this.$parent.currentstep);
+    }
+}
+</script>
+
+<style lang="scss">
+
+</style>
