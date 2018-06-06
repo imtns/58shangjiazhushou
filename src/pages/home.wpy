@@ -248,7 +248,7 @@ export default class Home extends wepy.page {
         return {
             title: '高效管理商家小程序的一站式服务工具',
             path: '/pages/home',
-            imageUrl: 'https://static.58.com/lbg/mengchong/image/shareBanner.png',
+            imageUrl: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/share.png',
             success(data) {
                 console.log(data);
             },

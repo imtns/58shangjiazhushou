@@ -39,6 +39,6 @@
                     </view>
                 </block>
             </view>
-            <button class="login" bindtap="callPassport">立即登录</button>
+            <view class="login" bindtap="callPassport">立即登录</view>
         </view>
     </view>

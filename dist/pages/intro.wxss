@@ -178,11 +178,13 @@
   width: 550rpx;
   height: 88rpx;
   background: #FFFFFF;
-  box-shadow: 0 0 12rpx 0 rgba(164, 170, 190, 0.2), inset 0 0 10rpx 0 rgba(164, 170, 190, 0.1);
+  box-shadow: 0 0 20rpx 0 rgba(164, 170, 190, 0.2), inset 0 0 15rpx 0 rgba(164, 170, 190, 0.1);
   border-radius: 100rpx;
   margin: 96rpx auto 91rpx auto;
   font-size: 32rpx;
   color: #5F62F9;
+  text-align: center;
+  line-height: 88rpx;
 }
 
 .intro .intro-content .title {
