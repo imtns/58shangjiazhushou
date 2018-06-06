@@ -47,7 +47,6 @@
 
 <script>
 import wepy from 'wepy';
-
 import { sleep, alert } from '../utils';
 import { post } from '../utils/ajax';
 
@@ -237,6 +236,26 @@ export default class Home extends wepy.page {
             mp.headImg = `https://pic1.58cdn.com.cn${mp.headImg}`;
         }
         return mp;
+    }
+    /**
+     * 用户点击右上角分享
+     */
+    onShareAppMessage(res) {
+        if (res.from === 'button') {
+            // 来自页面内转发按钮
+            console.log(res.target);
+        }
+        return {
+            title: '高效管理商家小程序的一站式服务工具',
+            path: '/pages/home',
+            imageUrl: 'https://static.58.com/lbg/mengchong/image/shareBanner.png',
+            success(data) {
+                console.log(data);
+            },
+            fail (err) {
+                console.log(err);
+            },
+        };
     }
     async loadData() {
         try {
