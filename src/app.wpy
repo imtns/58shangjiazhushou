@@ -31,6 +31,8 @@ export default class extends wepy.app {
             'pages/UploadArticle', // 上传文章
             'pages/UploadInfoSuccess', // 素材上传成功
             'pages/VideoPlay', // 视频播放页面
+            'pages/OrderList', // 订单列表
+            'pages/OrderDetail', // 订单详情
         ],
         window: {
             backgroundTextStyle: 'light',

@@ -1,0 +1,28 @@
+
+    <view class="orderlist">
+        <view class="tabs-wrap">
+            <view class="tab-box {{sendParams.status==0?'selected':''}}" bindtap="bindClickTab" data-wpybindclicktab-a="0">待接单</view>
+            <view class="tab-box {{sendParams.status==1?'selected':''}}" bindtap="bindClickTab" data-wpybindclicktab-a="1">待服务</view>
+            <view class="tab-box {{sendParams.status==2?'selected':''}}" bindtap="bindClickTab" data-wpybindclicktab-a="2">已完成</view>
+            <view class="tab-box {{sendParams.status==''?'selected':''}}" bindtap="bindClickTab" data-wpybindclicktab-a="">全部</view>
+        </view>
+        <scroll-view class="orders-wrap" scroll-y bindscrolltolower="bindscrolltolower" data-wpybindscrolltolower-a="sendParams.pageNum+1">
+            <block wx:for="(md,i) in orderList" wx:for-index="index" wx:for-item="item" wx:key="md.id">
+                <view class="order-box mb-20" data-orderid="{{md.id}}">
+                    <view class="text order-number">
+                        <view class="text-left">订单号：{{md.id}}</view>
+                        <view class="text-right font-yellow">{{statusSet[md.status]}}</view>
+                    </view>
+                    <view class="title">
+                        服务名称：{{md.serviceName}}
+                    </view>
+                    <view class="text mt-20">服务时间：{{md.startTime}}至{{md.endTime}}</view>
+                    <view class="text mt-10">下单时间：{{md.createTime}}</view>
+                    <view class="text order-fee">
+                        <view class="text-left">共计费用</view>
+                        <view class="text-right font-yellow">￥<view>{{md.realAmount}}</view></view>
+                    </view>
+                </view>
+            </block>
+        </scroll-view>
+    </view>

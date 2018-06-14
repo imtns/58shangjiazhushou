@@ -1,0 +1,266 @@
+<template>
+    <view class="orderlist">
+        <view class="tabs-wrap">
+            <view class="tab-box {{sendParams.status==0?'selected':''}}" @tap="bindClickTab(0)">待接单</view>
+            <view class="tab-box {{sendParams.status==1?'selected':''}}" @tap="bindClickTab(1)">待服务</view>
+            <view class="tab-box {{sendParams.status==2?'selected':''}}" @tap="bindClickTab(2)">已完成</view>
+            <view class="tab-box {{sendParams.status==''?'selected':''}}" @tap="bindClickTab('')">全部</view>
+        </view>
+        <scroll-view class="orders-wrap" scroll-y @scrolltolower="bindscrolltolower(sendParams.pageNum+1)">
+            <repeat for="(md,i) in orderList" key="md.id">
+                <view class="order-box mb-20" data-orderid="{{md.id}}">
+                    <view class="text order-number">
+                        <view class="text-left">订单号：{{md.id}}</view>
+                        <view class="text-right font-yellow">{{statusSet[md.status]}}</view>
+                    </view>
+                    <view class="title">
+                        服务名称：{{md.serviceName}}
+                    </view>
+                    <view class="text mt-20">服务时间：{{md.startTime}}至{{md.endTime}}</view>
+                    <view class="text mt-10">下单时间：{{md.createTime}}</view>
+                    <view class="text order-fee">
+                        <view class="text-left">共计费用</view>
+                        <view class="text-right font-yellow">￥<view>{{md.realAmount}}</view></view>
+                    </view>
+                </view>
+            </repeat>
+        </scroll-view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+import { toast } from '../utils';
+import { get } from '../utils/ajaxP';
+
+
+export default class OrderList extends wepy.page {
+    config = {
+        navigationBarTitleText: '订单管理',
+    }
+    data = {
+        statusSet: ['已下单', '已接单', '已评价', '已取消', '已删除'],
+        sendParams: {
+            pageNum: 1,
+            pageSize: 5,
+            status: 0,
+        },
+        orderList: [],
+    }
+    methods = {
+        bindClickTab (status) {
+            const resetParams = {
+                pageNum: 1,
+                pageSize: 5,
+                status,
+            };
+            this.sendParams = Object.assign({}, this.sendParams, resetParams);
+            this.getOrderList();
+        },
+        bindLoadDown (pageNum) {
+            this.sendParams = Object.assign({}, this.sendParams, { pageNum });
+            this.getOrderList();
+        },
+    }
+    parseOrderList (orders) {
+        const regDateTime = /(\d{4})-([0-1]{0,1}\d{1})-([0-3]{0,1}\d{1}) ([0-6]{0,1}\d{1}):([0-6]{0,1}\d{1}):([0-6]{0,1}\d{1}).+/;
+        return orders.map((item) => {
+            const ret = item;
+            ret.createTime = item.createTime.replace(regDateTime, '$2.$3 $4:$5');
+            ret.startTime = item.startTime.replace(regDateTime, '$2.$3 $4:$5');
+            ret.endTime = item.endTime.replace(regDateTime, '$2.$3 $4:$5');
+            return ret;
+        });
+    }
+    async getOrderList () {
+        const len = this.orderList.length;
+        const [e, data] = await get('/consumerAppointment/queryPageForUser', this.sendParams);
+        if (e) {
+            toast(e);
+            return;
+        }
+        const orderList = this.parseOrderList(data);
+        this.orderList.splice(0, len, ...orderList);
+    }
+    async onLoad () {
+        this.getOrderList();
+    }
+}
+</script>
+<style lang="scss">
+.orderlist {
+    .tabs-wrap {
+        display: table;
+        width: 100%;
+        background: #fff;
+        position: fixed;
+        top: 0;
+        z-index: 100;
+    }
+    .tabs-wrap > .tab-box {
+        display: table-cell;
+        text-align: center;
+        line-height: 88rpx;
+    }
+    .selected {
+        color: #ff552e;
+    }
+    .selected::after {
+        display: block;
+        content: '';
+        width: 40%;
+        height: 4rpx;
+        margin: 0 auto;
+        background: currentColor;
+    }
+    .orders-wrap {
+        margin-top: 92rpx;
+        background: #f3f3f3;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 99;
+    }
+    // .waitinglist-wrap {
+    //     display: block;
+    // }
+    // .orders-wrap .lists {
+    //     margin-bottom: -20rpx;
+    //     min-height: 20rpx;
+    // }
+    .order-box {
+        background: #fff;
+    }
+    .order-box > view {
+        padding: 0 30rpx;
+    }
+    .order-number {
+        line-height: 88rpx;
+        display: table;
+        box-sizing: border-box;
+        width: 100%;
+        margin-bottom: 30rpx;
+        border-bottom: 2rpx solid #f3f3f3;
+    }
+    .order-number > view,
+    .order-fee > view {
+        display: table-cell;
+    }
+    .order-fee {
+        width: 100%;
+        line-height: 100rpx;
+        display: table;
+        box-sizing: border-box;
+        border-top: 2rpx solid #f3f3f3;
+        margin-top: 24rpx;
+    }
+
+    .order-number > view {
+        display: table-cell;
+    }
+    .text {
+        font-size: 28rpx;
+        color: #333333;
+    }
+    .text-left {
+        text-align: left;
+    }
+    .text-right {
+        text-align: right;
+    }
+    .title {
+        font-size: 32rpx;
+        color: #333333;
+    }
+    .font-yellow {
+        color: #ff552e;
+    }
+    .mt-10 {
+        margin-top: 10rpx;
+    }
+    .mt-20 {
+        margin-top: 20rpx;
+    }
+    .mt-30 {
+        margin-top: 30rpx;
+    }
+    .mb-20 {
+        margin-bottom: 20rpx;
+    }
+    //     /* 下拉刷新 */
+    //     .img-no-data {
+    //         display: block;
+    //         width: 1.8rem;
+    //         height: 1.8rem;
+    //         margin: 2rem auto 0.2rem;
+    //     }
+    //     .txt-no-data {
+    //         line-height: 0.88rem;
+    //         text-align: center;
+    //         font-size: 0.3rem;
+    //         color: #ccc;
+    //     }
+    //     .dropload-up,
+    //     .dropload-down0,
+    //     .dropload-down1,
+    //     .dropload-down2,
+    //     .dropload-down3 {
+    //         position: relative;
+    //         height: 0;
+    //         overflow: hidden;
+    //         font-size: 0.3rem;
+    //         /* 开启硬件加速 */
+    //         -webkit-transform: translateZ(0);
+    //         transform: translateZ(0);
+    //     }
+    //     .dropload-down0,
+    //     .dropload-down1,
+    //     .dropload-down2,
+    //     .dropload-down3 {
+    //         height: auto;
+    //     }
+    //     .dropload-refresh,
+    //     .dropload-update,
+    //     .dropload-load,
+    //     .dropload-noData {
+    //         height: 0.88rem;
+    //         line-height: 0.88rem;
+    //         text-align: center;
+    //     }
+    //     .dropload-load .loading {
+    //         display: inline-block;
+    //         height: 0.3rem;
+    //         width: 0.3rem;
+    //         border-radius: 100%;
+    //         margin: 0.15rem;
+    //         border: 0.02rem solid #666;
+    //         border-bottom-color: transparent;
+    //         vertical-align: middle;
+    //         -webkit-animation: rotate 0.75s linear infinite;
+    //         animation: rotate 0.75s linear infinite;
+    //     }
+    //     @-webkit-keyframes rotate {
+    //         0% {
+    //             -webkit-transform: rotate(0deg);
+    //         }
+    //         50% {
+    //             -webkit-transform: rotate(180deg);
+    //         }
+    //         100% {
+    //             -webkit-transform: rotate(360deg);
+    //         }
+    //     }
+    //     @keyframes rotate {
+    //         0% {
+    //             transform: rotate(0deg);
+    //         }
+    //         50% {
+    //             transform: rotate(180deg);
+    //         }
+    //         100% {
+    //             transform: rotate(360deg);
+    //         }
+    //     }
+}
+</style>

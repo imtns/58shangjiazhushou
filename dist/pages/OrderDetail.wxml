@@ -1,0 +1,71 @@
+
+    <view class="orderdetail">
+        <view class="order-wrap"  wx:if="{{!submitSuccess}}">
+            <view class="item-box table">
+                    <view class="table-cell cell-left label-text">订单号</view>
+                    <view class="table-cell cell-right text">{{order.id}}</view>
+                </view>
+                <view class="item-box table">
+                    <view class="table-cell cell-left label-text">服务名称</view>
+                    <view class="table-cell cell-right text">{{order.serviceName}}</view>
+                </view>
+                <view class="item-box table">
+                    <view class="table-cell cell-left label-text">服务联系人</view>
+                    <view class="table-cell cell-right text">{{order.consumerName}}</view>
+                </view>
+                <view class="item-box table">
+                    <view class="table-cell cell-left label-text">联系电话</view>
+                    <view class="table-cell cell-right text">{{order.consumerMobile}}</view>
+                </view>
+                <view class="item-box table">
+                    <view class="table-cell cell-left label-text">服务地址</view>
+                    <view class="table-cell cell-right text address-text">{{order.consumerAddress}}</view>
+                </view>
+                <view class="item-box table">
+                    <view class="table-cell cell-left label-text">服务时间</view>
+                    <view class="table-cell cell-right text">{{order.startTime}} 至 {{order.endTime}}</view>
+                </view>
+                <view class="item-box table mt-20">
+                    <view class="table-cell cell-left label-text">当前状态</view>
+                    <view class="table-cell cell-right text order-time">下单时间：{{order.createTime}}
+                        <view class="order-status font-yellow">{{statusSet[order.status]}}</view>
+                    </view>
+                </view>
+                <view class="item-box table mt-20">
+                    <view class="table-cell cell-left label-text">支付方式</view>
+                    <view class="table-cell cell-right text font-yellow">到店付</view>
+                </view>
+                <view class="tip-box mt-10" wx:if="{{contentSet[order.status]}}">contentSet[order.status]</view>
+                <block wx:if="{{order.status==2}}">
+                    <view class="item-box table mt-20">
+                        <view class="table-cell cell-left label-text">服务评分</view>
+                        <view class="table-cell cell-right text">
+                            <i class="star selected" wx:if="{{order.stars>=1}}"/><i class="star " wx:else/>
+                            <i class="star selected" wx:if="{{order.stars>=2}}"/><i class="star " wx:else/>
+                            <i class="star selected" wx:if="{{order.stars>=3}}"/><i class="star " wx:else/>
+                            <i class="star selected" wx:if="{{order.stars>=4}}"/><i class="star " wx:else/>
+                            <i class="star selected" wx:if="{{order.stars>=5}}"/><i class="star " wx:else/>
+                        </view>
+                    </view>
+                </block>
+                <block wx:if="{{order.status==0}}">
+                    <view class="button orange mt-60 order-confirm" bindtap="bindSubmitOrder" data-wpybindsubmitorder-a="ask">确认订单</view>
+                    <view class="button yellow mt-30" bindtap="bindPhoneCall" data-wpybindphonecall-a="order.consumerMobile">联系顾客</view>
+                </block>    
+                <block wx:if="{{order.status==1}}">
+                    <view class="button gray mt-60">已确认订单</view>
+                    <view class="button yellow mt-30" bindtap="bindPhoneCall" data-wpybindphonecall-a="order.consumerMobile">联系顾客</view>
+                </block>
+                <block wx:if="{{order.status==2}}">
+                    <view class="button gray mt-60">已评价</view>
+                </block>
+        </view>
+        <view class="ordersuccess"  wx:if="{{submitSuccess}}">
+            <view class="ordersuccess-container">
+                <image class="ordersuccess-icon" src="https://img.58cdn.com.cn/lbg/jianzhan/images/paysuccess-icon.png"/>
+                <view class="ordersuccess-title">接单成功</view> 
+            </view>
+            <navigator class="ordersuccess-other" open-type="navigateBack">其他订单</navigator>
+            <navigator class="ordersuccess-home" url="/pages/home" open-type="navigateBack" delta="2">返回首页</navigator>
+        </view>
+    </view>
