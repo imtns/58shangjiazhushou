@@ -1,0 +1,237 @@
+<template>
+    <view class="notice-container">
+        <scroll-view class="notice-list">
+        <block wx:for="noticeList" wx:key="index">
+            <view class="notice-item" bindtap="touploadInfo" data-item="item">
+                <view class="notice-time">2018-06-24 12:00</view>
+                <view class="notice-content">
+                    <view class="notice">
+                        <view class="notice-logo"><image src="https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=120&h=120"></image></view>
+                        <view class="notice-name">美嘉合服务</view>
+                        <view class="notice-num">XC93888901012</view>
+                        <view class="notice-unread"></view>
+                    </view>
+                    <view class="order">服务名称<view>预约产品1</view></view>
+                    <view class="order">服务时间<view>预约产品1</view></view>
+                    <view class="order">下单时间<view>预约产品1</view></view>
+                    <view class="order order-status">订单状态<view>预约产品1</view></view>
+                    <view class="account-total">共计费用<view class="num">￥<view>120.00</view></view></view>
+                </view>
+            </view>
+        </block>
+        </scroll-view>
+        <view class="emptyBox" wx:if="{{noticeList.length<=0}}">
+            <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/empty.png" class="emptyIcon"></image>
+            <view class="emptyText">暂无通知</view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { sleep, toast } from '../utils/index';
+
+import { get } from '../utils/ajax';
+
+export default class AccountNoticeList extends wepy.page {
+    config = {
+        navigationBarTitleText: '订单提醒',
+        disableScroll: true,
+    }
+    data = {
+        noticeList: [],
+        unreadcount: 0,
+    }
+    async onLoad() {
+        await sleep();
+        console.log('onLoad');
+    }
+    async onShow() {
+        this.loadList();
+    }
+    async onHide() {
+        console.log('onHide');
+    }
+    async onUnload() {
+        console.log('onUnLoad');
+        if (this.unreadcount <= 0) {
+            return;
+        }
+        try {
+            await get('/mplogic/msgreadall');
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    async loadList() {
+        try {
+            const { data } = await get('/mplogic/msglist');
+            const { msglist, unreadcount } = data;
+            this.unreadcount = unreadcount;
+            if (msglist && msglist.length > 0) {
+                const arr = [];
+                msglist.forEach((item) => {
+                    const ele = item;
+                    if (ele.mpLogo && ele.mpLogo.indexOf('http') === -1) {
+                        ele.mpLogo = `https://pic1.58cdn.com.cn${ele.mpLogo}`;
+                    }
+                    arr.push(ele);
+                });
+                this.noticeList = arr;
+            } else {
+                this.noticeList = [];
+            }
+            this.$apply();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    touploadInfo(e) {
+        const { item } = e.currentTarget.dataset;
+        // 微信小程序，审核失败，进 上传素材页面
+        if (item.msgType !== 5 && item.app_type !== 1) return;
+        wepy.navigateTo({
+            url: '../uploadInfo',
+        });
+    }
+    async clearAll() {
+        try {
+            console.log(this.noticeList.length <= 0);
+            if (this.noticeList.length <= 0) {
+                toast('没有消息，无需清空~');
+                return;
+            }
+            await get('/mplogic/msgclearall');
+            sleep();
+            this.loadList();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+}
+</script>
+
+<style lang="scss">
+page{
+    width:100%;
+    height:100%;
+    background:#f5f5f5;
+}
+view,scroll-view{
+    box-sizing:border-box;
+}
+.notice-container{
+    width:100%;
+    height:100%;
+    flex-direction:column;
+    .notice-list{
+        width:100%;
+        .notice-item{
+            width:100%;
+            position:relative;
+            padding:12rpx 30rpx;
+            border-bottom:1rpx solid #f3f3f3;
+            position: relative;
+            .notice-time{
+                font-size: 28rpx;
+                color:#999;
+                text-align:center;
+                margin-bottom: 24rpx;
+            }
+            .notice-content{
+                padding-top:24rpx;
+                background:#fff;
+                border-radius:8rpx; 
+                .notice{
+                    padding:0 30rpx;
+                    height: 58rpx;
+                    color: #333;
+                    line-height: 58rpx;
+                    margin-bottom: 30rpx;
+                    position: relative;
+                    .notice-logo{
+                        float: left;
+                        image{
+                            display: block;
+                            width: 58rpx;
+                            height: 58rpx;
+                            border-radius: 100%;
+                        }
+                    }
+                    .notice-name{
+                        font-size: 32rpx;
+                        margin-left: 20rpx;
+                        float: left;
+                    }
+                    .notice-num{
+                        font-size: 28rpx;
+                        float: right;
+                    }
+                    .notice-unread{
+                        width:16rpx;
+                        height: 16rpx;
+                        background:#FF3C39;
+                        border-radius:100%;
+                        position: absolute;
+                        left:87rpx;
+                        top:5rpx;
+                    }
+                }
+                .order{
+                    font-size: 28rpx;
+                    color:#999;
+                    line-height: 40rpx;
+                    margin-bottom: 10rpx;
+                    padding:0 30rpx;
+                    view{
+                        display: inline;
+                        margin-left: 30rpx;
+                        color:#333;
+                    }
+                    &.order-status{
+                        view{
+                            color:#FF552E;
+                        }
+                    }
+                }
+                .account-total{
+                    font-size: 28rpx;
+                    color:#333;
+                    line-height: 84rpx;
+                    margin-top: 30rpx;
+                    padding:0 30rpx;
+                    border-top:1rpx solid #F6F6F6;
+                    .num{
+                        float: right;
+                        view{
+                            font-size: 34rpx;
+                            display: inline;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .emptyBox{
+        width:100%;
+        height:50%;
+        text-align:center;
+        margin: auto;
+        .emptyIcon{
+            width:209rpx;
+            height:187rpx;
+        }
+        .emptyText{
+            margin-top: 20rpx;
+            color:#999999;
+            font-size:30rpx;
+        }
+    }
+}
+</style>
+
+<!-- 
+# 时间格式化
+# 标识优选个微信小程序的状态没有
+-->
