@@ -248,6 +248,7 @@ export default class Uploader extends wepy.component {
     onLoad () {
         this.vm = [];
         this.images = [];
+        this.uploading = false;
         this.$apply();
     }
 }
