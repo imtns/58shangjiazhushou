@@ -1,64 +1,66 @@
 <template>
     <view class="orderdetail">
         <view class="order-wrap" wx:if = "{{!submitSuccess}}">
-            <view class="item-box table">
-                    <view class="table-cell cell-left label-text">订单号</view>
-                    <view class="table-cell cell-right text">{{order.id}}</view>
+            <view class="order-table">
+                <view class="order-row">
+                    <view class="left-label">订单号</view>
+                    <view class="right-text">{{order.id}}</view>
                 </view>
-                <view class="item-box table">
-                    <view class="table-cell cell-left label-text">服务名称</view>
-                    <view class="table-cell cell-right text">{{order.serviceName}}</view>
+                <view class="order-row">
+                    <view class="left-label">服务名称</view>
+                    <view class="right-text">{{order.serviceName}}</view>
                 </view>
-                <view class="item-box table">
-                    <view class="table-cell cell-left label-text">服务联系人</view>
-                    <view class="table-cell cell-right text">{{order.consumerName}}</view>
+                <view class="order-row">
+                    <view class="left-label">服务联系人</view>
+                    <view class="right-text">{{order.consumerName}}</view>
                 </view>
-                <view class="item-box table">
-                    <view class="table-cell cell-left label-text">联系电话</view>
-                    <view class="table-cell cell-right text">{{order.consumerMobile}}</view>
+                <!-- <view class="order-row">
+                    <view class="left-label">联系电话</view>
+                    <view class="right-text">{{order.consumerMobile}}</view>
+                </view> -->
+                <view class="order-row">
+                    <view class="left-label">服务地址</view>
+                    <view class="right-text">{{order.consumerAddress}}</view>
                 </view>
-                <view class="item-box table">
-                    <view class="table-cell cell-left label-text">服务地址</view>
-                    <view class="table-cell cell-right text address-text">{{order.consumerAddress}}</view>
+                <view class="order-row none-border">
+                    <view class="left-label">服务时间</view>
+                    <view class="right-text servicetime">{{order.startTime}} 至 {{order.endTime}}</view>
                 </view>
-                <view class="item-box table">
-                    <view class="table-cell cell-left label-text">服务时间</view>
-                    <view class="table-cell cell-right text">{{order.startTime}} 至 {{order.endTime}}</view>
+            </view>
+            <view class="order-status">
+                <view class="left-label">当前状态</view>
+                <view class="right-text {{fontClass[order.status] || ''}}">
+                    {{statusSet[order.status]}}
                 </view>
-                <view class="item-box table mt-20">
-                    <view class="table-cell cell-left label-text">当前状态</view>
-                    <view class="table-cell cell-right text order-time">下单时间：{{order.createTime}}
-                        <view class="order-status font-yellow">{{statusSet[order.status]}}</view>
+            </view>
+            <view class="order-paytype">
+                <view class="left-label">支付方式</view>
+                <view class="right-text {{fontClass[order.status] || ''}}">到店支付</view>
+            </view>
+            <view class="order-desc" wx:if="{{contentSet[order.status]}}">{{contentSet[order.status]}}</view>
+            <block wx:if="{{order.status==2}}">
+                <view class="order-evaluate">
+                    <view class="left-label">服务评分</view>
+                    <view class="right-text">
+                        <i class="star {{order.stars>=1?'selected':''}}"></i>
+                        <i class="star {{order.stars>=2?'selected':''}}"></i>
+                        <i class="star {{order.stars>=3?'selected':''}}"></i>
+                        <i class="star {{order.stars>=4?'selected':''}}"></i>
+                        <i class="star {{order.stars>=5?'selected':''}}"></i>
                     </view>
                 </view>
-                <view class="item-box table mt-20">
-                    <view class="table-cell cell-left label-text">支付方式</view>
-                    <view class="table-cell cell-right text font-yellow">到店付</view>
-                </view>
-                <view class="tip-box mt-10" wx:if="{{contentSet[order.status]}}">contentSet[order.status]</view>
-                <block wx:if="{{order.status==2}}">
-                    <view class="item-box table mt-20">
-                        <view class="table-cell cell-left label-text">服务评分</view>
-                        <view class="table-cell cell-right text">
-                            <i class="star selected" wx:if="{{order.stars>=1}}"></i><i class="star " wx:else></i>
-                            <i class="star selected" wx:if="{{order.stars>=2}}"></i><i class="star " wx:else></i>
-                            <i class="star selected" wx:if="{{order.stars>=3}}"></i><i class="star " wx:else></i>
-                            <i class="star selected" wx:if="{{order.stars>=4}}"></i><i class="star " wx:else></i>
-                            <i class="star selected" wx:if="{{order.stars>=5}}"></i><i class="star " wx:else></i>
-                        </view>
-                    </view>
-                </block>
-                <block wx:if="{{order.status==0}}">
-                    <view class="button orange mt-60 order-confirm" @tap="bindSubmitOrder('ask')">确认订单</view>
-                    <view class="button yellow mt-30" @tap="bindPhoneCall(order.consumerMobile)">联系顾客</view>
-                </block>    
-                <block wx:if="{{order.status==1}}">
-                    <view class="button gray mt-60">已确认订单</view>
-                    <view class="button yellow mt-30" @tap="bindPhoneCall(order.consumerMobile)">联系顾客</view>
-                </block>
-                <block wx:if="{{order.status==2}}">
-                    <view class="button gray mt-60">已评价</view>
-                </block>
+            </block>
+            <block wx:if="{{order.status==0}}">
+                <view class="order-confirm" @tap="bindSubmitOrder('ask')">确认订单</view>
+                <view class="order-contact" @tap="bindPhoneCall({{order.consumerMobile}})">联系顾客</view>
+            </block>    
+            <block wx:if="{{order.status==1}}">
+                <view class="order-finish">已确认订单</view>
+                <view class="order-contact" @tap="bindPhoneCall({{order.consumerMobile}})">联系顾客</view>
+            </block>
+            <block wx:if="{{order.status==2}}">
+                <view class="order-evaluated">已评价</view>
+            </block>
         </view>
         <view class="ordersuccess" wx:if = "{{submitSuccess}}">
             <view class="ordersuccess-container">
@@ -81,6 +83,7 @@ export default class OrderDetail extends wepy.page {
         navigationBarTitleText: '订单管理',
     }
     data = {
+        fontClass: ['active', 'active', 'active', 'cancel', 'finish'],
         statusSet: ['已下单', '已接单', '已评价', '已取消', '已删除'],
         contentSet: ['顾客已下单，请尽快与顾客联系', '请尽快与顾客联系，并提供服务', '顾客已取消订单'],
         order: {},
@@ -90,18 +93,19 @@ export default class OrderDetail extends wepy.page {
         bindPhoneCall (phoneNumber) {
             wepy.makePhoneCall({ phoneNumber });
         },
-        bindSubmitOrder (action) {
+        bindSubmitOrder () {
             this.submitOrder();
         },
     }
-    submitOrder () {
-        const orderId = this.order;
-        const [e, res] = post(`/consumerAppointment/accept/${orderId}`);
+    async submitOrder () {
+        const { id } = this.order;
+        const [e] = await post(`/consumerAppointment/accept/${id}`);
         if (e) {
             toast(e);
             return;
         }
         this.submitSuccess = true;
+        this.$apply();
     }
     parseOrder (data) {
         const ret = data || {};
@@ -121,122 +125,145 @@ export default class OrderDetail extends wepy.page {
         return ret;
     }
     async onLoad (options) {
-        const id = options;
-        const [e, data] = get(`/consumerAppointment/get/${id}`);
+        const { id } = options;
+        const [e, data] = await get(`/consumerAppointment/get/${id}`);
         if (e) {
             toast(e);
             return;
         }
         const order = this.parseOrder(data);
         this.order = Object.assign({}, order);
+        this.$apply();
     }
 }
 </script>
 <style lang="scss">
 .orderdetail {
     font-family: PingFangSC-Regular;
-    /* 基本布局 */
-    .table {
-        display: table;
-        width: 100%;
-        box-sizing: border-box;
+    .order-wrap {
+        background: #f6f6f6;
+        .order-table {
+            background: #fff;
+            padding: 0 30rpx;
+            border-top: 2rpx solid #f3f3f3;
+            .order-row {
+                display: table;
+                width: 100%;
+                border-bottom: 2rpx solid #f3f3f3;
+                .left-label,
+                .right-text {
+                    display: table-cell;
+                    height: 88rpx;
+                    vertical-align: middle;
+                }
+                .left-label {
+                    font-size: 28rpx;
+                    color: #999999;
+                    min-width: 60rpx;
+                }
+                .right-text {
+                    font-size: 28rpx;
+                    color: #333333;
+                    text-align: right;
+                    max-width: 280rpx;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    &.servicetime {
+                        font-family: PingFangSC-Semibold;
+                    }
+                }
+                &.none-border {
+                    border: none;
+                }
+            }
+        }
+        .order-status,
+        .order-paytype,
+        .order-evaluate {
+            display: table;
+            width: 100%;
+            padding: 0 30rpx;
+            background: #fff;
+            box-sizing: border-box;
+            .left-label,
+            .right-text {
+                display: table-cell;
+                height: 88rpx;
+                vertical-align: middle;
+            }
+            .left-label {
+                font-size: 28rpx;
+                color: #999999;
+                min-width: 60rpx;
+            }
+            .right-text {
+                font-size: 28rpx;
+                color: #333333;
+                text-align: right;
+                max-width: 280rpx;
+                &.active {
+                    color: #ff552e;
+                }
+                &.cancel {
+                    color: #bdbdbd;
+                }
+            }
+        }
+        .order-status {
+            margin: 20rpx 0;
+        }
+        .order-desc {
+            padding: 0 30rpx;
+            line-height: 38rpx;
+            margin: 10rpx 0 20rpx;
+            font-size: 26rpx;
+            color: #999999;
+        }
+        .order-confirm,
+        .order-finish,
+        .order-evaluated,
+        .order-contact {
+            margin: 0 30rpx;
+            line-height: 94rpx;
+            border-radius: 4rpx;
+            text-align: center;
+        }
+        .order-confirm {
+            margin-top: 60rpx;
+            background: #4e88ff;
+            font-size: 32rpx;
+            color: #ffffff;
+        }
+        .order-finish,
+        .order-evaluated {
+            margin-top: 60rpx;
+            background: #cccccc;
+            font-size: 32rpx;
+            color: #ffffff;
+        }
+        .order-contact {
+            margin-top: 30rpx;
+            background: #ffffff;
+            font-size: 32rpx;
+            color: #333333;
+        }
     }
-    .table-cell {
-        display: table-cell;
-    }
-    .cell-right {
-        text-align: left;
-    }
-    .cell-right {
-        text-align: right;
-        line-height: 48rpx;
-        max-width: 280rpx;
-    }
-    .mt-10 {
-        margin-top: 10rpx !important;
-    }
-    .mt-20 {
-        margin-top: 20rpx !important;
-    }
-    .mt-30 {
-        margin-top: 30rpx !important;
-    }
-    .mt-60 {
-        margin-top: 60rpx !important;
-    }
-    /* 文本样式 */
-    .text {
-        font-size: 28rpx;
-        color: #333333;
-    }
-    .label-text {
-        font-size: 28rpx;
-        color: #999999;
-        min-width: 60rpx;
-    }
-    .small-text {
-        font-size: 26rpx;
-        color: #333333;
-    }
-    .address-text {
-        line-height: 48rpx;
-        padding-bottom: 24rpx;
-    }
-    /* 按钮样式 */
-    .button {
-        display: block;
-        margin: 0 30rpx;
-        line-height: 94rpx;
-        font-size: 32rpx;
-        border-radius: 4rpx;
-        color: #ffffff;
-        text-align: center;
-    }
-    .button.orange {
-        background: #ff552e;
-    }
-    .button.yellow {
-        background: #ffa100;
-    }
-    .button.gray {
-        background: #cccccc;
-    }
-    .font-yellow {
-        color: #ff552e;
-    }
-    .item-box {
-        background: #fff;
-        padding: 0 30rpx;
-        line-height: 88rpx;
-        border-bottom: 2rpx solid #f3f3f3;
-    }
-    .none-border {
-        border: none;
-    }
-    .tip-box {
-        margin: 0 30rpx;
-        line-height: 38rpx;
-        font-size: 26rpx;
-        color: #999999;
-    }
-    .order-cancel {
-        color: #ff552e;
-    }
-    .order-status {
-        margin-left: 20rpx;
-    }
+
     /* 评星 */
     .star {
         display: inline-block;
         margin-right: 20rpx;
         width: 40rpx;
         height: 40rpx;
-        background: url('../images/ico-star.png') no-repeat top left;
+        background: url('https://static.58.com/lbg/businessorder/dist/images/ico-star.png')
+            no-repeat top left;
         background-size: 100%;
         vertical-align: middle;
     }
     .star.selected {
-        background: url('../images/ico-star-light.png') no-repeat top left;
+        background: url('https://static.58.com/lbg/businessorder/dist/images/ico-star-light.png')
+            no-repeat top left;
         background-size: 100%;
     }
 }
