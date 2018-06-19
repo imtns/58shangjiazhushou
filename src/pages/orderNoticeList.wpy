@@ -1,26 +1,33 @@
 <template>
     <view class="notice-container">
-        <scroll-view class="notice-list">
-        <block wx:for="noticeList" wx:key="index">
-            <view class="notice-item" bindtap="touploadInfo" data-item="item">
-                <view class="notice-time">2018-06-24 12:00</view>
+        <scroll-view class="notice-list" wx:if="{{orderList.length>0}}" scroll-y="true" lower-threshold="50" bindscrolltolower="orderListMore">
+        <view wx:for="{{orderList}}" wx:key="index" data-item="{{item}}">
+            <navigator class="notice-item" url="OrderDetail?id={{item.id}}" hover-class="none">
+                <view class="notice-time">{{item.createTime}}</view>
                 <view class="notice-content">
                     <view class="notice">
-                        <view class="notice-logo"><image src="https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=120&h=120"></image></view>
-                        <view class="notice-name">美嘉合服务</view>
-                        <view class="notice-num">XC93888901012</view>
-                        <view class="notice-unread"></view>
+                        <view class="notice-logo"><image src="{{item.mpLogo}}?w=120&h=120"></image></view>
+                        <view class="notice-name">{{item.title}}</view>
+                        <view class="notice-num">{{item.id}}</view>
+                        <!-- <view class="notice-unread" wx:if="{{unreadcount>0}}"></view> -->
                     </view>
-                    <view class="order">服务名称<view>预约产品1</view></view>
-                    <view class="order">服务时间<view>预约产品1</view></view>
-                    <view class="order">下单时间<view>预约产品1</view></view>
-                    <view class="order order-status">订单状态<view>预约产品1</view></view>
-                    <view class="account-total">共计费用<view class="num">￥<view>120.00</view></view></view>
+                    <view class="order">服务名称<view>{{item.serviceName}}</view></view>
+                    <view class="order">服务时间<view>{{item.startTime}}</view></view>
+                    <view class="order">下单时间<view>{{item.createTime}}</view></view>
+                    <view class="order order-status">订单状态
+                        <view wx:if="{{item.status === 0}}">已下单</view>
+                        <view wx:if="{{item.status === 1}}">已接单</view>
+                        <view wx:if="{{item.status === 2}}">已完成</view>
+                        <view wx:if="{{item.status === 3}}">已取消</view>
+                        <view wx:if="{{item.status === 4}}">已删除</view>
+                        <view wx:if="{{item.status === 11}}">已支付</view>
+                    </view>
+                    <view class="account-total">共计费用<view class="num">￥<view>{{item.realAmount}}</view></view></view>
                 </view>
-            </view>
-        </block>
+            </navigator>
+        </view>
         </scroll-view>
-        <view class="emptyBox" wx:if="{{noticeList.length<=0}}">
+        <view class="emptyBox" wx:if="{{orderList.length<=0}}">
             <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/empty.png" class="emptyIcon"></image>
             <view class="emptyText">暂无通知</view>
         </view>
@@ -30,18 +37,30 @@
 <script>
 import wepy from 'wepy';
 
-import { sleep, toast } from '../utils/index';
+import { sleep } from '../utils/index';
 
 import { get } from '../utils/ajax';
 
-export default class AccountNoticeList extends wepy.page {
+export default class OrderNoticeList extends wepy.page {
     config = {
         navigationBarTitleText: '订单提醒',
-        disableScroll: true,
+        // disableScroll: true,
     }
     data = {
-        noticeList: [],
+        orderList: [],
         unreadcount: 0,
+        sendParams: {
+            group: 2,
+            page: 1,
+            pageSize: 10,
+        },
+    }
+    methods = {
+        orderListMore() {
+            this.sendParams.page = this.sendParams.page + 1;
+            this.sendParams = Object.assign({}, this.sendParams, this.sendParams.page);
+            this.loadList();
+        },
     }
     async onLoad() {
         await sleep();
@@ -55,56 +74,34 @@ export default class AccountNoticeList extends wepy.page {
     }
     async onUnload() {
         console.log('onUnLoad');
-        if (this.unreadcount <= 0) {
-            return;
-        }
+        // if (this.unreadcount <= 0) {
+        //     return;
+        // }
         try {
-            await get('/mplogic/msgreadall');
+            await get('/mplogic/readgroupmsg', { group: 2 });
         } catch (e) {
             console.log(e);
         }
     }
     async loadList() {
         try {
-            const { data } = await get('/mplogic/msglist');
-            const { msglist, unreadcount } = data;
-            this.unreadcount = unreadcount;
+            const { data } = await get('/mplogic/getgroupmsglist', this.sendParams);
+            const { msglist } = data;
             if (msglist && msglist.length > 0) {
                 const arr = [];
                 msglist.forEach((item) => {
-                    const ele = item;
+                    const { content } = item;
+                    const ele = Object.assign({}, item, JSON.parse(content));
                     if (ele.mpLogo && ele.mpLogo.indexOf('http') === -1) {
                         ele.mpLogo = `https://pic1.58cdn.com.cn${ele.mpLogo}`;
                     }
                     arr.push(ele);
                 });
-                this.noticeList = arr;
+                this.orderList = this.orderList.concat(arr);
             } else {
-                this.noticeList = [];
+                this.orderList = this.orderList;
             }
             this.$apply();
-        } catch (e) {
-            console.log(e);
-        }
-    }
-    touploadInfo(e) {
-        const { item } = e.currentTarget.dataset;
-        // 微信小程序，审核失败，进 上传素材页面
-        if (item.msgType !== 5 && item.app_type !== 1) return;
-        wepy.navigateTo({
-            url: '../uploadInfo',
-        });
-    }
-    async clearAll() {
-        try {
-            console.log(this.noticeList.length <= 0);
-            if (this.noticeList.length <= 0) {
-                toast('没有消息，无需清空~');
-                return;
-            }
-            await get('/mplogic/msgclearall');
-            sleep();
-            this.loadList();
         } catch (e) {
             console.log(e);
         }
@@ -127,12 +124,13 @@ view,scroll-view{
     flex-direction:column;
     .notice-list{
         width:100%;
+        height:100%;
         .notice-item{
             width:100%;
             position:relative;
-            padding:12rpx 30rpx;
+            padding:15rpx 30rpx;
             border-bottom:1rpx solid #f3f3f3;
-            position: relative;
+            box-sizing:border-box;
             .notice-time{
                 font-size: 28rpx;
                 color:#999;

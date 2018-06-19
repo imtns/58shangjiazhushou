@@ -2,32 +2,23 @@
     <view class="notice-container">
         <view class="notice-header">
             <view>支付主体</view>
-            <view class="attach-notice" bindtap="clearAll">入账金额</view>
+            <view class="attach-notice">入账金额</view>
         </view>
-        <scroll-view class="notice-list">
-        <block wx:for="noticeList" wx:key="index">
-            <view class="notice-item" bindtap="touploadInfo" data-item="item">
-                <view class="notice-content">
-                    <view class="business-name">58有限公司</view>
-                    <view class="account-time">2018-06-24 12:00</view>
-                </view>
-                <view class="notice-money">
-                    <view>￥</view>102.00
-                </view>
-                <view class="notice-unread"></view>
-            </view>
-            <view class="notice-item" bindtap="touploadInfo" data-item="item">
-                <view class="notice-content">
-                    <view class="business-name">58有限公司</view>
-                    <view class="account-time">2018-06-24 12:00</view>
-                </view>
-                <view class="notice-money">
-                    <view>￥</view>102.00
+        <scroll-view class="notice-list" wx:if="{{accountList.length > 0}}" scroll-y="true" lower-threshold="50" bindscrolltolower="accountListMore">
+            <view wx:for="{{accountList}}" wx:key="index" data-item="{{item}}">
+                <view class="notice-item">
+                    <view class="notice-content">
+                        <view class="business-name">{{item.from}}</view>
+                        <view class="account-time">{{item.time}}</view>
+                    </view>
+                    <view class="notice-money">
+                        <view>￥</view>{{item.amount}}
+                    </view>
+                    <view class="notice-unread" wx:if="{{unreadcount>0}}"></view>
                 </view>
             </view>
-        </block>
         </scroll-view>
-        <view class="emptyBox" wx:if="{{noticeList.length<=0}}">
+        <view class="emptyBox" wx:if="{{accountList.length <= 0}}">
             <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/empty.png" class="emptyIcon"></image>
             <view class="emptyText">暂无通知</view>
         </view>
@@ -37,24 +28,36 @@
 <script>
 import wepy from 'wepy';
 
-import { sleep, toast } from '../utils/index';
+import { sleep } from '../utils/index';
 
 import { get } from '../utils/ajax';
 
 export default class AccountNoticeList extends wepy.page {
     config = {
         navigationBarTitleText: '入账提醒',
-        disableScroll: true,
     }
     data = {
-        noticeList: [],
+        accountList: [],
+        sendParams: {
+            group: 3,
+            page: 1,
+            pageSize: 10,
+        },
         unreadcount: 0,
+    }
+    methods = {
+        accountListMore() {
+            this.sendParams.page = this.sendParams.page + 1;
+            this.sendParams = Object.assign({}, this.sendParams, this.sendParams.page);
+            this.loadList();
+        },
     }
     async onLoad() {
         await sleep();
         console.log('onLoad');
     }
     async onShow() {
+        console.log('dededed');
         this.loadList();
     }
     async onHide() {
@@ -62,56 +65,35 @@ export default class AccountNoticeList extends wepy.page {
     }
     async onUnload() {
         console.log('onUnLoad');
-        if (this.unreadcount <= 0) {
-            return;
-        }
+        // if (this.unreadcount <= 0) {
+        //     return;
+        // }
         try {
-            await get('/mplogic/msgreadall');
+            await get('/mplogic/readgroupmsg', { group: 3 });
         } catch (e) {
             console.log(e);
         }
     }
     async loadList() {
         try {
-            const { data } = await get('/mplogic/msglist');
-            const { msglist, unreadcount } = data;
-            this.unreadcount = unreadcount;
+            const { data } = await get('/mplogic/getgroupmsglist', this.sendParams);
+            const { msglist } = data;
             if (msglist && msglist.length > 0) {
                 const arr = [];
                 msglist.forEach((item) => {
-                    const ele = item;
+                    const { content } = item;
+                    const ele = Object.assign({}, item, JSON.parse(content));
+                    // const ele = item;
                     if (ele.mpLogo && ele.mpLogo.indexOf('http') === -1) {
                         ele.mpLogo = `https://pic1.58cdn.com.cn${ele.mpLogo}`;
                     }
                     arr.push(ele);
                 });
-                this.noticeList = arr;
+                this.accountList = this.accountList.concat(arr);
             } else {
-                this.noticeList = [];
+                this.accountList = this.accountList;
             }
             this.$apply();
-        } catch (e) {
-            console.log(e);
-        }
-    }
-    touploadInfo(e) {
-        const { item } = e.currentTarget.dataset;
-        // 微信小程序，审核失败，进 上传素材页面
-        if (item.msgType !== 5 && item.app_type !== 1) return;
-        wepy.navigateTo({
-            url: '../uploadInfo',
-        });
-    }
-    async clearAll() {
-        try {
-            console.log(this.noticeList.length <= 0);
-            if (this.noticeList.length <= 0) {
-                toast('没有消息，无需清空~');
-                return;
-            }
-            await get('/mplogic/msgclearall');
-            sleep();
-            this.loadList();
         } catch (e) {
             console.log(e);
         }
@@ -130,13 +112,18 @@ view,scroll-view{
 }
 .notice-container{
     width:100%;
-    height:100%;
     display:flex;
     flex-direction:column;
     .notice-header{
         width:100%;
-        padding:24rpx 30rpx;
-        position:relative;
+        padding:0 30rpx;
+        height: 80rpx;
+        line-height: 80rpx;
+        position: fixed;
+        top:0;
+        left: 0;
+        z-index:9;
+        background:#f5f5f5;
         view{
             font-size: 28rpx;
             color: #999999;
@@ -145,12 +132,13 @@ view,scroll-view{
         .attach-notice{
             position:absolute;
             right:30rpx;
-            top:24rpx;
+            top:0;
         }
     }
     .notice-list{
         width:100%;
-        flex:1;
+        height: 100%;
+        margin-top:80rpx;
         .notice-item{
             width:100%;
             position:relative;

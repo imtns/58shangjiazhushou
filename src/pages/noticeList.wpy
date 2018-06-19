@@ -5,8 +5,8 @@
             <view class="clear-notice attach-notice" bindtap="clearAll">清空</view>
         </view>
         <view class="notice-new">
-            <navigator class="notice-name notice-order" url="orderNoticeList" hover-class="none">订单提醒<view class="num">2</view></navigator>
-            <navigator class="notice-name notice-account" url="accountNoticeList" hover-class="none">入账通知<view class="num">16</view></navigator>
+            <navigator class="notice-name notice-order" url="orderNoticeList" hover-class="none">订单提醒<view class="num" wx:if="{{orderUnRead > 0}}">{{orderUnRead}}</view></navigator>
+            <navigator class="notice-name notice-account" url="accountNoticeList" hover-class="none">入账通知<view class="num" wx:if="{{recivMoneyUnRead > 0}}">{{recivMoneyUnRead}}</view></navigator>
         </view>
         <scroll-view class="notice-list" wx:if="{{noticeList.length>0}}">
         <block wx:for="{{noticeList}}" wx:key="index">
@@ -53,6 +53,8 @@ export default class NoticeList extends wepy.page {
     }
     data = {
         noticeList: [],
+        orderUnRead: 0,
+        recivMoneyUnRead: 0,
         unreadcount: 0,
     }
     async onLoad() {
@@ -71,7 +73,7 @@ export default class NoticeList extends wepy.page {
             return;
         }
         try {
-            await get('/mplogic/msgreadall');
+            await get('/mplogic/readgroupmsg', { group: 1 });
         } catch (e) {
             console.log(e);
         }
@@ -79,8 +81,12 @@ export default class NoticeList extends wepy.page {
     async loadList() {
         try {
             const { data } = await get('/mplogic/msglist');
-            const { msglist, unreadcount } = data;
+            const {
+                msglist, unreadcount, orderUnRead, recivMoneyUnRead,
+            } = data;
             this.unreadcount = unreadcount;
+            this.orderUnRead = orderUnRead;
+            this.recivMoneyUnRead = recivMoneyUnRead;
             if (msglist && msglist.length > 0) {
                 const arr = [];
                 msglist.forEach((item) => {

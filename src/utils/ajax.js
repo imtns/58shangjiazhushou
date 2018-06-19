@@ -24,6 +24,7 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
         header: {
             'content-type': method === 'GET' ? 'application/json' : 'application/x-www-form-urlencoded;charset=utf-8',
             PPU: ppu || 'wanghongyue',
+            // 'YkuYdY8rk5As4T2QaJ7v': '45797966958100',
             'reqfrom': 'biz_assistant',
         },
         success(response) {
@@ -34,11 +35,11 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
                 // callback && callback(null, response.data);
             } else if (state == -10001) {
                 toast(msg);
-                // setTimeout(() => {
-                //     wepy.reLaunch({
-                //         url: '../pages/intro',
-                //     });
-                // }, 1000);
+                setTimeout(() => {
+                    wepy.reLaunch({
+                        url: '../pages/intro',
+                    });
+                }, 1000);
                 reject(msg);
                 // callback && callback(null, response.data);
             } else {
