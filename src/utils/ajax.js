@@ -34,11 +34,11 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
                 // callback && callback(null, response.data);
             } else if (state == -10001) {
                 toast(msg);
-                setTimeout(() => {
-                    wepy.reLaunch({
-                        url: '../pages/intro',
-                    });
-                }, 1000);
+                // setTimeout(() => {
+                //     wepy.reLaunch({
+                //         url: '../pages/intro',
+                //     });
+                // }, 1000);
                 reject(msg);
                 // callback && callback(null, response.data);
             } else {
