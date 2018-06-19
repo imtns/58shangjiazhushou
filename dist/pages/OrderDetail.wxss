@@ -1,1 +1,206 @@
-.orderdetail{font-family:PingFangSC-Regular}.orderdetail .table{display:table;width:100%;box-sizing:border-box}.orderdetail .table-cell{display:table-cell}.orderdetail .cell-right{text-align:left}.orderdetail .cell-right{text-align:right;line-height:48rpx;max-width:280rpx}.orderdetail .mt-10{margin-top:10rpx !important}.orderdetail .mt-20{margin-top:20rpx !important}.orderdetail .mt-30{margin-top:30rpx !important}.orderdetail .mt-60{margin-top:60rpx !important}.orderdetail .text{font-size:28rpx;color:#333333}.orderdetail .label-text{font-size:28rpx;color:#999999;min-width:60rpx}.orderdetail .small-text{font-size:26rpx;color:#333333}.orderdetail .address-text{line-height:48rpx;padding-bottom:24rpx}.orderdetail .button{display:block;margin:0 30rpx;line-height:94rpx;font-size:32rpx;border-radius:4rpx;color:#ffffff;text-align:center}.orderdetail .button.orange{background:#ff552e}.orderdetail .button.yellow{background:#ffa100}.orderdetail .button.gray{background:#cccccc}.orderdetail .font-yellow{color:#ff552e}.orderdetail .item-box{background:#fff;padding:0 30rpx;line-height:88rpx;border-bottom:2rpx solid #f3f3f3}.orderdetail .none-border{border:none}.orderdetail .tip-box{margin:0 30rpx;line-height:38rpx;font-size:26rpx;color:#999999}.orderdetail .order-cancel{color:#ff552e}.orderdetail .order-status{margin-left:20rpx}.orderdetail .star{display:inline-block;margin-right:20rpx;width:40rpx;height:40rpx;background:url("../images/ico-star.png") no-repeat top left;background-size:100%;vertical-align:middle}.orderdetail .star.selected{background:url("../images/ico-star-light.png") no-repeat top left;background-size:100%}.ordersuccess{font-family:PingFangSC-Regular;height:100vh;background:#f6f6f6}.ordersuccess .ordersuccess-container{padding:80rpx 0;background:#fff}.ordersuccess .ordersuccess-icon{display:block;width:144rpx;height:144rpx;margin:0 auto 30rpx}.ordersuccess .ordersuccess-title{text-align:center;font-size:32rpx;color:#333333}.ordersuccess .ordersuccess-home,.ordersuccess .ordersuccess-other{margin:0 30rpx;border-radius:4rpx;line-height:94rpx;font-size:32rpx;text-align:center}.ordersuccess .ordersuccess-other{margin-top:80rpx;background:#4e88ff;color:#fff}.ordersuccess .ordersuccess-home{margin-top:30rpx;background:#fff;color:#333}
+@charset "UTF-8";
+.orderdetail {
+  font-family: PingFangSC-Regular;
+  /* 评星 */
+}
+
+.orderdetail .order-wrap {
+  background: #f6f6f6;
+}
+
+.orderdetail .order-wrap .order-table {
+  background: #fff;
+  padding: 0 30rpx;
+  border-top: 2rpx solid #f3f3f3;
+}
+
+.orderdetail .order-wrap .order-table .order-row {
+  display: table;
+  width: 100%;
+  border-bottom: 2rpx solid #f3f3f3;
+}
+
+.orderdetail .order-wrap .order-table .order-row .left-label,
+.orderdetail .order-wrap .order-table .order-row .right-text {
+  display: table-cell;
+  height: 88rpx;
+  vertical-align: middle;
+}
+
+.orderdetail .order-wrap .order-table .order-row .left-label {
+  font-size: 28rpx;
+  color: #999999;
+  min-width: 60rpx;
+}
+
+.orderdetail .order-wrap .order-table .order-row .right-text {
+  font-size: 28rpx;
+  color: #333333;
+  text-align: right;
+  max-width: 280rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.orderdetail .order-wrap .order-table .order-row .right-text.servicetime {
+  font-family: PingFangSC-Semibold;
+}
+
+.orderdetail .order-wrap .order-table .order-row.none-border {
+  border: none;
+}
+
+.orderdetail .order-wrap .order-status,
+.orderdetail .order-wrap .order-paytype,
+.orderdetail .order-wrap .order-evaluate {
+  display: table;
+  width: 100%;
+  padding: 0 30rpx;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.orderdetail .order-wrap .order-status .left-label,
+.orderdetail .order-wrap .order-status .right-text,
+.orderdetail .order-wrap .order-paytype .left-label,
+.orderdetail .order-wrap .order-paytype .right-text,
+.orderdetail .order-wrap .order-evaluate .left-label,
+.orderdetail .order-wrap .order-evaluate .right-text {
+  display: table-cell;
+  height: 88rpx;
+  vertical-align: middle;
+}
+
+.orderdetail .order-wrap .order-status .left-label,
+.orderdetail .order-wrap .order-paytype .left-label,
+.orderdetail .order-wrap .order-evaluate .left-label {
+  font-size: 28rpx;
+  color: #999999;
+  min-width: 60rpx;
+}
+
+.orderdetail .order-wrap .order-status .right-text,
+.orderdetail .order-wrap .order-paytype .right-text,
+.orderdetail .order-wrap .order-evaluate .right-text {
+  font-size: 28rpx;
+  color: #333333;
+  text-align: right;
+  max-width: 280rpx;
+}
+
+.orderdetail .order-wrap .order-status .right-text.active,
+.orderdetail .order-wrap .order-paytype .right-text.active,
+.orderdetail .order-wrap .order-evaluate .right-text.active {
+  color: #ff552e;
+}
+
+.orderdetail .order-wrap .order-status .right-text.cancel,
+.orderdetail .order-wrap .order-paytype .right-text.cancel,
+.orderdetail .order-wrap .order-evaluate .right-text.cancel {
+  color: #bdbdbd;
+}
+
+.orderdetail .order-wrap .order-status {
+  margin: 20rpx 0;
+}
+
+.orderdetail .order-wrap .order-desc {
+  padding: 0 30rpx;
+  line-height: 38rpx;
+  margin: 10rpx 0 20rpx;
+  font-size: 26rpx;
+  color: #999999;
+}
+
+.orderdetail .order-wrap .order-confirm,
+.orderdetail .order-wrap .order-finish,
+.orderdetail .order-wrap .order-evaluated,
+.orderdetail .order-wrap .order-contact {
+  margin: 0 30rpx;
+  line-height: 94rpx;
+  border-radius: 4rpx;
+  text-align: center;
+}
+
+.orderdetail .order-wrap .order-confirm {
+  margin-top: 60rpx;
+  background: #4e88ff;
+  font-size: 32rpx;
+  color: #ffffff;
+}
+
+.orderdetail .order-wrap .order-finish,
+.orderdetail .order-wrap .order-evaluated {
+  margin-top: 60rpx;
+  background: #cccccc;
+  font-size: 32rpx;
+  color: #ffffff;
+}
+
+.orderdetail .order-wrap .order-contact {
+  margin-top: 30rpx;
+  background: #ffffff;
+  font-size: 32rpx;
+  color: #333333;
+}
+
+.orderdetail .star {
+  display: inline-block;
+  margin-right: 20rpx;
+  width: 40rpx;
+  height: 40rpx;
+  background: url("https://static.58.com/lbg/businessorder/dist/images/ico-star.png") no-repeat top left;
+  background-size: 100%;
+  vertical-align: middle;
+}
+
+.orderdetail .star.selected {
+  background: url("https://static.58.com/lbg/businessorder/dist/images/ico-star-light.png") no-repeat top left;
+  background-size: 100%;
+}
+
+.ordersuccess {
+  font-family: PingFangSC-Regular;
+  height: 100vh;
+  background: #f6f6f6;
+}
+
+.ordersuccess .ordersuccess-container {
+  padding: 80rpx 0;
+  background: #fff;
+}
+
+.ordersuccess .ordersuccess-icon {
+  display: block;
+  width: 144rpx;
+  height: 144rpx;
+  margin: 0 auto 30rpx;
+}
+
+.ordersuccess .ordersuccess-title {
+  text-align: center;
+  font-size: 32rpx;
+  color: #333333;
+}
+
+.ordersuccess .ordersuccess-home,
+.ordersuccess .ordersuccess-other {
+  margin: 0 30rpx;
+  border-radius: 4rpx;
+  line-height: 94rpx;
+  font-size: 32rpx;
+  text-align: center;
+}
+
+.ordersuccess .ordersuccess-other {
+  margin-top: 80rpx;
+  background: #4e88ff;
+  color: #fff;
+}
+
+.ordersuccess .ordersuccess-home {
+  margin-top: 30rpx;
+  background: #fff;
+  color: #333;
+}

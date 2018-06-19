@@ -317,6 +317,11 @@ export default class Home extends wepy.page {
                 });
                 break;
             case 2:
+                wepy.navigateTo({
+                    url: 'OrderList',
+                });
+                break;
+            case 3:
                 if (this.business.selected.app_type === 1) {
                     alert('当前小程序为优享小程序，不用提交注册信息', '提示');
                     return;
@@ -332,12 +337,12 @@ export default class Home extends wepy.page {
                     });
                 }
                 break;
-            case 3:
+            case 4:
                 wepy.navigateTo({
                     url: 'progress',
                 });
                 break;
-            case 4:
+            case 5:
                 wepy.navigateTo({
                     url: 'feedback',
                 });
