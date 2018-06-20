@@ -95,7 +95,7 @@ export default class OrderList extends wepy.page {
         },
         bindLoadDown (pageNum) {
             const { recordsTotal: total } = this.orderList;
-            if (this.orderList.length === total) return;
+            if (this.orderList.data.length === total) return;
             this.sendParams = Object.assign({}, this.sendParams, { pageNum });
             this.getOrderList();
         },
