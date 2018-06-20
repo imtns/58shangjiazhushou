@@ -28,7 +28,7 @@
 <script>
 import wepy from 'wepy';
 
-import { sleep } from '../utils/index';
+import { sleep, toast } from '../utils/index';
 
 import { get } from '../utils/ajax';
 
@@ -79,22 +79,23 @@ export default class AccountNoticeList extends wepy.page {
         try {
             const { data } = await get('/mplogic/getgroupmsglist', this.sendParams);
             const { msglist } = data;
-            if (msglist && msglist.length > 0) {
-                const arr = [];
-                msglist.forEach((item) => {
-                    const { content } = item;
-                    const ele = Object.assign({}, item, JSON.parse(content));
-                    // const ele = item;
-                    if (ele.mpLogo && ele.mpLogo.indexOf('http') === -1) {
-                        ele.mpLogo = `https://pic1.58cdn.com.cn${ele.mpLogo}`;
-                    }
-                    arr.push(ele);
-                });
-                this.accountList = this.accountList.concat(arr);
-                console.log(this.accountList);
-            } else {
+            if (msglist.length === 0) {
                 this.accountList = this.accountList;
+                toast('没有更多消息啦');
+                return;
             }
+            const arr = [];
+            msglist.forEach((item) => {
+                const { content } = item;
+                const ele = Object.assign({}, item, JSON.parse(content));
+                // const ele = item;
+                if (ele.mpLogo && ele.mpLogo.indexOf('http') === -1) {
+                    ele.mpLogo = `https://pic1.58cdn.com.cn${ele.mpLogo}`;
+                }
+                arr.push(ele);
+            });
+            this.accountList = this.accountList.concat(arr);
+            console.log(this.accountList);
             this.$apply();
         } catch (e) {
             console.log(e);
