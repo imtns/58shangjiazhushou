@@ -56,6 +56,11 @@ export default class NoticeList extends wepy.page {
         orderUnRead: 0,
         recivMoneyUnRead: 0,
         unreadcount: 0,
+        sendParams: {
+            group: 2,
+            page: 1,
+            pageSize: 10,
+        },
     }
     async onLoad() {
         await sleep();
