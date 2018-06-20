@@ -187,9 +187,8 @@ view,scroll-view{
     }
     .emptyBox{
         width:100%;
-        height:50%;
         text-align:center;
-        margin: auto;
+        padding-top:280rpx;
         .emptyIcon{
             width:209rpx;
             height:187rpx;

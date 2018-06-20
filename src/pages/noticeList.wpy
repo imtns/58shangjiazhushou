@@ -8,7 +8,7 @@
             <navigator class="notice-name notice-order" url="orderNoticeList" hover-class="none">订单提醒<view class="num" wx:if="{{orderUnRead > 0}}">{{orderUnRead}}</view></navigator>
             <navigator class="notice-name notice-account" url="accountNoticeList" hover-class="none">入账通知<view class="num" wx:if="{{recivMoneyUnRead > 0}}">{{recivMoneyUnRead}}</view></navigator>
         </view>
-        <scroll-view class="notice-list" wx:if="{{noticeList.length>0}}">
+        <scroll-view class="notice-list" wx:if="{{noticeList.length>0}}" scroll-y="true">
         <block wx:for="{{noticeList}}" wx:key="index">
             <view class="notice-list-item">
                 <view class="notice-item" bindtap="touploadInfo" data-item="{{item}}">
@@ -49,7 +49,7 @@ import { get } from '../utils/ajax';
 export default class NoticeList extends wepy.page {
     config = {
         navigationBarTitleText: '通知',
-        disableScroll: true,
+        // disableScroll: true,
     }
     data = {
         noticeList: [],
@@ -146,8 +146,14 @@ view,scroll-view{
     flex-direction:column;
     .notice-header{
         width:100%;
-        padding:24rpx 30rpx;
-        position:relative;
+        padding:0 30rpx;
+        height: 80rpx;
+        line-height: 80rpx;
+        position: fixed;
+        top:0;
+        left: 0;
+        z-index:9;
+        background:#f5f5f5;
         view{
             font-size: 28rpx;
             color: #999999;
@@ -156,11 +162,12 @@ view,scroll-view{
         .attach-notice{
             position:absolute;
             right:30rpx;
-            top:24rpx;
+            top:0;
         }
         .clear-notice::before{
             position:absolute;
-            left:-40rpx;top:0;
+            left:-40rpx;
+            top:22rpx;
             content:'';
             width:36rpx;
             height:36rpx;
@@ -169,6 +176,7 @@ view,scroll-view{
         }
     }
     .notice-new{
+        margin-top:80rpx;
         .notice-name{
             display:block;
             font-size: 28rpx;
