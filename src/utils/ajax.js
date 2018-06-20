@@ -24,7 +24,7 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
         header: {
             'content-type': method === 'GET' ? 'application/json' : 'application/x-www-form-urlencoded;charset=utf-8',
             PPU: ppu || 'wanghongyue',
-            // 'YkuYdY8rk5As4T2QaJ7v': '45797966958100',
+            'YkuYdY8rk5As4T2QaJ7v': '45797966958100',
             'reqfrom': 'biz_assistant',
         },
         success(response) {
