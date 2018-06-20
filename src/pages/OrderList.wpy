@@ -39,7 +39,11 @@
                         <view class="order-fee active" wx:else>￥<view class="order-fee-txt">{{item.realAmount}}</view></view>
                     </view>
                 </view>
+                
             </navigator>
+            <view class="order-list-nomore" wx:if="{{orderList.recordsTotal>0 && orderList.data.length===orderList.recordsTotal}}">
+                ╮(￣▽￣)╭已经到底了
+            </view>
         </scroll-view>
         </block>
         <block wx:else>
@@ -296,6 +300,12 @@ export default class OrderList extends wepy.page {
                     }
                 }
             }
+        }
+        .order-list-nomore {
+            margin-bottom: 20rpx;
+            font-size: 28rpx;
+            color: #999999;
+            text-align: center;
         }
     }
     // .waitinglist-wrap {
