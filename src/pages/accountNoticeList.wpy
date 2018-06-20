@@ -4,7 +4,7 @@
             <view>支付主体</view>
             <view class="attach-notice">入账金额</view>
         </view>
-        <scroll-view class="notice-list" wx:if="{{accountList.length > 0}}" scroll-y="true" lower-threshold="50" bindscrolltolower="accountListMore">
+        <scroll-view class="notice-list" wx:if="{{accountList.length>0}}" scroll-y="true" lower-threshold="50" bindscrolltolower="accountListMore">
             <view wx:for="{{accountList}}" wx:key="index" data-item="{{item}}">
                 <view class="notice-item">
                     <view class="notice-content">
@@ -38,15 +38,16 @@ export default class AccountNoticeList extends wepy.page {
     }
     data = {
         accountList: [],
+        unreadcount: 0,
         sendParams: {
             group: 3,
             page: 1,
             pageSize: 10,
         },
-        unreadcount: 0,
     }
     methods = {
         accountListMore() {
+            console.log('wwdwdwqccedqqwdq');
             this.sendParams.page = this.sendParams.page + 1;
             this.sendParams = Object.assign({}, this.sendParams, this.sendParams.page);
             this.loadList();
@@ -90,6 +91,7 @@ export default class AccountNoticeList extends wepy.page {
                     arr.push(ele);
                 });
                 this.accountList = this.accountList.concat(arr);
+                console.log(this.accountList);
             } else {
                 this.accountList = this.accountList;
             }
@@ -112,8 +114,7 @@ view,scroll-view{
 }
 .notice-container{
     width:100%;
-    display:flex;
-    flex-direction:column;
+    height:100%;
     .notice-header{
         width:100%;
         padding:0 30rpx;
@@ -137,8 +138,12 @@ view,scroll-view{
     }
     .notice-list{
         width:100%;
-        height: 100%;
         margin-top:80rpx;
+        position: absolute;
+        top:0;
+        bottom: 0;
+        left: 0;
+        right:0;
         .notice-item{
             width:100%;
             position:relative;
