@@ -6,6 +6,7 @@
             <view class="tab-box {{sendParams.status==='2'?'selected':''}}" @tap="bindClickTab(2)">已完成</view>
             <view class="tab-box {{sendParams.status===''?'selected':''}}" @tap="bindClickTab('')">全部</view>
         </view>
+        <block wx:if="{{orderList.data && orderList.data.length > 0}}">
         <scroll-view class="orders-ul" scroll-y @scrolltolower="bindLoadDown( {{sendParams.pageNum+1}} )">
             <navigator wx:for="{{orderList.data}}" wx:for-index="idx" wx:key="item.id" url="/pages/OrderDetail?id={{item.id}}">
                 <view class="order-ul-li" data-orderid="{{item.id}}">
@@ -38,8 +39,19 @@
                         <view class="order-fee active" wx:else>￥<view class="order-fee-txt">{{item.realAmount}}</view></view>
                     </view>
                 </view>
+                
             </navigator>
+            <view class="order-list-nomore" wx:if="{{orderList.recordsTotal>0 && orderList.data.length===orderList.recordsTotal}}">
+                ╮(￣▽￣)╭已经到底了
+            </view>
         </scroll-view>
+        </block>
+        <block wx:else>
+            <view class="empty-wrap">
+                <image class="img-no-data" src="//img.58cdn.com.cn/lbg/jianzhan/images/empty.png"/>
+                <view class="txt-no-data">暂无订单信息</view>
+            </view>
+        </block>
     </view>
 </template>
 <script>
@@ -109,11 +121,10 @@ export default class OrderList extends wepy.page {
         this.orderList = Object.assign({}, res, {
             data: [].concat(this.orderList.data, data),
         });
-        console.log('3333', this.orderList);
         this.$apply();
     }
     async onLoad () {
-        this.getOrderList();
+        await this.getOrderList();
     }
 }
 </script>
@@ -148,7 +159,8 @@ export default class OrderList extends wepy.page {
         }
     }
 
-    .orders-ul {
+    .orders-ul,
+    .empty-wrap {
         margin-top: 92rpx;
         padding: 20rpx 0;
         background: #f3f3f3;
@@ -289,6 +301,12 @@ export default class OrderList extends wepy.page {
                 }
             }
         }
+        .order-list-nomore {
+            margin-bottom: 20rpx;
+            font-size: 28rpx;
+            color: #999999;
+            text-align: center;
+        }
     }
     // .waitinglist-wrap {
     //     display: block;
@@ -301,17 +319,17 @@ export default class OrderList extends wepy.page {
     .font-yellow {
         color: #ff552e;
     }
-    .mt-10 {
-        margin-top: 10rpx;
+    .img-no-data {
+        display: block;
+        width: 180rpx;
+        height: 180rpx;
+        margin: 200rpx auto 20rpx;
     }
-    .mt-20 {
-        margin-top: 20rpx;
-    }
-    .mt-30 {
-        margin-top: 30rpx;
-    }
-    .mb-20 {
-        margin-bottom: 20rpx;
+    .txt-no-data {
+        line-height: 88rpx;
+        text-align: center;
+        font-size: 30rpx;
+        color: #ccc;
     }
     //     /* 下拉刷新 */
     //     .img-no-data {
