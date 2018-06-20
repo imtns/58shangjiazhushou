@@ -8,13 +8,13 @@
             <view wx:for="{{accountList}}" wx:key="index" data-item="{{item}}">
                 <view class="notice-item">
                     <view class="notice-content">
-                        <view class="business-name">{{item.from}}</view>
-                        <view class="account-time">{{item.time}}</view>
+                        <view class="business-name">{{item.content.from}}</view>
+                        <view class="account-time">{{item.content.time}}</view>
                     </view>
                     <view class="notice-money">
-                        <view>￥</view>{{item.amount}}
+                        <view>￥</view>{{item.content.amount}}
                     </view>
-                    <view class="notice-unread" wx:if="{{unreadcount>0}}"></view>
+                    <view class="notice-unread" wx:if="{{item.status === 1}}"></view>
                 </view>
             </view>
         </scroll-view>
@@ -38,7 +38,6 @@ export default class AccountNoticeList extends wepy.page {
     }
     data = {
         accountList: [],
-        unreadcount: 0,
         sendParams: {
             group: 3,
             page: 1,
@@ -47,7 +46,6 @@ export default class AccountNoticeList extends wepy.page {
     }
     methods = {
         accountListMore() {
-            console.log('wwdwdwqccedqqwdq');
             this.sendParams.page = this.sendParams.page + 1;
             this.sendParams = Object.assign({}, this.sendParams, this.sendParams.page);
             this.loadList();
@@ -87,7 +85,10 @@ export default class AccountNoticeList extends wepy.page {
             const arr = [];
             msglist.forEach((item) => {
                 const { content } = item;
-                const ele = Object.assign({}, item, JSON.parse(content));
+                const ele = Object.assign(
+                    {},
+                    item, { content: JSON.parse(content) },
+                );
                 // const ele = item;
                 if (ele.mpLogo && ele.mpLogo.indexOf('http') === -1) {
                     ele.mpLogo = `https://pic1.58cdn.com.cn${ele.mpLogo}`;
@@ -187,9 +188,8 @@ view,scroll-view{
     }
     .emptyBox{
         width:100%;
-        height:50%;
         text-align:center;
-        margin: auto;
+        padding-top:280rpx;
         .emptyIcon{
             width:209rpx;
             height:187rpx;

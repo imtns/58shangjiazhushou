@@ -1,31 +1,31 @@
 <template>
     <view class="notice-container">
         <scroll-view class="notice-list" wx:if="{{orderList.length>0}}" scroll-y="true" lower-threshold="50" bindscrolltolower="orderListMore">
-        <view wx:for="{{orderList}}" wx:key="index" data-item="{{item}}">
-            <navigator class="notice-item" url="OrderDetail?id={{item.id}}" hover-class="none">
-                <view class="notice-time">{{item.createTime}}</view>
-                <view class="notice-content">
-                    <view class="notice">
-                        <view class="notice-logo"><image src="{{item.mpLogo}}?w=120&h=120"></image></view>
-                        <view class="notice-name">{{item.title}}</view>
-                        <view class="notice-num">{{item.id}}</view>
-                        <!-- <view class="notice-unread" wx:if="{{unreadcount>0}}"></view> -->
+            <view wx:for="{{orderList}}" wx:key="index" data-item="{{item}}">
+                <navigator class="notice-item" url="/pages/OrderDetail?id={{item.id}}" hover-class="none">
+                    <view class="notice-time">{{item.createTime}}</view>
+                    <view class="notice-content">
+                        <view class="notice">
+                            <view class="notice-logo"><image src="{{item.mpLogo}}?w=120&h=120"></image></view>
+                            <view class="notice-name">{{item.title}}</view>
+                            <view class="notice-num">{{item.id}}</view>
+                            <view class="notice-unread" wx:if="{{item.status === 1}}"></view>
+                        </view>
+                        <view class="order">服务名称<view>{{item.content.serviceName}}</view></view>
+                        <view class="order">服务时间<view>{{item.content.startTime}}</view></view>
+                        <view class="order">下单时间<view>{{item.content.createTime}}</view></view>
+                        <view class="order order-status">订单状态
+                            <view wx:if="{{item.content.status === 0}}">已下单</view>
+                            <view wx:if="{{item.content.status === 1}}">已接单</view>
+                            <view wx:if="{{item.content.status === 2}}">已完成</view>
+                            <view wx:if="{{item.content.status === 3}}">已取消</view>
+                            <view wx:if="{{item.content.status === 4}}">已删除</view>
+                            <view wx:if="{{item.content.status === 11}}">已支付</view>
+                        </view>
+                        <view class="account-total">共计费用<view class="num">￥<view>{{item.content.realAmount}}</view></view></view>
                     </view>
-                    <view class="order">服务名称<view>{{item.serviceName}}</view></view>
-                    <view class="order">服务时间<view>{{item.startTime}}</view></view>
-                    <view class="order">下单时间<view>{{item.createTime}}</view></view>
-                    <view class="order order-status">订单状态
-                        <view wx:if="{{item.status === 0}}">已下单</view>
-                        <view wx:if="{{item.status === 1}}">已接单</view>
-                        <view wx:if="{{item.status === 2}}">已完成</view>
-                        <view wx:if="{{item.status === 3}}">已取消</view>
-                        <view wx:if="{{item.status === 4}}">已删除</view>
-                        <view wx:if="{{item.status === 11}}">已支付</view>
-                    </view>
-                    <view class="account-total">共计费用<view class="num">￥<view>{{item.realAmount}}</view></view></view>
-                </view>
-            </navigator>
-        </view>
+                </navigator>
+            </view>
         </scroll-view>
         <view class="emptyBox" wx:if="{{orderList.length<=0}}">
             <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/empty.png" class="emptyIcon"></image>
@@ -48,7 +48,6 @@ export default class OrderNoticeList extends wepy.page {
     }
     data = {
         orderList: [],
-        unreadcount: 0,
         sendParams: {
             group: 2,
             page: 1,
@@ -95,7 +94,10 @@ export default class OrderNoticeList extends wepy.page {
             const arr = [];
             msglist.forEach((item) => {
                 const { content } = item;
-                const ele = Object.assign({}, item, JSON.parse(content));
+                const ele = Object.assign(
+                    {},
+                    item, { content: JSON.parse(content) },
+                );
                 if (ele.mpLogo && ele.mpLogo.indexOf('http') === -1) {
                     ele.mpLogo = `https://pic1.58cdn.com.cn${ele.mpLogo}`;
                 }
@@ -214,9 +216,8 @@ view,scroll-view{
     }
     .emptyBox{
         width:100%;
-        height:50%;
         text-align:center;
-        margin: auto;
+        padding-top:280rpx;
         .emptyIcon{
             width:209rpx;
             height:187rpx;
