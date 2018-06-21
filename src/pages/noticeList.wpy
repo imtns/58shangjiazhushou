@@ -158,7 +158,7 @@ export default class NoticeList extends wepy.page {
                 toast('没有消息，无需清空~');
                 return;
             }
-            await get('/mplogic/msgclearall');
+            await get('/mplogic/cleargroupmsg', { group: 1 });
             sleep();
             this.loadList();
         } catch (e) {

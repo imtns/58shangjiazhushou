@@ -5,7 +5,7 @@ const test = 'test';
 const host = 'https://yaofa.58.com';
 const http = (method, ...props) => {
     const [url, param, showLoading = true] = props;
-    const sendData = Object.assign({}, param);
+    const sendData = Object.assign({}, param, { test });
     // ppu加入header
     const ppu = wepy.getStorageSync('ppu');
     console.log('请求接口', url);
