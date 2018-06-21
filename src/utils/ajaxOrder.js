@@ -20,7 +20,7 @@ const http = (method, ...props) => {
                 'content-type': method === 'GET' ? 'application/json' : 'application/x-www-form-urlencoded;charset=utf-8',
                 PPU: ppu || 'wanghongyue',
                 reqfrom: 'biz_assistant',
-                YkuYdY8rk5As4T2QaJ7v: '15293583575559',
+                // YkuYdY8rk5As4T2QaJ7v: '15293583575559',
             },
         }).then((response) => {
             console.log('ajaxOrder.response', response);

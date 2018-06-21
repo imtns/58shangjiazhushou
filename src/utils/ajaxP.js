@@ -9,7 +9,7 @@ const http = (method, ...props) => {
     // ppu加入header
     const ppu = wepy.getStorageSync('ppu');
     console.log('请求接口', url);
-    console.log('请求参数', param);
+    console.log('请求参数', sendData);
     showLoading && wepy.showLoading && wepy.showLoading({ title: '加载中', mask: true });
     return new Promise((resolve) => {
         wepy.request({
