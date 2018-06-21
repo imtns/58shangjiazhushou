@@ -2,7 +2,7 @@
     <view class="notice-container">
         <scroll-view class="notice-list" wx:if="{{orderList.length>0}}" scroll-y="true" lower-threshold="50" bindscrolltolower="orderListMore">
             <view wx:for="{{orderList}}" wx:key="index" data-item="{{item}}">
-                <navigator class="notice-item" url="/pages/OrderDetail?id={{item.id}}" hover-class="none">
+                <navigator class="notice-item" url="/pages/OrderDetail?id={{item.content.orderId}}" hover-class="none">
                     <view class="notice-time">{{item.createTime}}</view>
                     <view class="notice-content">
                         <view class="notice">
