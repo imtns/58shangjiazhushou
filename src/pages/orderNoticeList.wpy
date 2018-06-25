@@ -86,6 +86,7 @@ export default class OrderNoticeList extends wepy.page {
         try {
             const { data } = await get('/mplogic/getgroupmsglist', this.sendParams);
             const { msglist } = data;
+            console.log(msglist);
             if (msglist.length === 0) {
                 this.accountList = this.accountList;
                 toast('没有更多消息啦');

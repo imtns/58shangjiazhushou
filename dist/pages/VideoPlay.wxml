@@ -1,0 +1,4 @@
+
+    <view class="video-view">
+        <video id="myVideo" bindfullscreenchange="fullscreenchange" class="video-view-video" src="{{videoPath}}"/>
+    </view>
