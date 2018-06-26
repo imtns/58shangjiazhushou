@@ -52,15 +52,14 @@
             </block>
             <block wx:if="{{order.status==0}}">
                 <view class="order-confirm" bindtap="bindSubmitOrder" data-wpybindsubmitorder-a="ask">确认订单</view>
-                <view class="order-contact" bindtap="bindPhoneCall" data-wpybindphonecall-a="{{order.consumerMobile}}">联系顾客</view>
             </block>    
             <block wx:if="{{order.status==1}}">
                 <view class="order-finish">已确认订单</view>
-                <view class="order-contact" bindtap="bindPhoneCall" data-wpybindphonecall-a="{{order.consumerMobile}}">联系顾客</view>
             </block>
             <block wx:if="{{order.status==2}}">
                 <view class="order-evaluated">已评价</view>
             </block>
+            <view class="order-contact" bindtap="bindPhoneCall" data-wpybindphonecall-a="{{order.consumerMobile}}">联系顾客</view>
         </view>
         <view class="ordersuccess"  wx:if="{{submitSuccess}}">
             <view class="ordersuccess-container">
