@@ -65,7 +65,7 @@ export default class OrderList extends wepy.page {
         navigationBarTitleText: '订单管理',
     }
     data = {
-        statusSet: ['已下单', '已接单', '已评价', '已取消', '已删除'],
+        statusSet: ['待接单', '待服务', '已评价', '已取消', '已删除'],
         sendParams: {
             pageNum: 1,
             pageSize: 5,
