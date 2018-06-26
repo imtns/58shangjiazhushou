@@ -81,7 +81,7 @@ export default class UploadArticle extends wepy.page {
             content = filteremoji(content);
             this.updateForm({ content });
             return {
-                value: content,
+                value: `<p>${content}</p>`,
             };
         },
         async submitSave () {
