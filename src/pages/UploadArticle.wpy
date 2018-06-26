@@ -81,12 +81,16 @@ export default class UploadArticle extends wepy.page {
             content = filteremoji(content);
             this.updateForm({ content });
             return {
-                value: `<p>${content}</p>`,
+                value: content,
             };
         },
         async submitSave () {
             if (!this.form.enableSubmit) return;
-            const { state, msg } = await post(submitApi, this.form);
+            const { content } = this.form;
+            const params = Object.assign({}, this.form, {
+                content: `<p>${content}</p>`,
+            });
+            const { state, msg } = await post(submitApi, params);
             if (state === 100) {
                 wepy.navigateBack();
             } else {
