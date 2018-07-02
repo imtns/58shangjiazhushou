@@ -8,7 +8,7 @@
                         <view class="notice">
                             <view class="notice-logo"><image src="{{item.mpLogo}}?w=120&h=120"></image></view>
                             <view class="notice-name">{{item.title}}</view>
-                            <view class="notice-num">{{item.content.orderId}}</view>
+                            <view class="notice-num">{{item.id}}</view>
                             <view class="notice-unread" wx:if="{{item.status === 1}}"></view>
                         </view>
                         <view class="order">服务名称<view>{{item.content.serviceName}}</view></view>
