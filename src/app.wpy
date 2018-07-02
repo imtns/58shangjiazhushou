@@ -35,6 +35,7 @@ export default class extends wepy.app {
             'pages/accountNoticeList', // 入账提醒页面
             'pages/OrderList', // 订单列表
             'pages/OrderDetail', // 订单详情
+            'pages/OpenPay', // 开通支付
         ],
         window: {
             backgroundTextStyle: 'light',
