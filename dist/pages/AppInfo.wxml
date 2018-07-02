@@ -17,19 +17,10 @@
         </view>
         <view class="appinfo-qrcode" wx:if="{{qrcodeUrl}}">
             <view class="appinfo-qrcode-label">小程序码：</view>
-            <image class="appinfo-qrcode-img" src="{{qrcodeUrl}}" bindtap="bindClickPreview" data-wpybindclickpreview-a="{{qrcodeUrl}}"/>
-            <view class="appinfo-miniprogram">访问小程序</view>
+            <image class="appinfo-qrcode-img" src="{{qrcodeUrl}}" bindtap="bindScanQrcode" data-wpybindscanqrcode-a="{{qrcodeUrl}}"/>
         </view>
         <view class="appinfo-qrcode-off" wx:else>
             <view class="">小程序码：上线后展示</view>
-        </view>
-        <view class="appinfo-qrcode" wx:if="{{payQrcodeUrl}}">
-            <view class="appinfo-qrcode-label">支付码：</view>
-            <image class="appinfo-qrcode-img" src="{{payQrcodeUrl}}" bindtap="bindClickPreview" data-wpybindclickpreview-a="{{payQrcodeUrl}}"/>
-        </view>
-        <view class="appinfo-qrcode-off" wx:else>
-            <view class="">小程序码：开通支付功能后展示</view>
-            <view class="appinfo-miniprogram">去开通</view>
         </view>
         <navigator url="/pages/AppEdit?mpid={{appInfo.mpid}}"><view class="appinfo-edit">编辑小程序</view></navigator>
     </view>
