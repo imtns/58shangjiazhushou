@@ -316,6 +316,9 @@ export default class AppEdit extends wepy.page {
                 address: form.address, // 地址
                 lat: form.addressLatitude, // 纬度
                 lnt: form.addressLongitude, // 经度
+                cate1: form.cate1 || '',
+                cate2: form.cate2 || '',
+                cate3: form.cate3 || '',
             };
             console.log(sendData);
             const [e, res] = await get(saveAppApi, sendData);
