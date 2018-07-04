@@ -12,8 +12,12 @@
                     </view>
                     <view class="details">
                         <view class="title"> 
-                            <image class="icon" mode="{{aspectFit}}" src="{{business.current.app_type === 1 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png'}}"/>
                             <view class="name">{{business.current.nickName}}</view>
+                            <button class="share" plain="{{true}}" open-type="getUserInfo" bindgetuserinfo="onReadytoShare" data-id="{{business.current.id}}">分享</button>
+                        </view>
+                        <view class="icons">
+                            <image class="icon" mode="{{aspectFit}}" src="{{ business.current.app_type === 1 || business.current.app_type === 2 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang_grey.png'}}"/>
+                            <image class="icon" mode="{{aspectFit}}" src="{{ business.current.app_type === 2 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin_grey.png'}}"/>
                         </view>
                         <view class="deadline">有效期至 {{business.current.expiryDate}}</view>
                     </view>
@@ -38,8 +42,11 @@
                         </view>
                         <view class="details">
                             <view class="title"> 
-                                <image class="icon" mode="{{aspectFit}}" src="{{item.app_type === 1 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png'}}"/>
                                 <view class="name">{{item.nickName}}</view>
+                            </view>
+                            <view class="icons">
+                                <image class="icon" mode="{{aspectFit}}" src="{{ item.app_type === 1 || item.app_type === 2 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang_grey.png'}}"/>
+                                <image class="icon" mode="{{aspectFit}}" src="{{ item.app_type === 2 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin_grey.png'}}"/>
                             </view>
                             <view class="deadline">有效期至 {{item.expiryDate}}</view>
                         </view>
