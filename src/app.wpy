@@ -44,7 +44,7 @@ export default class extends wepy.app {
         },
     }
     onLaunch () {
-        console.log('onlainch');
+        console.log('onlaunch');
     }
     onShow (options) {
         const { path } = options;
@@ -52,7 +52,7 @@ export default class extends wepy.app {
         // const pages = getCurrentPages();
         // const currPage = pages[pages.length - 1];
         // console.log('currPage', currPage.route);
-        if (options.scene === 1038 && path === 'pages/intro') {
+        if (+options.scene === 1038 && path === 'pages/intro') {
             if (!options.referrerInfo) {
                 console.log('options.referrerInfo为空');
             }
