@@ -82,20 +82,26 @@ export default class Home extends wepy.page {
                 iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-order.png',
                 text: '订单管理',
             }, {
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-progress.png',
+                text: '完成度',
+            }, {
                 iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-register.png',
                 text: '微信注册信息',
             }, {
                 iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-progress.png',
-                text: '完成度',
+                text: '支付开通',
             }, {
                 iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-advice.png',
                 text: '意见反馈',
+            }, {
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-progress.png',
+                text: '暂未开放',
             },
         ],
     }
     methods = {
         link (index) {
-            if (index !== 4) { //   意见反馈不做判断
+            if (index !== 6) { //   意见反馈不做判断
                 this.checkBeforeJump(index);
             } else {
                 wepy.navigateTo({
@@ -322,6 +328,11 @@ export default class Home extends wepy.page {
                 });
                 break;
             case 3:
+                wepy.navigateTo({
+                    url: 'progress',
+                });
+                break;
+            case 4:
                 if (this.business.selected.app_type === 1) {
                     alert('当前小程序为优享小程序，不用提交注册信息', '提示');
                     return;
@@ -337,12 +348,12 @@ export default class Home extends wepy.page {
                     });
                 }
                 break;
-            case 4:
+            case 5:
                 wepy.navigateTo({
-                    url: 'progress',
+                    url: 'OpenPay',
                 });
                 break;
-            case 5:
+            case 6:
                 wepy.navigateTo({
                     url: 'feedback',
                 });
@@ -629,8 +640,9 @@ scroll-view {
         border-radius: 16rpx;
         display: flex;
         flex-wrap: wrap;
+        justify-content: space-between;
         .index-loaded-item {
-            width: 33%;
+            width: 156rpx;
             margin-bottom: 70rpx;
             text-align: center;
             .item-img {

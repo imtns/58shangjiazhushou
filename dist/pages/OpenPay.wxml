@@ -2,18 +2,23 @@
 <view class="openpay-container">
     <!-- 开通支付 -->
     <view class="openpay"  wx:if="{{!opened}}">
-        <view>请用微信绑定手机号与58账号手机号相同的微信进行验证</view>
+        <view class="openpay-main">
+            <!-- 状态图标 -->
+            <image class="openpay-main-icon" src=""/>
+            <view class="openpay-main-content">当前微信账号所绑定的手机号，必须与58账</view>
+            <view class="openpay-main-content">号绑定的手机号相同</view>
+        </view>
         <!-- 同意协议 -->
         <view class="openpay-protocol">
             <view class="openpay-protocol-agree {{agreeProtocol?'':'openpay-protocol-disagree'}}" bindtap="bindAgreeProtocol">您已阅读并同意</view>
-            <view class="paydetail-authorize-protocol" bindtap="bindShowProtocol" data-wpybindshowprotocol-a="{{true}}">《同城优选服务使用协议》</view>
+            <view class="openpay-protocol-title1" bindtap="bindShowProtocol" data-wpybindshowprotocol-a="{{true}}">《同城优选服务使用协议》</view>
         </view>
         <!-- 跳转到支付助手小程序性开通支付 -->
         <!-- 小程序跳转时低版本不提供url会报错 -->
         <navigator open-type="navigate" target="miniProgram" path="/pages/payAuthorize/payAuthorize?param={{userid}}" url="/pages/payAuthorize/payAuthorize" app-id="{{payAppId}}" version="develop">
             <view class="openpay-confirm">确认开通</view>
         </navigator>
-        <!-- 协议内容 -->
+        <!-- 协议内容弹框 -->
         <view class="openpay-protocol-mask" wx:if="{{showProtocol}}" catchtouchmove="stopAuthorizeScroll" bindtap="bindShowProtocol" data-wpybindshowprotocol-a="{{false}}">
         </view>
         <view class="openpay-protocol-container" wx:if="{{showProtocol}}">
@@ -32,11 +37,17 @@
     </view>
     <!-- 更换收款微信 -->
     <view class="changepay"  wx:else>
-        <view>当前小程序已开通支付</view>
-        <view>您现在可以使用买单功能</view>
+        <view class="changepay-main">
+            <image class="changepay-main-icon" src=""/>
+            <view class="changepay-main-content">当前小程序已经开通支付，您可以</view>
+            <view class="changepay-main-content">使用买单功能啦</view>
+        </view>
         <!-- 跳转支付助手更换收款微信 -->
         <navigator open-type="navigate" target="miniProgram" path="/pages/payAuthorize/payAuthorize?param={{userid}}" url="/pages/payAuthorize/payAuthorize" app-id="{{payAppId}}" version="develop">
-            <view class="openpay-confirm">更换收款微信</view>
+            <view class="changepay-confirm">更换收款微信</view>
+        </navigator>
+        <navigator open-type="redirect" url="/pages/home">
+            <view class="changepay-home">返回首页</view>
         </navigator>
     </view>
 </view>
