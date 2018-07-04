@@ -1,5 +1,8 @@
 
     <view class="myMP">
+        <view class="shareContainer"  wx:if="{{shareImage}}">
+            <image class="img" src="{{shareImage}}" mode="{{scaleToFill}}"/>
+        </view>
         <view class="current">
             <view class="tips">
                 <view>当前小程序</view>
@@ -13,7 +16,7 @@
                     <view class="details">
                         <view class="title"> 
                             <view class="name">{{business.current.nickName}}</view>
-                            <button class="share" plain="{{true}}" open-type="getUserInfo" bindgetuserinfo="onReadytoShare" data-id="{{business.current.id}}">分享</button>
+                            <button  wx:if="{{business.current.mpStatus == 2}}" class="share" plain="{{true}}" open-type="getUserInfo" bindgetuserinfo="onReadytoShare" data-id="{{business.current.id}}">分享</button>
                         </view>
                         <view class="icons">
                             <image class="icon" mode="{{aspectFit}}" src="{{ business.current.app_type === 1 || business.current.app_type === 2 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang_grey.png'}}"/>
@@ -23,13 +26,13 @@
                     </view>
                 </view>
                 <view class="btns">
-                    <view bindtap="shouquan"  wx:if="{{business.current.app_type === 2}}">{{business.current.status === 1 ? '重新授权' : '去授权'}}</view>
+                    <view bindtap="shouquan" wx:if="{{business.current.app_type === 2}}">{{business.current.status === 1 ? '重新授权' : '去授权'}}</view>
                     <view bindtap="decorate"  data-address="{{business.current.address}}" data-id="{{business.current.id}}" class="{{!business.current.address ? 'grey' : ''}}">装修</view>
                     <view bindtap="checkDetail" data-address="{{business.current.address}}" data-id="{{business.current.id}}">查看</view>
                 </view>
             </view>
         </view>
-        <view class="others"  wx:if="{{business.mps.length}}">
+        <view class="others" wx:if="{{business.mps.length}}">
             <view class="tips">
                 <view>其他小程序</view>
                 <view/>
@@ -43,6 +46,7 @@
                         <view class="details">
                             <view class="title"> 
                                 <view class="name">{{item.nickName}}</view>
+                                <button wx:if="{{item.mpStatus == 2}}" class="share" plain="{{true}}" open-type="getUserInfo" bindgetuserinfo="onReadytoShare" data-id="{{item.id}}">分享</button>
                             </view>
                             <view class="icons">
                                 <image class="icon" mode="{{aspectFit}}" src="{{ item.app_type === 1 || item.app_type === 2 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang_grey.png'}}"/>
