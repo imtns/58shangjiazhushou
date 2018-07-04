@@ -274,10 +274,13 @@ scroll-view {
   display: flex;
   -webkit-flex-wrap: wrap;
           flex-wrap: wrap;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
 }
 
 .home .index-loaded-body .index-loaded-item {
-  width: 33%;
+  width: 156rpx;
   margin-bottom: 70rpx;
   text-align: center;
 }
