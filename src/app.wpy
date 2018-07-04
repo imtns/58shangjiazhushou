@@ -2,6 +2,7 @@
 import wepy from 'wepy';
 import 'wepy-async-function';
 // import { alert } from './utils';
+import DoMiniProgramBack from './utils/scene';
 
 export default class extends wepy.app {
     constructor() {
@@ -48,31 +49,43 @@ export default class extends wepy.app {
         console.log('onlainch');
     }
     onShow (options) {
-        const { path } = options;
-        console.log(path);
+        // const { path } = options;
+        // console.log(path);
         // const pages = getCurrentPages();
         // const currPage = pages[pages.length - 1];
         // console.log('currPage', currPage.route);
-        if (options.scene === 1038 && path === 'pages/intro') {
-            if (!options.referrerInfo) {
-                console.log('options.referrerInfo为空');
-            }
-            if (!options.referrerInfo.extraData) {
-                console.log('options.referrerInfo.extraData为空');
-            }
-            let { extraData } = options.referrerInfo;
-            if (typeof extraData !== 'object') {
-                extraData = JSON.parse(extraData);
-            }
-            if (extraData.ppu !== undefined) { // 如果获取ppu成功
-                console.log(`获取PPU成功！ ${extraData.ppu}`);
-                wepy.setStorageSync('ppu', extraData.ppu);
-                setTimeout(() => {
-                    wepy.reLaunch({
-                        url: '/pages/home',
-                    });
-                }, 1000);
-            }
+        // if (options.scene === 1038 && path === 'pages/intro') {
+        //     if (!options.referrerInfo) {
+        //         console.log('options.referrerInfo为空');
+        //     }
+        //     if (!options.referrerInfo.extraData) {
+        //         console.log('options.referrerInfo.extraData为空');
+        //     }
+        //     let { extraData } = options.referrerInfo;
+        //     if (typeof extraData !== 'object') {
+        //         extraData = JSON.parse(extraData);
+        //     }
+        //     if (extraData.ppu !== undefined) { // 如果获取ppu成功
+        //         console.log(`获取PPU成功！ ${extraData.ppu}`);
+        //         wepy.setStorageSync('ppu', extraData.ppu);
+        //         setTimeout(() => {
+        //             wepy.reLaunch({
+        //                 url: '/pages/home',
+        //             });
+        //         }, 1000);
+        //     }
+        // }
+        // 赋值场景值、referrer信息
+        const { scene, referrerInfo, path } = options;
+        // action:(必须)跳转小程序任务动作标识
+        let action = (referrerInfo && referrerInfo.extraData && referrerInfo.extraData.action) || '';
+        // 登陆已经上线保持原有判断逻辑
+        if (scene === 1038 && path === 'pages/intro') {
+            action = 'Login';
+        }
+        // 小程序返回值处理
+        if (scene === 1038 && action) {
+            DoMiniProgramBack[`Do${action}`].call(this, referrerInfo.extraData);
         }
     }
 }
