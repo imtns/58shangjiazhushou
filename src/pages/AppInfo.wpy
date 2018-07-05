@@ -26,7 +26,7 @@
                 <navigator target="miniProgram"
                     open-type="navigate"
                     app-id="wx86c7b0019914401c"
-                    path="/pages/index58/index58?releaseId={{appInfo.releaseId}}"
+                    path="/pages/index58/index58?releaseId={{appInfo.mpid}}"
                     url="/pages/home"
                     version="develop">
                     <view class="qrcode-visit">访问小程序</view>
@@ -46,7 +46,7 @@
                 <navigator 
                     target="miniProgram"
                     open-type="navigate"
-                    app-id="{{appInfo.appId}}"
+                    app-id="{{appInfo.authorizerAppid}}"
                     path="/pages/index/index"
                     url="/pages/home"
                     version="develop">

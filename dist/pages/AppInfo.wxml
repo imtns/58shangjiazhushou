@@ -22,7 +22,7 @@
                 <view class="qrcode-tip">点击保存</view>
                 <view class="qrcode-name">优享小程序码</view>
                 <!-- 访问优享小程序 -->
-                <navigator target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="/pages/index58/index58?releaseId={{appInfo.releaseId}}" url="/pages/home" version="develop">
+                <navigator target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="/pages/index58/index58?releaseId={{appInfo.mpid}}" url="/pages/home" version="develop">
                     <view class="qrcode-visit">访问小程序</view>
                 </navigator>
             </view>
@@ -36,7 +36,7 @@
                 <view class="qrcode-tip">点击保存</view>
                 <view class="qrcode-name">微信小程序码</view>
                 <!-- 访问微信小程序 -->
-                <navigator target="miniProgram" open-type="navigate" app-id="{{appInfo.appId}}" path="/pages/index/index" url="/pages/home" version="develop">
+                <navigator target="miniProgram" open-type="navigate" app-id="{{appInfo.authorizerAppid}}" path="/pages/index/index" url="/pages/home" version="develop">
                     <view class="qrcode-visit">访问小程序</view>
                 </navigator>
             </view>
