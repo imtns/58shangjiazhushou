@@ -10,6 +10,7 @@ export default class extends wepy.app {
     }
     config = {
         pages: [
+            'pages/test',
             'pages/home', // 登陆之后的主页
             'pages/intro', // 没有登陆的介绍页面
             'pages/myMp', // 我的小程序
@@ -47,6 +48,7 @@ export default class extends wepy.app {
         console.log('onlaunch');
     }
     onShow (options) {
+        return;
         const { path } = options;
         console.log(path);
         // const pages = getCurrentPages();

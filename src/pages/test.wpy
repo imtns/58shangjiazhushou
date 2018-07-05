@@ -1,0 +1,17 @@
+<template>
+    <Cropper></Cropper>
+</template>
+
+<script>
+import wepy from 'wepy';
+import Cropper from '../components/Cropper';
+
+export default class Home extends wepy.page {
+    components = {
+        Cropper,
+    }
+}
+</script>
+
+<style lang="scss">
+</style>
