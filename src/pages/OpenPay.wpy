@@ -4,7 +4,7 @@
     <view class="openpay" wx:if="{{!opened}}">
         <view class="openpay-main">
             <!-- 状态图标 -->
-            <image class="openpay-main-icon" src=""/>
+            <image class="openpay-main-icon" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-openinfo.png"/>
             <view class="openpay-main-content">当前微信账号所绑定的手机号，必须与58账</view>
             <view class="openpay-main-content">号绑定的手机号相同</view>
         </view>
@@ -47,7 +47,7 @@
     <!-- 更换收款微信 -->
     <view class="changepay" wx:else>
         <view class="changepay-main">
-            <image class="changepay-main-icon" src=""/>
+            <image class="changepay-main-icon" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-openchange.png"/>
             <view class="changepay-main-content">当前小程序已经开通支付，您可以</view>
             <view class="changepay-main-content">使用买单功能啦</view>
         </view>

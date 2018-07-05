@@ -73,13 +73,13 @@ var Home = function (_wepy$page) {
                 iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-register.png',
                 text: '微信注册信息'
             }, {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-progress.png',
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-pay.png',
                 text: '支付开通'
             }, {
                 iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-advice.png',
                 text: '意见反馈'
             }, {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-progress.png',
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-building.png',
                 text: '暂未开放'
             }]
         }, _this.methods = {
