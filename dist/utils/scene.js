@@ -28,6 +28,8 @@ exports.default = {
             }, 1000);
         }
     },
+
+    // 同镇跳转过来先进入到首页面，初始化当前小程序后到我的小程序页面
     DoToMymp: function DoToMymp(extraData) {
         var extraDataJSON = (typeof extraData === 'undefined' ? 'undefined' : _typeof(extraData)) === 'object' ? _extends({}, extraData) : JSON.parse(extraData);
         if (extraDataJSON.ppu !== undefined) {

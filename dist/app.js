@@ -125,10 +125,7 @@ var _class = function (_wepy$app) {
 
             // action:通过fromAppId和scene返回当前小程序处理
 
-            console.log('action', CALLBACKAPPS[fromAppId]);
-            console.log('scene', scene);
             var action = scene === 1038 || scene === '1038' ? CALLBACKAPPS[fromAppId] : '';
-            console.log('action', action);
             // 登陆已经上线保持原有判断逻辑
             // 条件1：scene：1038从另一个小程序返回
             if (scene === 1038 && path === 'pages/intro' && fromAppId === 'wx2a9c6eeb1c44a284') {
