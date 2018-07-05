@@ -28,8 +28,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 // 回调小程序类型
 var CALLBACKAPPS = {
-    wx2a9c6eeb1c44a284: 'Login', // 登陆小程序
-    wx67b75e86c9daef45: 'OpenPay' // 开通支付小程序
+    wx2a9c6eeb1c44a284: 'Login', // 从58验证
+    wx67b75e86c9daef45: 'OpenPay', // 开通支付小程序
+    wxf03e52adc4b13448: 'ToMymp' // 从同镇小程序个人中心-> 管理我的小程序
 };
 
 var _class = function (_wepy$app) {
@@ -83,7 +84,7 @@ var _class = function (_wepy$app) {
         value: function onLaunch() {
             console.log('onlainch');
             // 刘强起的ppu.测试使用，上线记得删除
-            _wepy2.default.setStorageSync('ppu', 'UID=48917864286479&UN=zf3e85&TT=d81202a65af05aa8cb1ea5f6d92254d1&PBODY=JhH_NY6a8n2PvW6ZgBv_B1CwuIJH84mNnuJt4PxcpEQDl5QPvba4IdoMpCpk_GxpEfRtc9RPAvrK6G4o9J3zhKHmVv33iBDKO8EVnmRq6yp2ETgstCBISr9016TKao2yDyUeZG32vv_2yuyG01uAnqTlUL1vaRpLJ3fRd9NqySA&VER=1');
+            // wepy.setStorageSync('ppu', 'UID=48917864286479&UN=zf3e85&TT=d81202a65af05aa8cb1ea5f6d92254d1&PBODY=JhH_NY6a8n2PvW6ZgBv_B1CwuIJH84mNnuJt4PxcpEQDl5QPvba4IdoMpCpk_GxpEfRtc9RPAvrK6G4o9J3zhKHmVv33iBDKO8EVnmRq6yp2ETgstCBISr9016TKao2yDyUeZG32vv_2yuyG01uAnqTlUL1vaRpLJ3fRd9NqySA&VER=1');
         }
     }, {
         key: 'onShow',
@@ -121,9 +122,13 @@ var _class = function (_wepy$app) {
                 referrerInfo = _options$referrerInfo === undefined ? {} : _options$referrerInfo,
                 path = options.path;
             var fromAppId = referrerInfo.appId;
+
             // action:通过fromAppId和scene返回当前小程序处理
 
-            var action = scene === 1038 ? CALLBACKAPPS[fromAppId] : '';
+            console.log('action', CALLBACKAPPS[fromAppId]);
+            console.log('scene', scene);
+            var action = scene === 1038 || scene === '1038' ? CALLBACKAPPS[fromAppId] : '';
+            console.log('action', action);
             // 登陆已经上线保持原有判断逻辑
             // 条件1：scene：1038从另一个小程序返回
             if (scene === 1038 && path === 'pages/intro' && fromAppId === 'wx2a9c6eeb1c44a284') {

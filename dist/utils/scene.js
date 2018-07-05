@@ -28,6 +28,19 @@ exports.default = {
             }, 1000);
         }
     },
+    DoToMymp: function DoToMymp(extraData) {
+        var extraDataJSON = (typeof extraData === 'undefined' ? 'undefined' : _typeof(extraData)) === 'object' ? _extends({}, extraData) : JSON.parse(extraData);
+        if (extraDataJSON.ppu !== undefined) {
+            // 如果获取ppu成功
+            console.log('\u83B7\u53D6PPU\u6210\u529F\uFF01 ' + extraDataJSON.ppu);
+            _wepy2.default.setStorageSync('ppu', extraDataJSON.ppu);
+            setTimeout(function () {
+                _wepy2.default.navigateTo({
+                    url: '/pages/myMp'
+                });
+            }, 1000);
+        }
+    },
     DoOpenPay: function DoOpenPay(extraData) {
         var code = extraData.code;
         // 开通支付失败
