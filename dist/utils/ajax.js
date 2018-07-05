@@ -18,11 +18,21 @@ var http = function http(method) {
     return new Promise(function (resolve, reject) {
         var url = props[0],
             data = props[1],
-            callback = props[2];
+            callback = props[2],
+            loadingControl = props[3];
 
         if (typeof data === 'function') {
             callback = data;
             data = {};
+        }
+        // loadingControl为控制loading的时间和文案的obj
+        // loadingTitle标示loading的文案
+        // delay标示 loading关闭时间 需要在请求成功后再次做延迟。
+        var loadingTitle = '';
+        var delay = 0;
+        if (loadingControl) {
+            loadingTitle = loadingControl.loadingTitle;
+            delay = loadingControl.delay;
         }
         // test="test"字段是为切换测试和线上环境的，如果提交审核和发布，将test改为''，标识切换为线上环境
         var sendData = Object.assign({}, data, { test: "test" });
@@ -30,7 +40,7 @@ var http = function http(method) {
         var ppu = wx.getStorageSync('ppu');
         console.log('请求接口', url);
         console.log('请求参数', sendData);
-        wx.showLoading && wx.showLoading({ title: '加载中', mask: true });
+        wx.showLoading && wx.showLoading({ title: loadingTitle || '加载中', mask: true });
         return wx.request({
             url: host + url + (~url.indexOf('?') ? '' : '?') + (+new Date()).toString(36).substr(3),
             data: sendData,
@@ -71,7 +81,13 @@ var http = function http(method) {
                 callback && callback(e);
             },
             complete: function complete() {
-                wx.hideLoading && wx.hideLoading();
+                if (delay) {
+                    setTimeout(function () {
+                        wx.hideLoading && wx.hideLoading();
+                    }, delay);
+                } else {
+                    wx.hideLoading && wx.hideLoading();
+                }
             }
         });
     });

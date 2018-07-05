@@ -47,7 +47,8 @@ var Index = function (_wepy$page) {
                     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code7.png',
                     deadLine: '2018-09-98'
                 }
-            }
+            },
+            shareImage: ''
         }, _this.config = {
             navigationBarTitleText: '我的小程序'
         }, _this.methods = {
@@ -84,7 +85,7 @@ var Index = function (_wepy$page) {
                 // 分享会先授权
 
                 if (!userInfo) {
-                    (0, _utils.alert)('您未授权，将无法转发小程序二维码。');
+                    (0, _utils.alert)('您未授权，商家助手不能为您生成分享图片哦', '提示');
                     return;
                 }
                 var nickName = userInfo.nickName;
@@ -189,27 +190,39 @@ var Index = function (_wepy$page) {
         key: 'getMpShareImg',
         value: function () {
             var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(id, nickName) {
-                var subData, _ref6, data;
+                var subData, delay, _ref6, data, url;
 
                 return regeneratorRuntime.wrap(function _callee3$(_context3) {
                     while (1) {
                         switch (_context3.prev = _context3.next) {
                             case 0:
-                                console.log('去获取拉', id, nickName);
                                 subData = {
-                                    id: id,
+                                    mpId: id,
                                     nickName: nickName
                                 };
+                                // 延迟时间，让用户感知loading文案，故意为之。
+
+                                delay = 1500;
                                 _context3.next = 4;
-                                return (0, _ajax.post)('/mplogic/mymplist', subData);
+                                return (0, _ajax.post)('/mplogic/share', subData, '', {
+                                    loadingTitle: '图片生成...',
+                                    delay: delay
+                                });
 
                             case 4:
                                 _ref6 = _context3.sent;
                                 data = _ref6.data;
+                                url = 'http://pic1.58cdn.com.cn/' + data;
 
+                                setTimeout(function () {
+                                    _wepy2.default.previewImage({
+                                        current: url, // 当前显示图片的http链接
+                                        urls: [url] // 需要预览的图片http链接列表
+                                    });
+                                }, delay);
                                 console.log(data);
 
-                            case 7:
+                            case 9:
                             case 'end':
                                 return _context3.stop();
                         }

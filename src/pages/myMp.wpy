@@ -1,5 +1,8 @@
 <template>
     <view class="myMP">
+        <view class="shareContainer" wx:if="{{shareImage}}">
+            <image class="img" src="{{shareImage}}" mode="{{scaleToFill}}"></image>
+        </view>
         <view class="current">
             <view class="tips">
                 <view>当前小程序</view>
@@ -13,7 +16,7 @@
                     <view class="details">
                         <view class="title"> 
                             <view class="name">{{business.current.nickName}}</view>
-                            <button class="share" plain="{{true}}" open-type="getUserInfo" bindgetuserinfo="onReadytoShare" data-id="{{business.current.id}}">分享</button>
+                            <button wx:if="{{business.current.mpStatus == 2}}" class="share" plain="{{true}}" open-type="getUserInfo" bindgetuserinfo="onReadytoShare" data-id="{{business.current.id}}">分享</button>
                         </view>
                         <view class="icons">
                             <image class="icon" mode="{{aspectFit}}" src="{{ business.current.app_type === 1 || business.current.app_type === 2 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang_grey.png'}}"></image>
@@ -43,6 +46,7 @@
                         <view class="details">
                             <view class="title"> 
                                 <view class="name">{{item.nickName}}</view>
+                                <button wx:if="{{item.mpStatus == 2}}" class="share" plain="{{true}}" open-type="getUserInfo" bindgetuserinfo="onReadytoShare" data-id="{{item.id}}">分享</button>
                             </view>
                             <view class="icons">
                                 <image  class="icon" mode="{{aspectFit}}" src="{{ item.app_type === 1 || item.app_type === 2 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang_grey.png'}}"></image>
@@ -77,6 +81,7 @@ export default class Index extends wepy.page {
                 deadLine: '2018-09-98',
             },
         },
+        shareImage: '',
     }
     config = {
         navigationBarTitleText: '我的小程序',
@@ -111,7 +116,7 @@ export default class Index extends wepy.page {
             const { userInfo } = e.detail;
             // 分享会先授权
             if (!userInfo) {
-                alert('您未授权，将无法转发小程序二维码。');
+                alert('您未授权，商家助手不能为您生成分享图片哦', '提示');
                 return;
             }
             const { nickName } = userInfo;
@@ -152,12 +157,23 @@ export default class Index extends wepy.page {
         console.log('onload');
     }
     async getMpShareImg(id, nickName) {
-        console.log('去获取拉', id, nickName);
         const subData = {
-            id,
+            mpId: id,
             nickName,
         };
-        const { data } = await post('/mplogic/mymplist', subData);
+        // 延迟时间，让用户感知loading文案，故意为之。
+        const delay = 1500;
+        const { data } = await post('/mplogic/share', subData, '', {
+            loadingTitle: '图片生成...',
+            delay,
+        });
+        const url = `http://pic1.58cdn.com.cn/${data}`;
+        setTimeout(() => {
+            wepy.previewImage({
+                current: url, // 当前显示图片的http链接
+                urls: [url], // 需要预览的图片http链接列表
+            });
+        }, delay);
         console.log(data);
     }
 }
@@ -257,6 +273,24 @@ export default class Index extends wepy.page {
                     flex:1;
                     text-align: center;
                 }
+            }
+        }
+        .shareContainer{
+            position: absolute;
+            background: #999999;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            left: 0;
+            right: 0;
+            .img{
+                position: absolute;
+                width: 628rpx;
+                height: 1110rpx;
+                left: 50%;
+                top: 50%;
+                transform: translate3d(-50%, -50%, 0);
+                display: block;
             }
         }
     }
