@@ -7,6 +7,10 @@ module.exports = {
   env: {
     browser: true
   },
+  globals: {
+    wx: true,
+    Page: true
+  },
   extends: 'airbnb-base',
   plugins: [
     'html'

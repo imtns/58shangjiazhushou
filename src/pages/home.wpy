@@ -301,10 +301,10 @@ export default class Home extends wepy.page {
     }
     checkBeforeJump (index) {
         console.log('this.business.selected.', this.business.selected);
-        if (!this.business.mpCount) {
-            alert('您还未购买小程序，请登录e.58.com进行购买', '提示');
-            return;
-        }
+        // if (!this.business.mpCount) {
+        //     alert('您还未购买小程序，请登录e.58.com进行购买', '提示');
+        //     return;
+        // }
         switch (index) {
             case 0:
                 wepy.navigateTo({
@@ -343,8 +343,11 @@ export default class Home extends wepy.page {
                 });
                 break;
             case 5:
+                // wepy.navigateTo({
+                //     url: 'feedback',
+                // });
                 wepy.navigateTo({
-                    url: 'feedback',
+                    url: 'purchase',
                 });
                 break;
             default:
