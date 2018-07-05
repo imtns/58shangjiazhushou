@@ -44,6 +44,7 @@ exports.default = {
         }
     },
     DoOpenPay: function DoOpenPay(extraData) {
+        if (extraData) return;
         var code = extraData.code;
         // 开通支付失败
         // 返回商家助手小程序首页

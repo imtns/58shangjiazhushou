@@ -27,6 +27,7 @@ export default {
         }
     },
     DoOpenPay(extraData) {
+        if (extraData) return;
         const { code } = extraData;
         // 开通支付失败
         // 返回商家助手小程序首页
