@@ -1,6 +1,6 @@
 <template>
     <view class="wx-content-info" v-if="imageSrc">
-        <view v-if="isShowImg" class="wx-corpper" style="width:{{cropperInitW}}rpx;height:{{cropperInitH}}rpx;background:#000;display:none;">
+        <view v-if="isShowImg" class="wx-corpper" style="width:{{cropperInitW}}rpx;height:{{cropperInitH}}rpx;background:#000;">
             <view class="wx-corpper-content" style="width:{{cropperW}}rpx;height:{{cropperH}}rpx;left:{{cropperL}}rpx;top:{{cropperT}}rpx">
                 <image src="{{ imageSrc }}" style="width:{{cropperW}}rpx;height:{{cropperH}}rpx"></image>
                 <view class="wx-corpper-crop-box" bindtouchstart="contentStartMove" bindtouchmove="contentMoveing" style="width:{{cutW}}rpx;height:{{cutH}}rpx;left:{{cutL}}rpx;top:{{cutT}}rpx">
@@ -23,8 +23,7 @@
                 </view>
             </view>
         </view>
-        <canvas canvas-id="myCanvas" style="position:absolute;border: 1px solid red; width:{{qualityWidth}}px;height:{{qualityWidth/innerAspectRadio}}px;"></canvas>
-        <image src="{{ imageSrc }}" style="width: 500rpx; height: 500rpx; position: fixed; bottom: 120rpx;"></image>
+        <canvas canvas-id="myCanvas" style="position:absolute;border: 1px solid red; width:{{qualityWidth}}px;height:{{qualityWidth/innerAspectRadio}}px;top:-9999px;right:-9999px;"></canvas>
         <view class="options">
             <button type="primary" @tap="getImageInfo"> 生成图片 </button>
             <button type="primary" @tap="getImage"> 选择图片 </button>
@@ -55,7 +54,7 @@ let initDragCutW = 0;
 let initDragCutL = 0;
 let initDragCutH = 0;
 let initDragCutT = 0;
-const qualityWidth = 300;
+const qualityWidth = 1080;
 let innerAspectRadio = 1;
 // 移动时 手势位移与 实际元素位移的比
 const dragScaleP = 2;
@@ -271,22 +270,22 @@ export default class Cropper extends wepy.component {
                 qualityWidth,
                 qualityWidth / innerAspectRadio,
             );
-            ctx.draw();
-            ctx.save();
-            wx.canvasToTempFilePath({
-                x: 0,
-                y: 0,
-                destWidth: qualityWidth,
-                destHeight: qualityWidth / innerAspectRadio,
-                quality: 0.5,
-                canvasId: 'myCanvas',
-                success(res) {
-                    wx.hideLoading();
-                    // 成功获得地址的地方
-                    console.log(res.tempFilePath);
-                    that.imageSrc = res.tempFilePath;
-                    that.$apply();
-                },
+            ctx.draw(false, () => {
+                wx.canvasToTempFilePath({
+                    x: 0,
+                    y: 0,
+                    destWidth: qualityWidth,
+                    destHeight: qualityWidth / innerAspectRadio,
+                    quality: 0.5,
+                    canvasId: 'myCanvas',
+                    success(res) {
+                        wx.hideLoading();
+                        // 成功获得地址的地方
+                        console.log(res.tempFilePath);
+                        that.imageSrc = res.tempFilePath;
+                        that.$apply();
+                    },
+                });
             });
         },
 
@@ -297,14 +296,6 @@ export default class Cropper extends wepy.component {
             wx.showLoading({
                 title: '图片生成中...',
             });
-            // 将图片写入画布
-            ctx.drawImage(
-                that.imageSrc,
-                0,
-                0,
-                qualityWidth,
-                qualityWidth / innerAspectRadio,
-            );
             ctx.draw(true, () => {
                 // 获取画布要裁剪的位置和宽度   均为百分比 * 画布中图片的宽度    保证了在微信小程序中裁剪的图片模糊
                 // 位置不对的问题 canvasT = (that.cutT / that.cropperH) * (that.imageH / pixelRatio)
