@@ -26,6 +26,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 // import { alert } from './utils';
 
 
+// 回调小程序类型
+var CALLBACKAPPS = {
+    wx2a9c6eeb1c44a284: 'Login', // 登陆小程序
+    wx67b75e86c9daef45: 'OpenPay' // 开通支付小程序
+};
+
 var _class = function (_wepy$app) {
     _inherits(_class, _wepy$app);
 
@@ -108,21 +114,23 @@ var _class = function (_wepy$app) {
             //         }, 1000);
             //     }
             // }
+            //
             // 赋值场景值、referrer信息
             var scene = options.scene,
-                referrerInfo = options.referrerInfo,
+                _options$referrerInfo = options.referrerInfo,
+                referrerInfo = _options$referrerInfo === undefined ? {} : _options$referrerInfo,
                 path = options.path;
-            // action:(必须)跳转小程序任务动作标识
+            var fromAppId = referrerInfo.appId;
+            // action:通过fromAppId和scene返回当前小程序处理
 
-            var action = referrerInfo && referrerInfo.extraData && referrerInfo.extraData.action || '';
+            var action = scene === 1038 ? CALLBACKAPPS[fromAppId] : '';
             // 登陆已经上线保持原有判断逻辑
-            if (scene === 1038 && path === 'pages/intro' && referrerInfo.appId === 'wx2a9c6eeb1c44a284') {
+            // 条件1：scene：1038从另一个小程序返回
+            if (scene === 1038 && path === 'pages/intro' && fromAppId === 'wx2a9c6eeb1c44a284') {
                 action = 'Login';
             }
-            // 小程序返回值处理
-            if (scene === 1038 && action) {
-                _scene2.default['Do' + action].call(this, referrerInfo.extraData);
-            }
+            // 从小程序返回场景处理
+            action && _scene2.default['Do' + action].call(this, referrerInfo.extraData);
         }
     }]);
 

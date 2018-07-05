@@ -19,7 +19,7 @@
         <!-- 小程序跳转时低版本不提供url会报错 -->
         <navigator open-type="navigate"
             target="miniProgram"
-            path="/pages/payAuthorize/payAuthorize?param={{userid}}" 
+            path="/pages/payAuthorize/payAuthorize?param={{'45797966958100'||userid}}"
             url="/pages/payAuthorize/payAuthorize"  
             app-id="{{payAppId}}"
             version="develop">
