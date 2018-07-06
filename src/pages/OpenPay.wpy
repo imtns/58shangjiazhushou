@@ -110,6 +110,8 @@ export default class OpenPay extends wepy.page {
             toast(e);
             return;
         }
+        console.log('userid', res.userid);
+        this.userid = res.userid;
         this.opened = res.protocol === 1;
     }
 }

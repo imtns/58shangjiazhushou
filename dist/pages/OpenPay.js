@@ -120,9 +120,11 @@ var OpenPay = function (_wepy$page) {
                                 return _context2.abrupt('return');
 
                             case 9:
+                                console.log('userid', res.userid);
+                                this.userid = res.userid;
                                 this.opened = res.protocol === 1;
 
-                            case 10:
+                            case 12:
                             case 'end':
                                 return _context2.stop();
                         }
