@@ -84,7 +84,10 @@ var _class = function (_wepy$app) {
         value: function onLaunch() {
             console.log('onlainch');
             // 刘强起的ppu.测试使用，上线记得删除
-            // wepy.setStorageSync('ppu', 'UID=48917864286479&UN=zf3e85&TT=d81202a65af05aa8cb1ea5f6d92254d1&PBODY=JhH_NY6a8n2PvW6ZgBv_B1CwuIJH84mNnuJt4PxcpEQDl5QPvba4IdoMpCpk_GxpEfRtc9RPAvrK6G4o9J3zhKHmVv33iBDKO8EVnmRq6yp2ETgstCBISr9016TKao2yDyUeZG32vv_2yuyG01uAnqTlUL1vaRpLJ3fRd9NqySA&VER=1');
+            // wepy.setStorageSync('ppu', 'UID=48917864286479&UN=zf3e85
+            // &TT=d81202a65af05aa8cb1ea5f6d92254d1&PBODY=JhH_NY6a8n2PvW6ZgBv_B1CwuIJH84mNn
+            // uJt4PxcpEQDl5QPvba4IdoMpCpk_GxpEfRtc9RPAvrK6G4o9J3zhKHmVv33iBDKO8EVnmRq6yp2ETg
+            // stCBISr9016TKao2yDyUeZG32vv_2yuyG01uAnqTlUL1vaRpLJ3fRd9NqySA&VER=1');
         }
     }, {
         key: 'onShow',
@@ -125,6 +128,7 @@ var _class = function (_wepy$app) {
 
             // action:通过fromAppId和scene返回当前小程序处理
 
+            console.log('referrerInfo', referrerInfo);
             var action = scene === 1038 || scene === '1038' ? CALLBACKAPPS[fromAppId] : '';
             // 登陆已经上线保持原有判断逻辑
             // 条件1：scene：1038从另一个小程序返回
