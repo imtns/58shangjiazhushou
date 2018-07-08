@@ -14,6 +14,7 @@
                     <image
                     wx:if="{{ curTab === 'image' || 'video' }}"
                     class="item"
+                    :class="{ 'video': curTab === 'video' }"
                     mode="aspectFill"
                     src="{{ item.resourceUrl }}"
                     @tap="previewResource({{ item.previewUrl }})"></image>
@@ -361,6 +362,7 @@ $workHeight: 200rpx;
 
         .work-box {
             position: relative;
+            margin: 0 30rpx 30rpx 0;
 
             .work-mask {
                 position: absolute;
@@ -388,11 +390,24 @@ $workHeight: 200rpx;
         }
 
         .item {
-            margin-bottom: 30rpx;
-            margin-right: 30rpx;
             width: $workWidth;
             height: $workHeight;
             background-color: #000000;
+
+            &.video::after {
+                content: ' ';
+                display: block;
+                background: url('/resource-video-play.png');
+                background-size: 60rpx 60rpx;
+                width: 60rpx;
+                height: 60rpx;
+                margin: auto;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
         }
     }
 }
