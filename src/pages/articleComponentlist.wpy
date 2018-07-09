@@ -1,0 +1,349 @@
+<template>
+    <view class="container">
+        <view class="banner">
+            <image class="banner-icon" src="./assets/banner-icon.png"></image>
+        </view>
+        <view class="items-body">
+            <view class="article-header">
+                <view class="line"></view>
+                <view class="article-header-text">阳台装修</view>
+                <view class="line"></view>
+            </view>
+            <scroll-view class="article-list {{editStatus ? 'edit' : ''}}" style="height:{{height}};" scroll-y="true">
+                <view wx:for="{{listData}}" wx:key="index" class="article-item {{item.choseStatu ? 'selected' : ''}}" data-item="{{item}}" bindtap="editChose">
+                    <view class="article-title">{{item.title}}</view>
+                    <view class="article-detail">
+                        <view class="article-detail-flex">
+                            <view class="article-base">作者：</view>
+                            <view class="base-text base-over">{{item.author || '未知'}}</view>
+                        </view>
+                        <view class="article-detail-flex">
+                            <view class="article-base">来源：</view>
+                            <view class="base-text base-over">{{item.source || '未知'}}</view>
+                        </view>
+                        <view class="article-detail-flex" wx:if="{{item.updateTime!=nul}}">
+                            <view class="article-base">时间：</view>
+                            <view class="base-text">{{item.updateTime}}</view>
+                        </view>
+                    </view>
+                    <view class="article-preview-con">{{item.intro}}</view>
+                </view>
+                <view class="block"></view>
+            </scroll-view>
+        </view>
+    </view>
+    <view class="list-edit" wx:if="{{!editStatus}}">
+        <view class="btn edit-btn" bindtap="edit">编辑</view>
+        <view class="btn add-btn" bindtap="addArticleGroup">添加文章</view>
+    </view>
+    <view class="list-edit" wx:if="{{editStatus}}">
+        <view class="btn edit-btn" bindtap="cancle">取消</view>
+        <view class="btn add-btn" bindtap="toDelete">删除</view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { alert } from '../utils';
+import { get } from '../utils/ajax';
+
+export default class ArticleComponentList extends wepy.page {
+    config = {
+        navigationBarTitleText: '文章管理',
+        disableScroll: true,
+    }
+    data = {
+        height: '',
+        editStatus: false,
+        listData: [
+            {
+                articleId: '1012244218699808768',
+                author: '',
+                cover: '',
+                createTime: '2018-06-28 16:00:02',
+                group: '983993878128848896',
+                id: '1012244218737557504',
+                intro: '阳台装修几点回家开发接口的你姐夫大亏阳台装修几点回家开发接口的你姐夫大亏阳台装修几点回家开发接口的你姐夫大亏阳台装修几点回家开发接口的你姐夫大亏阳台装修几点回家开发接口的你姐夫大亏阳台装修几点回家开发接口的你姐夫大亏阳台装修几点回家开发接口的你姐夫大亏',
+                source: '',
+                title: '专业是我们的代名词-保洁服务',
+                updateTime: null,
+                userid: '31755938744583',
+                choseStatu: false,
+            },
+            {
+                articleId: '1012244218699808769',
+                author: '',
+                cover: '',
+                createTime: '2018-06-28 16:00:02',
+                group: '983993878128848896',
+                id: '1012244218737557505',
+                intro: '阳台装修几点回家开发接口的你姐夫大亏阳台装修几点回家开发接口的你姐夫大亏阳台装修几点回家开发接口的你姐夫大亏阳台装修几点回家开发接口的你姐夫大亏阳台装修几点回家开发接口的你姐夫大亏阳台装修几点回家开发接口的你姐夫大亏阳台装修几点回家开发接口的你姐夫大亏',
+                source: '',
+                title: '专业是我们的代名词-保洁服务',
+                updateTime: null,
+                userid: '31755938744583',
+                choseStatu: false,
+            },
+        ],
+        delList: [],
+    }
+    onLoad(option) {
+        const { id = '' } = option;
+        this.id = id;
+        this.$apply(); 
+        try {
+            const { windowHeight } = wepy.getSystemInfoSync();
+            const height = windowHeight;
+            this.height = `${(height * 2) - (88 * 2) - (40 * 2) - 96}rpx`;
+            this.loadList();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    loadList() {
+        console.log('loadlist');
+    }
+    editChose(e) {
+        if (this.data.editStatus) {
+            const selArr = this.delList;
+            const dataList = this.listData;
+            const { id } = e.currentTarget.dataset.item;
+            const index = this.delList.length === 0 ? -2 : this.delList.indexOf(id);
+            if (index < 0) {
+                selArr.push(id);
+                dataList.forEach(item => {
+                    if (item.id === id) {
+                        Object.assign(item, {
+                            choseStatu: true,
+                        });
+                    }
+                });
+            } else {
+                dataList.forEach(item => {
+                    if (item.id === id) {
+                        Object.assign(item, {
+                            choseStatu: false,
+                        });
+                    }
+                });
+                selArr.splice(index, 1);
+            }
+            this.listData = dataList;
+            this.delList = selArr;
+            this.$apply();
+        }
+    }
+    edit() {
+        this.editStatus = true;
+        this.$apply();
+    }
+    async toDelete() {
+        const { delList } = this;
+        if (delList.length === 0) {
+            alert('请选择要删除的文章');
+            return;
+        }
+        const ids = delList.join();
+        await get('/businessArticle/delete/0', {
+            ids: ids,
+        });
+        alert('删除成功！');
+        this.loadList();
+        this.editStatus = false;
+        this.$apply();
+    }
+    cancle() {
+        const dataList = this.listData;
+        dataList.forEach(item => {
+            Object.assign(item, {
+                choseStatu: false,
+            });
+        });
+        this.editStatus = false;
+        this.listData = dataList;
+        this.$apply();
+    }
+    addArticleGroup() {
+        wepy.navigateTo({
+            url: `articleGroup?id=${this.id}`,
+        });
+    }
+}
+</script>
+
+<style lang="scss">
+    page{
+        position:relative;
+        .list-edit{
+            position:fixed;
+            left:0;
+            bottom:0;
+            width:100%;
+            height:102rpx;
+            line-height:102rpx;
+            text-align:center;
+            display:flex;
+            .btn{
+                flex:1;
+                background:#fff;
+                color: #4E88FF;
+                font-size: 34rpx;
+                letter-spacing: 0.51px;
+                font-family: PingFangSC-Regular;
+            }
+            .btn.add-btn{
+                background:#4E88FF;
+                color:#fff;
+            }
+        }
+    }
+    .container{
+        width:100%;
+        height:100%;
+        background:#f6f6f6;
+        .banner{
+            width:100%;
+            height:170rpx;
+            background:url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/article-banner.png');
+            background-size:100% 100%;
+            position:relative;
+            .banner-icon{
+                width:49rpx;
+                height:52rpx;
+                position:absolute;
+                left:50%;
+                margin-left:-20rpx;
+                bottom:45rpx;
+                z-index:2;
+            }
+        }
+        .items-body{
+            // padding:0 20rpx;
+            .article-header{
+                margin:0 20rpx;
+                width:710rpx;
+                height:100rpx;
+                background: #FFFFFF;
+                box-shadow: 2px 6px 6px 0 rgba(213,219,255,0.50);
+                border-radius: 8rpx;
+                position:relative;
+                top:-50rpx;
+                z-index:1;
+                text-align:center;
+                display:flex;
+                justify-content:center;
+                align-items:center;
+                line-height:100rpx;
+                .line{
+                    width:50rpx;
+                    height:4rpx;
+                    background:#1F499E;
+                }
+                .article-header-text{
+                    box-sizing:border-box;
+                    max-width:500rpx;
+                    margin:0 30rpx;
+                    white-space:nowrap;
+                    overflow:hidden;
+                    text-overflow:ellipsis;
+                    font-family: PingFangSC-Medium;
+                    font-size: 36rpx;
+                    color: #1F499E;
+                    letter-spacing: 0.54rpx;
+                    position:relative;
+                }
+            }
+            .article-list{
+                position:relative;
+                top:-30rpx;
+            }
+            .article-item{
+                margin:0 20rpx 20rpx;
+                width:710rpx;
+                background: #FFFFFF;
+                box-shadow: 2px 6px 6px 0 rgba(213,219,255,0.30);
+                border-radius: 8rpx;
+                padding:30rpx 20rpx;
+                box-sizing:border-box;
+                .article-title{
+                    font-family: PingFangSC-Medium;
+                    font-size: 32rpx;
+                    color: #333333;
+                    letter-spacing: 0.48rpx;
+                    width:670rpx;
+                    white-space:nowrap;
+                    overflow:hidden;
+                    text-overflow:ellipsis;
+                }
+                .article-detail{
+                    width:100%;
+                    border-bottom:1rpx solid #f3f3f3;
+                    .article-detail-flex{
+                        display:inline-block;
+                        margin-right:10rpx;
+                        line-height:50rpx;
+                        .article-base,.base-text{
+                            float:left;
+                            font-family: PingFangSC-Regular;
+                            font-size: 26rpx;
+                            letter-spacing: 0;
+                        }
+                        .article-base{
+                            color: #666666;
+                        }
+                        .base-text{
+                            color: #3F3F3F;
+                        }
+                        .base-over.base-text{
+                            max-width:156rpx;
+                            white-space:nowrap;
+                            overflow:hidden;
+                            text-overflow:ellipsis;
+                        }
+                    }
+                }
+                .article-preview-con{
+                    max-width:670rpx;
+                    width:670px;
+                    height:90px;
+                    line-height:30px;
+                    display:flex;
+                    line-clamp: 3;
+                    flex-direction: column;
+                    overflow:hidden;
+                    text-overflow:ellipsis;
+                    font-family: PingFangSC-Regular;
+                    font-size: 30rpx;
+                    color: #666666;
+                    letter-spacing: 0;
+                }
+            }
+        }
+        .edit .article-item{
+            position:relative;
+            left:100rpx;
+            &::before{
+                width:40rpx;
+                height:40rpx;
+                content: '';
+                position:absolute;
+                left:-80rpx;
+                top:50%;
+                margin-top:-20rpx;
+                background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png) no-repeat;
+                background-size:40rpx 40rpx;
+            }
+        }
+        .edit .selected.article-item{
+            &::before{
+                background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/selected-icon.png) no-repeat;
+                background-size:40rpx 40rpx;
+            }
+        }
+        .block{
+            width:100%;
+            height:102rpx;
+        }
+    }
+</style>
