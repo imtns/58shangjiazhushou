@@ -50,7 +50,6 @@ var AppEdit = function (_wepy$page) {
         }
 
         return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = AppEdit.__proto__ || Object.getPrototypeOf(AppEdit)).call.apply(_ref, [this].concat(args))), _this), _this.config = {
-            disableScroll: true,
             navigationBarTitleText: '小程序编辑'
         }, _this.data = {
             logoUrl: '',
@@ -63,7 +62,8 @@ var AppEdit = function (_wepy$page) {
                 city: '1',
                 province: '5001'
             },
-            tempLogo: ''
+            tempLogo: '',
+            cateChooice: []
         }, _this.computed = {
             enableSave: function enableSave() {
                 return !!(this.form.nickName && this.form.headImg && this.form.telphone && this.form.city && this.form.address);
@@ -301,7 +301,10 @@ var AppEdit = function (_wepy$page) {
                                         city: form.city, // 城市
                                         address: form.address, // 地址
                                         lat: form.addressLatitude, // 纬度
-                                        lnt: form.addressLongitude // 经度
+                                        lnt: form.addressLongitude, // 经度
+                                        cate1: this.cateChooice[0].cateId,
+                                        cate2: this.cateChooice[1].cateId,
+                                        cate3: this.cateChooice[2].cateId
                                     };
 
                                     console.log(sendData);
@@ -705,6 +708,11 @@ var AppEdit = function (_wepy$page) {
 
             return onLoad;
         }()
+    }, {
+        key: 'onShow',
+        value: function onShow() {
+            this.cateChooice = this.$parent.globalData && this.$parent.globalData.cateChooice ? this.$parent.globalData.cateChooice : [];
+        }
     }]);
 
     return AppEdit;

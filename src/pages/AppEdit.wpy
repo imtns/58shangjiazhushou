@@ -20,6 +20,22 @@
                 <text class="appedit-form-label">联系电话</text>
                 <input class="appedit-form-input" maxlength='11' type="number" @input="setMobile" placeholder="请输入" placeholder-class="appedit-form-placeholder" value="{{form.telphone}}"/>
             </view>
+            <navigator url="/pages/CateSelector">
+                <view class="appedit-content-list-item">
+                    
+                    <text class="appedit-form-label">所属行业</text>
+                    <view class="appedit-form-cate">
+                        <block wx:if="{{cateChooice && cateChooice.length>0}}">
+                            <repeat for="{{cateChooice}}" key="cateId">{{item.name+' '}}</repeat>
+                        </block>
+                        <block wx:else>
+                            请选择
+                        </block>
+                    </view>
+                    <text class="appedit-form-arrow"></text>
+                
+                </view>
+             </navigator>
             <picker mode="multiSelector" @change="setCity" @columnchange="bindCity" range="{{areas}}" range-key="localName" value="{{selCityIndex}}">
                 <view class="appedit-content-list-item">
                     <text class="appedit-form-label">小程序城市</text>
@@ -62,7 +78,6 @@ const saveAppApi = '/mplogic/modifympinfo';
 
 export default class AppEdit extends wepy.page {
     config = {
-        disableScroll: true,
         navigationBarTitleText: '小程序编辑',
     }
     data = {
@@ -77,6 +92,7 @@ export default class AppEdit extends wepy.page {
             province: '5001',
         },
         tempLogo: '',
+        cateChooice: [],
     }
     computed = {
         enableSave () {
@@ -316,6 +332,9 @@ export default class AppEdit extends wepy.page {
                 address: form.address, // 地址
                 lat: form.addressLatitude, // 纬度
                 lnt: form.addressLongitude, // 经度
+                cate1: this.cateChooice[0].cateId,
+                cate2: this.cateChooice[1].cateId,
+                cate3: this.cateChooice[2].cateId,
             };
             console.log(sendData);
             const [e, res] = await get(saveAppApi, sendData);
@@ -337,6 +356,10 @@ export default class AppEdit extends wepy.page {
         await this.getLocation();
         await this.getProvinces();
         this.defaultSelCityIndex();
+    }
+    onShow () {
+        this.cateChooice = (this.$parent.globalData && this.$parent.globalData.cateChooice) ?
+            this.$parent.globalData.cateChooice : [];
     }
 }
 </script>
@@ -414,10 +437,21 @@ export default class AppEdit extends wepy.page {
             .appedit-form-input,
             .appedit-form-picker,
             .appedit-form-appname,
+            .appedit-form-cate,
             .appedit-form-picker-placeholder {
                 margin-left: 144rpx;
                 display: inline-block;
                 width: 396rpx;
+                font-family: PingFangSC-Regular;
+                font-size: 30rpx;
+                color: #333333;
+                text-align: right;
+                vertical-align: middle;
+            }
+            .appedit-form-cate {
+                margin-left: 144rpx;
+                display: inline-block;
+                // width: 396rpx;
                 font-family: PingFangSC-Regular;
                 font-size: 30rpx;
                 color: #333333;

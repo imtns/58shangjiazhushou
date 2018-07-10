@@ -83,10 +83,21 @@
 .appedit-container .appedit-content-list .appedit-content-list-item .appedit-form-input,
 .appedit-container .appedit-content-list .appedit-content-list-item .appedit-form-picker,
 .appedit-container .appedit-content-list .appedit-content-list-item .appedit-form-appname,
+.appedit-container .appedit-content-list .appedit-content-list-item .appedit-form-cate,
 .appedit-container .appedit-content-list .appedit-content-list-item .appedit-form-picker-placeholder {
   margin-left: 144rpx;
   display: inline-block;
   width: 396rpx;
+  font-family: PingFangSC-Regular;
+  font-size: 30rpx;
+  color: #333333;
+  text-align: right;
+  vertical-align: middle;
+}
+
+.appedit-container .appedit-content-list .appedit-content-list-item .appedit-form-cate {
+  margin-left: 144rpx;
+  display: inline-block;
   font-family: PingFangSC-Regular;
   font-size: 30rpx;
   color: #333333;

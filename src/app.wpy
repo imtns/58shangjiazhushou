@@ -44,6 +44,7 @@ export default class extends wepy.app {
             'pages/OrderList', // 订单列表
             'pages/OrderDetail', // 订单详情
             'pages/OpenPay', // 开通支付
+            'pages/CateSelector', // 类目选择
         ],
         window: {
             backgroundTextStyle: 'light',

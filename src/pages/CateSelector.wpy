@@ -1,0 +1,164 @@
+<style lang="scss">
+.cateselector-container {
+    border-top: 2rpx solid #f3f3f3;
+    display: flex;
+    .cateselector {
+        height: 100vh;
+        overflow-y: scroll;
+        .cateselector-li {
+            position: relative;
+            line-height: 88rpx;
+            overflow: hidden;
+            white-space: nowrap;
+            background: #fbfbfb;
+            text-indent: 30rpx;
+            font-family: PingFangSC-Regular;
+            font-size: 28rpx;
+            color: #333333;
+            letter-spacing: 0;
+            &.selected {
+                background: #3a87ff;
+                color: #ffffff;
+                .cateselector-li-bottom {
+                    display: none;
+                }
+            }
+            .cateselector-li-bottom {
+                position: absolute;
+                bottom: 0rpx;
+                left: 20rpx;
+                height: 2rpx;
+                display: block;
+                width: 100%;
+                box-sizing: border-box;
+                padding-left: 30rpx;
+                background: #f3f3f3;
+            }
+        }
+        &.first {
+            width: 152rpx;
+            background: #fbfbfb;
+        }
+        &.second {
+            width: 206rpx;
+            background: #f6f6f6;
+        }
+        &.three {
+            background: #fff;
+            flex: 1;
+        }
+    }
+}
+</style>
+<template>
+<view class="cateselector-container">
+    <view class="cateselector first">
+        <repeat for="{{cateRange[0]}}" key="cateId">
+            <view class="cateselector-li {{item.cateId===cateChooice[0].cateId?'selected':''}}"
+            @tap="bindFirstCate({{item}})">{{item.name}}<view class="cateselector-li-bottom"></view></view>
+        </repeat>
+    </view>
+    <view class="cateselector second">
+        <repeat for="{{cateRange[1]}}" key="cateId">
+            <view class="cateselector-li {{item.cateId===cateChooice[1].cateId?'selected':''}}"
+            @tap="bindSecondCate({{item}})">{{item.name}}<view class="cateselector-li-bottom"></view></view>
+        </repeat>
+    </view>
+    <view class="cateselector three">
+        <repeat for="{{cateRange[2]}}" key="cateId">
+            <view class="cateselector-li {{item.cateId===cateChooice[2].cateId?'selected':''}}"
+            @tap="bindThreeCate({{item}})">{{item.name}}<view class="cateselector-li-bottom"></view></view>
+        </repeat>
+    </view>
+</view>
+</template>
+<script>
+import wepy from 'wepy';
+import { toast } from '../utils';
+import { get } from '../utils/ajaxP';
+
+
+export default class CateSelector extends wepy.page {
+    config = { navigationBarTitleText: '选择类目' }
+    data = {
+        cateChooice: [], // 选中类别[cate1,cate2,cate3]
+        cateRange: [[], [], []], // 三级类范围值
+    }
+    methods = {
+        async bindFirstCate (item) {
+            const { cateId: parentid } = item;
+            // 第一级选中，更新第二级范围值
+            const [e, range2] = await this.getRangeById(this.mpId, parentid);
+            if (e) {
+                toast(e);
+                return;
+            }
+            const [range1] = this.cateRange;
+            this.cateRange = [range1, range2, []];
+            this.cateChooice.splice(0, 1, item);
+            this.$apply();
+        },
+        async bindSecondCate (item) {
+            const { cateId: parentid } = item;
+            // 第二级选中，更新第三级范围值
+            const [e, range3] = await this.getRangeById(this.mpId, parentid);
+            if (e) {
+                toast(e);
+                return;
+            }
+            const [range1, range2] = this.cateRange;
+            this.cateRange = [range1, range2, range3];
+            this.cateChooice.splice(1, 1, item);
+            this.$apply();
+        },
+        bindThreeCate (item) {
+            this.cateChooice.splice(2, 1, item);
+            this.$apply();
+        },
+    }
+    onLoad (options) {
+        const mpId = options.mpid || wepy.getStorageSync('current_mpid');
+        const {
+            cate1 = '', cate2 = '', cate3 = '',
+        } = options;
+        this.initData(mpId, [
+            cate1,
+            cate2,
+            cate3,
+        ]);
+    }
+    onUnload () {
+        // 关闭选择类目同时存储选择值到全局
+        this.$parent.globalData = Object.assign(
+            {}, this.$parent.globalData,
+            { cateChooice: this.cateChooice },
+        );
+    }
+    getRangeById (mpId, parentid = '') {
+        return get('/cate/dispcate/byparentid', { mpid: mpId, parentid });
+    }
+    async initData (mpId, cateChooice) {
+        const [cate1 = '', cate2 = ''] = cateChooice;
+        // 每次必须拉取第一级范围值
+        const [e, cate1Range] = await this.getRangeById(mpId || '940887130543091712');
+        if (e) {
+            toast(e);
+            return;
+        }
+        this.cateRange = [cate1Range, [], []];
+        // 第二级和第三级范围值需要上一级范围选中
+        [cate1, cate2].map(async (item, index) => {
+            // 未选择中范围中则不能拉取下级范围
+            if (!item) return;
+            const [e1, range] = await this.getRangeById(mpId, item);
+            if (e1) {
+                toast(e1);
+                return;
+            }
+            this.cateRange.splice(index + 1, 1, range);
+        });
+        this.mpId = mpId;
+        this.$apply();
+    }
+}
+</script>

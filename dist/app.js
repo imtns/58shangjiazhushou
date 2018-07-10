@@ -66,7 +66,8 @@ var _class = function (_wepy$app) {
             'pages/accountNoticeList', // 入账提醒页面
             'pages/OrderList', // 订单列表
             'pages/OrderDetail', // 订单详情
-            'pages/OpenPay'],
+            'pages/OpenPay', // 开通支付
+            'pages/CateSelector'],
             window: {
                 backgroundTextStyle: 'light',
                 navigationBarBackgroundColor: '#fff',

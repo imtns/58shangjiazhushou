@@ -1,0 +1,18 @@
+
+<view class="cateselector-container">
+    <view class="cateselector first">
+        <block wx:for="{{cateRange[0]}}" wx:for-index="index" wx:for-item="item" wx:key="cateId">
+            <view class="cateselector-li {{item.cateId===cateChooice[0].cateId?'selected':''}}" bindtap="bindFirstCate" data-wpybindfirstcate-a="{{item}}">{{item.name}}<view class="cateselector-li-bottom"/></view>
+        </block>
+    </view>
+    <view class="cateselector second">
+        <block wx:for="{{cateRange[1]}}" wx:for-index="index" wx:for-item="item" wx:key="cateId">
+            <view class="cateselector-li {{item.cateId===cateChooice[1].cateId?'selected':''}}" bindtap="bindSecondCate" data-wpybindsecondcate-a="{{item}}">{{item.name}}<view class="cateselector-li-bottom"/></view>
+        </block>
+    </view>
+    <view class="cateselector three">
+        <block wx:for="{{cateRange[2]}}" wx:for-index="index" wx:for-item="item" wx:key="cateId">
+            <view class="cateselector-li {{item.cateId===cateChooice[2].cateId?'selected':''}}" bindtap="bindThreeCate" data-wpybindthreecate-a="{{item}}">{{item.name}}<view class="cateselector-li-bottom"/></view>
+        </block>
+    </view>
+</view>

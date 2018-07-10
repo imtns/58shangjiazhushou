@@ -84,6 +84,12 @@
 						"appId": "wxf03e52adc4b13448",
 						"extraData": "{\"ppu\":\"UID=48917864286479&UN=zf3e85&TT=d81202a65af05aa8cb1ea5f6d92254d1&PBODY=JhH_NY6a8n2PvW6ZgBv_B1CwuIJH84mNnuJt4PxcpEQDl5QPvba4IdoMpCpk_GxpEfRtc9RPAvrK6G4o9J3zhKHmVv33iBDKO8EVnmRq6yp2ETgstCBISr9016TKao2yDyUeZG32vv_2yuyG01uAnqTlUL1vaRpLJ3fRd9NqySA&VER=1\"}"
 					}
+				},
+				{
+					"id": -1,
+					"name": "类目选择",
+					"pathName": "pages/CateSelector",
+					"query": ""
 				}
 			]
 		}
