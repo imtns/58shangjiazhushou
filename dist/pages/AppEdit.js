@@ -63,6 +63,7 @@ var AppEdit = function (_wepy$page) {
                 province: '5001'
             },
             tempLogo: '',
+            mpSource: 1, // 小程序来源,2代表同镇
             cateChooice: []
         }, _this.computed = {
             enableSave: function enableSave() {
@@ -649,9 +650,20 @@ var AppEdit = function (_wepy$page) {
                                 return _context8.abrupt('return', false);
 
                             case 24:
+                                if (this.cateChooice.slice(0, 2).every(function (item) {
+                                    return item.cateId;
+                                })) {
+                                    _context8.next = 27;
+                                    break;
+                                }
+
+                                this.toast('所属行业至少选择两项');
+                                return _context8.abrupt('return', false);
+
+                            case 27:
                                 return _context8.abrupt('return', true);
 
-                            case 25:
+                            case 28:
                             case 'end':
                                 return _context8.stop();
                         }
@@ -679,7 +691,9 @@ var AppEdit = function (_wepy$page) {
                                 if (!mpid) {
                                     _wepy2.default.navigateBack();
                                 }
+                                // const { mpSource } = this.$parent.globalData.extConfig;
                                 this.mpid = mpid;
+                                // this.mpSource = mpSource;
                                 _context9.next = 5;
                                 return this.getAppInfo(this.mpid);
 

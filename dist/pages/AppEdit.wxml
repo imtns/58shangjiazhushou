@@ -21,11 +21,10 @@
             </view>
             <navigator url="/pages/CateSelector">
                 <view class="appedit-content-list-item">
-                    
                     <text class="appedit-form-label">所属行业</text>
                     <view class="appedit-form-cate">
-                        <block wx:if="{{cateChooice && cateChooice.length>0}}">
-                            <block wx:for="{{cateChooice}}" wx:for-index="index" wx:for-item="item" wx:key="cateId">{{item.name+' '}}</block>
+                        <block wx:if="{{cateChooice && cateChooice[0].cateId}}">
+                            <block wx:for="{{cateChooice}}" wx:for-index="index" wx:for-item="item" wx:key="cateId">{{item.name ? item.name+' ':''}}</block>
                         </block>
                         <block wx:else>
                             请选择

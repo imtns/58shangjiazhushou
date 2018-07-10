@@ -22,11 +22,10 @@
             </view>
             <navigator url="/pages/CateSelector">
                 <view class="appedit-content-list-item">
-                    
                     <text class="appedit-form-label">所属行业</text>
                     <view class="appedit-form-cate">
-                        <block wx:if="{{cateChooice && cateChooice.length>0}}">
-                            <repeat for="{{cateChooice}}" key="cateId">{{item.name+' '}}</repeat>
+                        <block wx:if="{{cateChooice && cateChooice[0].cateId}}">
+                            <repeat for="{{cateChooice}}" key="cateId">{{item.name ? item.name+' ':''}}</repeat>
                         </block>
                         <block wx:else>
                             请选择
@@ -92,6 +91,7 @@ export default class AppEdit extends wepy.page {
             province: '5001',
         },
         tempLogo: '',
+        mpSource: 1, // 小程序来源,2代表同镇
         cateChooice: [],
     }
     computed = {
@@ -239,6 +239,11 @@ export default class AppEdit extends wepy.page {
             this.toast('输入详情地址');
             return false;
         }
+        // 所属行业至少选择两项
+        if (!this.cateChooice.slice(0, 2).every(item => item.cateId)) {
+            this.toast('所属行业至少选择两项');
+            return false;
+        }
         return true;
     }
     methods = {
@@ -351,7 +356,9 @@ export default class AppEdit extends wepy.page {
         if (!mpid) {
             wepy.navigateBack();
         }
+        // const { mpSource } = this.$parent.globalData.extConfig;
         this.mpid = mpid;
+        // this.mpSource = mpSource;
         await this.getAppInfo(this.mpid);
         await this.getLocation();
         await this.getProvinces();
@@ -437,7 +444,6 @@ export default class AppEdit extends wepy.page {
             .appedit-form-input,
             .appedit-form-picker,
             .appedit-form-appname,
-            .appedit-form-cate,
             .appedit-form-picker-placeholder {
                 margin-left: 144rpx;
                 display: inline-block;
@@ -449,14 +455,27 @@ export default class AppEdit extends wepy.page {
                 vertical-align: middle;
             }
             .appedit-form-cate {
-                margin-left: 144rpx;
+                margin-left: 40rpx;
                 display: inline-block;
-                // width: 396rpx;
+                width: 460rpx;
+                overflow: hidden;
+                white-space: nowrap;
                 font-family: PingFangSC-Regular;
                 font-size: 30rpx;
                 color: #333333;
                 text-align: right;
                 vertical-align: middle;
+            }
+            .appedit-form-arrow {
+                display: inline-block;
+                content: '';
+                width: 15rpx;
+                height: 25rpx;
+                vertical-align: middle;
+                margin-left: 25rpx;
+                background: url('https://static.58.com/lbg/mengchong/image/icon/arrow-right.png')
+                    no-repeat;
+                background-size: 100%;
             }
             .appedit-form-appname {
                 overflow: hidden;

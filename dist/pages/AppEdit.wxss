@@ -83,7 +83,6 @@
 .appedit-container .appedit-content-list .appedit-content-list-item .appedit-form-input,
 .appedit-container .appedit-content-list .appedit-content-list-item .appedit-form-picker,
 .appedit-container .appedit-content-list .appedit-content-list-item .appedit-form-appname,
-.appedit-container .appedit-content-list .appedit-content-list-item .appedit-form-cate,
 .appedit-container .appedit-content-list .appedit-content-list-item .appedit-form-picker-placeholder {
   margin-left: 144rpx;
   display: inline-block;
@@ -96,13 +95,27 @@
 }
 
 .appedit-container .appedit-content-list .appedit-content-list-item .appedit-form-cate {
-  margin-left: 144rpx;
+  margin-left: 40rpx;
   display: inline-block;
+  width: 460rpx;
+  overflow: hidden;
+  white-space: nowrap;
   font-family: PingFangSC-Regular;
   font-size: 30rpx;
   color: #333333;
   text-align: right;
   vertical-align: middle;
+}
+
+.appedit-container .appedit-content-list .appedit-content-list-item .appedit-form-arrow {
+  display: inline-block;
+  content: '';
+  width: 15rpx;
+  height: 25rpx;
+  vertical-align: middle;
+  margin-left: 25rpx;
+  background: url("https://static.58.com/lbg/mengchong/image/icon/arrow-right.png") no-repeat;
+  background-size: 100%;
 }
 
 .appedit-container .appedit-content-list .appedit-content-list-item .appedit-form-appname {

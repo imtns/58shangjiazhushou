@@ -1,0 +1,7 @@
+
+    <view class="editor">
+        <block  wx:for="modules" wx:for-item="component" wx:key="index">
+            {{modules.length}}
+            <!-- <template is="{{component.name}}" data="{{...component.props, index, env58, tabBarItems, isIphoneX}}" /> -->
+        </block>
+    </view>
