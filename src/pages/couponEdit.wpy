@@ -1,0 +1,253 @@
+<template>
+    <view class="container">
+        <view class="section">
+            <view class="item required border-bottom">
+                <text>优惠券标题</text>
+                <input
+                type="text"
+                placeholder="最多可输入10个字"
+                placeholder-class="placeholder"
+                value="{{ form.title }}"/>
+            </view>
+            <view class="item required">
+                <text>优惠券副标题</text>
+                <input
+                type="text"
+                placeholder="可用优惠券亮点吸引用户"
+                placeholder-class="placeholder"
+                value="{{ form.subTitle }}"/>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required">
+                <text>优惠券类型</text>
+                <navigator
+                :class="{ placeholder: form.couponType === '' }"
+                url="/pages/couponType">
+                    {{ form.couponType && (form.couponType === 1 ? '代金券' : '折扣券') || '去选择' }}
+                    <view class="icon more"></view>
+                </navigator>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required">
+                <text>生效时间</text>
+                <navigator
+                :class="{ placeholder: form.validType === '' }"
+                url="/pages/couponValidTime">
+                    {{ form.validType && (form.validType === 1 ? '固定时间' : '领取后生效') || '去选择' }}<view class="icon more"></view>
+                </navigator>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required border-bottom">
+                <text>库存</text>
+                <input
+                type="number"
+                placeholder="请输入库存数量"
+                placeholder-class="placeholder"
+                value="{{ form.totalCount }}"/>
+            </view>
+            <view class="item">
+                <text>每人限领</text>
+                <input
+                type="number"
+                placeholder="若不填默认为1"
+                placeholder-class="placeholder"
+                value="{{ form.limitCount || '' }}"/>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required">
+                <text>优惠券使用产品</text>
+                <navigator  :class="{ placeholder: form.product === '' }">
+                    去选择<view class="icon more"></view>
+                </navigator>
+            </view>
+        </view>
+
+        <button class="save">保存</button>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import Mixin from '../mixins';
+import { get } from '../utils/ajax';
+import { LOAD_COUPON } from '../utils/url';
+
+import globalService from '../utils/globalService';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '优惠券内容',
+    }
+
+    data = {
+        form: {
+            title: '',
+            subTitle: '',
+            couponType: '',
+            totalCount: 0, // 库存
+            limitCount: 0, // 每人限领
+            validType: '', // 1 固定时间，2 领取后生效
+            validDays: null,
+            validAfterDays: null,
+            validStarttime: '',
+            validEndtime: '',
+        },
+    }
+
+    mixins = [Mixin]
+
+    async onLoad(options) {
+        const { id } = options;
+
+        if (id) {
+            await this.loadData(id);
+            this.updateData();
+        }
+    }
+
+    onShow() {
+        // 每次onShow同步数据
+        const couponManage = globalService.get('couponManage');
+        Object.assign(this.form, couponManage);
+    }
+
+    async loadData(id) {
+        try {
+            const { data: coupon } = await get(LOAD_COUPON + id);
+            let { couponCondition } = coupon;
+
+            if (couponCondition) {
+                try {
+                    couponCondition = JSON.parse(couponCondition);
+                    Object.assign(coupon, couponCondition);
+                } catch (e) {
+                    this.errorHandler(e);
+                }
+            }
+
+            console.log(coupon);
+
+            const {
+                title,
+                subTitle,
+                couponType,
+                totalCount,
+                limitCount,
+                limitAmount,
+                couponDiscard,
+                reliefAmount,
+                validType,
+                validDays,
+                validAfterDays,
+                validStarttime,
+                validEndtime,
+            } = coupon;
+
+            Object.assign(this.form, {
+                title,
+                subTitle,
+                couponType,
+                totalCount,
+                limitCount,
+                limitAmount,
+                couponDiscard,
+                reliefAmount,
+                validType,
+                validDays,
+                validAfterDays,
+                validStarttime,
+                validEndtime,
+            });
+
+            this.$apply();
+        } catch (e) {
+            this.errorHandler(e);
+        }
+    }
+
+    updateData() {
+        const couponManage = globalService.get('couponManage');
+        globalService.set('couponManage', Object.assign(couponManage, this.form));
+    }
+}
+</script>
+
+<style lang="scss">
+.container {
+    font-size: 28rpx;
+}
+
+.section {
+    margin-top: 20rpx;
+    background-color: #FFFFFF;
+
+    .item {
+        display: flex;
+        justify-content: space-between;
+        padding: 23rpx 0;
+        margin: 0 30rpx;
+        position: relative;
+
+        &.border-bottom {
+            border-bottom: 1rpx solid #f3f3f3;
+        }
+        &.required::before {
+            display: block;
+            content: '*';
+            width: 14rpx;
+            height: 37rpx;
+            font-size: 26rpx;
+            color: #FFA100;
+            position: absolute;
+            left: -15rpx;
+        }
+
+        input {
+            width: 396rpx;
+            height: 30rpx;
+            line-height: 30rpx;
+            text-align: right;
+        }
+
+        text {
+            color: #BDBDBD;
+        }
+    }
+}
+
+button.save {
+    height: 102rpx;
+    background-color: #4e88ff;
+    color: #fff;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 0;
+
+    &::after {
+        content: none;
+    }
+}
+
+.placeholder {
+    font-size: 28rpx;
+    color: #BDBDBD;
+}
+
+.icon {
+    display: inline-block;
+
+    &.more {
+        width: 25rpx;
+        height: 25rpx;
+        background: url('/coupon-more.png') no-repeat;
+        background-size: auto 25rpx;
+        background-position: right;
+    }
+}
+</style>

@@ -36,6 +36,7 @@
 
 <script>
 import wepy from 'wepy';
+import Mixin from '../mixins';
 import { LOAD_RESOURCE_URL, DELETE_RESOURCE, SAVE_RESOURCE_URL } from '../utils/url';
 import { get } from '../utils/ajax';
 import { toast, alert, picSrcDomain, sleep } from '../utils';
@@ -50,6 +51,8 @@ export default class Index extends wepy.page {
     config = {
         navigationBarTitleText: '素材管理',
     }
+
+    mixins = [Mixin]
 
     data = {
         curTab: 'image',

@@ -1,0 +1,240 @@
+<template>
+    <view class="container">
+        <view class="coupons" wx:if="{{ coupons && coupons.length }}">
+            <view class="item" :class="{ unable: item.status !== 2}" wx:for="{{ coupons }}" wx:key="id">
+                <view class="left">
+                    <!-- 打折 -->
+                    <view class="discount" wx:if="{{ item.couponType === 2 }}">
+                        <text class="bold">{{ item.couponDiscard / 10 || 9 }}</text>折
+                    </view>
+                    <!-- 满减 -->
+                    <view class="reduce" wx:else>
+                        ￥<text class="bold">{{ item.reliefAmount }}</text>
+                    </view>
+                </view>
+                <view class="right">
+                    <view class="info">
+                        <view class="title">满{{ item.limitAmount }}可用</view>
+                        <view class="type">{{ item.subTitle }}</view>
+                        <view class="time">2018.06.08-2018.07.01</view>
+                    </view>
+                    <button>立即领取</button>
+                </view>
+            </view>
+        </view>
+        <view wx:else>
+            <view class="coupons-empty">
+                <image class="empty-image" src="https://img.58cdn.com.cn/lbg/jianzhan/images/empty.png"></image>
+                <view>暂无优惠卷</view>
+            </view>
+        </view>
+
+        <view class="options">
+            <button class="edit" @tap="edit">{{ isEditing ? '取消' : '编辑' }}</button>
+            <button wx:if="{{ isEditing }}" @tap="deleteItem">删除</button>
+            <button wx:else>添加优惠券</button>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import Mixin from '../mixins';
+
+import { get } from '../utils/ajax';
+import { LOAD_COUPON_LIST } from '../utils/url';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '优惠券管理',
+    }
+
+    mixins = [Mixin]
+
+    data = {
+        coupons: [],
+        couponNone: false,
+    }
+
+    async onLoad() {
+        try {
+            const mpId = wepy.getStorageSync('current_mpid');
+            // mpId = '948441796865454080';
+            const { data: coupons } = await get(LOAD_COUPON_LIST, {
+                pageNum: 1,
+                pageSize: 10,
+                mpId,
+            });
+
+            if (coupons && coupons.length) {
+                this.coupons = coupons.map(item => {
+                    const coupon = Object.assign({}, item);
+                    let { couponCondition } = coupon;
+
+                    if (couponCondition) {
+                        try {
+                            couponCondition = JSON.parse(couponCondition);
+                            Object.assign(coupon, couponCondition);
+                        } catch (e) {
+                            this.errorHandler(e);
+                        }
+                    }
+
+                    return coupon;
+                });
+
+                this.$apply();
+            }
+        } catch (e) {
+            this.errorHandler(e);
+        }
+    }
+}
+</script>
+
+<style lang="scss">
+view {
+    box-sizing: border-box;
+}
+
+button::after {
+    border: none;
+}
+
+$radius: 4rpx;
+
+.coupons {
+    .item {
+        height: 180rpx;
+        margin: 30rpx 20rpx 0 20rpx;
+        display: flex;
+        box-shadow: 0 1rpx 10rpx 0 rgba(0,0,0,0.05);
+        border-radius: $radius;
+
+        .left {
+            width: 176rpx;
+            color: #FF552E;
+            font-size: 30rpx;
+            background-color: #fff;
+            line-height: 180rpx;
+            padding: 0 20rpx;
+            border-right: 2rpx dashed #FFB204;
+            border-radius: $radius 0 0 $radius;
+            text-align: center;
+
+            .discount .bold {
+                font-size: 70rpx;
+            }
+            .reduce .bold {
+                font-size: 60rpx;
+            }
+        }
+
+        .right {
+            flex-grow: 1;
+            display: flex;
+            background-image: linear-gradient(135deg, #FFBD05 0%, #FF9602 100%);
+            padding: 30rpx 24rpx;
+            align-items: center;
+            border-radius: 0 $radius $radius 0;
+
+            .info {
+                flex-grow: 1;
+                color: #FFF;
+
+                .title {
+                    font-size: 32rpx;
+                    line-height: 45rpx;
+                }
+                .type {
+                    font-size: 28rpx;
+                    line-height: 40rpx;
+                    margin-bottom: 13rpx;
+                }
+                .time {
+                    font-size: 24rpx;
+                    color: #ffe37f;
+                    line-height: 33rpx;
+                }
+            }
+
+            button {
+                width: 160rpx;
+                height: 60rpx;
+                color: #FF9C02;
+                background-color: #FFF;
+                border-radius: 30rpx;
+                font-size: 28rpx;
+                padding: 0;
+                line-height: 60rpx;
+            }
+        }
+    }
+}
+
+.coupons {
+    .item.unable {
+
+        .left {
+            background-color: #f6f6f6;
+            color: #ccc;
+            border-right: 2rpx dashed #e7e7eb;
+        }
+
+        .right {
+            background-image: none;
+            background-color: #f8f9fb;
+
+            .info {
+                color: #ccc;
+                .time {
+                    color: #ccc;
+                }
+            }
+
+            button {
+                color: #fff;
+                background-color: #e7e7eb;
+            }
+        }
+    }
+}
+
+/* 优惠卷列表空 */
+.coupons-empty{
+    padding-top:200rpx;
+    font-size:30rpx;
+    color:#ccc;
+    text-align: center;
+}
+.empty-image{
+    width:260rpx;
+    height:260rpx;
+}
+
+.options {
+    display: flex;
+    font-size: 34rpx;
+    letter-spacing: 0.51px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+
+    button {
+        width: 50%;
+        border-radius: 0;
+        color: #FFF;
+        background-color: #4e88ff;
+
+        &::after {
+            border: none;
+        }
+    }
+
+    .edit {
+        color: #4e88ff;
+        background-color: #FFF;
+        box-shadow: 0 -1px 17px -1px rgba(202,202,202,0.50);
+    }
+}
+</style>
