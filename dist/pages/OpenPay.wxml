@@ -1,5 +1,5 @@
 
-<view class="openpay-container">
+<view class="openpay-container" hidden="{{loading}}">
     <!-- 开通支付 -->
     <view class="openpay"  wx:if="{{!opened}}">
         <view class="openpay-main">
@@ -15,7 +15,7 @@
         </view>
         <!-- 跳转到支付助手小程序性开通支付 -->
         <!-- 小程序跳转时低版本不提供url会报错 -->
-        <navigator open-type="navigate" target="miniProgram" path="/pages/payAuthorize/payAuthorize?param={{userid}}" url="/pages/payAuthorize/payAuthorize" app-id="{{payAppId}}" version="develop">
+        <navigator open-type="navigate" target="miniProgram" path="/pages/payAuthorize/payAuthorize?param={{userid}}" app-id="{{payAppId}}" version="develop">
             <view class="openpay-confirm">确认开通</view>
         </navigator>
         <!-- 协议内容弹框 -->
@@ -43,7 +43,7 @@
             <view class="changepay-main-content">使用买单功能啦</view>
         </view>
         <!-- 跳转支付助手更换收款微信 -->
-        <navigator open-type="navigate" target="miniProgram" path="/pages/payAuthorize/payAuthorize?param={{userid}}" url="/pages/payAuthorize/payAuthorize" app-id="{{payAppId}}" version="develop">
+        <navigator open-type="navigate" target="miniProgram" path="/pages/payAuthorize/payAuthorize?param={{userid}}" url="/pages/payAuthorize/payAuthorize?param={{userid}}" app-id="{{payAppId}}" version="develop">
             <view class="changepay-confirm">更换收款微信</view>
         </navigator>
         <navigator open-type="redirect" url="/pages/home">

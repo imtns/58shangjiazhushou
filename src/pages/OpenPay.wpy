@@ -1,5 +1,5 @@
 <template>
-<view class="openpay-container">
+<view class="openpay-container" hidden="{{loading}}">
     <!-- 开通支付 -->
     <view class="openpay" wx:if="{{!opened}}">
         <view class="openpay-main">
@@ -19,8 +19,7 @@
         <!-- 小程序跳转时低版本不提供url会报错 -->
         <navigator open-type="navigate"
             target="miniProgram"
-            path="/pages/payAuthorize/payAuthorize?param={{userid}}"
-            url="/pages/payAuthorize/payAuthorize"  
+            path="/pages/payAuthorize/payAuthorize?param={{userid}}" 
             app-id="{{payAppId}}"
             version="develop">
             <view class="openpay-confirm">确认开通</view>
@@ -55,7 +54,7 @@
         <navigator open-type="navigate"
             target="miniProgram"
             path="/pages/payAuthorize/payAuthorize?param={{userid}}" 
-            url="/pages/payAuthorize/payAuthorize"  
+            url="/pages/payAuthorize/payAuthorize?param={{userid}}"
             app-id="{{payAppId}}"
             version="develop">
             <view class="changepay-confirm">更换收款微信</view>
@@ -84,6 +83,7 @@ export default class OpenPay extends wepy.page {
         opened: false, // 是否已经开通支付
         agreeProtocol: true, // 是否同意协议
         showProtocol: false, // 显示协议内容
+        loading: true, // 加载中隐藏页面内容
     }
     methods = {
         bindAgreeProtocol () {
@@ -110,9 +110,10 @@ export default class OpenPay extends wepy.page {
             toast(e);
             return;
         }
-        console.log('userid', res.userid);
+        this.loading = false;
         this.userid = res.userid;
         this.opened = res.protocol === 1;
+        this.$apply();
     }
 }
 </script>

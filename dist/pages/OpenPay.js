@@ -50,7 +50,8 @@ var OpenPay = function (_wepy$page) {
             userid: '', // 开通支付必填
             opened: false, // 是否已经开通支付
             agreeProtocol: true, // 是否同意协议
-            showProtocol: false // 显示协议内容
+            showProtocol: false, // 显示协议内容
+            loading: true // 加载中隐藏页面内容
         }, _this.methods = {
             bindAgreeProtocol: function bindAgreeProtocol() {
                 this.agreeProtocol = !this.agreeProtocol;
@@ -120,11 +121,12 @@ var OpenPay = function (_wepy$page) {
                                 return _context2.abrupt('return');
 
                             case 9:
-                                console.log('userid', res.userid);
+                                this.loading = false;
                                 this.userid = res.userid;
                                 this.opened = res.protocol === 1;
+                                this.$apply();
 
-                            case 12:
+                            case 13:
                             case 'end':
                                 return _context2.stop();
                         }
