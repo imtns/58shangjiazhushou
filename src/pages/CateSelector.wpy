@@ -48,7 +48,7 @@
             // background: #fff;
             flex: 1;
         }
-        &.selected{
+        &.selected {
             width: 300rpx;
         }
     }
@@ -132,6 +132,7 @@ export default class CateSelector extends wepy.page {
             // 更新第三级选值
             this.cateChooice.splice(2, 1, item);
             this.$apply();
+            wepy.navigateBack();
         },
     }
     // 初始化选择范围

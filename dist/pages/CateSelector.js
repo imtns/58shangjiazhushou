@@ -157,6 +157,7 @@ var CateSelector = function (_wepy$page) {
                 // 更新第三级选值
                 this.cateChooice.splice(2, 1, item);
                 this.$apply();
+                _wepy2.default.navigateBack();
             }
         }, _temp), _possibleConstructorReturn(_this, _ret);
     }
