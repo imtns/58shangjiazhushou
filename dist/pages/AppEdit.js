@@ -719,6 +719,14 @@ var AppEdit = function (_wepy$page) {
     }, {
         key: 'onShow',
         value: function onShow() {
+            this.updateCateChooice();
+        }
+        // 更新所属行业类别
+
+    }, {
+        key: 'updateCateChooice',
+        value: function updateCateChooice() {
+            if (this.$parent.globalData || this.$parent.globalData.cateChooice) return;
             var form = {};
             // 从所属类目值选择页面返回重新赋值
             var cateChooice = this.$parent.globalData && this.$parent.globalData.cateChooice ? this.$parent.globalData.cateChooice : [{}, {}, {}];

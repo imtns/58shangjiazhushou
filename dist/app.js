@@ -129,10 +129,6 @@ var _class = function (_wepy$app) {
 
             var fromAppId = appId;
             // action:通过fromAppId和scene返回当前小程序处理
-<<<<<<< HEAD
-=======
-
->>>>>>> bfffd2c19cc93f660f65649dd8ee53503acfe9ee
             console.log('referrerInfo', referrerInfo);
             var action = scene === 1038 || scene === '1038' ? CALLBACKAPPS[fromAppId] : '';
 
