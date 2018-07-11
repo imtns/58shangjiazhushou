@@ -30,7 +30,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var CALLBACKAPPS = {
     wx2a9c6eeb1c44a284: 'Login', // 从58验证
     wx67b75e86c9daef45: 'OpenPay', // 开通支付小程序
-    wxf03e52adc4b13448: 'ToMymp' // 从同镇小程序个人中心-> 管理我的小程序
+    wxee214e01d07c9db0: 'ToMymp' // 从同镇小程序个人中心-> 管理我的小程序
 };
 
 var _class = function (_wepy$app) {
@@ -125,12 +125,19 @@ var _class = function (_wepy$app) {
                 _options$referrerInfo = options.referrerInfo,
                 referrerInfo = _options$referrerInfo === undefined ? {} : _options$referrerInfo,
                 path = options.path;
-            var fromAppId = referrerInfo.appId;
+            var appId = referrerInfo.appId;
 
+            var fromAppId = appId;
             // action:通过fromAppId和scene返回当前小程序处理
+<<<<<<< HEAD
+=======
 
+>>>>>>> bfffd2c19cc93f660f65649dd8ee53503acfe9ee
             console.log('referrerInfo', referrerInfo);
             var action = scene === 1038 || scene === '1038' ? CALLBACKAPPS[fromAppId] : '';
+
+            // 1037进入 从别的小程序进入
+            action = scene === 1037 || scene === '1037' ? CALLBACKAPPS[fromAppId] : '';
             // 登陆已经上线保持原有判断逻辑
             // 条件1：scene：1038从另一个小程序返回
             if (scene === 1038 && path === 'pages/intro' && fromAppId === 'wx2a9c6eeb1c44a284') {
