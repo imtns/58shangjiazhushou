@@ -7,7 +7,8 @@
                 type="text"
                 placeholder="最多可输入10个字"
                 placeholder-class="placeholder"
-                value="{{ form.title }}"/>
+                value="{{ form.title }}"
+                @change="setFormData('title')"/>
             </view>
             <view class="item required">
                 <text>优惠券副标题</text>
@@ -15,7 +16,8 @@
                 type="text"
                 placeholder="可用优惠券亮点吸引用户"
                 placeholder-class="placeholder"
-                value="{{ form.subTitle }}"/>
+                value="{{ form.subTitle }}"
+                @change="setFormData('subTitle')"/>
             </view>
         </view>
         <view class="section">
@@ -46,7 +48,8 @@
                 type="number"
                 placeholder="请输入库存数量"
                 placeholder-class="placeholder"
-                value="{{ form.totalCount }}"/>
+                value="{{ form.totalCount }}"
+                @change="setFormData('totalCount')"/>
             </view>
             <view class="item">
                 <text>每人限领</text>
@@ -54,27 +57,30 @@
                 type="number"
                 placeholder="若不填默认为1"
                 placeholder-class="placeholder"
-                value="{{ form.limitCount || '' }}"/>
+                value="{{ form.limitCount || '' }}"
+                @change="setFormData('limitCount')"/>
             </view>
         </view>
         <view class="section">
             <view class="item required">
                 <text>优惠券使用产品</text>
-                <navigator  :class="{ placeholder: form.product === '' }">
-                    去选择<view class="icon more"></view>
+                <navigator  :class="{ placeholder: form.applyType === '' }"
+                url="/pages/couponService">
+                    {{ form.applyType && (form.applyType === 1 ? '全部产品' : '指定产品') || '去选择' }}<view class="icon more"></view>
                 </navigator>
             </view>
         </view>
 
-        <button class="save">保存</button>
+        <button class="save" @tap="save">保存</button>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
 import Mixin from '../mixins';
-import { get } from '../utils/ajax';
-import { LOAD_COUPON } from '../utils/url';
+import { get, post } from '../utils/ajax';
+import { LOAD_COUPON, SAVE_COUPON } from '../utils/url';
+import { alert } from '../utils';
 
 import globalService from '../utils/globalService';
 
@@ -85,6 +91,8 @@ export default class Index extends wepy.page {
 
     data = {
         form: {
+            id: '',
+            mpId: '',
             title: '',
             subTitle: '',
             couponType: '',
@@ -95,10 +103,50 @@ export default class Index extends wepy.page {
             validAfterDays: null,
             validStarttime: '',
             validEndtime: '',
+            applyType: '',
+            serviceIds: '',
         },
     }
 
     mixins = [Mixin]
+
+    methods = {
+        async save() {
+            try {
+                // 数据过滤
+                const { form } = this;
+                const postData = {};
+                Object.keys(form).forEach(key => {
+                    if (form[key]) {
+                        postData[key] = form[key];
+                    }
+                });
+
+                this.validator(postData);
+
+                await post(SAVE_COUPON, postData);
+                wepy.navigateBack();
+            } catch (e) {
+                alert(e);
+                this.errorHandler(e);
+            }
+        },
+
+        setFormData(prop, e) {
+            this.form[prop] = e.detail.value;
+        },
+    }
+
+    validator(data) {
+        let msg = '';
+        if (data.couponDiscard < 0 || data.couponDiscard > 99) {
+            msg = '享受折扣应该介于0至9.9折';
+        }
+
+        if (msg) {
+            throw new Error(msg);
+        }
+    }
 
     async onLoad(options) {
         const { id } = options;
@@ -119,6 +167,7 @@ export default class Index extends wepy.page {
         try {
             const { data: coupon } = await get(LOAD_COUPON + id);
             let { couponCondition } = coupon;
+            const mpId = wepy.getStorageSync('current_mpid');
 
             if (couponCondition) {
                 try {
@@ -128,8 +177,6 @@ export default class Index extends wepy.page {
                     this.errorHandler(e);
                 }
             }
-
-            console.log(coupon);
 
             const {
                 title,
@@ -145,9 +192,18 @@ export default class Index extends wepy.page {
                 validAfterDays,
                 validStarttime,
                 validEndtime,
+                applyType,
+                services,
             } = coupon;
+            let serviceIds = '';
+
+            if (services && services.length) {
+                serviceIds = services.map(item => item.id).join(',');
+            }
 
             Object.assign(this.form, {
+                id,
+                mpId,
                 title,
                 subTitle,
                 couponType,
@@ -161,6 +217,8 @@ export default class Index extends wepy.page {
                 validAfterDays,
                 validStarttime,
                 validEndtime,
+                applyType,
+                serviceIds,
             });
 
             this.$apply();

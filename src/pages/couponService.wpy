@@ -1,0 +1,373 @@
+<template>
+    <view class="container">
+        <view class="wrap">
+            <view class="top">
+                <view class="current-group"
+                :class="{ show: showProduct }"
+                @tap="showProduct">
+                    {{ currentGroup }}<view class="icon-triangle"></view>
+                    <view class="group-list">
+                        <view class="item" wx:for="{{ groups }}"
+                        wx:key="id" @tap="chooseGroup({{ item.id }}, {{ item.name }})">{{ item.name }}</view>
+                    </view>
+                </view>
+                <view class="add-product">+添加产品</view>
+            </view>
+            <view class="products" wx:if="{{ services && services.length }}">
+                <view class="item" wx:for="{{ services }}"
+                wx:key="id" @tap="chooseService({{ index }})">
+                    <view class="checkbox" :class="{ checked: item.checked }">
+                    </view>
+                    <image mode="aspectFill" src="{{ item.pics + '?w=60' }}"/>
+                    <view class="info">
+                        <view class="title">{{ item.serviceName }}</view>
+                        <view class="price">服务价格：<text class="bold">{{ item.price }}</text>元/次</view>
+                    </view>
+                </view>
+            </view>
+            <view wx:else style="margin: 30rpx;text-align: center">---啥也没有---</view>
+        </view>
+        <view class="options">
+            <button class="edit" @tap="chooseAll">全选当前分组</button>
+            <button @tap="confirm">确定</button>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import Mixin from '../mixins';
+
+import { picSrcDomain } from '../utils';
+import { LOAD_SERVICE_GROUPS, LOAD_SERVICE_LIST } from '../utils/url';
+import { get } from '../utils/ajax';
+import globalService from '../utils/globalService';
+
+const pageSize = 20;
+const pageNum = 1;
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '优惠券适用产品',
+    }
+
+    mixins = [Mixin]
+
+    data = {
+        services: [],
+        showProduct: false,
+        groups: [{
+            name: '所有产品',
+            id: '',
+        }],
+        currentGroup: '所有产品',
+        selectedServices: [], // 已选产品
+        allServices: [], // 全部产品
+
+        applyType: 1, // 1 全部产品，2 指定产品
+        serviceIds: '',
+    }
+
+    methods = {
+        showProduct() {
+            this.showProduct = !this.showProduct;
+        },
+
+        async chooseGroup(resourceGroup, name) {
+            const services = await this.getServices(resourceGroup);
+            this.services = services;
+            this.currentGroup = name;
+            this.$apply();
+        },
+
+        chooseService(index) {
+            const service = this.services[index];
+            service.checked = !service.checked;
+            this.applyType = 2;
+            this.updateSelected(index);
+        },
+
+        chooseAll() {
+            this.services = this.services.map(item => {
+                const service = Object.assign({}, item);
+                service.checked = true;
+                return service;
+            });
+
+            this.applyType = 1;
+            this.serviceIds = '';
+            this.selectedServices = this.allServices.concat();
+        },
+
+        confirm() {
+            wepy.navigateBack();
+        },
+    }
+
+    computed = {
+        serviceIds() {
+            let result = '';
+
+            if (this.applyType === 1) {
+                result = '';
+            } else {
+                result = this.selectedServices.join(',');
+            }
+
+            return result;
+        },
+    }
+
+    // 通过在数组中的位置记录，减少成本
+    updateSelected(index) {
+        const { id } = this.services[index];
+        const { selectedServices } = this;
+
+        if (~selectedServices.indexOf(id)) {
+            selectedServices.splice(selectedServices.indexOf(id), 1);
+        } else {
+            selectedServices.push(id);
+        }
+
+        // 全部产品选择
+        if (selectedServices.length === this.allServices.length) {
+            this.applyType = 1;
+            this.serviceIds = '';
+            this.$apply();
+        }
+    }
+
+    async onLoad() {
+        try {
+            const mpid = wepy.getStorageSync('current_mpid');
+
+            // 获取分组
+            const { data: groups } = await get(LOAD_SERVICE_GROUPS, {
+                mpid,
+            });
+
+            // 获取预约组件
+            let services = await this.getServices();
+            this.allServices = services.map(item => item.id);
+
+            // 同步已选产品
+            const couponManage = globalService.get('couponManage');
+            const { serviceIds = '', applyType } = couponManage;
+            const allServices = [];
+
+            // 指定产品
+            if (applyType === 2 && couponManage.serviceIds) {
+                this.selectedServices = serviceIds.split(',');
+            }
+
+            services = services.map(item => {
+                const service = Object.assign({}, item);
+                // 因为默认选择所有产品，所以此时能够获取到所有产品
+                allServices.push(service.id);
+
+                if (~serviceIds.indexOf(service.id) && applyType === 2) {
+                    service.checked = true;
+                }
+                return service;
+            });
+
+            this.allServices = allServices;
+            this.applyType = applyType;
+            this.services = services;
+            this.groups = this.groups.concat(groups);
+            this.$apply();
+        } catch (e) {
+            this.errorHandler(e);
+        }
+    }
+
+    onUnload() {
+        this.updateData();
+    }
+
+    updateData() {
+        const couponManage = globalService.get('couponManage');
+        globalService.set('couponManage', Object.assign(couponManage, {
+            applyType: this.applyType,
+            serviceIds: this.serviceIds,
+        }));
+    }
+
+    async getServices(resourceGroup = '') {
+        const { selectedServices } = this;
+        const mpid = wepy.getStorageSync('current_mpid');
+        // 获取所有产品
+        const { data: { data: services } = {} } = await get(LOAD_SERVICE_LIST, {
+            mpid,
+            pageNum,
+            pageSize,
+            resourceGroup,
+        });
+
+        return services.map(item => {
+            const service = Object.assign({}, item);
+
+            // 图片处理
+            service.pics = picSrcDomain() + service.pics;
+            // check处理
+            if (!selectedServices.indexOf(item.id)) {
+                service.checked = true;
+            }
+            return service;
+        });
+    }
+}
+</script>
+
+<style lang="scss">
+view {
+    box-sizing: border-box;
+}
+
+.container {
+    .wrap {
+        padding: 30rpx;
+    }
+
+    .top {
+        display: flex;
+        justify-content: space-between;
+        font-size: 28rpx;
+        margin-bottom: 30rpx;
+
+        .current-group {
+            color: #666;
+
+            .icon-triangle {
+                display: inline-block;
+                width: 14rpx;
+                height: 10rpx;
+                margin: 0 0 7rpx 10rpx;
+                background-image: url('/coupon-triangle.png');
+                background-size: 14rpx 10rpx;
+                transform: rotate(180deg);
+                transition: transform .3s;
+            }
+
+            .group-list {
+                width: 296rpx;
+                padding: 0 20rpx;
+                margin-top: 10rpx;
+                position: absolute;
+                background-color: #fff;
+                box-shadow: 2rpx 2rpx 10rpx 0 rgba(189,189,189,0.50);
+                border-radius: 8rpx;
+                display: none;
+
+                .item {
+                    height: 80rpx;
+                    padding: 20rpx 0;
+                    border-bottom: 1rpx solid #f3f3f3;
+                    &.last {
+                        border: none;
+                    }
+                }
+            }
+
+            &.show {
+                .icon-triangle {
+                    transform: rotate(0deg);
+                }
+                .group-list {
+                    display: block;
+                }
+            }
+        }
+
+        .add-product {
+            color: #4e88ff;
+        }
+    }
+
+    .products {
+        padding-left: 100rpx;
+
+        .item {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            width: 590rpx;
+            height: 163rpx;
+            box-shadow: 2rpx 6rpx 6rpx 0 rgba(213,219,255,0.30);
+            border-radius: 8rpx;
+            padding: 22rpx 0;
+            margin-bottom: 20rpx;
+
+            .checkbox {
+                width: 40rpx;
+                height: 40rpx;
+                background-image: url('/resource-unchecked.png');
+                background-size: 40rpx 40rpx;
+                margin-left: -100rpx;
+
+                &.checked {
+                    background-image: url('/resource-checked.png');
+                }
+            }
+
+            image {
+                width: 120rpx;
+                height: 120rpx;
+                margin-right: 30rpx;
+                margin-left: 40rpx;
+                border-radius: 8rpx;
+                background-color: 120rpx;
+                border: 1rpx solid #eee;
+                box-shadow: 2rpx 6rpx 6rpx 0 rgba(213,219,255,0.30);
+            }
+
+            .info {
+                .title {
+                    font-size: 32rpx;
+                    color: #333;
+                    line-height: 45rpx;
+                    margin-bottom: 10rpx;
+                }
+                .price {
+                    font-size: 30rpx;
+                    color: #666;
+                    line-height: 48rpx;
+
+                    .bold {
+                        font-size: 34rpx;
+                        color: #ff937b;
+                        margin: 0 4rpx;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.options {
+    display: flex;
+    font-size: 34rpx;
+    letter-spacing: 0.51rpx;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    box-shadow: 0 -1rpx 17rpx -1rpx rgba(202,202,202,0.50);
+
+    button {
+        width: 50%;
+        border-radius: 0;
+        color: #FFF;
+        background-color: #4e88ff;
+
+        &::after {
+            border: none;
+        }
+    }
+
+    .edit {
+        color: #4e88ff;
+        background-color: #FFF;
+    }
+}
+</style>

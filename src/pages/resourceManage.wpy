@@ -437,7 +437,7 @@ $workHeight: 200rpx;
     .edit {
         color: #4e88ff;
         background-color: #FFF;
-        box-shadow: 0 -1px 17px -1px rgba(202,202,202,0.50);
+        box-shadow: 0 -1rpx 17rpx -1rpx rgba(202,202,202,0.50);
     }
 }
 </style>

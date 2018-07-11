@@ -21,18 +21,18 @@
             <block wx:if="{{ validType === 1 }}">
                 <view class="item required border-bottom">
                     <text>开始时间</text>
-                    <picker mode="date" value="{{ validStarttime }}"
+                    <picker mode="date" value="{{ formatValidStarttime }}"
                     :class="{ placeholder: validStarttime === null }"
                     @change="dataAction('validStarttime')">
-                        {{ validStarttime || '去选择' }}<view class="icon more"></view>
+                        {{ formatValidStarttime || '去选择' }}<view class="icon more"></view>
                     </picker>
                 </view>
                 <view class="item required">
                     <text>结束时间</text>
-                    <picker mode="date" value="{{ validStarttime }}"
+                    <picker mode="date" value="{{ formatValidEndtime }}"
                     :class="{ placeholder: validEndtime === null }"
                     @change="dataAction('validEndtime')">
-                        {{ validEndtime || '去选择' }}<view class="icon more"></view>
+                        {{ formatValidEndtime || '去选择' }}<view class="icon more"></view>
                     </picker>
                 </view>
             </block>
@@ -61,10 +61,14 @@ import wepy from 'wepy';
 import globalService from '../utils/globalService';
 import { alert } from '../utils';
 
+import CouponMixin from '../mixins/coupon';
+
 export default class Index extends wepy.page {
     config = {
         navigationBarTitleText: '优惠券类型',
     }
+
+    mixins = [CouponMixin]
 
     data = {
         validType: 1, // 1 固定时间，2 领取后生效
@@ -72,6 +76,8 @@ export default class Index extends wepy.page {
         validAfterDays: null,
         validStarttime: '',
         validEndtime: '',
+        formatValidEndtime: '',
+        formatValidStarttime: '',
     }
 
     methods = {
@@ -93,6 +99,15 @@ export default class Index extends wepy.page {
 
             this[prop] = value;
             this.updateData();
+        },
+    }
+
+    computed = {
+        formatValidStarttime() {
+            return this.formatTime(this.validStarttime);
+        },
+        formatValidEndtime() {
+            return this.formatTime(this.validEndtime);
         },
     }
 

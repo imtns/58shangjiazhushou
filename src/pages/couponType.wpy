@@ -28,7 +28,7 @@
                 <block wx:if="{{ couponType === 2 }}">
                     <text>享受折扣</text>
                     <input type="digit" placeholder="请输入享受折扣"
-                    placeholder-class="placeholder" value="{{ couponDiscard || '' }}"
+                    placeholder-class="placeholder" value="{{ formatCouponDiscard || '' }}"
                     @blur="dataAction('couponDiscard')"/>
                 </block>
                 <block wx:else>
@@ -74,9 +74,19 @@ export default class Index extends wepy.page {
                 value = value && value.detail && value.detail.value;
             }
 
+            if (prop === 'couponDiscard') {
+                value = value * 10;
+            }
+
             this[prop] = value;
             this.updateData();
         },
+    }
+
+    computed = {
+        formatCouponDiscard() {
+            return this.couponDiscard / 10;
+        }
     }
 
     onLoad() {
@@ -86,6 +96,7 @@ export default class Index extends wepy.page {
         this.updateData();
     }
 
+    // 更新全局状态
     updateData() {
         const couponManage = globalService.get('couponManage');
         globalService.set('couponManage', Object.assign(couponManage, {
