@@ -63,6 +63,12 @@
   background: rgba(255, 157, 0, 0.1);
 }
 
+.appinfo-container .appinfo-base .appinfo-youxiang.disable,
+.appinfo-container .appinfo-base .appinfo-weixin.disable {
+  background: #f6f6f6;
+  color: #ccc;
+}
+
 .appinfo-container .appinfo-base .appinfo-weixin {
   margin-left: 20rpx;
   color: #27bc28;
