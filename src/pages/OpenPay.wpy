@@ -17,11 +17,12 @@
         </view>
         <!-- 跳转到支付助手小程序性开通支付 -->
         <!-- 小程序跳转时低版本不提供url会报错 -->
+        <view class="openpay-confirm disable" wx:if="{{!agreeProtocol}}">确认开通</view>
         <navigator open-type="navigate"
             target="miniProgram"
             path="/pages/payAuthorize/payAuthorize?param={{userid}}" 
             app-id="{{payAppId}}"
-            version="develop">
+            version="develop" wx:else>
             <view class="openpay-confirm">确认开通</view>
         </navigator>
         <!-- 协议内容弹框 -->
@@ -98,8 +99,16 @@ export default class OpenPay extends wepy.page {
         },
     }
     async onShow () {
+        // 开通支付后回传状态
+        const OpenPayStatus = wepy.getStorageSync('OpenPay');
+        OpenPayStatus === '0' && await this.saveAgreeProtocol();
+        console.log('OpenPayStatus', OpenPayStatus);
         const mpid = wepy.getStorageSync('current_mpid');
         await this.getOpenedInfo(mpid);
+    }
+    async saveAgreeProtocol () {
+        const [e] = await get('/mpInfo/agree');
+        e && toast(e);
     }
     async getOpenedInfo (mpid) {
         // 获取用户是否开通支付
@@ -112,7 +121,7 @@ export default class OpenPay extends wepy.page {
         }
         this.loading = false;
         this.userid = res.userid;
-        this.opened = res.protocol === 1;
+        this.opened = res.pay_open === 1;
         this.$apply();
     }
 }
@@ -187,6 +196,9 @@ export default class OpenPay extends wepy.page {
             color: #ffffff;
             letter-spacing: 0;
             text-align: center;
+            &.disable {
+                opacity: 0.5;
+            }
         }
         /* 协议内容 */
         .openpay-protocol-mask {

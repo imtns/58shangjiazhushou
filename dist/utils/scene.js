@@ -44,17 +44,23 @@ exports.default = {
         }
     },
     DoOpenPay: function DoOpenPay(extraData) {
-        if (extraData) return;
+        if (!extraData) return;
         var code = extraData.code;
         // 开通支付失败
         // 返回商家助手小程序首页
 
-        if (code !== 0) {
+        console.log('code:', code);
+        if (code !== '0') {
+            console.log('OpenPay:1');
             setTimeout(function () {
                 _wepy2.default.reLaunch({
                     url: '/pages/home'
                 });
             }, 1000);
+        } else {
+            console.log('OpenPay:0');
+            // 支付开通验证成功后，调用同意协议接口
+            _wepy2.default.setStorageSync('OpenPay', '0');
         }
     }
 };

@@ -15,7 +15,8 @@
         </view>
         <!-- 跳转到支付助手小程序性开通支付 -->
         <!-- 小程序跳转时低版本不提供url会报错 -->
-        <navigator open-type="navigate" target="miniProgram" path="/pages/payAuthorize/payAuthorize?param={{userid}}" app-id="{{payAppId}}" version="develop">
+        <view class="openpay-confirm disable" wx:if="{{!agreeProtocol}}">确认开通</view>
+        <navigator open-type="navigate" target="miniProgram" path="/pages/payAuthorize/payAuthorize?param={{userid}}" app-id="{{payAppId}}" version="develop" wx:else>
             <view class="openpay-confirm">确认开通</view>
         </navigator>
         <!-- 协议内容弹框 -->
