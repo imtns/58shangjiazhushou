@@ -1,5 +1,5 @@
 <template>
-<view class="openpay-container">
+<view class="openpay-container" hidden="{{loading}}">
     <!-- 开通支付 -->
     <view class="openpay" wx:if="{{!opened}}">
         <view class="openpay-main">
@@ -17,12 +17,12 @@
         </view>
         <!-- 跳转到支付助手小程序性开通支付 -->
         <!-- 小程序跳转时低版本不提供url会报错 -->
+        <view class="openpay-confirm disable" wx:if="{{!agreeProtocol}}">确认开通</view>
         <navigator open-type="navigate"
             target="miniProgram"
-            path="/pages/payAuthorize/payAuthorize?param={{'45797966958100'||userid}}"
-            url="/pages/payAuthorize/payAuthorize"  
+            path="/pages/payAuthorize/payAuthorize?param={{userid}}" 
             app-id="{{payAppId}}"
-            version="develop">
+            version="develop" wx:else>
             <view class="openpay-confirm">确认开通</view>
         </navigator>
         <!-- 协议内容弹框 -->
@@ -55,7 +55,7 @@
         <navigator open-type="navigate"
             target="miniProgram"
             path="/pages/payAuthorize/payAuthorize?param={{userid}}" 
-            url="/pages/payAuthorize/payAuthorize"  
+            url="/pages/payAuthorize/payAuthorize?param={{userid}}"
             app-id="{{payAppId}}"
             version="develop">
             <view class="changepay-confirm">更换收款微信</view>
@@ -84,6 +84,7 @@ export default class OpenPay extends wepy.page {
         opened: false, // 是否已经开通支付
         agreeProtocol: true, // 是否同意协议
         showProtocol: false, // 显示协议内容
+        loading: true, // 加载中隐藏页面内容
     }
     methods = {
         bindAgreeProtocol () {
@@ -97,9 +98,17 @@ export default class OpenPay extends wepy.page {
             console.log('stopAuthorizeScroll');
         },
     }
-    async onLoad (options) {
-        const mpid = options.mpid || wepy.getStorageSync('current_mpid');
+    async onShow () {
+        // 开通支付后回传状态
+        const OpenPayStatus = wepy.getStorageSync('OpenPay');
+        OpenPayStatus === '0' && await this.saveAgreeProtocol();
+        console.log('OpenPayStatus', OpenPayStatus);
+        const mpid = wepy.getStorageSync('current_mpid');
         await this.getOpenedInfo(mpid);
+    }
+    async saveAgreeProtocol () {
+        const [e] = await get('/mpInfo/agree');
+        e && toast(e);
     }
     async getOpenedInfo (mpid) {
         // 获取用户是否开通支付
@@ -110,7 +119,10 @@ export default class OpenPay extends wepy.page {
             toast(e);
             return;
         }
-        this.opened = res.protocol === 1;
+        this.loading = false;
+        this.userid = res.userid;
+        this.opened = res.pay_open === 1;
+        this.$apply();
     }
 }
 </script>
@@ -184,6 +196,9 @@ export default class OpenPay extends wepy.page {
             color: #ffffff;
             letter-spacing: 0;
             text-align: center;
+            &.disable {
+                opacity: 0.5;
+            }
         }
         /* 协议内容 */
         .openpay-protocol-mask {

@@ -50,7 +50,6 @@ var AppEdit = function (_wepy$page) {
         }
 
         return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = AppEdit.__proto__ || Object.getPrototypeOf(AppEdit)).call.apply(_ref, [this].concat(args))), _this), _this.config = {
-            disableScroll: true,
             navigationBarTitleText: '小程序编辑'
         }, _this.data = {
             logoUrl: '',
@@ -301,7 +300,10 @@ var AppEdit = function (_wepy$page) {
                                         city: form.city, // 城市
                                         address: form.address, // 地址
                                         lat: form.addressLatitude, // 纬度
-                                        lnt: form.addressLongitude // 经度
+                                        lnt: form.addressLongitude, // 经度
+                                        cate1: form.cate1, // 所属行业第一级
+                                        cate2: form.cate2, // 所属行业第二级
+                                        cate3: form.cate3 // 所属行业第三级
                                     };
 
                                     console.log(sendData);
@@ -646,9 +648,18 @@ var AppEdit = function (_wepy$page) {
                                 return _context8.abrupt('return', false);
 
                             case 24:
+                                if (!(!form.cate1 || !form.cate2)) {
+                                    _context8.next = 27;
+                                    break;
+                                }
+
+                                this.toast('所属行业至少选择两项');
+                                return _context8.abrupt('return', false);
+
+                            case 27:
                                 return _context8.abrupt('return', true);
 
-                            case 25:
+                            case 28:
                             case 'end':
                                 return _context8.stop();
                         }
@@ -705,6 +716,21 @@ var AppEdit = function (_wepy$page) {
 
             return onLoad;
         }()
+    }, {
+        key: 'onShow',
+        value: function onShow() {
+            var form = {};
+            // 从所属类目值选择页面返回重新赋值
+            var cateChooice = this.$parent.globalData && this.$parent.globalData.cateChooice ? this.$parent.globalData.cateChooice : [{}, {}, {}];
+            cateChooice.map(function (item, index) {
+                form['cate' + (index + 1)] = item.cateId || '';
+                form['cate' + (index + 1) + 'Name'] = item.name || '';
+                return item;
+            });
+            // 更新完成删除全局所属类目字段cateChooice
+            this.$parent.globalData && this.$parent.globalData.cateChooice && delete this.$parent.globalData.cateChooice;
+            this.updateForm(form);
+        }
     }]);
 
     return AppEdit;

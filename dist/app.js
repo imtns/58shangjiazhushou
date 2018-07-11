@@ -66,7 +66,8 @@ var _class = function (_wepy$app) {
             'pages/accountNoticeList', // 入账提醒页面
             'pages/OrderList', // 订单列表
             'pages/OrderDetail', // 订单详情
-            'pages/OpenPay'],
+            'pages/OpenPay', // 开通支付
+            'pages/CateSelector'],
             window: {
                 backgroundTextStyle: 'light',
                 navigationBarBackgroundColor: '#fff',
@@ -84,7 +85,10 @@ var _class = function (_wepy$app) {
         value: function onLaunch() {
             console.log('onlainch');
             // 刘强起的ppu.测试使用，上线记得删除
-            // wepy.setStorageSync('ppu', 'UID=48917864286479&UN=zf3e85&TT=d81202a65af05aa8cb1ea5f6d92254d1&PBODY=JhH_NY6a8n2PvW6ZgBv_B1CwuIJH84mNnuJt4PxcpEQDl5QPvba4IdoMpCpk_GxpEfRtc9RPAvrK6G4o9J3zhKHmVv33iBDKO8EVnmRq6yp2ETgstCBISr9016TKao2yDyUeZG32vv_2yuyG01uAnqTlUL1vaRpLJ3fRd9NqySA&VER=1');
+            // wepy.setStorageSync('ppu', 'UID=48917864286479&UN=zf3e85
+            // &TT=d81202a65af05aa8cb1ea5f6d92254d1&PBODY=JhH_NY6a8n2PvW6ZgBv_B1CwuIJH84mNn
+            // uJt4PxcpEQDl5QPvba4IdoMpCpk_GxpEfRtc9RPAvrK6G4o9J3zhKHmVv33iBDKO8EVnmRq6yp2ETg
+            // stCBISr9016TKao2yDyUeZG32vv_2yuyG01uAnqTlUL1vaRpLJ3fRd9NqySA&VER=1');
         }
     }, {
         key: 'onShow',
@@ -125,6 +129,10 @@ var _class = function (_wepy$app) {
 
             var fromAppId = appId;
             // action:通过fromAppId和scene返回当前小程序处理
+<<<<<<< HEAD
+=======
+
+>>>>>>> bfffd2c19cc93f660f65649dd8ee53503acfe9ee
             console.log('referrerInfo', referrerInfo);
             var action = scene === 1038 || scene === '1038' ? CALLBACKAPPS[fromAppId] : '';
 

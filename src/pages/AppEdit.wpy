@@ -20,6 +20,29 @@
                 <text class="appedit-form-label">联系电话</text>
                 <input class="appedit-form-input" maxlength='11' type="number" @input="setMobile" placeholder="请输入" placeholder-class="appedit-form-placeholder" value="{{form.telphone}}"/>
             </view>
+            <!-- 同镇用户所属行业只可编辑一次，mpSource:2 代表同镇，所属行业已编辑 -->
+            <view class="appedit-content-list-item"
+             wx:if="{{form.mpSource == 2 && form.cate2}}">
+                <text class="appedit-form-label">所属行业</text>
+                <view class="appedit-form-cate">
+                    {{ form.cate1Name||''+' '+form.cate2Name||''+' '+form.cate3Name||'' }}
+                </view>
+                <text class="appedit-form-arrow"></text>
+            </view>
+            <navigator url="/pages/CateSelector?cate1={{form.cate1}}&cate2={{form.cate2}}&cate3={{form.cate3}}" wx:else>
+                <view class="appedit-content-list-item">
+                    <text class="appedit-form-label">所属行业</text>
+                    <view class="appedit-form-cate">
+                        <block wx:if="{{form.cate1Name}}">
+                            {{ form.cate1Name+' '+form.cate2Name+' '+form.cate3Name }}
+                        </block>
+                        <block wx:else>
+                            请选择
+                        </block>
+                    </view>
+                    <text class="appedit-form-arrow"></text>
+                </view>
+             </navigator>
             <picker mode="multiSelector" @change="setCity" @columnchange="bindCity" range="{{areas}}" range-key="localName" value="{{selCityIndex}}">
                 <view class="appedit-content-list-item">
                     <text class="appedit-form-label">小程序城市</text>
@@ -62,7 +85,6 @@ const saveAppApi = '/mplogic/modifympinfo';
 
 export default class AppEdit extends wepy.page {
     config = {
-        disableScroll: true,
         navigationBarTitleText: '小程序编辑',
     }
     data = {
@@ -223,6 +245,11 @@ export default class AppEdit extends wepy.page {
             this.toast('输入详情地址');
             return false;
         }
+        // 所属行业至少选择两项
+        if (!form.cate1 || !form.cate2) {
+            this.toast('所属行业至少选择两项');
+            return false;
+        }
         return true;
     }
     methods = {
@@ -316,6 +343,9 @@ export default class AppEdit extends wepy.page {
                 address: form.address, // 地址
                 lat: form.addressLatitude, // 纬度
                 lnt: form.addressLongitude, // 经度
+                cate1: form.cate1, // 所属行业第一级
+                cate2: form.cate2, // 所属行业第二级
+                cate3: form.cate3, // 所属行业第三级
             };
             console.log(sendData);
             const [e, res] = await get(saveAppApi, sendData);
@@ -337,6 +367,22 @@ export default class AppEdit extends wepy.page {
         await this.getLocation();
         await this.getProvinces();
         this.defaultSelCityIndex();
+    }
+    onShow () {
+        const form = {};
+        // 从所属类目值选择页面返回重新赋值
+        const cateChooice = (this.$parent.globalData && this.$parent.globalData.cateChooice) ?
+            this.$parent.globalData.cateChooice : [{}, {}, {}];
+        cateChooice.map((item, index) => {
+            form[`cate${index + 1}`] = item.cateId || '';
+            form[`cate${index + 1}Name`] = item.name || '';
+            return item;
+        });
+        // 更新完成删除全局所属类目字段cateChooice
+        this.$parent.globalData
+            && this.$parent.globalData.cateChooice
+            && (delete this.$parent.globalData.cateChooice);
+        this.updateForm(form);
     }
 }
 </script>
@@ -423,6 +469,29 @@ export default class AppEdit extends wepy.page {
                 color: #333333;
                 text-align: right;
                 vertical-align: middle;
+            }
+            .appedit-form-cate {
+                margin-left: 40rpx;
+                display: inline-block;
+                width: 460rpx;
+                overflow: hidden;
+                white-space: nowrap;
+                font-family: PingFangSC-Regular;
+                font-size: 30rpx;
+                color: #333333;
+                text-align: right;
+                vertical-align: middle;
+            }
+            .appedit-form-arrow {
+                display: inline-block;
+                content: '';
+                width: 15rpx;
+                height: 25rpx;
+                vertical-align: middle;
+                margin-left: 25rpx;
+                background: url('https://static.58.com/lbg/mengchong/image/icon/arrow-right.png')
+                    no-repeat;
+                background-size: 100%;
             }
             .appedit-form-appname {
                 overflow: hidden;

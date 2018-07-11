@@ -23,7 +23,7 @@
 .appinfo-container .appinfo-base .appinfo-title-wrap {
   display: inline-block;
   overflow: hidden;
-  width: 450rpx;
+  width: 384rpx;
   height: 128rpx;
 }
 
@@ -51,7 +51,6 @@
 .appinfo-container .appinfo-base .appinfo-weixin {
   display: inline-block;
   vertical-align: top;
-  margin-left: 20rpx;
   width: 66rpx;
   line-height: 38rpx;
   font-family: PingFangSC-Regular;
@@ -65,6 +64,7 @@
 }
 
 .appinfo-container .appinfo-base .appinfo-weixin {
+  margin-left: 20rpx;
   color: #27bc28;
   background: rgba(24, 173, 25, 0.1);
 }

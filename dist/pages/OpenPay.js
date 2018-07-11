@@ -50,7 +50,8 @@ var OpenPay = function (_wepy$page) {
             userid: '', // 开通支付必填
             opened: false, // 是否已经开通支付
             agreeProtocol: true, // 是否同意协议
-            showProtocol: false // 显示协议内容
+            showProtocol: false, // 显示协议内容
+            loading: true // 加载中隐藏页面内容
         }, _this.methods = {
             bindAgreeProtocol: function bindAgreeProtocol() {
                 this.agreeProtocol = !this.agreeProtocol;
@@ -66,19 +67,33 @@ var OpenPay = function (_wepy$page) {
     }
 
     _createClass(OpenPay, [{
-        key: 'onLoad',
+        key: 'onShow',
         value: function () {
-            var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(options) {
-                var mpid;
+            var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+                var OpenPayStatus, mpid;
                 return regeneratorRuntime.wrap(function _callee$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
                             case 0:
-                                mpid = options.mpid || _wepy2.default.getStorageSync('current_mpid');
-                                _context.next = 3;
+                                // 开通支付后回传状态
+                                OpenPayStatus = _wepy2.default.getStorageSync('OpenPay');
+                                _context.t0 = OpenPayStatus === '0';
+
+                                if (!_context.t0) {
+                                    _context.next = 5;
+                                    break;
+                                }
+
+                                _context.next = 5;
+                                return this.saveAgreeProtocol();
+
+                            case 5:
+                                console.log('OpenPayStatus', OpenPayStatus);
+                                mpid = _wepy2.default.getStorageSync('current_mpid');
+                                _context.next = 9;
                                 return this.getOpenedInfo(mpid);
 
-                            case 3:
+                            case 9:
                             case 'end':
                                 return _context.stop();
                         }
@@ -86,43 +101,33 @@ var OpenPay = function (_wepy$page) {
                 }, _callee, this);
             }));
 
-            function onLoad(_x) {
+            function onShow() {
                 return _ref2.apply(this, arguments);
             }
 
-            return onLoad;
+            return onShow;
         }()
     }, {
-        key: 'getOpenedInfo',
+        key: 'saveAgreeProtocol',
         value: function () {
-            var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(mpid) {
-                var _ref4, _ref5, e, res;
+            var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+                var _ref4, _ref5, e;
 
                 return regeneratorRuntime.wrap(function _callee2$(_context2) {
                     while (1) {
                         switch (_context2.prev = _context2.next) {
                             case 0:
                                 _context2.next = 2;
-                                return (0, _ajaxP.get)(appinfoApi + '/' + mpid);
+                                return (0, _ajaxP.get)('/mpInfo/agree');
 
                             case 2:
                                 _ref4 = _context2.sent;
-                                _ref5 = _slicedToArray(_ref4, 2);
+                                _ref5 = _slicedToArray(_ref4, 1);
                                 e = _ref5[0];
-                                res = _ref5[1];
 
-                                if (!e) {
-                                    _context2.next = 9;
-                                    break;
-                                }
+                                e && (0, _utils.toast)(e);
 
-                                (0, _utils.toast)(e);
-                                return _context2.abrupt('return');
-
-                            case 9:
-                                this.opened = res.protocol === 1;
-
-                            case 10:
+                            case 6:
                             case 'end':
                                 return _context2.stop();
                         }
@@ -130,8 +135,55 @@ var OpenPay = function (_wepy$page) {
                 }, _callee2, this);
             }));
 
-            function getOpenedInfo(_x2) {
+            function saveAgreeProtocol() {
                 return _ref3.apply(this, arguments);
+            }
+
+            return saveAgreeProtocol;
+        }()
+    }, {
+        key: 'getOpenedInfo',
+        value: function () {
+            var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(mpid) {
+                var _ref7, _ref8, e, res;
+
+                return regeneratorRuntime.wrap(function _callee3$(_context3) {
+                    while (1) {
+                        switch (_context3.prev = _context3.next) {
+                            case 0:
+                                _context3.next = 2;
+                                return (0, _ajaxP.get)(appinfoApi + '/' + mpid);
+
+                            case 2:
+                                _ref7 = _context3.sent;
+                                _ref8 = _slicedToArray(_ref7, 2);
+                                e = _ref8[0];
+                                res = _ref8[1];
+
+                                if (!e) {
+                                    _context3.next = 9;
+                                    break;
+                                }
+
+                                (0, _utils.toast)(e);
+                                return _context3.abrupt('return');
+
+                            case 9:
+                                this.loading = false;
+                                this.userid = res.userid;
+                                this.opened = res.pay_open === 1;
+                                this.$apply();
+
+                            case 13:
+                            case 'end':
+                                return _context3.stop();
+                        }
+                    }
+                }, _callee3, this);
+            }));
+
+            function getOpenedInfo(_x) {
+                return _ref6.apply(this, arguments);
             }
 
             return getOpenedInfo;

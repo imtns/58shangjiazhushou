@@ -6,8 +6,8 @@
                 <view class="appinfo-title">{{appInfo.nickName}}</view>
                 <view class="appinfo-date">有效期至 {{appInfo.date}}</view>
             </view>
-            <view class="appinfo-youxiang" wx:if="{{appInfo.app_type==1}}">优享</view>
-            <view class="appinfo-weixin" wx:else>微信</view>
+            <view class="appinfo-youxiang" wx:if="{{appInfo.app_type==1 || appInfo.app_type==2}}">优享</view>
+            <view class="appinfo-weixin" wx:if="{{appInfo.app_type==2}}">微信</view>
         </view>
         <view class="appinfo-status">
             <view class="appinfo-auth" wx:if="{{appInfo.app_type==2}}">授权状态：{{appInfo.status_desc}}</view>
@@ -205,7 +205,7 @@ export default class AppInfo extends wepy.page {
         .appinfo-title-wrap {
             display: inline-block;
             overflow: hidden;
-            width: 450rpx;
+            width: 384rpx;
             height: 128rpx;
         }
         .appinfo-title {
@@ -230,7 +230,6 @@ export default class AppInfo extends wepy.page {
         .appinfo-weixin {
             display: inline-block;
             vertical-align: top;
-            margin-left: 20rpx;
             width: 66rpx;
             line-height: 38rpx;
             font-family: PingFangSC-Regular;
@@ -243,8 +242,11 @@ export default class AppInfo extends wepy.page {
             background: rgba(255, 157, 0, 0.1);
         }
         .appinfo-weixin {
+            margin-left: 20rpx;
             color: #27bc28;
             background: rgba(24, 173, 25, 0.1);
+            &.disable {
+            }
         }
     }
     .appinfo-status {
