@@ -89,7 +89,7 @@ export default class CateSelector extends wepy.page {
     data = {
         columnNo: 1, // 选中的列宽度加大
         cateChooice: [{}, {}, {}], // 选中类别[cate1,cate2,cate3]
-        cateRange: [[], [], []], // 三级类范围值
+        cateRange: [[], [], []], // 三级类范围值[range1,range2,range3]
     }
     methods = {
         async bindFirstCate (item) {
@@ -137,7 +137,8 @@ export default class CateSelector extends wepy.page {
     }
     // 初始化选择范围
     onLoad (options) {
-        const mpId = options.mpid || wepy.getStorageSync('current_mpid');
+        const mpId = wepy.getStorageSync('current_mpid');
+        // 已选中的行业ID
         const {
             cate1 = '', cate2 = '', cate3 = '',
         } = options;
@@ -158,27 +159,40 @@ export default class CateSelector extends wepy.page {
     getRangeById (mpId, parentid = '') {
         return get('/cate/dispcate/byparentid', { mpid: mpId, parentid });
     }
+    getCateById (item, cateId) {
+        return `${item.cateId}` === cateId;
+    }
     async initData (mpId, cateChooice) {
-        const [cate1 = {}, cate2 = {}] = cateChooice;
-        // 每次必须拉取第一级范围值
-        const [e, cate1Range] = await this.getRangeById(mpId || '940887130543091712');
+        // 每次必须拉取第一级范围数据
+        const [e, cate1Range] = await this.getRangeById(mpId);
         if (e) {
             toast(e);
             return;
         }
-        this.cateRange = [cate1Range, [], []];
-        // 当第一级为空的时候，设置第一级范围数组下标0为默认值
-        this.cateChooice.splice(0, 1, Object.assign(cate1, cate1Range[0]));
-        // 第二级和第三级范围值需要上一级范围选中
-        [cate1, cate2].map(async (item, index) => {
-            // 未选择中范围中则不能拉取下级范围
-            if (!item) return;
-            const [e1, range] = await this.getRangeById(mpId, item);
+        // 更新第一级范围数据
+        this.cateRange.splice(0, 1, cate1Range);
+        // 更新第一级选中值
+        // 如果选中值为空则取范围中第一条做默认值
+        const category1 = cate1Range.find(item => `${item.cateId}` === cateChooice[0]) || cate1Range[0];
+        this.cateChooice.splice(0, 1, category1);
+        cateChooice.splice(0, 1, category1.cateId);
+        // 通过父级选值子级范围数据
+        cateChooice.slice(0, 2).map(async (parentId, index) => {
+            // CateChooice中子元素下标
+            const subIndex = index + 1;
+            // 父级未选择中范围中则不能拉取下级范围
+            if (!parentId) return;
+            const [e1, range] = await this.getRangeById(mpId, parentId);
             if (e1) {
                 toast(e1);
                 return;
             }
-            this.cateRange.splice(index + 1, 1, range);
+            // 更新子级范围数据源
+            this.cateRange.splice(subIndex, 1, range);
+            // 子级范围是否有选中值
+            const tempCate = range.find(item => `${item.cateId}` === cateChooice[subIndex]) || '';
+            tempCate && this.cateChooice.splice(subIndex, 1, tempCate);
+            this.$apply();
         });
         this.mpId = mpId;
         this.$apply();

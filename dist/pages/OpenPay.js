@@ -67,15 +67,15 @@ var OpenPay = function (_wepy$page) {
     }
 
     _createClass(OpenPay, [{
-        key: 'onLoad',
+        key: 'onShow',
         value: function () {
-            var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(options) {
+            var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
                 var mpid;
                 return regeneratorRuntime.wrap(function _callee$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
                             case 0:
-                                mpid = options.mpid || _wepy2.default.getStorageSync('current_mpid');
+                                mpid = _wepy2.default.getStorageSync('current_mpid');
                                 _context.next = 3;
                                 return this.getOpenedInfo(mpid);
 
@@ -87,11 +87,11 @@ var OpenPay = function (_wepy$page) {
                 }, _callee, this);
             }));
 
-            function onLoad(_x) {
+            function onShow() {
                 return _ref2.apply(this, arguments);
             }
 
-            return onLoad;
+            return onShow;
         }()
     }, {
         key: 'getOpenedInfo',
@@ -134,7 +134,7 @@ var OpenPay = function (_wepy$page) {
                 }, _callee2, this);
             }));
 
-            function getOpenedInfo(_x2) {
+            function getOpenedInfo(_x) {
                 return _ref3.apply(this, arguments);
             }
 

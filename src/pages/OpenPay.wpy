@@ -97,8 +97,8 @@ export default class OpenPay extends wepy.page {
             console.log('stopAuthorizeScroll');
         },
     }
-    async onLoad (options) {
-        const mpid = options.mpid || wepy.getStorageSync('current_mpid');
+    async onShow () {
+        const mpid = wepy.getStorageSync('current_mpid');
         await this.getOpenedInfo(mpid);
     }
     async getOpenedInfo (mpid) {

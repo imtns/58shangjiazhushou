@@ -62,9 +62,7 @@ var AppEdit = function (_wepy$page) {
                 city: '1',
                 province: '5001'
             },
-            tempLogo: '',
-            mpSource: 1, // 小程序来源,2代表同镇
-            cateChooice: []
+            tempLogo: ''
         }, _this.computed = {
             enableSave: function enableSave() {
                 return !!(this.form.nickName && this.form.headImg && this.form.telphone && this.form.city && this.form.address);
@@ -303,9 +301,9 @@ var AppEdit = function (_wepy$page) {
                                         address: form.address, // 地址
                                         lat: form.addressLatitude, // 纬度
                                         lnt: form.addressLongitude, // 经度
-                                        cate1: this.cateChooice[0].cateId,
-                                        cate2: this.cateChooice[1].cateId,
-                                        cate3: this.cateChooice[2].cateId
+                                        cate1: form.cate1, // 所属行业第一级
+                                        cate2: form.cate2, // 所属行业第二级
+                                        cate3: form.cate3 // 所属行业第三级
                                     };
 
                                     console.log(sendData);
@@ -650,9 +648,7 @@ var AppEdit = function (_wepy$page) {
                                 return _context8.abrupt('return', false);
 
                             case 24:
-                                if (this.cateChooice.slice(0, 2).every(function (item) {
-                                    return item.cateId;
-                                })) {
+                                if (!(!form.cate1 || !form.cate2)) {
                                     _context8.next = 27;
                                     break;
                                 }
@@ -691,9 +687,7 @@ var AppEdit = function (_wepy$page) {
                                 if (!mpid) {
                                     _wepy2.default.navigateBack();
                                 }
-                                // const { mpSource } = this.$parent.globalData.extConfig;
                                 this.mpid = mpid;
-                                // this.mpSource = mpSource;
                                 _context9.next = 5;
                                 return this.getAppInfo(this.mpid);
 
@@ -725,7 +719,17 @@ var AppEdit = function (_wepy$page) {
     }, {
         key: 'onShow',
         value: function onShow() {
-            this.cateChooice = this.$parent.globalData && this.$parent.globalData.cateChooice ? this.$parent.globalData.cateChooice : [];
+            var form = {};
+            // 从所属类目值选择页面返回重新赋值
+            var cateChooice = this.$parent.globalData && this.$parent.globalData.cateChooice ? this.$parent.globalData.cateChooice : [{}, {}, {}];
+            cateChooice.map(function (item, index) {
+                form['cate' + (index + 1)] = item.cateId || '';
+                form['cate' + (index + 1) + 'Name'] = item.name || '';
+                return item;
+            });
+            // 更新完成删除全局所属类目字段cateChooice
+            this.$parent.globalData && this.$parent.globalData.cateChooice && delete this.$parent.globalData.cateChooice;
+            this.updateForm(form);
         }
     }]);
 

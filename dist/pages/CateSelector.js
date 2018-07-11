@@ -43,7 +43,7 @@ var CateSelector = function (_wepy$page) {
         return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = CateSelector.__proto__ || Object.getPrototypeOf(CateSelector)).call.apply(_ref, [this].concat(args))), _this), _this.config = { navigationBarTitleText: '选择类目' }, _this.data = {
             columnNo: 1, // 选中的列宽度加大
             cateChooice: [{}, {}, {}], // 选中类别[cate1,cate2,cate3]
-            cateRange: [[], [], []] // 三级类范围值
+            cateRange: [[], [], []] // 三级类范围值[range1,range2,range3]
         }, _this.methods = {
             bindFirstCate: function () {
                 var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(item) {
@@ -167,7 +167,8 @@ var CateSelector = function (_wepy$page) {
 
         // 初始化选择范围
         value: function onLoad(options) {
-            var mpId = options.mpid || _wepy2.default.getStorageSync('current_mpid');
+            var mpId = _wepy2.default.getStorageSync('current_mpid');
+            // 已选中的行业ID
             var _options$cate = options.cate1,
                 cate1 = _options$cate === undefined ? '' : _options$cate,
                 _options$cate2 = options.cate2,
@@ -193,79 +194,100 @@ var CateSelector = function (_wepy$page) {
             return (0, _ajaxP.get)('/cate/dispcate/byparentid', { mpid: mpId, parentid: parentid });
         }
     }, {
+        key: 'getCateById',
+        value: function getCateById(item, cateId) {
+            return '' + item.cateId === cateId;
+        }
+    }, {
         key: 'initData',
         value: function () {
             var _ref8 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(mpId, cateChooice) {
                 var _this2 = this;
 
-                var _cateChooice2, _cateChooice2$, cate1, _cateChooice2$2, cate2, _ref9, _ref10, e, cate1Range;
+                var _ref9, _ref10, e, cate1Range, category1;
 
                 return regeneratorRuntime.wrap(function _callee4$(_context4) {
                     while (1) {
                         switch (_context4.prev = _context4.next) {
                             case 0:
-                                _cateChooice2 = _slicedToArray(cateChooice, 2), _cateChooice2$ = _cateChooice2[0], cate1 = _cateChooice2$ === undefined ? {} : _cateChooice2$, _cateChooice2$2 = _cateChooice2[1], cate2 = _cateChooice2$2 === undefined ? {} : _cateChooice2$2;
-                                // 每次必须拉取第一级范围值
+                                _context4.next = 2;
+                                return this.getRangeById(mpId);
 
-                                _context4.next = 3;
-                                return this.getRangeById(mpId || '940887130543091712');
-
-                            case 3:
+                            case 2:
                                 _ref9 = _context4.sent;
                                 _ref10 = _slicedToArray(_ref9, 2);
                                 e = _ref10[0];
                                 cate1Range = _ref10[1];
 
                                 if (!e) {
-                                    _context4.next = 10;
+                                    _context4.next = 9;
                                     break;
                                 }
 
                                 (0, _utils.toast)(e);
                                 return _context4.abrupt('return');
 
-                            case 10:
-                                this.cateRange = [cate1Range, [], []];
-                                // 当第一级为空的时候，设置第一级范围数组下标0为默认值
-                                this.cateChooice.splice(0, 1, Object.assign(cate1, cate1Range[0]));
-                                // 第二级和第三级范围值需要上一级范围选中
-                                [cate1, cate2].map(function () {
-                                    var _ref11 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(item, index) {
-                                        var _ref12, _ref13, e1, range;
+                            case 9:
+                                // 更新第一级范围数据
+                                this.cateRange.splice(0, 1, cate1Range);
+                                // 更新第一级选中值
+                                // 如果选中值为空则取范围中第一条做默认值
+                                category1 = cate1Range.find(function (item) {
+                                    return '' + item.cateId === cateChooice[0];
+                                }) || cate1Range[0];
+
+                                this.cateChooice.splice(0, 1, category1);
+                                cateChooice.splice(0, 1, category1.cateId);
+                                // 通过父级选值子级范围数据
+                                cateChooice.slice(0, 2).map(function () {
+                                    var _ref11 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(parentId, index) {
+                                        var subIndex, _ref12, _ref13, e1, range, tempCate;
 
                                         return regeneratorRuntime.wrap(function _callee3$(_context3) {
                                             while (1) {
                                                 switch (_context3.prev = _context3.next) {
                                                     case 0:
-                                                        if (item) {
-                                                            _context3.next = 2;
+                                                        // CateChooice中子元素下标
+                                                        subIndex = index + 1;
+                                                        // 父级未选择中范围中则不能拉取下级范围
+
+                                                        if (parentId) {
+                                                            _context3.next = 3;
                                                             break;
                                                         }
 
                                                         return _context3.abrupt('return');
 
-                                                    case 2:
-                                                        _context3.next = 4;
-                                                        return _this2.getRangeById(mpId, item);
+                                                    case 3:
+                                                        _context3.next = 5;
+                                                        return _this2.getRangeById(mpId, parentId);
 
-                                                    case 4:
+                                                    case 5:
                                                         _ref12 = _context3.sent;
                                                         _ref13 = _slicedToArray(_ref12, 2);
                                                         e1 = _ref13[0];
                                                         range = _ref13[1];
 
                                                         if (!e1) {
-                                                            _context3.next = 11;
+                                                            _context3.next = 12;
                                                             break;
                                                         }
 
                                                         (0, _utils.toast)(e1);
                                                         return _context3.abrupt('return');
 
-                                                    case 11:
-                                                        _this2.cateRange.splice(index + 1, 1, range);
-
                                                     case 12:
+                                                        // 更新子级范围数据源
+                                                        _this2.cateRange.splice(subIndex, 1, range);
+                                                        // 子级范围是否有选中值
+                                                        tempCate = range.find(function (item) {
+                                                            return '' + item.cateId === cateChooice[subIndex];
+                                                        }) || '';
+
+                                                        tempCate && _this2.cateChooice.splice(subIndex, 1, tempCate);
+                                                        _this2.$apply();
+
+                                                    case 16:
                                                     case 'end':
                                                         return _context3.stop();
                                                 }
@@ -280,7 +302,7 @@ var CateSelector = function (_wepy$page) {
                                 this.mpId = mpId;
                                 this.$apply();
 
-                            case 15:
+                            case 16:
                             case 'end':
                                 return _context4.stop();
                         }
