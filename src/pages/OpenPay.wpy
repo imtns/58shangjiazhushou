@@ -99,14 +99,15 @@ export default class OpenPay extends wepy.page {
         },
     }
     async onShow () {
-        // 开通支付后回传状态
-        const OpenPayStatus = wepy.getStorageSync('OpenPay');
-        OpenPayStatus === '0' && await this.saveAgreeProtocol();
-        console.log('OpenPayStatus', OpenPayStatus);
+        await this.saveAgreeProtocol();
         const mpid = wepy.getStorageSync('current_mpid');
         await this.getOpenedInfo(mpid);
     }
     async saveAgreeProtocol () {
+        // 开通支付后回传状态
+        const OpenPayStatus = wepy.getStorageSync('OpenPay');
+        if (OpenPayStatus !== '0') return;
+        wepy.removeStorageSync('OpenPay');
         const [e] = await get('/mpInfo/agree');
         e && toast(e);
     }

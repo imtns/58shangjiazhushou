@@ -133,7 +133,7 @@ var _class = function (_wepy$app) {
             var action = scene === 1038 || scene === '1038' ? CALLBACKAPPS[fromAppId] : '';
 
             // 1037进入 从别的小程序进入
-            action = scene === 1037 || scene === '1037' ? CALLBACKAPPS[fromAppId] : '';
+            action = scene === 1037 || scene === '1037' ? CALLBACKAPPS[fromAppId] : action;
             // 登陆已经上线保持原有判断逻辑
             // 条件1：scene：1038从另一个小程序返回
             if (scene === 1038 && path === 'pages/intro' && fromAppId === 'wx2a9c6eeb1c44a284') {

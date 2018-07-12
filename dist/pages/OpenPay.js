@@ -70,30 +70,20 @@ var OpenPay = function (_wepy$page) {
         key: 'onShow',
         value: function () {
             var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-                var OpenPayStatus, mpid;
+                var mpid;
                 return regeneratorRuntime.wrap(function _callee$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
                             case 0:
-                                // 开通支付后回传状态
-                                OpenPayStatus = _wepy2.default.getStorageSync('OpenPay');
-                                _context.t0 = OpenPayStatus === '0';
-
-                                if (!_context.t0) {
-                                    _context.next = 5;
-                                    break;
-                                }
-
-                                _context.next = 5;
+                                _context.next = 2;
                                 return this.saveAgreeProtocol();
 
-                            case 5:
-                                console.log('OpenPayStatus', OpenPayStatus);
+                            case 2:
                                 mpid = _wepy2.default.getStorageSync('current_mpid');
-                                _context.next = 9;
+                                _context.next = 5;
                                 return this.getOpenedInfo(mpid);
 
-                            case 9:
+                            case 5:
                             case 'end':
                                 return _context.stop();
                         }
@@ -111,23 +101,35 @@ var OpenPay = function (_wepy$page) {
         key: 'saveAgreeProtocol',
         value: function () {
             var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-                var _ref4, _ref5, e;
+                var OpenPayStatus, _ref4, _ref5, e;
 
                 return regeneratorRuntime.wrap(function _callee2$(_context2) {
                     while (1) {
                         switch (_context2.prev = _context2.next) {
                             case 0:
-                                _context2.next = 2;
+                                // 开通支付后回传状态
+                                OpenPayStatus = _wepy2.default.getStorageSync('OpenPay');
+
+                                if (!(OpenPayStatus !== '0')) {
+                                    _context2.next = 3;
+                                    break;
+                                }
+
+                                return _context2.abrupt('return');
+
+                            case 3:
+                                _wepy2.default.removeStorageSync('OpenPay');
+                                _context2.next = 6;
                                 return (0, _ajaxP.get)('/mpInfo/agree');
 
-                            case 2:
+                            case 6:
                                 _ref4 = _context2.sent;
                                 _ref5 = _slicedToArray(_ref4, 1);
                                 e = _ref5[0];
 
                                 e && (0, _utils.toast)(e);
 
-                            case 6:
+                            case 10:
                             case 'end':
                                 return _context2.stop();
                         }
