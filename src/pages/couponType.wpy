@@ -75,7 +75,7 @@ export default class Index extends wepy.page {
             }
 
             if (prop === 'couponDiscard') {
-                value = value * 10;
+                value *= 10;
             }
 
             this[prop] = value;
@@ -86,7 +86,7 @@ export default class Index extends wepy.page {
     computed = {
         formatCouponDiscard() {
             return this.couponDiscard / 10;
-        }
+        },
     }
 
     onLoad() {
