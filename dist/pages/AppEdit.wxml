@@ -23,7 +23,7 @@
             <view class="appedit-content-list-item" wx:if="{{form.mpSource == 2 && form.cate2}}">
                 <text class="appedit-form-label">所属行业</text>
                 <view class="appedit-form-cate">
-                    {{ form.cate1Name||''+' '+form.cate2Name||''+' '+form.cate3Name||'' }}
+                    {{ form.cate1Name+' '+form.cate2Name+' '+form.cate3Name }}
                 </view>
                 <text class="appedit-form-arrow"/>
             </view>

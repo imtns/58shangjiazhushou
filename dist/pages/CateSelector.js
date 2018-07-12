@@ -251,8 +251,9 @@ var CateSelector = function (_wepy$page) {
                                                         // CateChooice中子元素下标
                                                         subIndex = index + 1;
                                                         // 父级未选择中范围中则不能拉取下级范围
+                                                        // parentId初始值为代表未选择，RD存的默认值
 
-                                                        if (parentId) {
+                                                        if (!(!parentId || parentId.toString() === '0')) {
                                                             _context3.next = 3;
                                                             break;
                                                         }

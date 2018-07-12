@@ -182,7 +182,8 @@ export default class CateSelector extends wepy.page {
             // CateChooice中子元素下标
             const subIndex = index + 1;
             // 父级未选择中范围中则不能拉取下级范围
-            if (!parentId) return;
+            // parentId初始值为代表未选择，RD存的默认值
+            if (!parentId || parentId.toString() === '0') return;
             const [e1, range] = await this.getRangeById(mpId, parentId);
             if (e1) {
                 toast(e1);

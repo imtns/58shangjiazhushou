@@ -25,7 +25,7 @@
              wx:if="{{form.mpSource == 2 && form.cate2}}">
                 <text class="appedit-form-label">所属行业</text>
                 <view class="appedit-form-cate">
-                    {{ form.cate1Name||''+' '+form.cate2Name||''+' '+form.cate3Name||'' }}
+                    {{ form.cate1Name+' '+form.cate2Name+' '+form.cate3Name }}
                 </view>
                 <text class="appedit-form-arrow"></text>
             </view>
@@ -375,9 +375,11 @@ export default class AppEdit extends wepy.page {
     updateCateChooice () {
         if (!this.$parent.globalData || !this.$parent.globalData.cateChooice) return;
         const form = {};
+        console.log('cateChooice0', this.$parent.globalData.cateChooice);
         // 从所属类目值选择页面返回重新赋值
         const cateChooice = (this.$parent.globalData && this.$parent.globalData.cateChooice) ?
             this.$parent.globalData.cateChooice : [{}, {}, {}];
+        console.log('cateChooice1', cateChooice);
         cateChooice.map((item, index) => {
             form[`cate${index + 1}`] = item.cateId || '';
             form[`cate${index + 1}Name`] = item.name || '';
