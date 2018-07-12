@@ -136,8 +136,9 @@ var CateSelector = function (_wepy$page) {
                                     // 更新第二级选值并清空第三级选值
                                     this.cateChooice = [chooice1, item, {}];
                                     this.$apply();
+                                    this.cateRange[2] && this.cateRange[2].length === 0 && _wepy2.default.navigateBack();
 
-                                case 15:
+                                case 16:
                                 case 'end':
                                     return _context2.stop();
                             }

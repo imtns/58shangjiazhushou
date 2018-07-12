@@ -125,6 +125,7 @@ export default class CateSelector extends wepy.page {
             // 更新第二级选值并清空第三级选值
             this.cateChooice = [chooice1, item, {}];
             this.$apply();
+            this.cateRange[2] && this.cateRange[2].length === 0 && wepy.navigateBack();
         },
         bindThreeCate (item) {
             // 更新选中列
