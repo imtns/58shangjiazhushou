@@ -605,7 +605,7 @@ var AppEdit = function (_wepy$page) {
                                     break;
                                 }
 
-                                this.toast('小程序名称不得小于4个');
+                                this.toast('小程序名称不得小于4个字');
                                 return _context8.abrupt('return', false);
 
                             case 11:

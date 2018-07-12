@@ -226,7 +226,7 @@ export default class AppEdit extends wepy.page {
             return false;
         }
         if (form.nickName.length < 4) {
-            this.toast('小程序名称不得小于4个');
+            this.toast('小程序名称不得小于4个字');
             return false;
         }
         if (!form.telphone) {
