@@ -373,7 +373,7 @@ export default class AppEdit extends wepy.page {
     }
     // 更新所属行业类别
     updateCateChooice () {
-        if (this.$parent.globalData || this.$parent.globalData.cateChooice) return;
+        if (!this.$parent.globalData || !this.$parent.globalData.cateChooice) return;
         const form = {};
         // 从所属类目值选择页面返回重新赋值
         const cateChooice = (this.$parent.globalData && this.$parent.globalData.cateChooice) ?
