@@ -738,7 +738,7 @@ var AppEdit = function (_wepy$page) {
                 return item;
             });
             // 更新完成删除全局所属类目字段cateChooice
-            this.$parent.globalData && this.$parent.globalData.cateChooice && delete this.$parent.globalData.cateChooice;
+            this.$parent.globalData && this.$parent.globalData.cateChooice && (this.$parent.globalData.cateChooice = undefined);
             this.updateForm(form);
         }
     }]);
