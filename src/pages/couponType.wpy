@@ -1,0 +1,193 @@
+<template>
+    <view class="container">
+        <view class="section border-top">
+            <view class="item select-type">
+                <text>类型选择</text>
+                <view
+                class="radio-button first"
+                :class="{ checked: couponType === 1 }"
+                @tap="dataAction('couponType', 1)">
+                    <view class="icon-radio"></view>
+                    代金券
+                </view>
+                <view
+                class="radio-button"
+                :class="{ checked: couponType === 2 }"
+                @tap="dataAction('couponType', 2)">
+                    <view class="icon-radio"></view>
+                    折扣券
+                </view>
+            </view>
+        </view>
+        <view class="desc">
+            <view class="text-line">代金券：可抵扣现金，展示为：满X元，减X元</view>
+            <view class="text-line">折扣券：可享受折扣，展示为：满X元，享X折</view>
+        </view>
+        <view class="section">
+            <view class="item border-bottom">
+                <block wx:if="{{ couponType === 2 }}">
+                    <text>享受折扣</text>
+                    <input type="digit" placeholder="请输入享受折扣"
+                    placeholder-class="placeholder" value="{{ formatCouponDiscard || '' }}"
+                    @blur="dataAction('couponDiscard')"/>
+                </block>
+                <block wx:else>
+                    <text>减免金额</text>
+                    <input type="digit" placeholder="请输入减免金额"
+                    placeholder-class="placeholder" value="{{ reliefAmount || '' }}"
+                    @blur="dataAction('reliefAmount')"/>
+                </block>
+            </view>
+            <view class="item">
+                <text>消费需要满</text>
+                <input type="digit" placeholder="请输入消费金额"
+                placeholder-class="placeholder" value="{{ limitAmount || '' }}"
+                @blur="dataAction('limitAmount')"/>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import globalService from '../utils/globalService';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '优惠券类型',
+    }
+
+    data = {
+        couponType: 1, // 1 代金券，2 折扣券
+        couponDiscard: null, // 折扣
+        reliefAmount: null, // 满减
+        limitAmount: null,
+    }
+
+    methods = {
+        dataAction(prop, v) {
+            let value = v;
+            if (prop === 'couponType') {
+                value = +value;
+            } else {
+                value = value && value.detail && value.detail.value;
+            }
+
+            if (prop === 'couponDiscard') {
+                value *= 10;
+            }
+
+            this[prop] = value;
+            this.updateData();
+        },
+    }
+
+    computed = {
+        formatCouponDiscard() {
+            return this.couponDiscard / 10;
+        },
+    }
+
+    onLoad() {
+        const couponManage = globalService.get('couponManage');
+        console.log(couponManage);
+        Object.assign(this, couponManage);
+        this.updateData();
+    }
+
+    // 更新全局状态
+    updateData() {
+        const couponManage = globalService.get('couponManage');
+        globalService.set('couponManage', Object.assign(couponManage, {
+            couponType: this.couponType,
+            couponDiscard: this.couponDiscard,
+            reliefAmount: this.reliefAmount,
+            limitAmount: this.limitAmount,
+        }));
+    }
+}
+</script>
+
+<style lang="scss">
+view {
+    box-sizing: border-box;
+}
+.container {
+    font-size: 30rpx;
+
+    .desc {
+        color: #999;
+        font-size: 26rpx;
+        padding-top: 20rpx;
+        padding: 20rpx 30rpx 0 30rpx;
+
+        .text-line {
+            margin-bottom: 20rpx;
+        }
+    }
+
+    .section {
+        padding: 0 30rpx;
+        background-color: #FFF;
+        overflow: hidden;
+
+        .item {
+            height: 89rpx;
+            padding: 23rpx 0;
+            display: flex;
+            justify-content: space-between;
+
+            text {
+                color: #999;
+            }
+
+            &.border-bottom {
+                border-bottom: 1rpx solid #f3f3f3;
+            }
+            &.border-top {
+                border-top: 1rpx solid #f3f3f3;
+            }
+
+            &.select-type {
+                text {
+                    flex-grow: 2;
+                }
+            }
+
+            .radio-button {
+                font-size: 28rpx;
+                color: #666;
+                display: flex;
+
+                &.first {
+                    margin-right: 100rpx;
+                }
+
+                .icon-radio {
+                    width: 40rpx;
+                    height: 40rpx;
+                    margin-right: 14rpx;
+                    background-image: url('/resource-unchecked.png');
+                    background-size: 40rpx 40rpx;
+                }
+
+                &.checked .icon-radio {
+                    background-image: url('/resource-checked.png');
+                }
+            }
+
+            .placeholder {
+                font-size: 28rpx;
+                color: #BDBDBD;
+            }
+
+            input {
+                text-align: right;
+                width: 396rpx;
+                height: 40rpx;
+            }
+        }
+    }
+}
+</style>

@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import wepy from 'wepy';
 import { toast } from '../utils';
 
@@ -19,7 +21,7 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
         delay = loadingControl.delay;
     }
     // test="test"字段是为切换测试和线上环境的，如果提交审核和发布，将test改为''，标识切换为线上环境
-    const sendData = Object.assign({}, data, { test:"test" });
+    const sendData = Object.assign({}, data, { test: 'test' });
     // ppu加入header
     const ppu = wx.getStorageSync('ppu');
     console.log('请求接口', url);
@@ -34,7 +36,7 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
             'content-type': method === 'GET' ? 'application/json' : 'application/x-www-form-urlencoded;charset=utf-8',
             PPU: ppu || 'wanghongyue',
             // 'YkuYdY8rk5As4T2QaJ7v': '45797966958100',
-            'reqfrom': 'biz_assistant',
+            reqfrom: 'biz_assistant',
         },
         success(response) {
             console.log('response', response);

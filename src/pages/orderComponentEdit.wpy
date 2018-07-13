@@ -1,0 +1,402 @@
+<template>
+    <view class="container">
+        <view class="section">
+            <view class="item required border-bottom">
+                <text>服务名称</text>
+                <input
+                type="text"
+                placeholder="可用优惠券亮点吸引用户"
+                placeholder-class="placeholder"
+                value="{{ form.title }}"
+                @change="setFormData('title')"/>
+            </view>
+            <view class="item required">
+                <text>服务价格</text>
+                <input
+                type="digit"
+                placeholder="请输入价格"
+                placeholder-class="placeholder"
+                value="{{ form.subTitle }}"
+                @change="setFormData('subTitle')"/>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required">
+                <text>服务时长</text>
+                <input
+                type="number"
+                placeholder="请输入时间"
+                placeholder-class="placeholder"
+                value="{{ form.subTitle }}"
+                @change="setFormData('subTitle')"/>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required border-bottom">
+                <text>服务开始时间</text>
+                <picker mode="date" value="{{ formatValidStarttime }}"
+                :class="{ placeholder: validStarttime === null }"
+                @change="dataAction('validStarttime')">
+                    {{ formatValidStarttime || '去选择' }}<view class="icon more"></view>
+                </picker>
+            </view>
+            <view class="item required">
+                <text>服务结束时间</text>
+                <picker mode="date" value="{{ formatValidEndtime }}"
+                :class="{ placeholder: validEndtime === null }"
+                @change="dataAction('validEndtime')">
+                    {{ formatValidEndtime || '去选择' }}<view class="icon more"></view>
+                </picker>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required border-bottom">
+                <text>预约区域</text>
+                <picker mode="region" value="{{ formatValidEndtime }}"
+                :class="{ placeholder: validEndtime === null }"
+                @change="dataAction('validEndtime')">
+                    {{ formatValidEndtime || '去选择' }}<view class="icon more"></view>
+                </picker>
+            </view>
+            <view class="item required">
+                <text>预约地址</text>
+                <button class="locate">定位</button>
+            </view>
+            <input type="text" class="location-detail" placeholder="请输入详细地址" placeholder-class="placeholder"/>
+            <map class="location-map" scale="14"></map>
+        </view>
+        <view class="section">
+            <view class="item">
+                <text>服务详情</text>
+            </view>
+            <textarea class="service-detail" cols="30" rows="10"></textarea>
+        </view>
+        <view class="section">
+            <view class="item border-bottom">
+                <text>服务人姓名</text>
+                <input
+                type="number"
+                placeholder="请输入服务人姓名"
+                placeholder-class="placeholder"
+                value="{{ form.subTitle }}"
+                @change="setFormData('subTitle')"/>
+            </view>
+            <view class="item">
+                <text>服务人电话</text>
+                <input
+                type="number"
+                placeholder="请输入服务人姓名"
+                placeholder-class="placeholder"
+                value="{{ form.subTitle }}"
+                @change="setFormData('subTitle')"/>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required">
+                <text>服务人姓名</text>
+                <view>本产品目前仅支持到店支付</view>
+            </view>
+        </view>
+
+        <button class="save" @tap="save">保存</button>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import Mixin from '../mixins';
+import { get, post } from '../utils/ajax';
+import { LOAD_COUPON, SAVE_COUPON } from '../utils/url';
+import { alert } from '../utils';
+
+import globalService from '../utils/globalService';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '编辑详情',
+    }
+
+    data = {
+        form: {
+            id: '',
+            mpId: '',
+            title: '',
+            subTitle: '',
+            couponType: '',
+            totalCount: 0, // 库存
+            limitCount: 0, // 每人限领
+            validType: '', // 1 固定时间，2 领取后生效
+            validDays: null,
+            validAfterDays: null,
+            validStarttime: '',
+            validEndtime: '',
+            applyType: '',
+            serviceIds: '',
+        },
+    }
+
+    mixins = [Mixin]
+
+    methods = {
+        async save() {
+            try {
+                // 数据过滤
+                const { form } = this;
+                const postData = {};
+                Object.keys(form).forEach(key => {
+                    if (form[key]) {
+                        postData[key] = form[key];
+                    }
+                });
+
+                this.validator(postData);
+
+                await post(SAVE_COUPON, postData);
+                wepy.navigateBack();
+            } catch (e) {
+                alert(e);
+                this.errorHandler(e);
+            }
+        },
+
+        setFormData(prop, e) {
+            this.form[prop] = e.detail.value;
+        },
+
+        dataAction(prop, v) {
+            let value = v;
+            // 数据预处理
+            if (prop === 'validType') {
+                value = +value;
+            } else {
+                value = value && value.detail && value.detail.value;
+            }
+
+            // 数据校验
+            const validate = this.validator(prop, value);
+            if (!validate.result) {
+                alert(validate.msg);
+                return;
+            }
+
+            this[prop] = value;
+            this.updateData();
+        },
+    }
+
+    validator(data) {
+        let msg = '';
+        if (data.couponDiscard < 0 || data.couponDiscard > 99) {
+            msg = '享受折扣应该介于0至9.9折';
+        }
+
+        if (msg) {
+            throw new Error(msg);
+        }
+    }
+
+    async onLoad(options) {
+        const { id } = options;
+
+        if (id) {
+            await this.loadData(id);
+            this.updateData();
+        }
+    }
+
+    onShow() {
+        // 每次onShow同步数据
+        const couponManage = globalService.get('couponManage');
+        Object.assign(this.form, couponManage);
+    }
+
+    async loadData(id) {
+        try {
+            const { data: coupon } = await get(LOAD_COUPON + id);
+            let { couponCondition } = coupon;
+            const mpId = wepy.getStorageSync('current_mpid');
+
+            if (couponCondition) {
+                try {
+                    couponCondition = JSON.parse(couponCondition);
+                    Object.assign(coupon, couponCondition);
+                } catch (e) {
+                    this.errorHandler(e);
+                }
+            }
+
+            const {
+                title,
+                subTitle,
+                couponType,
+                totalCount,
+                limitCount,
+                limitAmount,
+                couponDiscard,
+                reliefAmount,
+                validType,
+                validDays,
+                validAfterDays,
+                validStarttime,
+                validEndtime,
+                applyType,
+                services,
+            } = coupon;
+            let serviceIds = '';
+
+            if (services && services.length) {
+                serviceIds = services.map(item => item.id).join(',');
+            }
+
+            Object.assign(this.form, {
+                id,
+                mpId,
+                title,
+                subTitle,
+                couponType,
+                totalCount,
+                limitCount,
+                limitAmount,
+                couponDiscard,
+                reliefAmount,
+                validType,
+                validDays,
+                validAfterDays,
+                validStarttime,
+                validEndtime,
+                applyType,
+                serviceIds,
+            });
+
+            this.$apply();
+        } catch (e) {
+            this.errorHandler(e);
+        }
+    }
+
+    updateData() {
+        const couponManage = globalService.get('couponManage');
+        globalService.set('couponManage', Object.assign(couponManage, this.form));
+    }
+}
+</script>
+
+<style lang="scss">
+view {
+    box-sizing: border-box;
+}
+.container {
+    font-size: 28rpx;
+    margin-bottom: 122rpx;
+}
+
+.section {
+    margin-top: 20rpx;
+    background-color: #FFFFFF;
+    overflow: hidden;
+
+    .location-detail {
+        margin: 0 30rpx 30rpx;
+        height: 40rpx;
+    }
+
+    .location-map {
+        width: 100%;
+        height: 360rpx;
+        margin-bottom: 30rpx;
+    }
+
+    .service-detail {
+        height: 200rpx;
+        background: #f6f6f6;
+        border-radius: 4rpx;
+        margin: 0 20rpx 30rpx;
+        padding: 20rpx;
+        width: 670rpx;
+    }
+
+    .item {
+        display: flex;
+        justify-content: space-between;
+        padding: 23rpx 0;
+        margin: 0 30rpx;
+        position: relative;
+        height: 89rpx;
+
+        &.border-bottom {
+            border-bottom: 1rpx solid #f3f3f3;
+        }
+        &.required::before {
+            display: block;
+            content: '*';
+            width: 14rpx;
+            height: 37rpx;
+            font-size: 26rpx;
+            color: #FFA100;
+            position: absolute;
+            left: -15rpx;
+        }
+
+        input {
+            width: 396rpx;
+            height: 30rpx;
+            line-height: 30rpx;
+            text-align: right;
+        }
+
+        text {
+            color: #BDBDBD;
+            font-size: 30rpx;
+        }
+
+        button.locate {
+            width: 110rpx;
+            height: 50rpx;
+            border: 2rpx solid #83abff;
+            border-radius: 4rpx;
+            padding: 0;
+            margin: 0;
+            font-size: 28rpx;
+            color: #83abff;
+            line-height:50rpx;
+            background-color:inherit;
+            &::after {
+                border: none;
+            }
+        }
+    }
+}
+
+button.save {
+    height: 102rpx;
+    background-color: #4e88ff;
+    color: #fff;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 0;
+    z-index: 999;
+
+    &::after {
+        content: none;
+    }
+}
+
+.placeholder {
+    font-size: 28rpx;
+    color: #BDBDBD;
+}
+
+.icon {
+    display: inline-block;
+
+    &.more {
+        width: 25rpx;
+        height: 25rpx;
+        background: url('/coupon-more.png') no-repeat;
+        background-size: auto 25rpx;
+        background-position: right;
+    }
+}
+</style>

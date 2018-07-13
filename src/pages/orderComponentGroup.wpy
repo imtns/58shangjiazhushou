@@ -1,0 +1,158 @@
+<template>
+    <view class="container">
+        <view class="group-list article-group-list {{isEditing ? 'edit' : ''}}" wx:if="{{groupList.length > 0}}">
+            <view
+                class="group-item article-group-item"
+                bindtap="editChose"
+                wx:for="{{groupList}}"
+                wx:key="index"
+                data-item="{{item}}">
+                <view class="group-line article-group-line selected">
+                    <view class="group-name article-group-name">{{item.name}}</view>
+                    <view class="group-size article-group-size">(13)</view>
+                    <view class="group-angel article-group-angel" wx:if="{{!isEditing}}"></view>
+                    <view class="rename-btn article-rename-btn" wx:if="{{isEditing}}">重命名</view>
+                </view>
+            </view>
+        </view>
+        <EmptyPage wx:if="{{groupList.length === 0}}"></EmptyPage>
+    </view>
+    <view class="options">
+        <button class="edit" @tap="edit" wx:if="{{groupList.length > 0 || works.length > 0}}">{{ isEditing ? '取消' : '编辑' }}</button>
+        <button wx:if="{{ isEditing }}" @tap="deleteItem">删除</button>
+        <button wx:else @tap="showDialog">添加分组</button>
+    </view>
+    <Pop wx:if="{{showPop}}" @close.user="close" @addGroup.user="addGroup"></Pop>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { sleep, toast, alert } from '../utils';
+import { get } from '../utils/ajax';
+
+import Pop from '../components/Dialog';
+import EmptyPage from '../components/EmptyPage';
+
+export default class OrderComponentGroup extends wepy.page {
+    config = {
+        navigationBarTitleText: '预约管理',
+    }
+    components = {
+        EmptyPage,
+        Pop,
+    }
+    data = {
+        isEditing: false,
+        groupList: [],
+        title: '没有预约分组~',
+        showPop: false,
+        delList: [],
+    }
+    async onLoad() {
+        await sleep();
+        console.log('onLoad');
+    }
+    methods = {
+        showDialog() {
+            this.showPop = true;
+            this.$apply();
+        },
+        async addGroup(content) {
+            try {
+                await get('/businessService/addGroup', {
+                    mpId: this.mpId,
+                    name: content,
+                });
+                this.showPop = false;
+                this.$apply();
+                toast('添加成功！');
+                this.page = 1;
+                this.loadData(this.curTab);
+            } catch (e) {
+                console.log(e);
+            }
+        },
+        close() {
+            this.showPop = false;
+            this.$apply();
+        },
+        edit() {
+            this.delList = [];
+            this.isEditing = !this.isEditing;
+        },
+        async deleteItem() {
+            try {
+                const { delList } = this;
+                if (delList.length === 0) {
+                    alert('请选择要删除的分组');
+                    return;
+                }
+                const ids = delList.join();
+                await get('/businessService/delGroup/', {
+                    ids,
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        },
+        editChose(e) {
+            const { id } = e.currentTarget.dataset.item;
+            if (this.editStatus) {
+                const selArr = this.delList;
+                const dataList = this.listData;
+                const index = this.delList.length === 0 ? -2 : this.delList.indexOf(id);
+                if (index < 0) {
+                    selArr.push(id);
+                    dataList.forEach(item => {
+                        if (item.id === id) {
+                            Object.assign(item, {
+                                choseStatu: true,
+                            });
+                        }
+                    });
+                } else {
+                    dataList.forEach(item => {
+                        if (item.id === id) {
+                            Object.assign(item, {
+                                choseStatu: false,
+                            });
+                        }
+                    });
+                    selArr.splice(index, 1);
+                }
+                this.listData = dataList;
+                this.delList = selArr;
+                this.$apply();
+                return;
+            }
+            // 点击跳转文章详情页面
+            wepy.navigateTo({
+                url: `orderComponentlist?id=${id}`,
+            });
+        },
+    }
+    async loadData() {
+        const { data } = await get('/businessService/groups', {
+            mpId: this.mpId,
+        });
+        if (!data || data.length === 0) return;
+        data.forEach(item => {
+            Object.assign(item, {
+                choseStatu: false,
+            });
+        });
+        this.groupList = data;
+        this.$apply();
+    }
+}
+</script>
+
+<style lang="scss">
+@import '../css/group.scss';
+@import '../css/btn.scss';
+page{
+    width:100%;
+    height:auto;
+}
+</style>

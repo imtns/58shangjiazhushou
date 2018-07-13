@@ -1,0 +1,108 @@
+<template>
+    <view class="container">
+        <view class="article-title">阳台设计中需要注意哪些安全问题阳台设计中需要注意哪些安全问题</view>
+        <view class="article-intro">
+            <view class="article-detail-flex">
+                <view class="article-base">作者：</view>
+                <view class="base-text base-over">未知</view>
+            </view>
+            <view class="article-detail-flex">
+                <view class="article-base">来源：</view>
+                <view class="base-text base-over">未知</view>
+            </view>
+            <view class="article-detail-flex">
+                <view class="article-base">时间：</view>
+                <view class="base-text">未知</view>
+            </view>
+        </view>
+        <view class="article-content"></view>
+    </view>
+    <view class="button article-edit-btn" @tap="toEdit">编辑</view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '文章详情',
+    }
+    data = {
+        id: '',
+    }
+    async onLoad(option) {
+        const { id = '' } = option;
+        this.id = id;
+        this.$apply();
+        this.loadData();
+    }
+    async loadData() {
+        // await get(`/businessArticle/detail/${this.id}`);
+    }
+    toEdit() {
+        // wx.navigateTo({
+        //     url: 'articleCreate',
+        // });
+    }
+}
+</script>
+
+<style lang="scss">
+    @import '../css/btn.scss';
+    page{
+        width:100%;
+        height:100%;
+        display:flex;
+        flex-direction:column;
+    }
+    .container{
+        background:#fff;
+        flex:1;
+        display:flex;
+        flex-direction:column;
+        padding: 32rpx 40rpx 0;
+        box-sizing:border-box;
+        .article-title{
+            max-width:670rpx;
+            height:68rpx;
+            font-family: PingFangSC-Medium;
+            font-size: 40rpx;
+            color: #000000;
+            letter-spacing: 0.24rpx;
+            line-height: 68rpx;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+        .article-intro{
+            width:100%;
+            border-bottom:1rpx solid #f3f3f3;
+            .article-detail-flex{
+                display:inline-block;
+                margin-right:10rpx;
+                line-height:50rpx;
+                .article-base,.base-text{
+                    float:left;
+                    font-family: PingFangSC-Regular;
+                    font-size: 26rpx;
+                    letter-spacing: 0;
+                }
+                .article-base{
+                    color: #666666;
+                }
+                .base-text{
+                    color: #3F3F3F;
+                }
+                .base-over.base-text{
+                    max-width:156rpx;
+                    white-space:nowrap;
+                    overflow:hidden;
+                    text-overflow:ellipsis;
+                }
+            }
+        }
+        .article-content{
+            flex:1;
+        }
+    }
+</style>

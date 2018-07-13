@@ -1,0 +1,244 @@
+<template>
+    <view class="container">
+        <view class="section border-top">
+            <view class="item select-type">
+                <text>类型选择</text>
+                <view class="radio-button first"
+                :class="{ checked: validType === 1}"
+                @tap="dataAction('validType', 1)">
+                    <view class="icon-radio"></view>
+                    固定时间
+                </view>
+                <view class="radio-button"
+                :class="{ checked: validType === 2}"
+                @tap="dataAction('validType', 2)">
+                    <view class="icon-radio"></view>
+                    领取后生效
+                </view>
+            </view>
+        </view>
+        <view class="section">
+            <block wx:if="{{ validType === 1 }}">
+                <view class="item required border-bottom">
+                    <text>开始时间</text>
+                    <picker mode="date" value="{{ formatValidStarttime }}"
+                    :class="{ placeholder: validStarttime === null }"
+                    @change="dataAction('validStarttime')">
+                        {{ formatValidStarttime || '去选择' }}<view class="icon more"></view>
+                    </picker>
+                </view>
+                <view class="item required">
+                    <text>结束时间</text>
+                    <picker mode="date" value="{{ formatValidEndtime }}"
+                    :class="{ placeholder: validEndtime === null }"
+                    @change="dataAction('validEndtime')">
+                        {{ formatValidEndtime || '去选择' }}<view class="icon more"></view>
+                    </picker>
+                </view>
+            </block>
+            <block wx:else>
+                <view class="item required border-bottom">
+                    <text>领券以后</text>
+                    <input type="number" placeholder="领券以后"
+                    placeholder-class="placeholder"
+                    value="{{ validAfterDays }}"
+                    @blur="dataAction('validAfterDays')"/>
+                </view>
+                <view class="item required">
+                    <text>有效天数</text>
+                    <input type="number" placeholder="有效天数"
+                    placeholder-class="placeholder"
+                    value="{{ validDays }}"
+                    @blur="dataAction('validDays')"/>
+                </view>
+            </block>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import globalService from '../utils/globalService';
+import { alert } from '../utils';
+
+import CouponMixin from '../mixins/coupon';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '优惠券类型',
+    }
+
+    mixins = [CouponMixin]
+
+    data = {
+        validType: 1, // 1 固定时间，2 领取后生效
+        validDays: null,
+        validAfterDays: null,
+        validStarttime: '',
+        validEndtime: '',
+        formatValidEndtime: '',
+        formatValidStarttime: '',
+    }
+
+    methods = {
+        dataAction(prop, v) {
+            let value = v;
+            // 数据预处理
+            if (prop === 'validType') {
+                value = +value;
+            } else {
+                value = value && value.detail && value.detail.value;
+            }
+
+            // 数据校验
+            const validate = this.validator(prop, value);
+            if (!validate.result) {
+                alert(validate.msg);
+                return;
+            }
+
+            this[prop] = value;
+            this.updateData();
+        },
+    }
+
+    computed = {
+        formatValidStarttime() {
+            return this.formatTime(this.validStarttime);
+        },
+        formatValidEndtime() {
+            return this.formatTime(this.validEndtime);
+        },
+    }
+
+    onLoad() {
+        const couponManage = globalService.get('couponManage');
+        Object.assign(this, couponManage);
+        this.updateData();
+    }
+
+    validator(prop, v) {
+        const value = v;
+        const validData = Object.assign({}, this);
+        validData[prop] = value;
+
+        const { validStarttime, validEndtime } = validData;
+
+        if (validStarttime && validEndtime && validStarttime > validEndtime) {
+            return {
+                result: false,
+                msg: '优惠结束时间不能小于开始时间！',
+            };
+        }
+
+        return {
+            result: true,
+            msg: 'ok',
+        };
+    }
+
+    updateData() {
+        const couponManage = globalService.get('couponManage');
+        globalService.set('couponManage', Object.assign(couponManage, {
+            validType: this.validType,
+            validDays: this.validDays,
+            validAfterDays: this.validAfterDays,
+            validStarttime: this.validStarttime,
+            validEndtime: this.validEndtime,
+        }));
+    }
+}
+</script>
+
+<style lang="scss">
+view {
+    box-sizing: border-box;
+}
+.container {
+    font-size: 30rpx;
+
+    .section {
+        padding: 0 30rpx;
+        background-color: #FFF;
+        margin-bottom: 20rpx;
+        overflow: hidden;
+
+        .item {
+            height: 89rpx;
+            padding: 23rpx 0;
+            display: flex;
+            justify-content: space-between;
+            height: 89rpx;
+
+            text {
+                color: #999;
+            }
+
+            &.border-bottom {
+                border-bottom: 1rpx solid #f3f3f3;
+            }
+            &.required::before {
+                display: block;
+                content: '*';
+                width: 14rpx;
+                height: 37rpx;
+                font-size: 26rpx;
+                color: #FFA100;
+                position: absolute;
+                left: -15rpx;
+            }
+
+            &.select-type {
+                text {
+                    flex-grow: 2;
+                }
+            }
+
+            .radio-button {
+                font-size: 28rpx;
+                color: #666;
+                display: flex;
+
+                &.first {
+                    margin-right: 100rpx;
+                }
+
+                .icon-radio {
+                    width: 40rpx;
+                    height: 40rpx;
+                    margin-right: 14rpx;
+                    background-image: url('/resource-unchecked.png');
+                    background-size: 40rpx 40rpx;
+                }
+
+                &.checked .icon-radio {
+                    background-image: url('/resource-checked.png');
+                }
+            }
+
+            .placeholder {
+                font-size: 28rpx;
+                color: #BDBDBD;
+            }
+
+            input {
+                text-align: right;
+                width: 396rpx;
+                height: 40rpx;
+            }
+        }
+    }
+}
+
+.icon {
+    display: inline-block;
+
+    &.more {
+        width: 25rpx;
+        height: 25rpx;
+        background: url('/coupon-more.png') no-repeat;
+        background-size: auto 25rpx;
+        background-position: right;
+    }
+}
+</style>

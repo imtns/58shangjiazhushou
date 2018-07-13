@@ -1,0 +1,184 @@
+<template>
+    <view class="container">
+        <view class="banner">
+            <image class="banner-icon" src="./assets/banner-icon.png"></image>
+        </view>
+        <view class="items-body">
+            <view class="article-header">
+                <view class="line"></view>
+                <view class="article-header-text">{{name}}</view>
+                <view class="line"></view>
+            </view>
+            <scroll-view
+                class="article-list {{editStatus ? 'edit' : ''}}"
+                style="height:{{height}};"
+                scroll-y="true"
+                wx:if="{{listData.length>0}}">
+                <view wx:for="{{listData}}" wx:key="index" class="list-item article-item {{item.choseStatu ? 'selected' : ''}}" data-item="{{item}}" bindtap="editChose">
+                    <view class="article-title">{{item.title}}</view>
+                    <view class="article-detail">
+                        <view class="article-detail-flex">
+                            <view class="article-base">作者：</view>
+                            <view class="base-text base-over">{{item.author || '未知'}}</view>
+                        </view>
+                        <view class="article-detail-flex">
+                            <view class="article-base">来源：</view>
+                            <view class="base-text base-over">{{item.source || '未知'}}</view>
+                        </view>
+                        <view class="article-detail-flex" wx:if="{{item.updateTime!=nul}}">
+                            <view class="article-base">时间：</view>
+                            <view class="base-text">{{item.updateTime}}</view>
+                        </view>
+                    </view>
+                    <view class="article-preview-con">{{item.intro}}</view>
+                </view>
+                <view class="block"></view>
+            </scroll-view>
+            <EmptyPage wx:if="{{listData.length===0}}"></EmptyPage>
+        </view>
+    </view>
+    <view class="options" wx:if="{{!editStatus}}">
+        <view class="button edit" bindtap="edit" wx:if="{{listData.length > 0}}">编辑</view>
+        <view class="button" bindtap="addArticleGroup">添加文章</view>
+    </view>
+    <view class="options" wx:if="{{editStatus}}">
+        <view class="button edit" bindtap="cancle">取消</view>
+        <view class="button" bindtap="toDelete">删除</view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { alert } from '../utils';
+import { get } from '../utils/ajax';
+import EmptyPage from '../components/EmptyPage';
+
+const pageNum = 1;
+const pageSize = 20;
+export default class ArticleComponentList extends wepy.page {
+    config = {
+        navigationBarTitleText: '文章管理',
+        disableScroll: true,
+    }
+    components = {
+        EmptyPage,
+    }
+    data = {
+        height: '',
+        editStatus: false,
+        listData: [],
+        delList: [],
+        id: '',
+        name: '',
+        title: '没有文章~',
+    }
+    onLoad(option) {
+        try {
+            const { id = '', name = '' } = option;
+            this.id = id;
+            this.name = name;
+            this.$apply();
+            const { windowHeight } = wepy.getSystemInfoSync();
+            const height = windowHeight;
+            this.height = `${(height * 2) - (88 * 2) - (40 * 2) - 96}rpx`;
+            this.loadList();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async loadList() {
+        console.log('loadlist');
+        const { data } = await get('/businessArticle/list', {
+            pageSize: pageSize,
+            pageNum: pageNum,
+            group: this.id,
+        });
+        data.foreach(item => {
+            Object.assign(item, {
+                choseStatu: false,
+            });
+        });
+        this.listData = data;
+        this.$apply();
+    }
+    editChose(e) {
+        const { id } = e.currentTarget.dataset.item;
+        if (this.editStatus) {
+            const selArr = this.delList;
+            const dataList = this.listData;
+            const index = this.delList.length === 0 ? -2 : this.delList.indexOf(id);
+            if (index < 0) {
+                selArr.push(id);
+                dataList.forEach(item => {
+                    if (item.id === id) {
+                        Object.assign(item, {
+                            choseStatu: true,
+                        });
+                    }
+                });
+            } else {
+                dataList.forEach(item => {
+                    if (item.id === id) {
+                        Object.assign(item, {
+                            choseStatu: false,
+                        });
+                    }
+                });
+                selArr.splice(index, 1);
+            }
+            this.listData = dataList;
+            this.delList = selArr;
+            this.$apply();
+            return;
+        }
+        // 点击跳转文章详情页面
+        wepy.navigateTo({
+            url: `articleDetail?id=${id}`,
+        });
+    }
+    edit() {
+        this.editStatus = true;
+        this.$apply();
+    }
+    async toDelete() {
+        const { delList } = this;
+        if (delList.length === 0) {
+            alert('请选择要删除的文章');
+            return;
+        }
+        const ids = delList.join();
+        await get('/businessArticle/delete/0', {
+            ids: ids,
+        });
+        alert('删除成功！');
+        this.loadList();
+        this.editStatus = false;
+        this.$apply();
+    }
+    cancle() {
+        const dataList = this.listData;
+        dataList.forEach(item => {
+            Object.assign(item, {
+                choseStatu: false,
+            });
+        });
+        this.editStatus = false;
+        this.listData = dataList;
+        this.$apply();
+    }
+    addArticleGroup() {
+        wepy.navigateTo({
+            url: `articleGroup?id=${this.id}`,
+        });
+    }
+}
+</script>
+
+<style lang="scss">
+@import '../css/btn.scss';
+@import '../css/list.scss';
+    page{
+        position:relative;
+    }
+</style>

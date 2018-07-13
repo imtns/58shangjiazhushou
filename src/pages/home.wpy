@@ -101,7 +101,11 @@ export default class Home extends wepy.page {
     }
     methods = {
         link (index) {
+<<<<<<< HEAD
             if (index !== 6) { //   意见反馈不做判断
+=======
+            if (index !== 5) { //   意见反馈不做判断
+>>>>>>> dev
                 this.checkBeforeJump(index);
             } else {
                 wepy.navigateTo({
