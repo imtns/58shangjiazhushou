@@ -1,0 +1,20 @@
+
+    <view class="container">
+        <view class="article-title">阳台设计中需要注意哪些安全问题阳台设计中需要注意哪些安全问题</view>
+        <view class="article-intro">
+            <view class="article-detail-flex">
+                <view class="article-base">作者：</view>
+                <view class="base-text base-over">未知</view>
+            </view>
+            <view class="article-detail-flex">
+                <view class="article-base">来源：</view>
+                <view class="base-text base-over">未知</view>
+            </view>
+            <view class="article-detail-flex">
+                <view class="article-base">时间：</view>
+                <view class="base-text">未知</view>
+            </view>
+        </view>
+        <view class="article-content"/>
+    </view>
+    <view class="button article-edit-btn" bindtap="toEdit">编辑</view>

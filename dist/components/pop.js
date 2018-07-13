@@ -18,24 +18,24 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Index = function (_wepy$component) {
-    _inherits(Index, _wepy$component);
+var Pop = function (_wepy$component) {
+    _inherits(Pop, _wepy$component);
 
-    function Index() {
-        _classCallCheck(this, Index);
+    function Pop() {
+        _classCallCheck(this, Pop);
 
-        return _possibleConstructorReturn(this, (Index.__proto__ || Object.getPrototypeOf(Index)).apply(this, arguments));
+        return _possibleConstructorReturn(this, (Pop.__proto__ || Object.getPrototypeOf(Pop)).apply(this, arguments));
     }
 
-    _createClass(Index, [{
+    _createClass(Pop, [{
         key: 'onLoad',
         value: function onLoad() {
             console.log('onLoad');
         }
     }]);
 
-    return Index;
+    return Pop;
 }(_wepy2.default.component);
 
-exports.default = Index;
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImEuanMiXSwibmFtZXMiOlsiSW5kZXgiLCJjb25zb2xlIiwibG9nIiwid2VweSIsImNvbXBvbmVudCJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7QUFDQTs7Ozs7Ozs7Ozs7O0lBRXFCQSxLOzs7Ozs7Ozs7OztpQ0FDUjtBQUNMQyxvQkFBUUMsR0FBUixDQUFZLFFBQVo7QUFDSDs7OztFQUg4QkMsZUFBS0MsUzs7a0JBQW5CSixLIiwiZmlsZSI6ImEuanMiLCJzb3VyY2VzQ29udGVudCI6WyJcclxuaW1wb3J0IHdlcHkgZnJvbSAnd2VweSc7XHJcblxyXG5leHBvcnQgZGVmYXVsdCBjbGFzcyBJbmRleCBleHRlbmRzIHdlcHkuY29tcG9uZW50IHtcclxuICAgIG9uTG9hZCgpIHtcclxuICAgICAgICBjb25zb2xlLmxvZygnb25Mb2FkJyk7XHJcbiAgICB9XHJcbn1cclxuIl19
+exports.default = Pop;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIlBvcC5qcyJdLCJuYW1lcyI6WyJQb3AiLCJjb25zb2xlIiwibG9nIiwid2VweSIsImNvbXBvbmVudCJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7QUFDQTs7Ozs7Ozs7Ozs7O0lBRXFCQSxHOzs7Ozs7Ozs7OztpQ0FDUjtBQUNMQyxvQkFBUUMsR0FBUixDQUFZLFFBQVo7QUFDSDs7OztFQUg0QkMsZUFBS0MsUzs7a0JBQWpCSixHIiwiZmlsZSI6IlBvcC5qcyIsInNvdXJjZXNDb250ZW50IjpbIlxyXG5pbXBvcnQgd2VweSBmcm9tICd3ZXB5JztcclxuXHJcbmV4cG9ydCBkZWZhdWx0IGNsYXNzIFBvcCBleHRlbmRzIHdlcHkuY29tcG9uZW50IHtcclxuICAgIG9uTG9hZCgpIHtcclxuICAgICAgICBjb25zb2xlLmxvZygnb25Mb2FkJyk7XHJcbiAgICB9XHJcbn1cclxuIl19
