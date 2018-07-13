@@ -15,7 +15,6 @@
             <view class="appinfo-telephone">联系电话：{{appInfo.telphone}}</view>
             <view class="appinfo-address">小程序地址：{{appInfo.address}}</view>
         </view>
-<<<<<<< HEAD
         <view class="appinfo-codelist">
             <!-- 优享小程序码 -->
             <view class="appinfo-codelist-li" wx:if="{{appInfo.wbQrcodeUrl}}">
@@ -72,14 +71,12 @@
                     <view class="qrcode-openpay">去开通</view>
                 </navigator>
             </view>
-=======
         <view class="appinfo-qrcode" wx:if="{{qrcodeUrl}}">
             <view class="appinfo-qrcode-label">小程序码：</view>
             <image class="appinfo-qrcode-img" src="{{qrcodeUrl}}" @tap="bindScanQrcode({{qrcodeUrl}})"/>
         </view>
         <view class="appinfo-qrcode-off" wx:else>
             <view class="">小程序码：上线后展示</view>
->>>>>>> dev
         </view>
         <navigator url="/pages/AppEdit?mpid={{appInfo.mpid}}"><view class="appinfo-edit">编辑小程序</view></navigator>
     </view>
@@ -127,17 +124,9 @@ export default class AppInfo extends wepy.page {
     }
     computed = {
         qrcodeUrl () {
-<<<<<<< HEAD
             const { qrcodeUrl } = this.appInfo;
             if (qrcodeUrl && qrcodeUrl.indexOf('http') < 0) {
                 return `${picSrcDomain() + qrcodeUrl}`;
-=======
-            const { qrcodeUrl, wbQrcodeUrl } = this.appInfo;
-            const appType = this.appInfo.app_type;
-            const ret = appType === 1 ? wbQrcodeUrl : qrcodeUrl;
-            if (ret && ret.indexOf('http') < 0) {
-                return picSrcDomain() + ret;
->>>>>>> dev
             }
             return qrcodeUrl;
         },
