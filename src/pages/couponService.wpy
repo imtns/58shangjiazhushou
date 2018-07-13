@@ -11,7 +11,7 @@
                         wx:key="id" @tap="chooseGroup({{ item.id }}, {{ item.name }})">{{ item.name }}</view>
                     </view>
                 </view>
-                <view class="add-product">+添加产品</view>
+                <!-- <view class="add-product">+添加产品</view> -->
             </view>
             <view class="products" wx:if="{{ services && services.length }}">
                 <view class="item" wx:for="{{ services }}"

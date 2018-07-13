@@ -42,6 +42,7 @@ export default class extends wepy.app {
             'pages/couponValidTime', // 优惠券生效时间
             'pages/couponService', // 优惠券适用产品
             'pages/couponPreview', // 优惠券预览
+            'pages/orderComponentEdit', // 预约编辑
         ],
         window: {
             backgroundTextStyle: 'light',

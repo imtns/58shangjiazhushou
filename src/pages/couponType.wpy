@@ -130,6 +130,7 @@ view {
     .section {
         padding: 0 30rpx;
         background-color: #FFF;
+        overflow: hidden;
 
         .item {
             height: 89rpx;
