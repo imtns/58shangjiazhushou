@@ -8,6 +8,8 @@ var _utils = require('./index.js');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/* eslint-disable */
+
 var host = 'https://yaofa.58.com';
 
 var http = function http(method) {
@@ -35,7 +37,7 @@ var http = function http(method) {
             delay = loadingControl.delay;
         }
         // test="test"字段是为切换测试和线上环境的，如果提交审核和发布，将test改为''，标识切换为线上环境
-        var sendData = Object.assign({}, data, { test: "test" });
+        var sendData = Object.assign({}, data, { test: 'test' });
         // ppu加入header
         var ppu = wx.getStorageSync('ppu');
         console.log('请求接口', url);
@@ -50,7 +52,7 @@ var http = function http(method) {
                 'content-type': method === 'GET' ? 'application/json' : 'application/x-www-form-urlencoded;charset=utf-8',
                 PPU: ppu || 'wanghongyue',
                 // 'YkuYdY8rk5As4T2QaJ7v': '45797966958100',
-                'reqfrom': 'biz_assistant'
+                reqfrom: 'biz_assistant'
             },
             success: function success(response) {
                 console.log('response', response);

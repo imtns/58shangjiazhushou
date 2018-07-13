@@ -47,6 +47,7 @@ var _class = function (_wepy$app) {
             'pages/myMp', // 我的小程序
             'pages/AppInfo', // 小程序信息
             'pages/UploadInfo', // 上传素材首页
+            'pages/resourceManage', // 素材管理
             'pages/send', // 测试授权页面专用，勿删
             'pages/progress', // 完成度页面
             'pages/AppEdit', // 小程序编辑
@@ -66,6 +67,22 @@ var _class = function (_wepy$app) {
             'pages/accountNoticeList', // 入账提醒页面
             'pages/OrderList', // 订单列表
             'pages/OrderDetail', // 订单详情
+            'pages/articleComponentCreate', // 文章添加
+            'pages/articleComponentlist', // 文章列表
+            'pages/articleComponentDetail', // 文章详情
+            'pages/articleChoseGroup', // 选择分组
+            'pages/orderComponentDetail', // 预约预览页面
+            'pages/paymentRecord', // 收款记录
+            'pages/payChoseTime', // 选择时间
+            'pages/orderComponentlist', // 预约列表
+            'pages/orderComponentGroup', // 预约分组
+            'pages/couponManage', // 优惠券管理
+            'pages/couponEdit', // 优惠券编辑页
+            'pages/couponType', // 优惠券类型
+            'pages/couponValidTime', // 优惠券生效时间
+            'pages/couponService', // 优惠券适用产品
+            'pages/couponPreview', // 优惠券预览
+            'pages/orderComponentEdit', // 预约编辑
             'pages/OpenPay', // 开通支付
             'pages/CateSelector'],
             window: {
@@ -83,12 +100,7 @@ var _class = function (_wepy$app) {
     _createClass(_class, [{
         key: 'onLaunch',
         value: function onLaunch() {
-            console.log('onlainch');
-            // 刘强起的ppu.测试使用，上线记得删除
-            // wepy.setStorageSync('ppu', 'UID=48917864286479&UN=zf3e85
-            // &TT=d81202a65af05aa8cb1ea5f6d92254d1&PBODY=JhH_NY6a8n2PvW6ZgBv_B1CwuIJH84mNn
-            // uJt4PxcpEQDl5QPvba4IdoMpCpk_GxpEfRtc9RPAvrK6G4o9J3zhKHmVv33iBDKO8EVnmRq6yp2ETg
-            // stCBISr9016TKao2yDyUeZG32vv_2yuyG01uAnqTlUL1vaRpLJ3fRd9NqySA&VER=1');
+            console.log('onlaunch');
         }
     }, {
         key: 'onShow',

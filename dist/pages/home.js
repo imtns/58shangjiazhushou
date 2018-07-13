@@ -58,39 +58,72 @@ var Home = function (_wepy$page) {
                 chosedId: 0
             },
             items: [{
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-my.png',
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-my-mp.png',
                 text: '我的小程序'
             }, {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-upload.png',
-                text: '上传素材'
-            }, {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-order.png',
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-order-manage.png',
                 text: '订单管理'
             }, {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-progress.png',
-                text: '完成度'
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-payment-record.png',
+                text: '收款记录'
             }, {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-register.png',
-                text: '微信注册信息'
-            }, {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-pay.png',
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-payment.png',
                 text: '支付开通'
+            }],
+            nItems: [{
+                title: '店铺运营',
+                items: [{
+                    iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-store-fit.png',
+                    text: '店铺装修'
+                }, {
+                    iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-order-service.png',
+                    text: '发布服务'
+                }, {
+                    iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-coupon.png',
+                    text: '优惠劵'
+                }, {
+                    iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-resorce-manage.png',
+                    text: '素材管理'
+                }]
             }, {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-advice.png',
-                text: '意见反馈'
-            }, {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-building.png',
-                text: '暂未开放'
+                title: '开店必做',
+                items: [{
+                    iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-buy-mp.png',
+                    text: '购买小程序'
+                }, {
+                    iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-regist-mp.png',
+                    text: '注册小程序'
+                }, {
+                    iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-mp-progress.png',
+                    text: '进度查询'
+                }, {
+                    iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-feedback-mp.png',
+                    text: '意见反馈'
+                }]
             }]
         }, _this.methods = {
-            link: function link(index) {
-                if (index !== 6) {
-                    //   意见反馈不做判断
-                    this.checkBeforeJump(index);
-                } else {
+            // link (index) {
+            //     if (index !== 6) { //   意见反馈不做判断
+            //         this.checkBeforeJump(index);
+            //     } else {
+            //         wepy.navigateTo({
+            //             url: 'feedback',
+            //         });
+            //     }
+            // },
+            link: function link(text) {
+                console.log(text);
+                if (text === '意见反馈') {
                     _wepy2.default.navigateTo({
                         url: 'feedback'
                     });
+                } else if (text === '购买小程序') {
+                    // 购买小程序页面
+                    _wepy2.default.navigateTo({
+                        // url: 'feedback',
+                    });
+                } else {
+                    this.checkBeforeJump(text);
                 }
             },
             checkProgress: function checkProgress() {
@@ -410,36 +443,119 @@ var Home = function (_wepy$page) {
                 _wepy2.default.setStorageSync('current_mpid', id);
             }
         }
+        // checkBeforeJump (index) {
+        //     console.log('this.business.selected.', this.business.selected);
+        //     if (!this.business.mpCount) {
+        //         alert('您还未购买小程序，请登录e.58.com进行购买', '提示');
+        //         return;
+        //     }
+        //     switch (index) {
+        //         case 0:
+        //             wepy.navigateTo({
+        //                 url: 'myMp',
+        //             });
+        //             break;
+        //         case 1:
+        //             wepy.navigateTo({
+        //                 url: 'UploadInfo',
+        //             });
+        //             break;
+        //         case 2:
+        //             wepy.navigateTo({
+        //                 url: 'OrderList',
+        //             });
+        //             break;
+        //         case 3:
+        //             wepy.navigateTo({
+        //                 url: 'progress',
+        //             });
+        //             break;
+        //         case 4:
+        //             if (this.business.selected.app_type === 1) {
+        //                 alert('当前小程序为优享小程序，不用提交注册信息', '提示');
+        //                 return;
+        //             }
+        //             if (this.business.selected.sign === 1) {
+        //                 wepy.navigateTo({
+        //                     url: 'registed',
+        //                 });
+        //             } else {
+        //                 wepy.setStorageSync('registMappid', this.business.selected.id);
+        //                 wepy.navigateTo({
+        //                     url: 'registMainAccount',
+        //                 });
+        //             }
+        //             break;
+        //         case 5:
+        //             wepy.navigateTo({
+        //                 url: 'OpenPay',
+        //             });
+        //             break;
+        //         case 6:
+        //             wepy.navigateTo({
+        //                 url: 'feedback',
+        //             });
+        //             break;
+        //         default:
+        //             break;
+        //     }
+        // }
+
     }, {
         key: 'checkBeforeJump',
-        value: function checkBeforeJump(index) {
+        value: function checkBeforeJump(text) {
             console.log('this.business.selected.', this.business.selected);
             if (!this.business.mpCount) {
                 (0, _utils.alert)('您还未购买小程序，请登录e.58.com进行购买', '提示');
                 return;
             }
-            switch (index) {
-                case 0:
+            switch (text) {
+                case '我的小程序员':
                     _wepy2.default.navigateTo({
                         url: 'myMp'
                     });
                     break;
-                case 1:
-                    _wepy2.default.navigateTo({
-                        url: 'UploadInfo'
-                    });
-                    break;
-                case 2:
+                case '订单管理':
                     _wepy2.default.navigateTo({
                         url: 'OrderList'
                     });
                     break;
-                case 3:
+                case '收款记录':
                     _wepy2.default.navigateTo({
-                        url: 'progress'
+                        url: 'paymentRecord'
                     });
                     break;
-                case 4:
+                case '支付开通':
+                    _wepy2.default.navigateTo({
+                        url: 'OpenPay'
+                    });
+                    break;
+                case '店铺装修':
+                    _wepy2.default.navigateTo({
+                        // url: 'OpenPay',店铺装修的页面url找黄鑫
+                    });
+                    break;
+                case '发布服务':
+                    _wepy2.default.navigateTo({
+                        url: 'orderComponentGroup'
+                    });
+                    break;
+                case '优惠劵':
+                    _wepy2.default.navigateTo({
+                        url: 'couponManage'
+                    });
+                    break;
+                case '素材管理':
+                    _wepy2.default.navigateTo({
+                        url: 'resourceManage'
+                    });
+                    break;
+                case '购买小程序':
+                    _wepy2.default.navigateTo({
+                        // url: 'resourceManage',购买小程序url找黄鑫
+                    });
+                    break;
+                case '注册小程序':
                     if (this.business.selected.app_type === 1) {
                         (0, _utils.alert)('当前小程序为优享小程序，不用提交注册信息', '提示');
                         return;
@@ -455,12 +571,12 @@ var Home = function (_wepy$page) {
                         });
                     }
                     break;
-                case 5:
+                case '进度查询':
                     _wepy2.default.navigateTo({
-                        url: 'OpenPay'
+                        url: 'progress'
                     });
                     break;
-                case 6:
+                case '意见反馈':
                     _wepy2.default.navigateTo({
                         url: 'feedback'
                     });
