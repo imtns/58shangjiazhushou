@@ -360,21 +360,18 @@ var AppEdit = function (_wepy$page) {
                                 return this.getAppInfo(this.mpid);
 
                             case 5:
-                                _context5.next = 7;
-                                return this.recordFirstCateStatus(this.form);
-
-                            case 7:
-                                _context5.next = 9;
+                                this.recordFirstCateStatus(this.form);
+                                _context5.next = 8;
                                 return this.getLocation();
 
-                            case 9:
-                                _context5.next = 11;
+                            case 8:
+                                _context5.next = 10;
                                 return this.getProvinces();
 
-                            case 11:
+                            case 10:
                                 this.defaultSelCityIndex();
 
-                            case 12:
+                            case 11:
                             case 'end':
                                 return _context5.stop();
                         }
@@ -403,6 +400,7 @@ var AppEdit = function (_wepy$page) {
             var mpSource = appInfo.mpSource,
                 cate2 = appInfo.cate2;
 
+            console.log('mpSource', mpSource, 'cate2', cate2);
             this.cateEditable = !!(mpSource && mpSource.toString() === '3' && !cate2) || mpSource && mpSource.toString() !== '3';
         }
         // 更新所属行业类别

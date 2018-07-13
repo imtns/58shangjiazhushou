@@ -107,7 +107,7 @@ var AppInfo = function (_wepy$page) {
                 return headImg;
             }
         }, _this.methods = {
-            bindScanQrcode: function bindScanQrcode(qrcodeUrl) {
+            bindClickPreview: function bindClickPreview(qrcodeUrl) {
                 _wepy2.default.previewImage({
                     urls: [(0, _utils.picSrcDomain)() + qrcodeUrl]
                 });

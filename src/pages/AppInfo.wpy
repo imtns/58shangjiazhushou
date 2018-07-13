@@ -9,6 +9,7 @@
             <view class="appinfo-youxiang {{(appInfo.app_type==1 || appInfo.app_type==2)?'':'disable'}}">优享</view>
             <view class="appinfo-weixin {{appInfo.app_type==2?'':'disable'}}">微信</view>
         </view>
+        <view class="appinfo-status">
             <view class="appinfo-auth" wx:if="{{appInfo.app_type==2}}">授权状态：{{appInfo.status_desc}}</view>
             <view class="appinfo-verify">审核状态：{{appInfo.lastpublishState_desc}}</view>
             <view class="appinfo-telephone">联系电话：{{appInfo.telphone}}</view>
