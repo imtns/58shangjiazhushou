@@ -71,12 +71,6 @@
                     <view class="qrcode-openpay">去开通</view>
                 </navigator>
             </view>
-        <view class="appinfo-qrcode" wx:if="{{qrcodeUrl}}">
-            <view class="appinfo-qrcode-label">小程序码：</view>
-            <image class="appinfo-qrcode-img" src="{{qrcodeUrl}}" @tap="bindScanQrcode({{qrcodeUrl}})"/>
-        </view>
-        <view class="appinfo-qrcode-off" wx:else>
-            <view class="">小程序码：上线后展示</view>
         </view>
         <navigator url="/pages/AppEdit?mpid={{appInfo.mpid}}"><view class="appinfo-edit">编辑小程序</view></navigator>
     </view>
@@ -153,7 +147,7 @@ export default class AppInfo extends wepy.page {
         },
     }
     methods = {
-        bindScanQrcode (qrcodeUrl) {
+        bindClickPreview (qrcodeUrl) {
             wepy.previewImage({
                 urls: [picSrcDomain() + qrcodeUrl],
             });
