@@ -7,19 +7,20 @@
                 type="text"
                 placeholder="可用优惠券亮点吸引用户"
                 placeholder-class="placeholder"
-                value="{{ form.title }}"
-                @change="setFormData('title')"/>
+                value="{{ form.serviceName }}"
+                @change="setFormData('serviceName')"/>
             </view>
-            <imageUploader @changeimages.user="setImages" maxCount="10" maxSize="4"
-         uploadtype="1"></imageUploader>
+            <imageUploader @changeimages.user="setImages" maxCount="10"
+            maxSize="4" uploadtype="1" :showDelete="showImageDelete"
+            showType="order" :defaultImages.sync="defaultImages"></imageUploader>
             <view class="item required">
                 <text>服务价格</text>
                 <input
                 type="digit"
                 placeholder="请输入价格"
                 placeholder-class="placeholder"
-                value="{{ form.subTitle }}"
-                @change="setFormData('subTitle')"/>
+                value="{{ form.price }}"
+                @change="setFormData('price')"/>
             </view>
         </view>
         <view class="section">
@@ -29,25 +30,25 @@
                 type="number"
                 placeholder="请输入时间"
                 placeholder-class="placeholder"
-                value="{{ form.subTitle }}"
-                @change="setFormData('subTitle')"/>
+                value="{{ form.duration }}"
+                @change="setFormData('duration')"/>
             </view>
         </view>
         <view class="section">
             <view class="item required border-bottom">
                 <text>服务开始时间</text>
-                <picker mode="date" value="{{ formatValidStarttime }}"
-                :class="{ placeholder: validStarttime === null }"
-                @change="dataAction('validStarttime')">
-                    {{ formatValidStarttime || '去选择' }}<view class="icon more"></view>
+                <picker mode="time" value="{{ form.serviceStarttime }}"
+                :class="{ placeholder: !form.serviceStarttime }"
+                @change="setFormData('serviceStarttime')">
+                    {{ form.serviceStarttime || '去选择' }}<view class="icon more"></view>
                 </picker>
             </view>
             <view class="item required">
                 <text>服务结束时间</text>
-                <picker mode="date" value="{{ formatValidEndtime }}"
-                :class="{ placeholder: validEndtime === null }"
-                @change="dataAction('validEndtime')">
-                    {{ formatValidEndtime || '去选择' }}<view class="icon more"></view>
+                <picker mode="time" value="{{ form.serviceEndtime }}"
+                :class="{ placeholder: !form.serviceEndtime }"
+                @change="setFormData('serviceEndtime')">
+                    {{ form.serviceEndtime || '去选择' }}<view class="icon more"></view>
                 </picker>
             </view>
         </view>
@@ -62,16 +63,28 @@
             </view>
             <view class="item required">
                 <text>预约地址</text>
-                <button class="locate">定位</button>
+                <button class="locate" @tap="setLocation">定位</button>
             </view>
-            <input type="text" class="location-detail" placeholder="请输入详细地址" placeholder-class="placeholder"/>
-            <map class="location-map" scale="14"></map>
+            <input
+            type="text"
+            class="location-detail"
+            placeholder="请输入详细地址"
+            placeholder-class="placeholder"
+            value="{{ form.address }}"
+            @change="setFormData('address')"/>
+            <map class="location-map" scale="14"
+            longitude="{{ form.addressLongitude }}"
+            latitude="{{ form.addressLatitude }}"></map>
         </view>
         <view class="section">
             <view class="item">
                 <text>服务详情</text>
             </view>
-            <textarea class="service-detail" cols="30" rows="10"></textarea>
+            <textarea class="service-detail" cols="30" rows="10"
+            placeholder="详细描述下您的服务内容吧~"
+            placeholder-class="placeholder"
+            value="{{ form.serviceDetailInfo }}"
+            @blur="setFormData('serviceDetailInfo')"></textarea>
         </view>
         <view class="section">
             <view class="item border-bottom">
@@ -80,27 +93,27 @@
                 type="number"
                 placeholder="请输入服务人姓名"
                 placeholder-class="placeholder"
-                value="{{ form.subTitle }}"
-                @change="setFormData('subTitle')"/>
+                value="{{ form.serviceUserName }}"
+                @change="setFormData('serviceUserName')"/>
             </view>
             <view class="item">
                 <text>服务人电话</text>
                 <input
                 type="number"
-                placeholder="请输入服务人姓名"
+                placeholder="请输入服务人电话"
                 placeholder-class="placeholder"
-                value="{{ form.subTitle }}"
-                @change="setFormData('subTitle')"/>
+                value="{{ form.serviceTelphone }}"
+                @change="setFormData('serviceTelphone')"/>
             </view>
         </view>
         <view class="section">
             <view class="item required">
-                <text>服务人姓名</text>
+                <text>支付方式</text>
                 <view>本产品目前仅支持到店支付</view>
             </view>
         </view>
 
-        <button class="save" @tap="save">保存</button>
+        <button class="save" :class="{ disabled: !canSubmit }" @tap="save">保存</button>
     </view>
 </template>
 
@@ -108,11 +121,9 @@
 import wepy from 'wepy';
 import Mixin from '../mixins';
 import { get, post } from '../utils/ajax';
-import { LOAD_COUPON, SAVE_COUPON } from '../utils/url';
-import { alert } from '../utils';
-
+import { LOAD_SERVICE, SAVE_COUPON } from '../utils/url';
+import { alert, picSrcDomain } from '../utils';
 import imageUploader from '../components/UploadFile';
-
 import globalService from '../utils/globalService';
 
 export default class Index extends wepy.page {
@@ -127,30 +138,46 @@ export default class Index extends wepy.page {
     data = {
         form: {
             id: '',
-            mpId: '',
-            title: '',
-            subTitle: '',
-            couponType: '',
-            totalCount: 0, // 库存
-            limitCount: 0, // 每人限领
-            validType: '', // 1 固定时间，2 领取后生效
-            validDays: null,
-            validAfterDays: null,
-            validStarttime: '',
-            validEndtime: '',
-            applyType: '',
-            serviceIds: '',
+            mpid: '',
+            serviceName: '', // *服务名称
+            pics: '', // *服务头图
+            price: 0, // *服务价格
+            durationUnit: 1, // *服务形式，小程序端只能选择 分钟/次
+            duration: 0, // *服务时长
+            serviceDetailInfo: '', // 服务详情
+            serviceUserName: '', // 服务人员姓名
+            serviceTelphone: '', // 服务人电话
+            serviceStarttime: '', // *开始时间
+            serviceEndtime: '', // *结束时间
+            provinceStr: '', // 省名
+            cityStr: '', // 城市名
+            areaStr: '', // 区名
+            address: '', // *详细地址
+            addressLongitude: '', // *经度
+            addressLatitude: '', // *纬度
+            province: 0, // *省id
+            city: 0, // *城市id
+            area: 0, // *区域id
+            payType: 1, // *支付方式，只能为到店付
         },
+        showImageDelete: false,
+        defaultImages: [],
     }
 
     mixins = [Mixin]
 
     methods = {
-        uploadFn() {
-
+        setImages({ images }) {
+            if (images.length) {
+                this.form.pics = images[0];
+            }
         },
 
         async save() {
+            if (!this.canSubmit) {
+                return;
+            }
+
             try {
                 // 数据过滤
                 const { form } = this;
@@ -175,24 +202,38 @@ export default class Index extends wepy.page {
             this.form[prop] = e.detail.value;
         },
 
-        dataAction(prop, v) {
-            let value = v;
-            // 数据预处理
-            if (prop === 'validType') {
-                value = +value;
-            } else {
-                value = value && value.detail && value.detail.value;
-            }
+        // dataAction(prop, v) {
+        //     let value = v;
+        //     // 数据预处理
+        //     if (prop === 'validType') {
+        //         value = +value;
+        //     } else {
+        //         value = value && value.detail && value.detail.value;
+        //     }
 
-            // 数据校验
-            const validate = this.validator(prop, value);
-            if (!validate.result) {
-                alert(validate.msg);
-                return;
-            }
+        //     // 数据校验
+        //     const validate = this.validator(prop, value);
+        //     if (!validate.result) {
+        //         alert(validate.msg);
+        //         return;
+        //     }
 
-            this[prop] = value;
-            this.updateData();
+        //     this[prop] = value;
+        //     this.updateData();
+        // },
+
+        async setLocation () {
+            const {
+                address,
+                latitude: addressLatitude,
+                longitude: addressLongitude
+            } = await wepy.chooseLocation();
+            Object.assign(this.form, {
+                address,
+                addressLatitude,
+                addressLongitude,
+            });
+            this.$apply();
         },
     }
 
@@ -224,61 +265,59 @@ export default class Index extends wepy.page {
 
     async loadData(id) {
         try {
-            const { data: coupon } = await get(LOAD_COUPON + id);
-            let { couponCondition } = coupon;
-            const mpId = wepy.getStorageSync('current_mpid');
-
-            if (couponCondition) {
-                try {
-                    couponCondition = JSON.parse(couponCondition);
-                    Object.assign(coupon, couponCondition);
-                } catch (e) {
-                    this.errorHandler(e);
-                }
-            }
+            const mpid = wepy.getStorageSync('current_mpid');
+            const { data: service } = await get(LOAD_SERVICE + id, {
+                mpid,
+            });
 
             const {
-                title,
-                subTitle,
-                couponType,
-                totalCount,
-                limitCount,
-                limitAmount,
-                couponDiscard,
-                reliefAmount,
-                validType,
-                validDays,
-                validAfterDays,
-                validStarttime,
-                validEndtime,
-                applyType,
-                services,
-            } = coupon;
-            let serviceIds = '';
-
-            if (services && services.length) {
-                serviceIds = services.map(item => item.id).join(',');
-            }
+                serviceName,
+                pics,
+                price,
+                durationUnit,
+                duration,
+                serviceDetailInfo,
+                serviceUserName,
+                serviceTelphone,
+                serviceStarttime,
+                serviceEndtime,
+                provinceStr,
+                cityStr,
+                areaStr,
+                address,
+                addressLongitude,
+                addressLatitude,
+                province,
+                city,
+                area,
+                payType,
+            } = service;
 
             Object.assign(this.form, {
                 id,
-                mpId,
-                title,
-                subTitle,
-                couponType,
-                totalCount,
-                limitCount,
-                limitAmount,
-                couponDiscard,
-                reliefAmount,
-                validType,
-                validDays,
-                validAfterDays,
-                validStarttime,
-                validEndtime,
-                applyType,
-                serviceIds,
+                mpid,
+                serviceName,
+                pics,
+                price,
+                durationUnit,
+                duration,
+                serviceDetailInfo,
+                serviceUserName,
+                serviceTelphone,
+                serviceStarttime,
+                serviceEndtime,
+                provinceStr,
+                cityStr,
+                areaStr,
+                address,
+                addressLongitude,
+                addressLatitude,
+                province,
+                city,
+                area,
+                payType,
             });
+            this.defaultImages = [picSrcDomain() + pics];
 
             this.$apply();
         } catch (e) {
@@ -287,8 +326,8 @@ export default class Index extends wepy.page {
     }
 
     updateData() {
-        const couponManage = globalService.get('couponManage');
-        globalService.set('couponManage', Object.assign(couponManage, this.form));
+        const orderComponent = globalService.get('orderComponent');
+        globalService.set('orderComponent', Object.assign(orderComponent, this.form));
     }
 }
 </script>
@@ -389,6 +428,10 @@ button.save {
     right: 0;
     border-radius: 0;
     z-index: 999;
+
+    &.disabled {
+        background-color: #C5C5C5;
+    }
 
     &::after {
         content: none;
