@@ -1,0 +1,68 @@
+
+    <view class="appedit-container" hidden="{{loading}}">
+        <view class="appedit-header" bindtap="setLogo"  wx:if="{{form.app_type==1 || !form.headImg}}">
+            <text class="appedit-form-label">上传小程序标志</text>
+            <image class="appedit-form-logo" mode="aspectFill" src="{{logoUrl}}"/>
+            <text class="appedit-form-arrow"/>
+        </view>
+        <view class="appedit-header"  wx:else>
+            <text class="appedit-form-label">上传小程序标志</text>
+            <image class="appedit-form-logo" mode="aspectFill" src="{{logoUrl}}"/>
+        </view>
+        <view class="appedit-content-list">
+            <view class="appedit-content-list-item">
+                <text class="appedit-form-label">小程序名称</text>
+                <input class="appedit-form-input" type="text" bindinput="setAppName" placeholder="提交后优享小程序才可修改" placeholder-class="appedit-form-placeholder" maxlength="30" confirm-type="done" value="{{form.nickName}}" wx:if="{{form.app_type==1}}"/>
+                <view class="appedit-form-appname appedit-form-placeholder" type="text" wx:else>{{form.nickName}}</view>
+            </view>
+            <view class="appedit-content-list-item">
+                <text class="appedit-form-label">联系电话</text>
+                <input class="appedit-form-input" maxlength="11" type="number" bindinput="setMobile" placeholder="请输入" placeholder-class="appedit-form-placeholder" value="{{form.telphone}}"/>
+            </view>
+            <!-- 同镇用户所属行业只可编辑一次，mpSource:2 代表同镇，所属行业已编辑 -->
+            <view class="appedit-content-list-item" wx:if="{{!cateEditable}}">
+                <text class="appedit-form-label">所属行业</text>
+                <view class="appedit-form-cate">
+                    {{ form.cate1Name+' '+form.cate2Name+' '+form.cate3Name }}
+                </view>
+                <text class="appedit-form-arrow"/>
+            </view>
+            <navigator url="/pages/CateSelector?cate1={{form.cate1}}&cate2={{form.cate2}}&cate3={{form.cate3}}" wx:else>
+                <view class="appedit-content-list-item">
+                    <text class="appedit-form-label">所属行业</text>
+                    <view class="appedit-form-cate">
+                        <block wx:if="{{form.cate1Name}}">
+                            {{ form.cate1Name+' '+form.cate2Name+' '+form.cate3Name }}
+                        </block>
+                        <block wx:else>
+                            请选择
+                        </block>
+                    </view>
+                    <text class="appedit-form-arrow"/>
+                </view>
+             </navigator>
+            <picker mode="multiSelector" bindchange="setCity" bindcolumnchange="bindCity" range="{{areas}}" range-key="localName" value="{{selCityIndex}}">
+                <view class="appedit-content-list-item">
+                    <text class="appedit-form-label">小程序城市</text>
+                    <view class="appedit-form-picker" wx:if="{{form.city}}">
+                        {{form.provinceName}} {{form.cityName}}
+                    </view>
+                    <view class="appedit-form-picker-placeholder" wx:else>
+                        请选择
+                    </view>
+                </view>
+            </picker>
+            <view class="appedit-content-list-item appedit-content-list-item-noborder">
+                <text class="appedit-form-label-address">小程序具体地点</text>
+                <view class="appedit-form-btn-location" bindtap="setLocation">定位</view>
+            </view>
+            <view class="appedit-content-list-item appedit-content-list-item-noborder">
+                <textarea name="" id="" cols="30" rows="10" class="appedit-form-input-addressdetail" placeholder="请输入" placeholder-class="appedit-form-placeholder" bindinput="setDetailAdress" value="{{form.address}}"/>
+            </view>
+        </view>
+        <view class="appedit-map">
+            <map id="map" class="appedit-map-in" longitude="{{longitude}}" latitude="{{latitude}}" scale="14" markers="{{markers}}"/>
+        </view>
+        <view class="appedit-submit submit-enable" bindtap="bindSave" wx:if="{{enableSave}}">保存</view>
+        <view class="appedit-submit" bindtap="bindSave" wx:else>保存</view>
+    </view>
