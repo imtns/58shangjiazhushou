@@ -62,7 +62,8 @@ var AppEdit = function (_wepy$page) {
                 city: '1',
                 province: '5001'
             },
-            tempLogo: ''
+            tempLogo: '',
+            cateEditable: true // 所属行业是否可以编辑
         }, _this.computed = {
             enableSave: function enableSave() {
                 return !!(this.form.nickName && this.form.headImg && this.form.telphone && this.form.city && this.form.address);
@@ -341,6 +342,90 @@ var AppEdit = function (_wepy$page) {
     }
 
     _createClass(AppEdit, [{
+        key: 'onLoad',
+        value: function () {
+            var _ref13 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(options) {
+                var mpid;
+                return regeneratorRuntime.wrap(function _callee5$(_context5) {
+                    while (1) {
+                        switch (_context5.prev = _context5.next) {
+                            case 0:
+                                mpid = options.mpid || _wepy2.default.getStorageSync('current_mpid');
+
+                                if (!mpid) {
+                                    _wepy2.default.navigateBack();
+                                }
+                                this.mpid = mpid;
+                                _context5.next = 5;
+                                return this.getAppInfo(this.mpid);
+
+                            case 5:
+                                _context5.next = 7;
+                                return this.recordFirstCateStatus(this.form);
+
+                            case 7:
+                                _context5.next = 9;
+                                return this.getLocation();
+
+                            case 9:
+                                _context5.next = 11;
+                                return this.getProvinces();
+
+                            case 11:
+                                this.defaultSelCityIndex();
+
+                            case 12:
+                            case 'end':
+                                return _context5.stop();
+                        }
+                    }
+                }, _callee5, this);
+            }));
+
+            function onLoad(_x2) {
+                return _ref13.apply(this, arguments);
+            }
+
+            return onLoad;
+        }()
+    }, {
+        key: 'onShow',
+        value: function onShow() {
+            this.updateCateChooice();
+        }
+        // 记录页面加载是所属行业类别编辑状态
+        // 如果小程序属于同镇mpSource= 3且所属行业cate2为空则可以编辑
+        // 或者mpSource!==3则可以编辑
+
+    }, {
+        key: 'recordFirstCateStatus',
+        value: function recordFirstCateStatus(appInfo) {
+            var mpSource = appInfo.mpSource,
+                cate2 = appInfo.cate2;
+
+            this.cateEditable = !!(mpSource && mpSource.toString() === '3' && !cate2) || mpSource && mpSource.toString() !== '3';
+        }
+        // 更新所属行业类别
+
+    }, {
+        key: 'updateCateChooice',
+        value: function updateCateChooice() {
+            if (!this.$parent.globalData || !this.$parent.globalData.cateChooice) return;
+            var form = {};
+            console.log('cateChooice0', this.$parent.globalData.cateChooice);
+            // 从所属类目值选择页面返回重新赋值
+            var cateChooice = this.$parent.globalData && this.$parent.globalData.cateChooice ? this.$parent.globalData.cateChooice : [{}, {}, {}];
+            console.log('cateChooice1', cateChooice);
+            cateChooice.map(function (item, index) {
+                form['cate' + (index + 1)] = item.cateId || '';
+                form['cate' + (index + 1) + 'Name'] = item.name || '';
+                return item;
+            });
+            // 更新完成删除全局所属类目字段cateChooice
+            this.$parent.globalData && this.$parent.globalData.cateChooice && (this.$parent.globalData.cateChooice = undefined);
+            this.updateForm(form);
+        }
+    }, {
         key: 'defaultSelCityIndex',
         value: function defaultSelCityIndex() {
             var _form = this.form,
@@ -404,48 +489,48 @@ var AppEdit = function (_wepy$page) {
     }, {
         key: 'getProvinces',
         value: function () {
-            var _ref13 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
-                var _ref14, _ref15, e1, data1, province, _ref16, _ref17, e2, data2;
+            var _ref14 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
+                var _ref15, _ref16, e1, data1, province, _ref17, _ref18, e2, data2;
 
-                return regeneratorRuntime.wrap(function _callee5$(_context5) {
+                return regeneratorRuntime.wrap(function _callee6$(_context6) {
                     while (1) {
-                        switch (_context5.prev = _context5.next) {
+                        switch (_context6.prev = _context6.next) {
                             case 0:
-                                _context5.next = 2;
+                                _context6.next = 2;
                                 return (0, _ajaxP.get)(provinceApi);
 
                             case 2:
-                                _ref14 = _context5.sent;
-                                _ref15 = _slicedToArray(_ref14, 2);
-                                e1 = _ref15[0];
-                                data1 = _ref15[1];
+                                _ref15 = _context6.sent;
+                                _ref16 = _slicedToArray(_ref15, 2);
+                                e1 = _ref16[0];
+                                data1 = _ref16[1];
 
                                 if (!e1) {
-                                    _context5.next = 9;
+                                    _context6.next = 9;
                                     break;
                                 }
 
                                 this.toast(e1);
-                                return _context5.abrupt('return');
+                                return _context6.abrupt('return');
 
                             case 9:
                                 province = this.form.province || '5001';
-                                _context5.next = 12;
+                                _context6.next = 12;
                                 return (0, _ajaxP.get)(cityApi + province);
 
                             case 12:
-                                _ref16 = _context5.sent;
-                                _ref17 = _slicedToArray(_ref16, 2);
-                                e2 = _ref17[0];
-                                data2 = _ref17[1];
+                                _ref17 = _context6.sent;
+                                _ref18 = _slicedToArray(_ref17, 2);
+                                e2 = _ref18[0];
+                                data2 = _ref18[1];
 
                                 if (!e2) {
-                                    _context5.next = 19;
+                                    _context6.next = 19;
                                     break;
                                 }
 
                                 this.toast(e2);
-                                return _context5.abrupt('return');
+                                return _context6.abrupt('return');
 
                             case 19:
                                 console.log('provinces', data1, 'citys', data2);
@@ -455,14 +540,14 @@ var AppEdit = function (_wepy$page) {
 
                             case 23:
                             case 'end':
-                                return _context5.stop();
+                                return _context6.stop();
                         }
                     }
-                }, _callee5, this);
+                }, _callee6, this);
             }));
 
             function getProvinces() {
-                return _ref13.apply(this, arguments);
+                return _ref14.apply(this, arguments);
             }
 
             return getProvinces;
@@ -470,76 +555,32 @@ var AppEdit = function (_wepy$page) {
     }, {
         key: 'getLocation',
         value: function () {
-            var _ref18 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
-                var _ref19, latitude, longitude;
-
-                return regeneratorRuntime.wrap(function _callee6$(_context6) {
-                    while (1) {
-                        switch (_context6.prev = _context6.next) {
-                            case 0:
-                                _context6.next = 2;
-                                return _wepy2.default.getLocation({ type: 'wgs84' });
-
-                            case 2:
-                                _ref19 = _context6.sent;
-                                latitude = _ref19.latitude;
-                                longitude = _ref19.longitude;
-
-                                if (!this.form.addressLatitude) {
-                                    _context6.next = 7;
-                                    break;
-                                }
-
-                                return _context6.abrupt('return');
-
-                            case 7:
-                                this.updateForm({ addressLatitude: latitude, addressLongitude: longitude });
-
-                            case 8:
-                            case 'end':
-                                return _context6.stop();
-                        }
-                    }
-                }, _callee6, this);
-            }));
-
-            function getLocation() {
-                return _ref18.apply(this, arguments);
-            }
-
-            return getLocation;
-        }()
-    }, {
-        key: 'getAppInfo',
-        value: function () {
-            var _ref20 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7(mpid) {
-                var _ref21, _ref22, e, data;
+            var _ref19 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
+                var _ref20, latitude, longitude;
 
                 return regeneratorRuntime.wrap(function _callee7$(_context7) {
                     while (1) {
                         switch (_context7.prev = _context7.next) {
                             case 0:
                                 _context7.next = 2;
-                                return (0, _ajaxP.get)(appinfoApi + '/' + mpid);
+                                return _wepy2.default.getLocation({ type: 'wgs84' });
 
                             case 2:
-                                _ref21 = _context7.sent;
-                                _ref22 = _slicedToArray(_ref21, 2);
-                                e = _ref22[0];
-                                data = _ref22[1];
+                                _ref20 = _context7.sent;
+                                latitude = _ref20.latitude;
+                                longitude = _ref20.longitude;
 
-                                if (!e) {
-                                    _context7.next = 9;
+                                if (!this.form.addressLatitude) {
+                                    _context7.next = 7;
                                     break;
                                 }
 
-                                this.toast(e);
                                 return _context7.abrupt('return');
 
-                            case 9:
-                                this.updateForm(_extends({}, data));
+                            case 7:
+                                this.updateForm({ addressLatitude: latitude, addressLongitude: longitude });
 
-                            case 10:
+                            case 8:
                             case 'end':
                                 return _context7.stop();
                         }
@@ -547,8 +588,52 @@ var AppEdit = function (_wepy$page) {
                 }, _callee7, this);
             }));
 
-            function getAppInfo(_x2) {
-                return _ref20.apply(this, arguments);
+            function getLocation() {
+                return _ref19.apply(this, arguments);
+            }
+
+            return getLocation;
+        }()
+    }, {
+        key: 'getAppInfo',
+        value: function () {
+            var _ref21 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8(mpid) {
+                var _ref22, _ref23, e, data;
+
+                return regeneratorRuntime.wrap(function _callee8$(_context8) {
+                    while (1) {
+                        switch (_context8.prev = _context8.next) {
+                            case 0:
+                                _context8.next = 2;
+                                return (0, _ajaxP.get)(appinfoApi + '/' + mpid);
+
+                            case 2:
+                                _ref22 = _context8.sent;
+                                _ref23 = _slicedToArray(_ref22, 2);
+                                e = _ref23[0];
+                                data = _ref23[1];
+
+                                if (!e) {
+                                    _context8.next = 9;
+                                    break;
+                                }
+
+                                this.toast(e);
+                                return _context8.abrupt('return');
+
+                            case 9:
+                                this.updateForm(_extends({}, data));
+
+                            case 10:
+                            case 'end':
+                                return _context8.stop();
+                        }
+                    }
+                }, _callee8, this);
+            }));
+
+            function getAppInfo(_x3) {
+                return _ref21.apply(this, arguments);
             }
 
             return getAppInfo;
@@ -573,136 +658,93 @@ var AppEdit = function (_wepy$page) {
     }, {
         key: 'verify',
         value: function () {
-            var _ref23 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8() {
+            var _ref24 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee9() {
                 var regPhone, form;
-                return regeneratorRuntime.wrap(function _callee8$(_context8) {
+                return regeneratorRuntime.wrap(function _callee9$(_context9) {
                     while (1) {
-                        switch (_context8.prev = _context8.next) {
+                        switch (_context9.prev = _context9.next) {
                             case 0:
                                 regPhone = /^1[3456789][0-9]{9}$/;
                                 form = this.data.form;
 
                                 if (form.headImg) {
-                                    _context8.next = 5;
+                                    _context9.next = 5;
                                     break;
                                 }
 
                                 this.toast('请完善信息');
-                                return _context8.abrupt('return', false);
+                                return _context9.abrupt('return', false);
 
                             case 5:
                                 if (form.nickName) {
-                                    _context8.next = 8;
+                                    _context9.next = 8;
                                     break;
                                 }
 
                                 this.toast('输入小程序名称');
-                                return _context8.abrupt('return', false);
+                                return _context9.abrupt('return', false);
 
                             case 8:
                                 if (!(form.nickName.length < 4)) {
-                                    _context8.next = 11;
+                                    _context9.next = 11;
                                     break;
                                 }
 
                                 this.toast('小程序名称不得小于4个字');
-                                return _context8.abrupt('return', false);
+                                return _context9.abrupt('return', false);
 
                             case 11:
                                 if (form.telphone) {
-                                    _context8.next = 14;
+                                    _context9.next = 14;
                                     break;
                                 }
 
                                 this.toast('输入联系电话');
-                                return _context8.abrupt('return', false);
+                                return _context9.abrupt('return', false);
 
                             case 14:
                                 if (!(form.telphone.length < 11 && !regPhone.test(form.telphone))) {
-                                    _context8.next = 18;
+                                    _context9.next = 18;
                                     break;
                                 }
 
-                                _context8.next = 17;
+                                _context9.next = 17;
                                 return (0, _utils.toastSync)('手机号不正确');
 
                             case 17:
-                                return _context8.abrupt('return', false);
+                                return _context9.abrupt('return', false);
 
                             case 18:
                                 if (form.city) {
-                                    _context8.next = 21;
+                                    _context9.next = 21;
                                     break;
                                 }
 
                                 this.toast('选择城市');
-                                return _context8.abrupt('return', false);
+                                return _context9.abrupt('return', false);
 
                             case 21:
                                 if (form.address) {
-                                    _context8.next = 24;
+                                    _context9.next = 24;
                                     break;
                                 }
 
                                 this.toast('输入详情地址');
-                                return _context8.abrupt('return', false);
+                                return _context9.abrupt('return', false);
 
                             case 24:
                                 if (!(!form.cate1 || !form.cate2)) {
-                                    _context8.next = 27;
+                                    _context9.next = 27;
                                     break;
                                 }
 
                                 this.toast('所属行业至少选择两项');
-                                return _context8.abrupt('return', false);
+                                return _context9.abrupt('return', false);
 
                             case 27:
-                                return _context8.abrupt('return', true);
+                                return _context9.abrupt('return', true);
 
                             case 28:
-                            case 'end':
-                                return _context8.stop();
-                        }
-                    }
-                }, _callee8, this);
-            }));
-
-            function verify() {
-                return _ref23.apply(this, arguments);
-            }
-
-            return verify;
-        }()
-    }, {
-        key: 'onLoad',
-        value: function () {
-            var _ref24 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee9(options) {
-                var mpid;
-                return regeneratorRuntime.wrap(function _callee9$(_context9) {
-                    while (1) {
-                        switch (_context9.prev = _context9.next) {
-                            case 0:
-                                mpid = options.mpid || _wepy2.default.getStorageSync('current_mpid');
-
-                                if (!mpid) {
-                                    _wepy2.default.navigateBack();
-                                }
-                                this.mpid = mpid;
-                                _context9.next = 5;
-                                return this.getAppInfo(this.mpid);
-
-                            case 5:
-                                _context9.next = 7;
-                                return this.getLocation();
-
-                            case 7:
-                                _context9.next = 9;
-                                return this.getProvinces();
-
-                            case 9:
-                                this.defaultSelCityIndex();
-
-                            case 10:
                             case 'end':
                                 return _context9.stop();
                         }
@@ -710,37 +752,12 @@ var AppEdit = function (_wepy$page) {
                 }, _callee9, this);
             }));
 
-            function onLoad(_x3) {
+            function verify() {
                 return _ref24.apply(this, arguments);
             }
 
-            return onLoad;
+            return verify;
         }()
-    }, {
-        key: 'onShow',
-        value: function onShow() {
-            this.updateCateChooice();
-        }
-        // 更新所属行业类别
-
-    }, {
-        key: 'updateCateChooice',
-        value: function updateCateChooice() {
-            if (!this.$parent.globalData || !this.$parent.globalData.cateChooice) return;
-            var form = {};
-            console.log('cateChooice0', this.$parent.globalData.cateChooice);
-            // 从所属类目值选择页面返回重新赋值
-            var cateChooice = this.$parent.globalData && this.$parent.globalData.cateChooice ? this.$parent.globalData.cateChooice : [{}, {}, {}];
-            console.log('cateChooice1', cateChooice);
-            cateChooice.map(function (item, index) {
-                form['cate' + (index + 1)] = item.cateId || '';
-                form['cate' + (index + 1) + 'Name'] = item.name || '';
-                return item;
-            });
-            // 更新完成删除全局所属类目字段cateChooice
-            this.$parent.globalData && this.$parent.globalData.cateChooice && (this.$parent.globalData.cateChooice = undefined);
-            this.updateForm(form);
-        }
     }]);
 
     return AppEdit;

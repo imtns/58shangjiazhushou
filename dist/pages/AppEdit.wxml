@@ -20,7 +20,7 @@
                 <input class="appedit-form-input" maxlength="11" type="number" bindinput="setMobile" placeholder="请输入" placeholder-class="appedit-form-placeholder" value="{{form.telphone}}"/>
             </view>
             <!-- 同镇用户所属行业只可编辑一次，mpSource:2 代表同镇，所属行业已编辑 -->
-            <view class="appedit-content-list-item" wx:if="{{form.mpSource == 2 && form.cate2}}">
+            <view class="appedit-content-list-item" wx:if="{{!cateEditable}}">
                 <text class="appedit-form-label">所属行业</text>
                 <view class="appedit-form-cate">
                     {{ form.cate1Name+' '+form.cate2Name+' '+form.cate3Name }}
