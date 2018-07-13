@@ -1,0 +1,223 @@
+.appinfo-container {
+  width: 100vw;
+  height: 100vh;
+  padding-bottom: 30rpx;
+}
+
+.appinfo-container .appinfo-base {
+  padding: 26rpx 30rpx;
+  overflow: hidden;
+  background: #fff;
+  border-top: 2rpx solid #f3f3f3;
+  border-bottom: 2rpx solid #f3f3f3;
+}
+
+.appinfo-container .appinfo-base .appinfo-logo {
+  float: left;
+  margin-right: 20rpx;
+  width: 128rpx;
+  height: 128rpx;
+  border: 2rpx solid #e7e7e7;
+}
+
+.appinfo-container .appinfo-base .appinfo-title-wrap {
+  display: inline-block;
+  overflow: hidden;
+  width: 384rpx;
+  height: 128rpx;
+}
+
+.appinfo-container .appinfo-base .appinfo-title {
+  max-width: 450rpx;
+  line-height: 48rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: PingFangSC-Medium;
+  font-size: 34rpx;
+  color: #333333;
+  letter-spacing: 0.51rpx;
+}
+
+.appinfo-container .appinfo-base .appinfo-date {
+  margin-top: 18rpx;
+  line-height: 40rpx;
+  font-family: PingFangSC-Regular;
+  font-size: 28rpx;
+  color: #999999;
+}
+
+.appinfo-container .appinfo-base .appinfo-youxiang,
+.appinfo-container .appinfo-base .appinfo-weixin {
+  display: inline-block;
+  vertical-align: top;
+  width: 66rpx;
+  line-height: 38rpx;
+  font-family: PingFangSC-Regular;
+  font-size: 26rpx;
+  text-align: center;
+  height: 38rpx;
+  border-radius: 8rpx;
+  letter-spacing: 0.57px;
+  color: #f49b02;
+  background: rgba(255, 157, 0, 0.1);
+}
+
+.appinfo-container .appinfo-base .appinfo-youxiang.disable,
+.appinfo-container .appinfo-base .appinfo-weixin.disable {
+  background: #f6f6f6;
+  color: #ccc;
+}
+
+.appinfo-container .appinfo-base .appinfo-weixin {
+  margin-left: 20rpx;
+  color: #27bc28;
+  background: rgba(24, 173, 25, 0.1);
+}
+
+.appinfo-container .appinfo-status {
+  padding: 20rpx 30rpx;
+  background: #fff;
+  margin-bottom: 20rpx;
+}
+
+.appinfo-container .appinfo-status .appinfo-auth,
+.appinfo-container .appinfo-status .appinfo-verify,
+.appinfo-container .appinfo-status .appinfo-telephone,
+.appinfo-container .appinfo-status .appinfo-address {
+  overflow: hidden;
+  font-family: PingFangSC-Regular;
+  font-size: 30rpx;
+  color: #333333;
+  margin-bottom: 18rpx;
+}
+
+.appinfo-container .appinfo-status .appinfo-address {
+  line-height: 40rpx;
+  margin-bottom: 0;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  text-overflow: ellipsis;
+}
+
+.appinfo-container .appinfo-qrcode-off {
+  padding: 24rpx 30rpx;
+  background: #fff;
+  font-family: PingFangSC-Regular;
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.appinfo-container .appinfo-qrcode {
+  padding: 24rpx 30rpx 30rpx;
+  background: #fff;
+}
+
+.appinfo-container .appinfo-qrcode .appinfo-qrcode-label {
+  display: inline-block;
+  margin-right: 20rpx;
+  width: 140rpx;
+  height: 40rpx;
+  vertical-align: top;
+  font-family: PingFangSC-Regular;
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.appinfo-container .appinfo-qrcode .appinfo-qrcode-img {
+  width: 180rpx;
+  height: 180rpx;
+}
+
+.appinfo-container .appinfo-codelist {
+  margin-top: 20rpx;
+  padding: 30rpx;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  background: #ffffff;
+}
+
+.appinfo-container .appinfo-codelist .appinfo-codelist-li {
+  width: 188rpx;
+  position: relative;
+  margin-right: 64rpx;
+}
+
+.appinfo-container .appinfo-codelist .appinfo-codelist-li.last {
+  margin-right: 0;
+}
+
+.appinfo-container .appinfo-codelist .appinfo-codelist-li .qrcode-image {
+  display: block;
+  width: 100%;
+  height: 188rpx;
+}
+
+.appinfo-container .appinfo-codelist .appinfo-codelist-li .qrcode-image-empty {
+  width: 188rpx;
+  height: 188rpx;
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  background: #f3f3f3;
+  font-family: PingFangSC-Regular;
+  font-size: 24rpx;
+  color: #aaaaaa;
+  letter-spacing: 0;
+}
+
+.appinfo-container .appinfo-codelist .appinfo-codelist-li .qrcode-tip {
+  position: absolute;
+  top: 154rpx;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  line-height: 36rpx;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4rpx;
+  font-family: PingFangSC-Regular;
+  font-size: 24rpx;
+  color: #ffffff;
+  text-align: center;
+}
+
+.appinfo-container .appinfo-codelist .appinfo-codelist-li .qrcode-name {
+  margin-top: 15rpx;
+  font-family: PingFangSC-Regular;
+  font-size: 28rpx;
+  color: #333333;
+  letter-spacing: 0;
+  text-align: center;
+}
+
+.appinfo-container .appinfo-codelist .appinfo-codelist-li .qrcode-visit,
+.appinfo-container .appinfo-codelist .appinfo-codelist-li .qrcode-openpay {
+  width: 152rpx;
+  line-height: 45rpx;
+  margin: 10rpx auto 0;
+  border: 2rpx solid #4e88ff;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  color: #4e88ff;
+  letter-spacing: 0;
+  text-align: center;
+}
+
+.appinfo-container .appinfo-codelist .appinfo-codelist-li .qrcode-openpay {
+  width: 98rpx;
+}
+
+.appinfo-container .appinfo-edit {
+  margin: 60rpx auto 0;
+  width: 690rpx;
+  line-height: 94rpx;
+  background: #4e88ff;
+  border-radius: 4rpx;
+  font-family: PingFangSC-Regular;
+  font-size: 32rpx;
+  color: #ffffff;
+  text-align: center;
+}

@@ -7,7 +7,7 @@
             :class="{ selected: curTab === item.name }"
             @tap="selectTab({{ item.name }})">{{ item.label }}</view>
         </view>
-
+        <EmptyPage wx:if="{{groupList.length === 0 || works.length === 0}}"></EmptyPage>
         <view class="work-list" wx:if="{{ curTab === 'image' || curTab === 'video' }}">
             <view class="content">
                 <view class="work-box" wx:for="{{ works }}" wx:key="id">
@@ -34,7 +34,6 @@
                 </view>
             </view>
         </view>
-        <EmptyPage wx:if="{{groupList.length === 0}}"></EmptyPage>
         <view class="options">
             <button class="button edit" @tap="edit" wx:if="{{groupList.length > 0 || works.length > 0}}">{{ isEditing ? '取消' : '编辑' }}</button>
             <button class="button" wx:if="{{ isEditing }}" @tap="deleteItem">删除</button>

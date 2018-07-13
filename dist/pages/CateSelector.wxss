@@ -1,0 +1,64 @@
+.cateselector-container {
+  border-top: 2rpx solid #f3f3f3;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  box-shadow: 0 0 40rpx 1024rpx;
+}
+
+.cateselector-container .cateselector {
+  height: 100vh;
+  overflow-y: scroll;
+}
+
+.cateselector-container .cateselector .cateselector-li {
+  position: relative;
+  line-height: 88rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  background: #fbfbfb;
+  text-indent: 30rpx;
+  font-family: PingFangSC-Regular;
+  font-size: 28rpx;
+  color: #333333;
+  letter-spacing: 0;
+}
+
+.cateselector-container .cateselector .cateselector-li.selected {
+  background: #3a87ff;
+  color: #ffffff;
+}
+
+.cateselector-container .cateselector .cateselector-li.selected .cateselector-li-bottom {
+  display: none;
+}
+
+.cateselector-container .cateselector .cateselector-li .cateselector-li-bottom {
+  position: absolute;
+  bottom: 0rpx;
+  left: 20rpx;
+  height: 2rpx;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding-left: 30rpx;
+  background: #f3f3f3;
+}
+
+.cateselector-container .cateselector.first {
+  width: 152rpx;
+}
+
+.cateselector-container .cateselector.second {
+  width: 206rpx;
+}
+
+.cateselector-container .cateselector.three {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
+}
+
+.cateselector-container .cateselector.selected {
+  width: 300rpx;
+}

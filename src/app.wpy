@@ -2,6 +2,14 @@
 import wepy from 'wepy';
 import 'wepy-async-function';
 // import { alert } from './utils';
+import DoMiniProgramBack from './utils/scene';
+
+// 回调小程序类型
+const CALLBACKAPPS = {
+    wx2a9c6eeb1c44a284: 'Login', // 从58验证
+    wx67b75e86c9daef45: 'OpenPay', // 开通支付小程序
+    wxee214e01d07c9db0: 'ToMymp', // 从同镇小程序个人中心-> 管理我的小程序
+};
 
 export default class extends wepy.app {
     constructor() {
@@ -52,6 +60,8 @@ export default class extends wepy.app {
             'pages/couponService', // 优惠券适用产品
             'pages/couponPreview', // 优惠券预览
             'pages/orderComponentEdit', // 预约编辑
+            'pages/OpenPay', // 开通支付
+            'pages/CateSelector', // 类目选择
         ],
         window: {
             backgroundTextStyle: 'light',
@@ -64,32 +74,50 @@ export default class extends wepy.app {
         console.log('onlaunch');
     }
     onShow (options) {
-        const { path } = options;
-        console.log(path);
+        // const { path } = options;
+        // console.log(path);
         // const pages = getCurrentPages();
         // const currPage = pages[pages.length - 1];
         // console.log('currPage', currPage.route);
-        if (+options.scene === 1038 && path === 'pages/intro') {
-            if (!options.referrerInfo) {
-                console.log('options.referrerInfo为空');
-            }
-            if (!options.referrerInfo.extraData) {
-                console.log('options.referrerInfo.extraData为空');
-            }
-            let { extraData } = options.referrerInfo;
-            if (typeof extraData !== 'object') {
-                extraData = JSON.parse(extraData);
-            }
-            if (extraData.ppu !== undefined) { // 如果获取ppu成功
-                console.log(`获取PPU成功！ ${extraData.ppu}`);
-                wepy.setStorageSync('ppu', extraData.ppu);
-                setTimeout(() => {
-                    wepy.reLaunch({
-                        url: '/pages/home',
-                    });
-                }, 1000);
-            }
+        // if (options.scene === 1038 && path === 'pages/intro') {
+        //     if (!options.referrerInfo) {
+        //         console.log('options.referrerInfo为空');
+        //     }
+        //     if (!options.referrerInfo.extraData) {
+        //         console.log('options.referrerInfo.extraData为空');
+        //     }
+        //     let { extraData } = options.referrerInfo;
+        //     if (typeof extraData !== 'object') {
+        //         extraData = JSON.parse(extraData);
+        //     }
+        //     if (extraData.ppu !== undefined) { // 如果获取ppu成功
+        //         console.log(`获取PPU成功！ ${extraData.ppu}`);
+        //         wepy.setStorageSync('ppu', extraData.ppu);
+        //         setTimeout(() => {
+        //             wepy.reLaunch({
+        //                 url: '/pages/home',
+        //             });
+        //         }, 1000);
+        //     }
+        // }
+        //
+        // 赋值场景值、referrer信息
+        const { scene, referrerInfo = {}, path } = options;
+        const { appId } = referrerInfo;
+        const fromAppId = appId;
+        // action:通过fromAppId和scene返回当前小程序处理
+        console.log('referrerInfo', referrerInfo);
+        let action = scene === 1038 || scene === '1038' ? CALLBACKAPPS[fromAppId] : '';
+
+        // 1037进入 从别的小程序进入
+        action = scene === 1037 || scene === '1037' ? CALLBACKAPPS[fromAppId] : action;
+        // 登陆已经上线保持原有判断逻辑
+        // 条件1：scene：1038从另一个小程序返回
+        if (scene === 1038 && path === 'pages/intro' && fromAppId === 'wx2a9c6eeb1c44a284') {
+            action = 'Login';
         }
+        // 从小程序返回场景处理
+        action && DoMiniProgramBack[`Do${action}`].call(this, referrerInfo.extraData);
     }
 }
 </script>

@@ -1,5 +1,8 @@
 <template>
     <view class="myMP">
+        <view class="shareContainer" wx:if="{{shareImage}}">
+            <image class="img" src="{{shareImage}}" mode="{{scaleToFill}}"></image>
+        </view>
         <view class="current">
             <view class="tips">
                 <view>当前小程序</view>
@@ -12,8 +15,12 @@
                     </view>
                     <view class="details">
                         <view class="title"> 
-                            <image class="icon" mode="{{aspectFit}}" src="{{business.current.app_type === 1 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png'}}"></image>
                             <view class="name">{{business.current.nickName}}</view>
+                            <button wx:if="{{business.current.mpStatus == 2}}" class="share" plain="{{true}}" open-type="getUserInfo" bindgetuserinfo="onReadytoShare" data-id="{{business.current.id}}">分享</button>
+                        </view>
+                        <view class="icons">
+                            <image class="icon" mode="{{aspectFit}}" src="{{ business.current.app_type === 1 || business.current.app_type === 2 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang_grey.png'}}"></image>
+                            <image class="icon" mode="{{aspectFit}}" src="{{ business.current.app_type === 2 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin_grey.png'}}"></image>
                         </view>
                         <view class="deadline">有效期至 {{business.current.expiryDate}}</view>
                     </view>
@@ -38,8 +45,12 @@
                         </view>
                         <view class="details">
                             <view class="title"> 
-                                <image class="icon" mode="{{aspectFit}}" src="{{item.app_type === 1 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png'}}"></image>
                                 <view class="name">{{item.nickName}}</view>
+                                <button wx:if="{{item.mpStatus == 2}}" class="share" plain="{{true}}" open-type="getUserInfo" bindgetuserinfo="onReadytoShare" data-id="{{item.id}}">分享</button>
+                            </view>
+                            <view class="icons">
+                                <image  class="icon" mode="{{aspectFit}}" src="{{ item.app_type === 1 || item.app_type === 2 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang_grey.png'}}"></image>
+                                <image class="icon" mode="{{aspectFit}}" src="{{ item.app_type === 2 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin_grey.png'}}"></image>
                             </view>
                             <view class="deadline">有效期至 {{item.expiryDate}}</view>
                         </view>
@@ -70,6 +81,7 @@ export default class Index extends wepy.page {
                 deadLine: '2018-09-98',
             },
         },
+        shareImage: '',
     }
     config = {
         navigationBarTitleText: '我的小程序',
@@ -99,6 +111,17 @@ export default class Index extends wepy.page {
                 });
             }
         },
+        onReadytoShare(e) {
+            const { id } = e.target.dataset;
+            const { userInfo } = e.detail;
+            // 分享会先授权
+            if (!userInfo) {
+                alert('您未授权，商家助手不能为您生成分享图片哦', '提示');
+                return;
+            }
+            const { nickName } = userInfo;
+            this.getMpShareImg(id, nickName);
+        },
     }
     async onShow() {
         const currentMpid = wepy.getStorageSync('current_mpid') || '';
@@ -108,7 +131,7 @@ export default class Index extends wepy.page {
         const { data } = await post('/mplogic/mymplist', subData);
         const mps = data.mpinfos;
         const [currentMp] = mps.filter((item) => item.id === currentMpid);
-        if (currentMp.headImg && currentMp.headImg.indexOf('http') === -1) {
+        if (currentMp && currentMp.headImg && currentMp.headImg.indexOf('http') === -1) {
             currentMp.headImg = `https://pic1.58cdn.com.cn${currentMp.headImg}`;
         }
         const others = mps.filter((item) => item.id !== currentMpid);
@@ -132,6 +155,26 @@ export default class Index extends wepy.page {
     async onLoad() {
         await sleep();
         console.log('onload');
+    }
+    async getMpShareImg(id, nickName) {
+        const subData = {
+            mpId: id,
+            nickName,
+        };
+        // 延迟时间，让用户感知loading文案，故意为之。
+        const delay = 1500;
+        const { data } = await post('/mplogic/share', subData, '', {
+            loadingTitle: '图片生成...',
+            delay,
+        });
+        const url = `http://pic1.58cdn.com.cn/${data}`;
+        setTimeout(() => {
+            wepy.previewImage({
+                current: url, // 当前显示图片的http链接
+                urls: [url], // 需要预览的图片http链接列表
+            });
+        }, delay);
+        console.log(data);
     }
 }
 </script>
@@ -157,14 +200,15 @@ export default class Index extends wepy.page {
             height: 246rpx;
             padding: 0 30rpx;
             margin-bottom: 20rpx;
+            position: relative;
             .infos{
                 height: 175rpx;
                 display: flex;
                 .logBox{
-                    width: 120rpx;
+                    width: 124rpx;
                     .logo{
-                        width: 120rpx;
-                        height: 120rpx;
+                        width: 124rpx;
+                        height: 124rpx;
                         margin-top: 24rpx;
                         border: 1rpx solid #E7E7E7;
                     }
@@ -173,24 +217,39 @@ export default class Index extends wepy.page {
                     flex:1;
                     padding-left: 20rpx;
                     .title{
-                        height: 91rpx;
-                        line-height: 91rpx;
-                        image{
-                            display: inline-block;
-                            width: 66rpx;
-                            height: 38rpx;
-                            float: left;
-                            margin-top: 26.5rpx;
+                        line-height: 40rpx;
+                        margin-top: 22rpx;
+                        .share{
+                            width: 80rpx;
+                            border: none;    
+                            position: absolute;
+                            font-size: 24rpx;
+                            color: #999999;   
+                            right: 27rpx;
+                            top: 25rpx;     
+                            padding: 0;
+                            margin: 0;    
+                            text-align: right;
+                            line-height: inherit; 
+                            background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mp_share.png') no-repeat left;  
+                            background-size: 26rpx 26rpx;   
                         }
                         .name{
                             display: inline-block;
                             font-size: 32rpx;
                             color: #333333;
-                            padding-left: 10rpx;
                             width:400rpx;
                             white-space:nowrap;
                             text-overflow:ellipsis;
                             overflow:hidden;
+                        }
+                    }
+                    .icons{
+                        .icon{
+                            display: inline-block;
+                            width: 66rpx;
+                            height: 38rpx;
+                            margin: 0 3prx;
                         }
                     }
                     .deadline{
@@ -214,6 +273,24 @@ export default class Index extends wepy.page {
                     flex:1;
                     text-align: center;
                 }
+            }
+        }
+        .shareContainer{
+            position: absolute;
+            background: #999999;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            left: 0;
+            right: 0;
+            .img{
+                position: absolute;
+                width: 628rpx;
+                height: 1110rpx;
+                left: 50%;
+                top: 50%;
+                transform: translate3d(-50%, -50%, 0);
+                display: block;
             }
         }
     }

@@ -1,0 +1,298 @@
+<template>
+<view class="openpay-container" hidden="{{loading}}">
+    <!-- 开通支付 -->
+    <view class="openpay" wx:if="{{!opened}}">
+        <view class="openpay-main">
+            <!-- 状态图标 -->
+            <image class="openpay-main-icon" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-openinfo.png"/>
+            <view class="openpay-main-content">当前微信账号所绑定的手机号，必须与58账</view>
+            <view class="openpay-main-content">号绑定的手机号相同</view>
+        </view>
+        <!-- 同意协议 -->
+        <view class="openpay-protocol">
+            <view class="openpay-protocol-agree {{agreeProtocol?'':'openpay-protocol-disagree'}}"
+                @tap="bindAgreeProtocol">您已阅读并同意</view>
+            <view class="openpay-protocol-title1" 
+                @tap="bindShowProtocol({{true}})">《同城优选服务使用协议》</view>
+        </view>
+        <!-- 跳转到支付助手小程序性开通支付 -->
+        <!-- 小程序跳转时低版本不提供url会报错 -->
+        <view class="openpay-confirm disable" wx:if="{{!agreeProtocol}}">确认开通</view>
+        <navigator open-type="navigate"
+            target="miniProgram"
+            path="/pages/payAuthorize/payAuthorize?param={{userid}}" 
+            app-id="{{payAppId}}"
+            version="develop" wx:else>
+            <view class="openpay-confirm">确认开通</view>
+        </navigator>
+        <!-- 协议内容弹框 -->
+        <view class="openpay-protocol-mask" wx:if="{{showProtocol}}"
+         catchtouchmove="stopAuthorizeScroll" @tap="bindShowProtocol({{false}})">
+        </view>
+        <view class="openpay-protocol-container" wx:if="{{showProtocol}}">
+            <view class="openpay-protocol-title" 
+                @tap="bindShowProtocol({{false}})">同城优选服务使用协议</view>
+            <view class="openpay-protocol-content">
+                <view class="openpay-protocol-content-paragraph">《同城优选服务使用协议》（以下简称“本协议”）是同城优选服务提供者五八同城信息技术有限公司（以下简称“本公司”）与用户（以下简称“您”）订立的有效合约。</view>
+                <view class="openpay-protocol-content-paragraph">本协议是《58同城使用协议》(http://about.58.com/home/announcement.html)、58同城隐私权条款（http://about.58.com/395.html）、双方已签署的《58同城网络服务单》和《58同城网络服务通用条款》及所有本公司已经发布的或将来可能发布的各类规则（以下简称“原协议”）的补充协议。特别提醒：请您务必认真阅读和理解本协议中规定的所有条款，特别是以粗体或下划线标注的条款。您需要理解并同意以下条款所述事项才能享受同城优选服务。</view>
+                <view>1. 同城优选服务是指您可通过本公司在微信上开通的小程序平台发布您的商品和服务的信息、参加本公司平台活动、使用其他信息服务及技术服务、以及根据您的委托代为收取其他用户应向您支付的服务费用等。为改善用户体验或经营需要，本公司服务的项目和内容可能会不时调整。</view>
+                <view>2. 您承诺不为任何非法目的或以任何非法方式使用本服务，也不将本服务用于法律、法规禁止或限制持有或交易物品的交易，亦不得涉嫌实施或实施洗钱、套现或进行传销活动。</view>
+                <view>3. 本公司仅提供本服务，并不参与具体的商品或服务交易，您使用本服务时，因商品或服务交易本身所产生的任何纠纷或责任应由您自行解决或承担。</view>
+                <view>4. 您在使用本协议约定服务时，还应一并遵守微信相关服务协议及使用规则，如因您违反微信相关服务协议及使用规则而导致微信暂停或终止向您提供服务而造成的一切损失由您自行承担。</view>
+                <view>5. 如果在双方合作期间内，由于监管政策、第三方公司产品模式及服务内容变化导致任何一方无法继续履行其在本协议项下的义务，则任何一方有权随时解除本协议，而无需承担任何责任。</view>
+                <view>6. 本协议未尽事宜，参照原协议执行；原协议与本协议有冲突的，以本协议为准。</view>
+            </view>
+        </view>
+    </view>
+    <!-- 更换收款微信 -->
+    <view class="changepay" wx:else>
+        <view class="changepay-main">
+            <image class="changepay-main-icon" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-openchange.png"/>
+            <view class="changepay-main-content">当前小程序已经开通支付，您可以</view>
+            <view class="changepay-main-content">使用买单功能啦</view>
+        </view>
+        <!-- 跳转支付助手更换收款微信 -->
+        <navigator open-type="navigate"
+            target="miniProgram"
+            path="/pages/payAuthorize/payAuthorize?param={{userid}}" 
+            url="/pages/payAuthorize/payAuthorize?param={{userid}}"
+            app-id="{{payAppId}}"
+            version="develop">
+            <view class="changepay-confirm">更换收款微信</view>
+        </navigator>
+        <navigator open-type="redirect" url="/pages/home">
+            <view class="changepay-home">返回首页</view>
+        </navigator>
+    </view>
+</view>
+</template>
+<script>
+import wepy from 'wepy';
+import { toast } from '../utils';
+import { get } from '../utils/ajaxP';
+
+const appinfoApi = '/mplogic/get';
+
+export default class OpenPay extends wepy.page {
+    config = {
+        navigationBarTitleText: '开通支付',
+        disableScroll: true,
+    }
+    data = {
+        payAppId: 'wx67b75e86c9daef45', // 开通支付小程序ID
+        userid: '', // 开通支付必填
+        opened: false, // 是否已经开通支付
+        agreeProtocol: true, // 是否同意协议
+        showProtocol: false, // 显示协议内容
+        loading: true, // 加载中隐藏页面内容
+    }
+    methods = {
+        bindAgreeProtocol () {
+            this.agreeProtocol = !this.agreeProtocol;
+        },
+        bindShowProtocol (showProtocol) {
+            this.showProtocol = showProtocol;
+        },
+        stopAuthorizeScroll () {
+            // 阻止滚动事件穿透
+            console.log('stopAuthorizeScroll');
+        },
+    }
+    async onShow () {
+        await this.saveAgreeProtocol();
+        const mpid = wepy.getStorageSync('current_mpid');
+        await this.getOpenedInfo(mpid);
+    }
+    async saveAgreeProtocol () {
+        // 开通支付后回传状态
+        const OpenPayStatus = wepy.getStorageSync('OpenPay');
+        if (OpenPayStatus !== '0') return;
+        wepy.removeStorageSync('OpenPay');
+        const [e] = await get('/mpInfo/agree');
+        e && toast(e);
+    }
+    async getOpenedInfo (mpid) {
+        // 获取用户是否开通支付
+        // if更改支收款微信
+        // else开通支付
+        const [e, res] = await get(`${appinfoApi}/${mpid}`);
+        if (e) {
+            toast(e);
+            return;
+        }
+        this.loading = false;
+        this.userid = res.userid;
+        this.opened = res.pay_open === 1;
+        this.$apply();
+    }
+}
+</script>
+<style lang="scss">
+.openpay-container {
+    background: #f6f6f6;
+    font-family: PingFangSC-Regular;
+    .openpay {
+        .openpay-main {
+            background: #fff;
+            padding: 70rpx 0 80rpx;
+            .openpay-main-icon {
+                display: block;
+                width: 144rpx;
+                height: 144rpx;
+                margin: 0 auto 40rpx;
+            }
+            .openpay-main-content {
+                line-height: 42rpx;
+                font-size: 30rpx;
+                color: #333333;
+                letter-spacing: 0;
+                text-align: center;
+            }
+        }
+        .openpay-protocol {
+            margin: 20rpx 30rpx 0;
+            display: flex;
+            align-items: center;
+            .openpay-protocol-agree,
+            .openpay-protocol-disagree {
+                position: relative;
+                padding-left: 34rpx;
+                font-size: 26rpx;
+                color: #9b9b9b;
+                &::before {
+                    display: inline-block;
+                    content: '';
+                    box-sizing: padding-box;
+                    position: absolute;
+                    top: -2rpx;
+                    left: -10rpx;
+                    width: 24rpx;
+                    height: 24rpx;
+                    border: 10rpx solid transparent;
+                    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAixJREFUSA21ls9P02AYx7/tZmRD62oy3cErJyfFkXAUZBEvSkIgokfHX7C7XvWgyTxxlkCIB9EhHohkHvydAHFz7GaiRuMWpqmZS4BS+/o+TVMnbaNrx3N68jx9Pt/nfd42TwVwK5VKJwRByHE3bRiGTDG/JoqiymsLjLGsoihfBAteTiQSh2RZDnPzyzbrdF2Hqqp6rVb7yUV6w9Q5wePxeDCy1RY1aLEOc5GcyONp6jxQ2y7FFjMt0syDjsWFD2ISm06wr9YxgTufcrj54Yaj2cACGtMwVcng+vtr6In2OAQCXe6mtonJd5ew3ljD3eQMxo9PdE6g3CxjojiOqvYVM8lZjB0bc8Ap4GtES/UlDK8OoaZVMXdq3hPuKjBXncX052nXbih4++MtXOZj2WW7mO+9h9H4qOezZqJYLPIv+o9NbWRYZOUgu1KaZA29YSd2jB2W2bhq5mIFiS1/W7ZzXg6xsVdg69cWO78+YoKSL0+y5+ozVmlW2NDqoBmTnx5hK9+feDH/ihPb8RZ1iV1YUB7g4tsLePPjNUbWztkjiIQiuK8s4OzRYTv2L8f1krtD3cj3LaJf6rfro6EoHvbl24JTsasAJaSwhEepx0hJKcQOxJA/vYgz8iCl2jLHiFqr5bCMFwOvsG1sg0bnxzxP0ArzCyfGfwm0irXr8xUqqrTmOm3EJDadoEA7tNMCFrMg8i8jy3dns16vc9HgOsQglrX0swJ1vp+/Lb8BXghRNmWbdOgAAAAASUVORK5CYII=')
+                        no-repeat top left;
+                    background-size: 100% 100%;
+                    background-clip: padding-box;
+                    -webkit-background-clip: padding-box;
+                }
+            }
+            .openpay-protocol-disagree::before {
+                background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAMhJREFUSA3tljEKwyAYhVUytoOD4NAz1EN4opwkJ/IQIVfoIDg4tKNo/1ccA0JMpvpPQfJ/7+UhvHBGs67rg3O+0KPNOUucHR0hRKRdV0qZjTEvXuGb1vompZxojrJ/eyklFmNM3vs3iTwnOAdcKdVHrrZgsLLuJLIIOrdw3mV7Z7kyrUDmvbHs8BmYYOMLLp0h0Ix3RDQiaibQfGHcon+ICB2Kmjt7wAQbt8ihQ88WqEwn0P7UnZ8QAon264ABVi39mcP5lb8tX3nWZCAfGe0fAAAAAElFTkSuQmCC')
+                    no-repeat top left;
+                background-size: 100% 100%;
+                background-clip: padding-box;
+                -webkit-background-clip: padding-box;
+            }
+            .openpay-protocol-title1 {
+                font-size: 26rpx;
+                color: #6d7ea2;
+            }
+        }
+        .openpay-confirm {
+            line-height: 94rpx;
+            margin: 60rpx 30rpx 0;
+            background: #4e88ff;
+            border-radius: 4rpx;
+            font-size: 32rpx;
+            color: #ffffff;
+            letter-spacing: 0;
+            text-align: center;
+            &.disable {
+                opacity: 0.5;
+            }
+        }
+        /* 协议内容 */
+        .openpay-protocol-mask {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 99;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .openpay-protocol-container {
+            box-sizing: border-box;
+            width: 650rpx;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+            background: #fff;
+            border-radius: 8rpx;
+            padding: 20rpx 40rpx 60rpx;
+
+            .openpay-protocol-title {
+                font-family: PingFangSC-Semibold;
+                font-size: 32rpx;
+                color: #333;
+                text-align: center;
+            }
+            .openpay-protocol-title::after {
+                position: relative;
+                left: 180rpx;
+                display: inline-block;
+                font-family: 'iconfont';
+                content: '\e69a';
+                font-size: 36rpx;
+            }
+            .openpay-protocol-content {
+                height: 800rpx;
+                line-height: 40rpx;
+                margin-top: 20rpx;
+                font-size: 28rpx;
+                word-break: break-all;
+                overflow-y: scroll;
+                overflow-x: hidden;
+                letter-spacing: 1rpx;
+                -webkit-overflow-scrolling: touch;
+                color: #999;
+                background: #f6f6f6;
+            }
+            .openpay-protocol-content-paragraph {
+                text-indent: 2em;
+            }
+        }
+    }
+    .changepay {
+        .changepay-main {
+            background: #fff;
+            padding: 70rpx 0 80rpx;
+            .changepay-main-icon {
+                display: block;
+                width: 144rpx;
+                height: 144rpx;
+                margin: 0 auto 40rpx;
+            }
+            .changepay-main-content {
+                line-height: 42rpx;
+                font-size: 30rpx;
+                color: #333333;
+                letter-spacing: 0;
+                text-align: center;
+            }
+        }
+        .changepay-confirm,
+        .changepay-home {
+            line-height: 94rpx;
+            margin: 60rpx 30rpx 0;
+            background: #4e88ff;
+            border-radius: 4rpx;
+            font-size: 32rpx;
+            color: #ffffff;
+            letter-spacing: 0;
+            text-align: center;
+        }
+        .changepay-confirm {
+            background: #4e88ff;
+            color: #ffffff;
+        }
+        .changepay-home {
+            margin-top: 20rpx;
+            background: #ffffff;
+            color: #333333;
+        }
+    }
+}
+</style>

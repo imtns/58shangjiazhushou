@@ -10,16 +10,31 @@
                 <view class="item-title" :class="{logoPadding : business.mpCount > 0 }">可上传素材、提交注册信息到当前小程序</view>
                 <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">切换</view>
                 <image  class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+                <view class="index-block-body">
+                    <view class="index-loaded-item" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
+                        <image src="{{item.iconPath}}" class="item-img"></image>
+                        <view class="item-text">{{item.text}}</view>
+                    </view>
+                </view>
                 <view bindtap="checkProgress" class="item-detail-progress">
-                    <view class="current-progress">当前进度</view>
+                    <view class="current-progress"></view>
                     <view class="remind-title">{{ business.progressText}}</view>
                 </view>
             </view>
         </view>
-        <view class="index-loaded-body">
+        <!-- <view class="index-loaded-body">
             <view bindtap="link({{index}})" class="index-loaded-item" wx:for="{{items}}" wx:key="index">
                 <image src="{{item.iconPath}}" class="item-img"></image>
                 <view class="item-text">{{item.text}}</view>
+            </view>
+        </view> -->
+        <view class="index-block"  wx:for="{{nItems}}" wx:for-item="nItem"  wx:key="{{nItem.title}}">
+            <view class="index-block-title">{{nItem.title}}</view>
+            <view class="index-block-body">
+                <view class="index-loaded-item {{item.text === '店铺装修' ? 'shangxin' : ''}}" wx:for="{{nItem.items}}" wx:key="index" bindtap="link({{item.text}})">
+                    <image src="{{item.iconPath}}" class="item-img"></image>
+                    <view class="item-text">{{item.text}}</view>
+                </view>
             </view>
         </view>
         <view wx:if="{{business.changeMP === true}}" class="mask" @tap="bindHideMask"></view>
@@ -73,34 +88,81 @@ export default class Home extends wepy.page {
         },
         items: [
             {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-my.png',
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-my-mp.png',
                 text: '我的小程序',
             }, {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-upload.png',
-                text: '上传素材',
-            }, {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-order.png',
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-order-manage.png',
                 text: '订单管理',
             }, {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-register.png',
-                text: '微信注册信息',
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-payment-record.png',
+                text: '收款记录',
             }, {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-progress.png',
-                text: '完成度',
-            }, {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-advice.png',
-                text: '意见反馈',
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-payment.png',
+                text: '支付开通',
+            },
+        ],
+        nItems: [
+            {
+                title: '店铺运营',
+                items: [
+                    {
+                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-store-fit.png',
+                        text: '店铺装修',
+                    }, {
+                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-order-service.png',
+                        text: '发布服务',
+                    }, {
+                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-coupon.png',
+                        text: '优惠劵',
+                    }, {
+                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-resorce-manage.png',
+                        text: '素材管理',
+                    },
+                ],
+            },
+            {
+                title: '开店必做',
+                items: [
+                    {
+                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-buy-mp.png',
+                        text: '购买小程序',
+                    }, {
+                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-regist-mp.png',
+                        text: '注册小程序',
+                    }, {
+                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-mp-progress.png',
+                        text: '进度查询',
+                    }, {
+                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-feedback-mp.png',
+                        text: '意见反馈',
+                    },
+                ],
             },
         ],
     }
     methods = {
-        link (index) {
-            if (index !== 5) { //   意见反馈不做判断
-                this.checkBeforeJump(index);
-            } else {
+        // link (index) {
+        //     if (index !== 6) { //   意见反馈不做判断
+        //         this.checkBeforeJump(index);
+        //     } else {
+        //         wepy.navigateTo({
+        //             url: 'feedback',
+        //         });
+        //     }
+        // },
+        link(text) {
+            console.log(text);
+            if (text === '意见反馈') {
                 wepy.navigateTo({
                     url: 'feedback',
                 });
+            } else if (text === '购买小程序') {
+                // 购买小程序页面
+                wepy.navigateTo({
+                    // url: 'feedback',
+                });
+            } else {
+                this.checkBeforeJump(text);
             }
         },
         checkProgress () {
@@ -299,29 +361,116 @@ export default class Home extends wepy.page {
             wepy.setStorageSync('current_mpid', id);
         }
     }
-    checkBeforeJump (index) {
+    // checkBeforeJump (index) {
+    //     console.log('this.business.selected.', this.business.selected);
+    //     if (!this.business.mpCount) {
+    //         alert('您还未购买小程序，请登录e.58.com进行购买', '提示');
+    //         return;
+    //     }
+    //     switch (index) {
+    //         case 0:
+    //             wepy.navigateTo({
+    //                 url: 'myMp',
+    //             });
+    //             break;
+    //         case 1:
+    //             wepy.navigateTo({
+    //                 url: 'UploadInfo',
+    //             });
+    //             break;
+    //         case 2:
+    //             wepy.navigateTo({
+    //                 url: 'OrderList',
+    //             });
+    //             break;
+    //         case 3:
+    //             wepy.navigateTo({
+    //                 url: 'progress',
+    //             });
+    //             break;
+    //         case 4:
+    //             if (this.business.selected.app_type === 1) {
+    //                 alert('当前小程序为优享小程序，不用提交注册信息', '提示');
+    //                 return;
+    //             }
+    //             if (this.business.selected.sign === 1) {
+    //                 wepy.navigateTo({
+    //                     url: 'registed',
+    //                 });
+    //             } else {
+    //                 wepy.setStorageSync('registMappid', this.business.selected.id);
+    //                 wepy.navigateTo({
+    //                     url: 'registMainAccount',
+    //                 });
+    //             }
+    //             break;
+    //         case 5:
+    //             wepy.navigateTo({
+    //                 url: 'OpenPay',
+    //             });
+    //             break;
+    //         case 6:
+    //             wepy.navigateTo({
+    //                 url: 'feedback',
+    //             });
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    // }
+    checkBeforeJump (text) {
         console.log('this.business.selected.', this.business.selected);
         if (!this.business.mpCount) {
             alert('您还未购买小程序，请登录e.58.com进行购买', '提示');
             return;
         }
-        switch (index) {
-            case 0:
+        switch (text) {
+            case '我的小程序员':
                 wepy.navigateTo({
                     url: 'myMp',
                 });
                 break;
-            case 1:
-                wepy.navigateTo({
-                    url: 'UploadInfo',
-                });
-                break;
-            case 2:
+            case '订单管理':
                 wepy.navigateTo({
                     url: 'OrderList',
                 });
                 break;
-            case 3:
+            case '收款记录':
+                wepy.navigateTo({
+                    url: 'paymentRecord',
+                });
+                break;
+            case '支付开通':
+                wepy.navigateTo({
+                    url: 'OpenPay',
+                });
+                break;
+            case '店铺装修':
+                wepy.navigateTo({
+                    // url: 'OpenPay',店铺装修的页面url找黄鑫
+                });
+                break;
+            case '发布服务':
+                wepy.navigateTo({
+                    url: 'orderComponentGroup',
+                });
+                break;
+            case '优惠劵':
+                wepy.navigateTo({
+                    url: 'couponManage',
+                });
+                break;
+            case '素材管理':
+                wepy.navigateTo({
+                    url: 'resourceManage',
+                });
+                break;
+            case '购买小程序':
+                wepy.navigateTo({
+                    // url: 'resourceManage',购买小程序url找黄鑫
+                });
+                break;
+            case '注册小程序':
                 if (this.business.selected.app_type === 1) {
                     alert('当前小程序为优享小程序，不用提交注册信息', '提示');
                     return;
@@ -337,12 +486,12 @@ export default class Home extends wepy.page {
                     });
                 }
                 break;
-            case 4:
+            case '进度查询':
                 wepy.navigateTo({
                     url: 'progress',
                 });
                 break;
-            case 5:
+            case '意见反馈':
                 wepy.navigateTo({
                     url: 'feedback',
                 });
@@ -503,10 +652,10 @@ scroll-view {
     }
     .index-loaded-header {
         width: 100%;
-        height: 444rpx;
+        height: 548rpx;
         .welcome-block {
             width: 100%;
-            height: 299rpx;
+            height: 306rpx;
             background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/welcome-block.png)
                 no-repeat;
             background-size: 100% auto;
@@ -539,12 +688,12 @@ scroll-view {
         }
         .item-detail {
             width: 698rpx;
-            height: 300rpx;
+            height: 448rpx;
             background: #fff;
             border-radius: 16rpx;
             margin: 0 26rpx;
             position: relative;
-            top: -144rpx;
+            top: -190rpx;
             padding: 30rpx;
             .haslogo {
                 position: absolute;
@@ -579,45 +728,55 @@ scroll-view {
                 position: absolute;
                 right: 30rpx;
                 top: 30rpx;
+                &:before{
+                    width:18rpx;
+                    height:17rpx;
+                    content: '';
+                    background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/switch-icon.png) no-repeat;
+                    background-size:18rpx 17rpx;
+                    position:absolute;
+                    left:-25rpx;
+                    top:50%;
+                    margin-top:-8rpx;
+                }
             }
         }
         .item-detail-progress {
             width: 646rpx;
-            height: 100rpx;
-            line-height: 100rpx;
-            background: #f6f6f6;
-            border-radius: 16rpx;
-            margin-top: 24rpx;
+            height: 84rpx;
+            line-height: 84rpx;
+            background: #EDF3FF;
+            border-radius: 100px;
             position: relative;
+            padding-left:81rpx;
             &::after {
                 display: block;
                 position: absolute;
                 right: 20rpx;
-                top: 37rpx;
+                top:50%;
+                margin-top:-13rpx;
                 content: '';
                 width: 15rpx;
                 height: 26rpx;
-                background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png')
+                background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/blue-right-angel.png')
                     no-repeat center;
                 background-size: 100%;
             }
             .current-progress {
-                border: 1rpx solid rgba(78, 136, 255, 0.8);
-                border-radius: 4rpx;
-                width: 108rpx;
-                height: 38rpx;
-                color: #4e88ff;
-                font-size: 24rpx;
-                text-align: center;
-                line-height: 38rpx;
-                float: left;
-                margin: 30rpx 16rpx 0 18rpx;
+                width: 31rpx;
+                height: 26rpx;
+                background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/current-msg-icon.png) no-repeat;
+                background-size:31rpx 26rpx;
+                position:absolute;
+                left:30rpx;
+                top:50%;
+                margin-top:-13rpx;
             }
         }
         .remind-title {
-            color: #9b9b9b;
-            border: 0;
-            font-size: 28rpx;
+            font-family: PingFangSC-Regular;
+            font-size: 26rpx;
+            color: #6AA1FF;
         }
     }
     .index-loaded-body {
@@ -629,8 +788,9 @@ scroll-view {
         border-radius: 16rpx;
         display: flex;
         flex-wrap: wrap;
+        justify-content: space-between;
         .index-loaded-item {
-            width: 33%;
+            width: 156rpx;
             margin-bottom: 70rpx;
             text-align: center;
             .item-img {
@@ -644,6 +804,65 @@ scroll-view {
                 text-align: center;
                 line-height: 32rpx;
                 margin-top: 6rpx;
+            }
+        }
+    }
+
+    .index-block{
+        width: 698rpx;
+        height:266rpx;
+        background: #fff;
+        border-radius: 16rpx;
+        margin: 30rpx 26rpx;
+        .index-block-title{
+            height:72rpx;
+            border-bottom:1rpx solid #f6f6f6;
+            padding-left:30rpx;
+            line-height:72rpx;
+            box-sizing:border-box;
+            font-family: PingFangSC-Medium;
+            font-size: 28rpx;
+            color: #333333;
+        }
+    }
+
+    .index-block-body{
+        height:193rpx;
+        display:flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        align-items:center;
+        .index-loaded-item {
+            width: 156rpx;
+            text-align: center;
+            
+            .item-img {
+                width: 72rpx;
+                height: 72rpx;
+            }
+            .item-text {
+                font-size: 26rpx;
+                color: #333333;
+                letter-spacing: 0;
+                text-align: center;
+                line-height: 32rpx;
+                margin-top: 6rpx;
+            }
+        }
+        .shangxin.index-loaded-item{
+            position:relative;
+            &:before{
+                content: '上新';
+                width: 52rpx;
+                height:30rpx;
+                background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/shangxin.png) no-repeat;
+                background-size:52rpx 30rpx;
+                position:absolute;
+                top:-10rpx;
+                right:15rpx;
+                font-family: PingFangSC-Regular;
+                font-size: 20rpx;
+                color: #FFFFFF;
             }
         }
     }
