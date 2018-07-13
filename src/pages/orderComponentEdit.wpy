@@ -10,8 +10,9 @@
                 value="{{ form.title }}"
                 @change="setFormData('title')"/>
             </view>
-            <imageUploader @changeimages.user="setImages" maxCount="10" maxSize="4"
-         uploadtype="1"></imageUploader>
+            <imageUploader @changeimages.user="setImages" maxCount="10"
+            maxSize="4" uploadtype="1" :showDelete="showImageDelete"
+            showType="order"></imageUploader>
             <view class="item required">
                 <text>服务价格</text>
                 <input
@@ -141,13 +142,15 @@ export default class Index extends wepy.page {
             applyType: '',
             serviceIds: '',
         },
+        showImageDelete: false,
     }
 
     mixins = [Mixin]
 
     methods = {
-        uploadFn() {
-
+        setImages(res) {
+            console.log('upload result');
+            console.log(res);
         },
 
         async save() {
