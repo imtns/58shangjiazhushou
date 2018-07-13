@@ -19,6 +19,23 @@
                     <input type="text" class="item-input" placeholder="请输入20字以内" value="">
                 </div>
             </div>
+            <div class="item-flex item-file">
+                <div class="item-upload-img">
+                    <img src="https://img.58cdn.com.cn/lbg/jianzhan/images/youxiang/banjia.png" id="cover"/>
+                    <div class="exchange-img">替换图片</div>
+                </div>
+
+                <div class="item-file-div">
+                    <div class="item-upload">添加图片</div>
+                    <input type="file" class="item-file-btn" id="item-file-btn">
+                </div>
+            </div>
+            <!-- <div class="item-flex">
+                <div class="item-text _author required" id="group">分组</div>
+                <div class="item-input-div">
+                    <div class="item-chose">去选择</div>
+                </div>
+            </div> -->
             <div class="item-flex">
                 <div class="item-text _author">作者</div>
                 <div class="item-input-div">
@@ -39,14 +56,15 @@
             <div id="editor" class="editor _content">
             </div>
         </div>
+        <div class="block"></div>
         <div class="btn save-btn">保存</div>
     </div>
-    <div class="mask none"></div>
-    <div class="dialog none">
-        <h2 class="title">提示</h2>
-        <p class="content">删除分组将同时删除组内所有服务</p>
-        <div class="action-bar">
-            <a href="javascript:void(0);" class="btn btn-primary _sure-btn">确定</a>
+    <div class="mask"></div>
+    <div class="dialog">
+        <h2 class="dialog-title">提示</h2>
+        <p class="dialog-content">删除分组将同时删除组内所有除</p>
+        <div class="dialog-action-bar">
+            <a href="javascript:void(0);" class="btn _sure-btn">确定</a>
         </div>
     </div>
     <script src="../static/js/zepto.min.js"></script>

@@ -8,11 +8,10 @@
             @tap="selectTab({{ item.name }})">{{ item.label }}</view>
         </view>
 
-        <view class="work-list">
+        <view class="work-list" wx:if="{{ curTab === 'image' || curTab === 'video' }}">
             <view class="content">
                 <view class="work-box" wx:for="{{ works }}" wx:key="id">
                     <image
-                    wx:if="{{ curTab === 'image' || 'video' }}"
                     class="item"
                     mode="aspectFill"
                     src="{{ item.resourceUrl }}"
@@ -24,12 +23,23 @@
                 </view>
             </view>
         </view>
-
-        <view class="options">
-            <button class="edit" @tap="edit">{{ isEditing ? '取消' : '编辑' }}</button>
-            <button wx:if="{{ isEditing }}" @tap="deleteItem">删除</button>
-            <button wx:else @tap="uploadFile({{ curTab }})">{{ optionNames[curTab] }}</button>
+        <view class="group-list article-group-list {{isEditing ? 'edit' : ''}}" wx:if="{{groupList.length > 0}}">
+            <view class="group-item article-group-item" bindtap="editChose" wx:for="{{groupList}}" wx:key="index" data-item="{{item}}">
+                <view class="group-line article-group-line selected">
+                    <view class="group-name article-group-name">{{item.name}}</view>
+                    <view class="group-size article-group-size">(13)</view>
+                    <view class="group-angel article-group-angel" wx:if="{{!isEditing}}"></view>
+                    <view class="rename-btn article-rename-btn" wx:if="{{isEditing}}">重命名</view>
+                </view>
+            </view>
         </view>
+        <EmptyPage wx:if="{{groupList.length === 0}}"></EmptyPage>
+        <view class="options">
+            <button class="button edit" @tap="edit" wx:if="{{groupList.length > 0 || works.length > 0}}">{{ isEditing ? '取消' : '编辑' }}</button>
+            <button class="button" wx:if="{{ isEditing }}" @tap="deleteItem">删除</button>
+            <button class="button" wx:else @tap="uploadFile({{ curTab }})">{{ optionNames[curTab] }}</button>
+        </view>
+        <Pop wx:if="{{showPop}}" @close.user="close" @addGroup.user="addGroup"></Pop>
     </view>
 </template>
 
@@ -39,6 +49,8 @@ import { LOAD_RESOURCE_URL, DELETE_RESOURCE, SAVE_RESOURCE_URL } from '../utils/
 import { get } from '../utils/ajax';
 import { toast, alert, picSrcDomain, sleep } from '../utils';
 import uploader from '../utils/uploaderP';
+import EmptyPage from '../components/EmptyPage';
+import Pop from '../components/Dialog';
 
 let pageNum = 1;
 const pageSize = 20;
@@ -50,8 +62,12 @@ export default class Index extends wepy.page {
         navigationBarTitleText: '素材管理',
     }
 
+    components = {
+        EmptyPage,
+        Pop,
+    }
     data = {
-        curTab: 'image',
+        curTab: 'article',
         tabbarItems: [
             {
                 label: '图片',
@@ -70,12 +86,14 @@ export default class Index extends wepy.page {
         optionNames: {
             image: '上传图片',
             video: '上传视频',
-            article: '添加文章',
+            article: '添加文章分组',
         },
         // 展示时用的works
         works: [],
-
+        groupList: [],
+        title: '没有文章分组~',
         isEditing: false,
+        showPop: false,
     }
 
     async onLoad() {
@@ -166,7 +184,7 @@ export default class Index extends wepy.page {
                     break;
 
                 case 'article':
-                    await this.uploadArticle();
+                    await this.showDialog();
                     break;
 
                 default:
@@ -175,6 +193,54 @@ export default class Index extends wepy.page {
 
             this.initData();
             this.loadData(this.curTab);
+        },
+        async addGroup(content) {
+            await get('/businessArticle/addgroup', {
+                name: content,
+            });
+            this.showPop = false;
+            this.$apply();
+            toast('添加成功！');
+            this.loadData(this.curTab);
+        },
+        close() {
+            this.showPop = false;
+            this.$apply();
+        },
+        editChose(e) {
+            const { id } = e.currentTarget.dataset.item;
+            if (this.isEditing) {
+                const selArr = selectedIds;
+                const dataList = this.listData;
+                const index = selectedIds.length === 0 ? -2 : selectedIds.indexOf(id);
+                if (index < 0) {
+                    selArr.push(id);
+                    dataList.forEach(item => {
+                        if (item.id === id) {
+                            Object.assign(item, {
+                                choseStatu: true,
+                            });
+                        }
+                    });
+                } else {
+                    dataList.forEach(item => {
+                        if (item.id === id) {
+                            Object.assign(item, {
+                                choseStatu: false,
+                            });
+                        }
+                    });
+                    selArr.splice(index, 1);
+                }
+                this.listData = dataList;
+                selectedIds = selArr;
+                this.$apply();
+                return;
+            }
+            // 点击跳转文章详情页面
+            wepy.navigateTo({
+                url: `articleComponentlist?id=${id}`,
+            });
         },
     }
 
@@ -260,7 +326,16 @@ export default class Index extends wepy.page {
         }
     }
 
-    loadArticle() {
+    async loadArticle() {
+        // const { data } = get('/businessArticle/groups');
+        // if (!data && data.length === 0) return;
+        // data.forEach(item => {
+        //     Object.assign(item, {
+        //         choseStatu: false,
+        //     });
+        // });
+        // this.groupList = data;
+        // this.$apply();
     }
 
     async uploadImage() {
@@ -303,9 +378,10 @@ export default class Index extends wepy.page {
         });
     }
 
-    uploadArticle() {
+    showDialog() {
+        this.showPop = true;
+        this.$apply();
     }
-
     errorHandler(e) {
         console.log('ERROR:', e);
     }
@@ -317,9 +393,15 @@ export default class Index extends wepy.page {
 </script>
 
 <style lang="scss">
+@import '../css/group.scss';
+@import '../css/btn.scss';
 $workWidth: 200rpx;
 $workHeight: 200rpx;
-
+.container{
+    margin-top: 110rpx;
+    width:100%;
+    height:100%;
+}
 .tabs-wrap {
     display: table;
     width: 100%;
@@ -352,7 +434,6 @@ $workHeight: 200rpx;
 .work-list {
     background-color: #FFFFFF;
     padding: 45rpx 15rpx 102rpx 45rpx;
-    margin-top: 110rpx;
     min-height: 1098rpx;
 
     .content {
@@ -394,32 +475,6 @@ $workHeight: 200rpx;
             height: $workHeight;
             background-color: #000000;
         }
-    }
-}
-
-.options {
-    display: flex;
-    font-size: 34rpx;
-    letter-spacing: 0.51px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-
-    button {
-        width: 50%;
-        border-radius: 0;
-        color: #FFF;
-        background-color: #4e88ff;
-
-        &::after {
-            content: none;
-        }
-    }
-
-    .edit {
-        color: #4e88ff;
-        background-color: #FFF;
-        box-shadow: 0 -1px 17px -1px rgba(202,202,202,0.50);
     }
 }
 </style>

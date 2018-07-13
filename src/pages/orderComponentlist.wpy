@@ -13,33 +13,25 @@
                 class="article-list {{editStatus ? 'edit' : ''}}"
                 style="height:{{height}};"
                 scroll-y="true"
-                wx:if="{{listData.length>0}}">
-                <view wx:for="{{listData}}" wx:key="index" class="list-item article-item {{item.choseStatu ? 'selected' : ''}}" data-item="{{item}}" bindtap="editChose">
-                    <view class="article-title">{{item.title}}</view>
-                    <view class="article-detail">
-                        <view class="article-detail-flex">
-                            <view class="article-base">作者：</view>
-                            <view class="base-text base-over">{{item.author || '未知'}}</view>
-                        </view>
-                        <view class="article-detail-flex">
-                            <view class="article-base">来源：</view>
-                            <view class="base-text base-over">{{item.source || '未知'}}</view>
-                        </view>
-                        <view class="article-detail-flex" wx:if="{{item.updateTime!=nul}}">
-                            <view class="article-base">时间：</view>
-                            <view class="base-text">{{item.updateTime}}</view>
+                wx:if="{{listData.length > 0}}">
+                <view class="list-item order-component-list" bindtap="editChose" wx:for="{{listData}}" data-item="{{item}}">
+                    <image class="list-image" src="{{item.src}}"></image>
+                    <view class="list-detail">
+                        <view class="list-title">{{item.name}}</view>
+                        <view class="list-intro">服务价格：<text>{{item.price}}</text>元/次
                         </view>
                     </view>
-                    <view class="article-preview-con">{{item.intro}}</view>
+                    <view class="border-btn"  wx:if="{{item.status === 0}}" @tap="manageProduct" data-status="{{item}}">上架</view>
+                    <view class="border-btn xiajia" @tap="manageProduct" data-status="{{item}}" wx:if="{{item.status === 2}}">下架</view>
                 </view>
                 <view class="block"></view>
             </scroll-view>
-            <EmptyPage wx:if="{{listData.length===0}}"></EmptyPage>
+            <EmptyPage wx:if="{{!listData.length}}"></EmptyPage>
         </view>
     </view>
     <view class="options" wx:if="{{!editStatus}}">
-        <view class="button edit" bindtap="edit" wx:if="{{listData.length > 0}}">编辑</view>
-        <view class="button" bindtap="addArticleGroup">添加文章</view>
+        <view class="button edit" bindtap="edit" wx:if="{{listData.length}}">编辑</view>
+        <view class="button" bindtap="addGroup">添加服务</view>
     </view>
     <view class="options" wx:if="{{editStatus}}">
         <view class="button edit" bindtap="cancle">取消</view>
@@ -49,15 +41,13 @@
 
 <script>
 import wepy from 'wepy';
-import { alert } from '../utils';
+import { alert, toast } from '../utils';
 import { get } from '../utils/ajax';
 import EmptyPage from '../components/EmptyPage';
 
-const pageNum = 1;
-const pageSize = 20;
 export default class ArticleComponentList extends wepy.page {
     config = {
-        navigationBarTitleText: '文章管理',
+        navigationBarTitleText: '预约列表',
         disableScroll: true,
     }
     components = {
@@ -69,8 +59,12 @@ export default class ArticleComponentList extends wepy.page {
         listData: [],
         delList: [],
         id: '',
+        mpId: '',
+        pageSize: 100,
+        pageNum: 1,
         name: '',
-        title: '没有文章~',
+        title: '没有预约服务~',
+        isLoading: true,
     }
     onLoad(option) {
         try {
@@ -86,20 +80,36 @@ export default class ArticleComponentList extends wepy.page {
             console.log(e);
         }
     }
-
+    onReachBottom() {
+        if (!this.isloading) return;
+        const pageNum = this.pageNum + 1;
+        this.pageNum = pageNum;
+        this.$apply();
+        this.loadList();
+    }
     async loadList() {
         console.log('loadlist');
-        const { data } = await get('/businessArticle/list', {
-            pageSize: pageSize,
-            pageNum: pageNum,
-            group: this.id,
+        const { data } = await get(`/businessService/listByPageForUser?resourceGroup=${this.id}&status=0`, {
+            pageSize: 100,
+            pageNum: 1,
+            mpId: this.mpId,
         });
+        if (this.pageNum === 1 && (data.length === 0 || !data)) {
+            this.isLoading = false;
+            toast('没有数据');
+            return;
+        }
+        if (this.pageNum > 1 && data.length < this.pageSzie) {
+            this.isLoading = false;
+            toast('没有更多数据');
+            return;
+        }
         data.foreach(item => {
             Object.assign(item, {
                 choseStatu: false,
             });
         });
-        this.listData = data;
+        this.listData = this.listData.concat(data);
         this.$apply();
     }
     editChose(e) {
@@ -132,9 +142,9 @@ export default class ArticleComponentList extends wepy.page {
             this.$apply();
             return;
         }
-        // 点击跳转文章详情页面
+        // 点击跳转
         wepy.navigateTo({
-            url: `articleDetail?id=${id}`,
+            url: `orderComponentDetail?id=${id}`,
         });
     }
     edit() {
@@ -142,17 +152,22 @@ export default class ArticleComponentList extends wepy.page {
         this.$apply();
     }
     async toDelete() {
-        const { delList } = this;
-        if (delList.length === 0) {
-            alert('请选择要删除的文章');
-            return;
+        try {
+            const { delList } = this;
+            if (delList.length === 0) {
+                alert('请选择要删除的服务');
+                return;
+            }
+            const ids = delList.join();
+            await get('/businessService/delGroup/0', {
+                ids: ids,
+            });
+            alert('删除成功！');
+            this.loadList();
+        } catch (e) {
+            console.log(e);
+            alert('该服务在模板中被应用，不能被删除');
         }
-        const ids = delList.join();
-        await get('/businessArticle/delete/0', {
-            ids: ids,
-        });
-        alert('删除成功！');
-        this.loadList();
         this.editStatus = false;
         this.$apply();
     }
@@ -167,10 +182,32 @@ export default class ArticleComponentList extends wepy.page {
         this.listData = dataList;
         this.$apply();
     }
-    addArticleGroup() {
+    addGroup() {
+        // 添加预约服务
         wepy.navigateTo({
-            url: `articleGroup?id=${this.id}`,
+            // url: `orderComponentGroup?id=${this.id}`,
         });
+    }
+    async manageProduct(e) {
+        const { status, id } = e.currentTarget.dataset.item;
+        let msg;
+        try {
+            await get('/businessService/update', {
+                id,
+                status,
+            });
+            if (status === 0) {
+                msg = '上架成功';
+            } else if (status === 2) {
+                msg = '下架成功';
+            }
+            toast(msg);
+            this.pageNum = 1;
+            this.$apply();
+            this.loadData();
+        } catch (err) {
+            console.log(err);
+        }
     }
 }
 </script>
@@ -180,5 +217,9 @@ export default class ArticleComponentList extends wepy.page {
 @import '../css/list.scss';
     page{
         position:relative;
+    }
+    .container .items-body .order-component-list.list-item{
+        margin-left:40rpx;
+        width:690rpx;
     }
 </style>

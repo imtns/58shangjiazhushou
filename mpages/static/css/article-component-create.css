@@ -68,7 +68,7 @@ html, body{
 }
 .wrap-items{
     width:100%;
-    height:2.67rem;
+    height:4.27rem;
     margin-top:0.2rem;
 }
 
@@ -80,6 +80,68 @@ html, body{
     border-bottom:0.01rem solid #ccc;
     background:#fff;
     padding:0 0.3rem;
+}
+.wrap-content .item-flex{
+    padding:0 0.1rem;
+}
+.item-file.item-flex{
+    height:1.6rem;
+    border:0;
+    padding:.2rem 0;
+    box-sizing:border-box;
+}
+.item-upload-img,.item-file-div{
+    width:1.2rem;
+    height:1.2rem;
+    margin-left:0.3rem;
+    position:relative;
+}
+.item-upload-img img{
+    width:1.2rem;
+    height:1.2rem;
+    border-radius: 0.08rem;
+}
+.item-upload-img .exchange-img{
+    position:absolute;
+    width:100%;
+    height:0.6rem;
+    background:rgba(0,0,0,.5);
+    bottom:0;
+    left:0;
+    text-align:center;
+    line-height:0.6rem;
+    font-size: 0.24rem;
+    color: #FFFFFF;
+    border-radius:0 0 0.08rem 0.08rem;
+}
+.item-upload{
+    border: 1px solid #CCCCCC;
+    text-align:center;
+    line-height:0.4rem;
+    font-family: PingFangSC-Regular;
+    font-size: 0.2rem;
+    color: #999999;
+    border-radius: 0.08rem;
+}
+.item-upload::before{
+    display:block;
+    content:'';
+    width:0.6rem;
+    height:0.6rem;
+    background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-img-icon.png) no-repeat;
+    background-size:0.6rem 0.6rem;
+    margin: 0.14rem 0 0 0.3rem;
+}
+.item-file-div{
+    position:relative;
+}
+.item-file-btn{
+    position:absolute;
+    width:1.2rem;
+    height:1.2rem;
+    left:0;
+    top:0;
+    opacity:0;
 }
 .no-border.item-flex{
     border:0;
@@ -98,13 +160,32 @@ html, body{
     width:0.075rem;
     height:0.075rem;
     content:"*";
-    color:#EE6723;
+    color: #FFA100;
     position:absolute;
     top:0.04rem;
     left:-0.12rem;
 }
 .item-input-div{
     flex:1;
+}
+.item-chose{
+    text-align:right;
+    width:100%;
+    font-family: PingFangSC-Regular;
+    font-size: .28rem;
+    color: #BDBDBD;
+    position:relative;
+}
+.item-chose::after{
+    display:inline-block;
+    width:0.15rem;
+    height:0.26rem;
+    content:'';
+    position:relative;
+    top:50%;
+    margin-left:0.2rem;
+    background:url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png') no-repeat center;
+    background-size: 100%;
 }
 .zeditor-btn-main{
     position:absolute;
@@ -136,7 +217,7 @@ html, body{
     opacity:0;
 }
 .wrap-content{
-    flex:1;
+    height:59%;
     background:#fff;
     padding:0.1rem 0.2rem 0.6rem 0.2rem;
     box-sizing:border-box;
@@ -146,7 +227,7 @@ html, body{
 .editor{
     background:#f6f6f6;
     width:100%;
-    height:100%;
+    height:90%;
     padding:.2rem;
     overflow:auto;
 }
@@ -168,6 +249,11 @@ html, body{
 .zeditor-content{
     outline:0;
 }
+.block{
+    width:100%;
+    height:1.02rem;
+    line-height:1.02rem;
+}
 .btn{
     width:100%;
     height:1.02rem;
@@ -178,6 +264,10 @@ html, body{
     background:#4E88FF;
     color:#fff;
     font-size: .34rem;
+    position:fixed;
+    left:0;
+    bottom:0;
+    z-index:10;
 }
 
 .mask{
@@ -189,18 +279,47 @@ html, body{
     background:rgba(0,0,0,.5);
 }
 .dialog{
-    width:5.52rem;
-    height:2rem;
+    width:5.6rem;
+    height:2.91rem;
     background:#fff;
-    border-radius:.04rem;
+    border-radius:.08rem;
     position:absolute;
     left:0;
     top:0;
     right:0;
     bottom:0;
     margin:auto;
+    box-sizing:border-box;
+    padding-top: 0.50rem;
+    text-align: center;
 }
-
+.dialog-title{
+    height: 0.5rem;
+    line-height:0.5rem;
+    font-family: PingFangSC-Regular;
+    font-size: 0.36rem;
+    color: #000000;
+}
+.dialog-content{
+    font-family: PingFangSC-Regular;
+    font-size: 0.28rem;
+    color: #888888;
+    margin:0.2rem 0 0.3rem 0;
+    line-height:0.4rem;
+}
+.dialog-action-bar{
+    height:1rem;
+    border-top:0.01rem solid #f5f5f5;
+    line-height:1rem;
+}
+.dialog-action-bar .btn{
+    width:100%;
+    height:100%;
+    display:block;
+    font-family: PingFangSC-Regular;
+    font-size: 0.36rem;
+    color: #4E88FF;
+}
 .none{
     display:none;
 }

@@ -1,0 +1,122 @@
+<template>
+    <view class="mask" wx:if="{{showPop}}" catchtouchmove="stopPro">
+        <view class="pop">
+            <view class="pop-title">
+                新建分组
+            </view>
+            <view class="pop-body">
+                <input placeholder="请输入分组名称" cursor-spacing="80" @input="input"></input>
+            </view>
+            <view class="pop-options">
+                <view class="pop-btn" @tap="close">取消</view>
+                <view class="pop-btn enter" @tap="add">创建</view>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { toast } from '../utils';
+
+export default class Pop extends wepy.component {
+    props = {
+        showPop: {
+            type: Boolean,
+        },
+    }
+    data = {
+        showPop: false,
+        content: '',
+    }
+    methods = {
+        close() {
+            this.$emit('close');
+        },
+        async add() {
+            console.log(this.content);
+            const content = this.content.trim();
+            if (!this.content) {
+                toast('请填写分组名称');
+                return;
+            }
+            if (content.length > 15) {
+                toast('分组名称过长');
+                return;
+            }
+            this.$emit('addGroup', this.content);
+            this.content = '';
+        },
+        input(e) {
+            this.content = e.detail.value;
+        },
+    }
+    onLoad() {
+        console.log('onLoad');
+    }
+}
+</script>
+
+<style lang="scss">
+.mask{
+    width:100%;
+    height:100%;
+    position:fixed;
+    background:rgba(0,0,0,.5);
+    z-index:9999;
+    left:0;top:0;
+}
+.pop{
+    width:560rpx;
+    height:291rpx;
+    position:fixed;
+    background:#fff;
+    border-radius: 8rpx;
+    left:0;
+    top:0;
+    right:0;
+    bottom:0;
+    margin:auto;
+    z-index:9999;
+    .pop-title{
+        font-family: PingFangSC-Regular;
+        font-size: 36rpx;
+        color: #000000;
+        text-align: center;
+        height:50rpx;
+        line-height:50rpx;
+        margin:20rpx 20rpx 0;
+    }
+    .pop-body input{
+        background: #F6F6F6;
+        border-radius: 4rpx;
+        font-family: PingFangSC-Regular;
+        font-size: 28rpx;
+        color: #888888;
+        margin:30rpx 20rpx;
+        padding:0 20rpx;
+        box-sizing:border-box;
+        height:60rpx;
+        line-height:60rpx;
+    }
+    .pop-options{
+        display:flex;
+        border-top:1rpx solid #E5E5E5;
+        .pop-btn{
+            flex:1;
+            height:100rpx;
+            line-height:100rpx;
+            text-align:center;
+            font-family: PingFangSC-Regular;
+            font-size: 36rpx;
+            color: #666666;
+            text-align: center;
+        }
+        .enter.pop-btn{
+            color: #4E88FF;
+            border-left:1rpx solid #E5E5E5;
+        }
+    }
+}
+</style>

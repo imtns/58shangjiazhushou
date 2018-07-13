@@ -36,6 +36,15 @@ export default class extends wepy.app {
             'pages/accountNoticeList', // 入账提醒页面
             'pages/OrderList', // 订单列表
             'pages/OrderDetail', // 订单详情
+            'pages/articleComponentCreate', // 文章添加
+            'pages/articleComponentlist', // 文章列表
+            'pages/articleComponentDetail', // 文章详情
+            'pages/articleChoseGroup', // 选择分组
+            'pages/orderComponentDetail', // 预约预览页面
+            'pages/paymentRecord', // 收款记录
+            'pages/payChoseTime', // 选择时间
+            'pages/orderComponentlist', // 预约列表
+            'pages/orderComponentGroup', // 预约分组
         ],
         window: {
             backgroundTextStyle: 'light',

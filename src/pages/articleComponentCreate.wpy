@@ -1,0 +1,24 @@
+<template>
+    <web-view src="{{url}}"></web-view>
+</template>
+<script>
+import wepy from 'wepy';
+
+export default class ArticleComponentCreate extends wepy.page {
+    config = {
+        navigationBarTitleText: '文章添加',
+    }
+    data = {
+        url: '',
+        id: '',
+    }
+    onLoad(option) {
+        const { id } = option;
+        this.id = id;
+        this.$apply();
+    }
+}
+</script>
+<style lang="scss">
+    
+</style>
