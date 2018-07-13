@@ -36,6 +36,7 @@ export default class extends wepy.app {
             'pages/accountNoticeList', // 入账提醒页面
             'pages/OrderList', // 订单列表
             'pages/OrderDetail', // 订单详情
+<<<<<<< HEAD
             'pages/articleComponentCreate', // 文章添加
             'pages/articleComponentlist', // 文章列表
             'pages/articleComponentDetail', // 文章详情
@@ -45,6 +46,14 @@ export default class extends wepy.app {
             'pages/payChoseTime', // 选择时间
             'pages/orderComponentlist', // 预约列表
             'pages/orderComponentGroup', // 预约分组
+=======
+            'pages/couponManage', // 优惠券管理
+            'pages/couponEdit', // 优惠券编辑页
+            'pages/couponType', // 优惠券类型
+            'pages/couponValidTime', // 优惠券生效时间
+            'pages/couponService', // 优惠券适用产品
+            'pages/couponPreview', // 优惠券预览
+>>>>>>> 7b1088d40192de231cf207a0e03bcbe989c55869
         ],
         window: {
             backgroundTextStyle: 'light',

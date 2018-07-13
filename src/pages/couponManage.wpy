@@ -1,0 +1,127 @@
+<template>
+    <view class="container">
+        <view wx:if="{{ coupons && coupons.length }}">
+            <couponList
+            :coupons.sync="coupons"
+            :isEditing.sync="isEditing"></couponList>
+        </view>
+        <view wx:else>
+            <view class="coupons-empty">
+                <image class="empty-image" src="https://img.58cdn.com.cn/lbg/jianzhan/images/empty.png"></image>
+                <view>暂无优惠卷</view>
+            </view>
+        </view>
+
+        <view class="options">
+            <button class="edit" @tap="edit">{{ isEditing ? '取消' : '编辑' }}</button>
+            <button wx:if="{{ isEditing }}" @tap="deleteItems">删除</button>
+            <button wx:else @tap="addCoupon">添加优惠券</button>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import couponList from '../components/CouponList';
+import Mixin from '../mixins';
+import CouponMixin from '../mixins/coupon';
+
+import { post } from '../utils/ajax';
+import { DELETE_COUPON } from '../utils/url';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '优惠券管理',
+    }
+
+    components = {
+        couponList,
+    }
+
+    mixins = [Mixin, CouponMixin]
+
+    data = {
+        coupons: [],
+        couponNone: false,
+        isEditing: false,
+    }
+
+    methods = {
+        addCoupon() {
+            wepy.navigateTo({
+                url: '/pages/couponEdit',
+            });
+        },
+
+        edit() {
+            this.isEditing = !this.isEditing;
+        },
+
+        async deleteItems() {
+            try {
+                const ids = this.coupons.filter(item => item.checked).map(item => item.id);
+                await Promise.all(ids.map(id => post(DELETE_COUPON + id)));
+                this.isEditing = false;
+                this.loadData();
+                this.$apply();
+            } catch (e) {
+                this.errorHandler(e);
+            }
+        },
+    }
+
+    onLoad() {
+        this.loadData();
+    }
+
+    async loadData() {
+        try {
+            const mpId = wepy.getStorageSync('current_mpid');
+            this.coupons = await this.getCoupons({
+                pageNum: 1,
+                pageSize: 10,
+                mpId,
+            });
+            this.$apply();
+        } catch (e) {
+            this.errorHandler(e);
+        }
+    }
+}
+</script>
+
+<style lang="scss">
+view {
+    box-sizing: border-box;
+}
+
+button::after {
+    border: none;
+}
+
+.options {
+    display: flex;
+    font-size: 34rpx;
+    letter-spacing: 0.51px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    box-shadow: 0 -1rpx 17rpx -1rpx rgba(202,202,202,0.50);
+
+    button {
+        width: 50%;
+        border-radius: 0;
+        color: #FFF;
+        background-color: #4e88ff;
+
+        &::after {
+            border: none;
+        }
+    }
+
+    .edit {
+        color: #4e88ff;
+        background-color: #FFF;
+    }
+}
+</style>

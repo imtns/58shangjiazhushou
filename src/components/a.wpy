@@ -15,7 +15,4 @@ export default class Index extends wepy.component {
 </script>
 
 <style lang="scss">
-.container{
-    background: url(/bg.png) no-repeat;
-}
 </style>
