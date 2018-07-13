@@ -39,6 +39,10 @@ export default class Uploader extends wepy.component {
         uploadtype: String,
         maxSize: String,
         maxCount: String,
+        defaultImages: { // 默认图片
+            type: Array,
+            default: [],
+        },
         showDelete: {
             type: Boolean,
             default: true,
@@ -69,6 +73,12 @@ export default class Uploader extends wepy.component {
 
             const count = this.maxCount - this.vm.length;
             return count > 0 ? count : 0;
+        },
+    }
+    watch = {
+        defaultImages(v) {
+            this.vm = v;
+            this.$apply();
         },
     }
     methods = {
