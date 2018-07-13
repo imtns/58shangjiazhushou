@@ -10,6 +10,8 @@
                 value="{{ form.title }}"
                 @change="setFormData('title')"/>
             </view>
+            <imageUploader @changeimages.user="setImages" maxCount="10" maxSize="4"
+         uploadtype="1"></imageUploader>
             <view class="item required">
                 <text>服务价格</text>
                 <input
@@ -109,11 +111,17 @@ import { get, post } from '../utils/ajax';
 import { LOAD_COUPON, SAVE_COUPON } from '../utils/url';
 import { alert } from '../utils';
 
+import imageUploader from '../components/UploadFile';
+
 import globalService from '../utils/globalService';
 
 export default class Index extends wepy.page {
     config = {
         navigationBarTitleText: '编辑详情',
+    }
+
+    components = {
+        imageUploader,
     }
 
     data = {
@@ -138,6 +146,10 @@ export default class Index extends wepy.page {
     mixins = [Mixin]
 
     methods = {
+        uploadFn() {
+
+        },
+
         async save() {
             try {
                 // 数据过滤
