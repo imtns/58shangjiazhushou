@@ -161,12 +161,14 @@ view {
         padding: 0 30rpx;
         background-color: #FFF;
         margin-bottom: 20rpx;
+        overflow: hidden;
 
         .item {
             height: 89rpx;
             padding: 23rpx 0;
             display: flex;
             justify-content: space-between;
+            height: 89rpx;
 
             text {
                 color: #999;

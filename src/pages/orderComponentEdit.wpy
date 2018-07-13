@@ -2,19 +2,19 @@
     <view class="container">
         <view class="section">
             <view class="item required border-bottom">
-                <text>优惠券标题</text>
+                <text>服务名称</text>
                 <input
                 type="text"
-                placeholder="最多可输入10个字"
+                placeholder="可用优惠券亮点吸引用户"
                 placeholder-class="placeholder"
                 value="{{ form.title }}"
                 @change="setFormData('title')"/>
             </view>
             <view class="item required">
-                <text>优惠券副标题</text>
+                <text>服务价格</text>
                 <input
-                type="text"
-                placeholder="可用优惠券亮点吸引用户"
+                type="digit"
+                placeholder="请输入价格"
                 placeholder-class="placeholder"
                 value="{{ form.subTitle }}"
                 @change="setFormData('subTitle')"/>
@@ -22,52 +22,79 @@
         </view>
         <view class="section">
             <view class="item required">
-                <text>优惠券类型</text>
-                <navigator
-                :class="{ placeholder: form.couponType === '' }"
-                url="/pages/couponType">
-                    {{ form.couponType && (form.couponType === 1 ? '代金券' : '折扣券') || '去选择' }}
-                    <view class="icon more"></view>
-                </navigator>
-            </view>
-        </view>
-        <view class="section">
-            <view class="item required">
-                <text>生效时间</text>
-                <navigator
-                :class="{ placeholder: form.validType === '' }"
-                url="/pages/couponValidTime">
-                    {{ form.validType && (form.validType === 1 ? '固定时间' : '领取后生效') || '去选择' }}<view class="icon more"></view>
-                </navigator>
+                <text>服务时长</text>
+                <input
+                type="number"
+                placeholder="请输入时间"
+                placeholder-class="placeholder"
+                value="{{ form.subTitle }}"
+                @change="setFormData('subTitle')"/>
             </view>
         </view>
         <view class="section">
             <view class="item required border-bottom">
-                <text>库存</text>
+                <text>服务开始时间</text>
+                <picker mode="date" value="{{ formatValidStarttime }}"
+                :class="{ placeholder: validStarttime === null }"
+                @change="dataAction('validStarttime')">
+                    {{ formatValidStarttime || '去选择' }}<view class="icon more"></view>
+                </picker>
+            </view>
+            <view class="item required">
+                <text>服务结束时间</text>
+                <picker mode="date" value="{{ formatValidEndtime }}"
+                :class="{ placeholder: validEndtime === null }"
+                @change="dataAction('validEndtime')">
+                    {{ formatValidEndtime || '去选择' }}<view class="icon more"></view>
+                </picker>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required border-bottom">
+                <text>预约区域</text>
+                <picker mode="region" value="{{ formatValidEndtime }}"
+                :class="{ placeholder: validEndtime === null }"
+                @change="dataAction('validEndtime')">
+                    {{ formatValidEndtime || '去选择' }}<view class="icon more"></view>
+                </picker>
+            </view>
+            <view class="item required">
+                <text>预约地址</text>
+                <button class="locate">定位</button>
+            </view>
+            <input type="text" class="location-detail" placeholder="请输入详细地址" placeholder-class="placeholder"/>
+            <map class="location-map" scale="14"></map>
+        </view>
+        <view class="section">
+            <view class="item">
+                <text>服务详情</text>
+            </view>
+            <textarea class="service-detail" cols="30" rows="10"></textarea>
+        </view>
+        <view class="section">
+            <view class="item border-bottom">
+                <text>服务人姓名</text>
                 <input
                 type="number"
-                placeholder="请输入库存数量"
+                placeholder="请输入服务人姓名"
                 placeholder-class="placeholder"
-                value="{{ form.totalCount }}"
-                @change="setFormData('totalCount')"/>
+                value="{{ form.subTitle }}"
+                @change="setFormData('subTitle')"/>
             </view>
             <view class="item">
-                <text>每人限领</text>
+                <text>服务人电话</text>
                 <input
                 type="number"
-                placeholder="若不填默认为1"
+                placeholder="请输入服务人姓名"
                 placeholder-class="placeholder"
-                value="{{ form.limitCount || '' }}"
-                @change="setFormData('limitCount')"/>
+                value="{{ form.subTitle }}"
+                @change="setFormData('subTitle')"/>
             </view>
         </view>
         <view class="section">
             <view class="item required">
-                <text>优惠券使用产品</text>
-                <navigator  :class="{ placeholder: form.applyType === '' }"
-                url="/pages/couponService">
-                    {{ form.applyType && (form.applyType === 1 ? '全部产品' : '指定产品') || '去选择' }}<view class="icon more"></view>
-                </navigator>
+                <text>服务人姓名</text>
+                <view>本产品目前仅支持到店支付</view>
             </view>
         </view>
 
@@ -86,7 +113,7 @@ import globalService from '../utils/globalService';
 
 export default class Index extends wepy.page {
     config = {
-        navigationBarTitleText: '优惠券内容',
+        navigationBarTitleText: '编辑详情',
     }
 
     data = {
@@ -134,6 +161,26 @@ export default class Index extends wepy.page {
 
         setFormData(prop, e) {
             this.form[prop] = e.detail.value;
+        },
+
+        dataAction(prop, v) {
+            let value = v;
+            // 数据预处理
+            if (prop === 'validType') {
+                value = +value;
+            } else {
+                value = value && value.detail && value.detail.value;
+            }
+
+            // 数据校验
+            const validate = this.validator(prop, value);
+            if (!validate.result) {
+                alert(validate.msg);
+                return;
+            }
+
+            this[prop] = value;
+            this.updateData();
         },
     }
 
@@ -240,12 +287,33 @@ view {
 }
 .container {
     font-size: 28rpx;
+    margin-bottom: 122rpx;
 }
 
 .section {
     margin-top: 20rpx;
     background-color: #FFFFFF;
     overflow: hidden;
+
+    .location-detail {
+        margin: 0 30rpx 30rpx;
+        height: 40rpx;
+    }
+
+    .location-map {
+        width: 100%;
+        height: 360rpx;
+        margin-bottom: 30rpx;
+    }
+
+    .service-detail {
+        height: 200rpx;
+        background: #f6f6f6;
+        border-radius: 4rpx;
+        margin: 0 20rpx 30rpx;
+        padding: 20rpx;
+        width: 670rpx;
+    }
 
     .item {
         display: flex;
@@ -280,6 +348,22 @@ view {
             color: #BDBDBD;
             font-size: 30rpx;
         }
+
+        button.locate {
+            width: 110rpx;
+            height: 50rpx;
+            border: 2rpx solid #83abff;
+            border-radius: 4rpx;
+            padding: 0;
+            margin: 0;
+            font-size: 28rpx;
+            color: #83abff;
+            line-height:50rpx;
+            background-color:inherit;
+            &::after {
+                border: none;
+            }
+        }
     }
 }
 
@@ -292,6 +376,7 @@ button.save {
     left: 0;
     right: 0;
     border-radius: 0;
+    z-index: 999;
 
     &::after {
         content: none;
