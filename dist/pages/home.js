@@ -510,7 +510,7 @@ var Home = function (_wepy$page) {
                 return;
             }
             switch (text) {
-                case '我的小程序员':
+                case '我的小程序':
                     _wepy2.default.navigateTo({
                         url: 'myMp'
                     });
