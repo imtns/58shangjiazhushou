@@ -1,10 +1,10 @@
 <template>
-<view class="openpay-container">
+<view class="openpay-container" hidden="{{loading}}">
     <!-- 开通支付 -->
     <view class="openpay" wx:if="{{!opened}}">
         <view class="openpay-main">
             <!-- 状态图标 -->
-            <image class="openpay-main-icon" src=""/>
+            <image class="openpay-main-icon" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-openinfo.png"/>
             <view class="openpay-main-content">当前微信账号所绑定的手机号，必须与58账</view>
             <view class="openpay-main-content">号绑定的手机号相同</view>
         </view>
@@ -17,12 +17,12 @@
         </view>
         <!-- 跳转到支付助手小程序性开通支付 -->
         <!-- 小程序跳转时低版本不提供url会报错 -->
+        <view class="openpay-confirm disable" wx:if="{{!agreeProtocol}}">确认开通</view>
         <navigator open-type="navigate"
             target="miniProgram"
             path="/pages/payAuthorize/payAuthorize?param={{userid}}" 
-            url="/pages/payAuthorize/payAuthorize"  
             app-id="{{payAppId}}"
-            version="develop">
+            version="develop" wx:else>
             <view class="openpay-confirm">确认开通</view>
         </navigator>
         <!-- 协议内容弹框 -->
@@ -47,7 +47,7 @@
     <!-- 更换收款微信 -->
     <view class="changepay" wx:else>
         <view class="changepay-main">
-            <image class="changepay-main-icon" src=""/>
+            <image class="changepay-main-icon" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-openchange.png"/>
             <view class="changepay-main-content">当前小程序已经开通支付，您可以</view>
             <view class="changepay-main-content">使用买单功能啦</view>
         </view>
@@ -55,7 +55,7 @@
         <navigator open-type="navigate"
             target="miniProgram"
             path="/pages/payAuthorize/payAuthorize?param={{userid}}" 
-            url="/pages/payAuthorize/payAuthorize"  
+            url="/pages/payAuthorize/payAuthorize?param={{userid}}"
             app-id="{{payAppId}}"
             version="develop">
             <view class="changepay-confirm">更换收款微信</view>
@@ -84,6 +84,7 @@ export default class OpenPay extends wepy.page {
         opened: false, // 是否已经开通支付
         agreeProtocol: true, // 是否同意协议
         showProtocol: false, // 显示协议内容
+        loading: true, // 加载中隐藏页面内容
     }
     methods = {
         bindAgreeProtocol () {
@@ -97,9 +98,18 @@ export default class OpenPay extends wepy.page {
             console.log('stopAuthorizeScroll');
         },
     }
-    async onLoad (options) {
-        const mpid = options.mpid || wepy.getStorageSync('current_mpid');
+    async onShow () {
+        await this.saveAgreeProtocol();
+        const mpid = wepy.getStorageSync('current_mpid');
         await this.getOpenedInfo(mpid);
+    }
+    async saveAgreeProtocol () {
+        // 开通支付后回传状态
+        const OpenPayStatus = wepy.getStorageSync('OpenPay');
+        if (OpenPayStatus !== '0') return;
+        wepy.removeStorageSync('OpenPay');
+        const [e] = await get('/mpInfo/agree');
+        e && toast(e);
     }
     async getOpenedInfo (mpid) {
         // 获取用户是否开通支付
@@ -110,7 +120,10 @@ export default class OpenPay extends wepy.page {
             toast(e);
             return;
         }
-        this.opened = res.protocol === 1;
+        this.loading = false;
+        this.userid = res.userid;
+        this.opened = res.pay_open === 1;
+        this.$apply();
     }
 }
 </script>
@@ -184,6 +197,9 @@ export default class OpenPay extends wepy.page {
             color: #ffffff;
             letter-spacing: 0;
             text-align: center;
+            &.disable {
+                opacity: 0.5;
+            }
         }
         /* 协议内容 */
         .openpay-protocol-mask {

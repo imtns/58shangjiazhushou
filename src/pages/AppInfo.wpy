@@ -6,8 +6,8 @@
                 <view class="appinfo-title">{{appInfo.nickName}}</view>
                 <view class="appinfo-date">有效期至 {{appInfo.date}}</view>
             </view>
-            <view class="appinfo-youxiang" wx:if="{{appInfo.app_type==1}}">优享</view>
-            <view class="appinfo-weixin" wx:else>微信</view>
+            <view class="appinfo-youxiang {{(appInfo.app_type==1 || appInfo.app_type==2)?'':'disable'}}">优享</view>
+            <view class="appinfo-weixin {{appInfo.app_type==2?'':'disable'}}">微信</view>
         </view>
         <view class="appinfo-status">
             <view class="appinfo-auth" wx:if="{{appInfo.app_type==2}}">授权状态：{{appInfo.status_desc}}</view>
@@ -27,7 +27,7 @@
                 <navigator target="miniProgram"
                     open-type="navigate"
                     app-id="wx86c7b0019914401c"
-                    path="/pages/index58/index58?releaseId={{appInfo.releaseId}}"
+                    path="/pages/index58/index58?releaseId={{appInfo.mpid}}"
                     url="/pages/home"
                     version="develop">
                     <view class="qrcode-visit">访问小程序</view>
@@ -47,7 +47,7 @@
                 <navigator 
                     target="miniProgram"
                     open-type="navigate"
-                    app-id="{{appInfo.appId}}"
+                    app-id="{{appInfo.authorizerAppid}}"
                     path="/pages/index/index"
                     url="/pages/home"
                     version="develop">
@@ -222,7 +222,7 @@ export default class AppInfo extends wepy.page {
         .appinfo-title-wrap {
             display: inline-block;
             overflow: hidden;
-            width: 450rpx;
+            width: 384rpx;
             height: 128rpx;
         }
         .appinfo-title {
@@ -247,7 +247,6 @@ export default class AppInfo extends wepy.page {
         .appinfo-weixin {
             display: inline-block;
             vertical-align: top;
-            margin-left: 20rpx;
             width: 66rpx;
             line-height: 38rpx;
             font-family: PingFangSC-Regular;
@@ -258,8 +257,13 @@ export default class AppInfo extends wepy.page {
             letter-spacing: 0.57px;
             color: #f49b02;
             background: rgba(255, 157, 0, 0.1);
+            &.disable {
+                background: #f6f6f6;
+                color: #ccc;
+            }
         }
         .appinfo-weixin {
+            margin-left: 20rpx;
             color: #27bc28;
             background: rgba(24, 173, 25, 0.1);
         }

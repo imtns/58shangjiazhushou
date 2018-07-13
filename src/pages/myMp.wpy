@@ -131,7 +131,7 @@ export default class Index extends wepy.page {
         const { data } = await post('/mplogic/mymplist', subData);
         const mps = data.mpinfos;
         const [currentMp] = mps.filter((item) => item.id === currentMpid);
-        if (currentMp.headImg && currentMp.headImg.indexOf('http') === -1) {
+        if (currentMp && currentMp.headImg && currentMp.headImg.indexOf('http') === -1) {
             currentMp.headImg = `https://pic1.58cdn.com.cn${currentMp.headImg}`;
         }
         const others = mps.filter((item) => item.id !== currentMpid);

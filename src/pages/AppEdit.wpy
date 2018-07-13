@@ -20,6 +20,29 @@
                 <text class="appedit-form-label">联系电话</text>
                 <input class="appedit-form-input" maxlength='11' type="number" @input="setMobile" placeholder="请输入" placeholder-class="appedit-form-placeholder" value="{{form.telphone}}"/>
             </view>
+            <!-- 同镇用户所属行业只可编辑一次，mpSource:2 代表同镇，所属行业已编辑 -->
+            <view class="appedit-content-list-item"
+             wx:if="{{!cateEditable}}">
+                <text class="appedit-form-label">所属行业</text>
+                <view class="appedit-form-cate">
+                    {{ form.cate1Name+' '+form.cate2Name+' '+form.cate3Name }}
+                </view>
+                <text class="appedit-form-arrow"></text>
+            </view>
+            <navigator url="/pages/CateSelector?cate1={{form.cate1}}&cate2={{form.cate2}}&cate3={{form.cate3}}" wx:else>
+                <view class="appedit-content-list-item">
+                    <text class="appedit-form-label">所属行业</text>
+                    <view class="appedit-form-cate">
+                        <block wx:if="{{form.cate1Name}}">
+                            {{ form.cate1Name+' '+form.cate2Name+' '+form.cate3Name }}
+                        </block>
+                        <block wx:else>
+                            请选择
+                        </block>
+                    </view>
+                    <text class="appedit-form-arrow"></text>
+                </view>
+             </navigator>
             <picker mode="multiSelector" @change="setCity" @columnchange="bindCity" range="{{areas}}" range-key="localName" value="{{selCityIndex}}">
                 <view class="appedit-content-list-item">
                     <text class="appedit-form-label">小程序城市</text>
@@ -62,7 +85,6 @@ const saveAppApi = '/mplogic/modifympinfo';
 
 export default class AppEdit extends wepy.page {
     config = {
-        disableScroll: true,
         navigationBarTitleText: '小程序编辑',
     }
     data = {
@@ -77,6 +99,7 @@ export default class AppEdit extends wepy.page {
             province: '5001',
         },
         tempLogo: '',
+        cateEditable: true, // 所属行业是否可以编辑
     }
     computed = {
         enableSave () {
@@ -102,6 +125,154 @@ export default class AppEdit extends wepy.page {
         },
     }
 
+    methods = {
+        async bindCity (e) {
+            const { column, value } = e.detail;
+            if (column === 1) {
+                return;
+            }
+            const { dispLocalID } = this.areas[0][value];
+            const [err, data] = await get(cityApi + dispLocalID);
+            if (err) {
+                this.toast(err);
+                return;
+            }
+            this.areas = [this.areas[0], data];
+            this.$apply();
+        },
+        setCity (e) {
+            const arr = e.detail.value;
+            const cityIdx = arr[1] && 0;
+            const province = this.areas[0][arr[0]];
+            const city = this.areas[1][cityIdx];
+            this.selCity = [province.localName, city.localName];
+            this.updateForm({
+                province: province.dispLocalID,
+                provinceName: province.localName,
+                city: city.dispLocalID,
+                cityName: city.localName,
+            });
+        },
+        async setLogo () {
+            const { tempFilePaths } = await wepy.chooseImage({
+                count: 1,
+                sizeType: 'compressed ',
+            });
+            const filePath = tempFilePaths[0];
+            console.log({ filePath });
+            try {
+                const response = await wepy.uploadFile({
+                    url: uploadApi,
+                    filePath,
+                    name: 'content',
+                });
+                const res = JSON.parse(response.data);
+                const { state, msg, data } = res;
+                if (state === 100) {
+                    this.tempLogo = filePath;
+                    this.updateForm({ headImg: data.content });
+                } else {
+                    this.toast(msg);
+                }
+            } catch ({ errMsg }) {
+                this.toast(errMsg);
+            }
+        },
+        setAppName (e) {
+            let nickName = e.detail.value;
+            nickName = filteremoji(nickName);
+            this.updateForm({ nickName });
+            return {
+                value: nickName,
+            };
+        },
+        setMobile (e) {
+            const telphone = e.detail.value;
+            this.updateForm({ telphone });
+        },
+        async setLocation () {
+            const { address, latitude, longitude } = await wepy.chooseLocation();
+            this.updateForm({ address, addressLatitude: latitude, addressLongitude: longitude });
+        },
+        setDetailAdress (e) {
+            let address = e.detail.value;
+            address = filteremoji(address);
+            this.updateForm({ address });
+            return {
+                value: address,
+            };
+        },
+        async bindSave () {
+            const { form } = this.data;
+            const verify = await this.verify();
+            if (!verify) return;
+            const sendData = {
+                mpid: this.mpid, // 小程序id
+                logo: form.headImg, // 小程序logo 只有优享小程序能改
+                telphone: form.telphone, // 电话
+                mpname: form.nickName, // 小程序名称 只有优享小程序能改
+                privince: form.province,
+                city: form.city, // 城市
+                address: form.address, // 地址
+                lat: form.addressLatitude, // 纬度
+                lnt: form.addressLongitude, // 经度
+                cate1: form.cate1, // 所属行业第一级
+                cate2: form.cate2, // 所属行业第二级
+                cate3: form.cate3, // 所属行业第三级
+            };
+            console.log(sendData);
+            const [e, res] = await get(saveAppApi, sendData);
+            if (e) {
+                this.toast(res.msg);
+            } else {
+                console.log(res);
+                wepy.navigateBack();
+            }
+        },
+    }
+    async onLoad (options) {
+        const mpid = options.mpid || wepy.getStorageSync('current_mpid');
+        if (!mpid) {
+            wepy.navigateBack();
+        }
+        this.mpid = mpid;
+        await this.getAppInfo(this.mpid);
+        await this.recordFirstCateStatus(this.form);
+        await this.getLocation();
+        await this.getProvinces();
+        this.defaultSelCityIndex();
+    }
+    onShow () {
+        this.updateCateChooice();
+    }
+    // 记录页面加载是所属行业类别编辑状态
+    // 如果小程序属于同镇mpSource= 3且所属行业cate2为空则可以编辑
+    // 或者mpSource!==3则可以编辑
+    recordFirstCateStatus (appInfo) {
+        const { mpSource, cate2 } = appInfo;
+        this.cateEditable = !!(mpSource && mpSource.toString() === '3' && !cate2)
+            || (mpSource && mpSource.toString() !== '3');
+    }
+    // 更新所属行业类别
+    updateCateChooice () {
+        if (!this.$parent.globalData || !this.$parent.globalData.cateChooice) return;
+        const form = {};
+        console.log('cateChooice0', this.$parent.globalData.cateChooice);
+        // 从所属类目值选择页面返回重新赋值
+        const cateChooice = (this.$parent.globalData && this.$parent.globalData.cateChooice) ?
+            this.$parent.globalData.cateChooice : [{}, {}, {}];
+        console.log('cateChooice1', cateChooice);
+        cateChooice.map((item, index) => {
+            form[`cate${index + 1}`] = item.cateId || '';
+            form[`cate${index + 1}Name`] = item.name || '';
+            return item;
+        });
+        // 更新完成删除全局所属类目字段cateChooice
+        this.$parent.globalData
+            && this.$parent.globalData.cateChooice
+            && (this.$parent.globalData.cateChooice = undefined);
+        this.updateForm(form);
+    }
     defaultSelCityIndex () {
         const { city, province } = this.form;
         let pIndex = 0;
@@ -204,7 +375,7 @@ export default class AppEdit extends wepy.page {
             return false;
         }
         if (form.nickName.length < 4) {
-            this.toast('小程序名称不得小于4个');
+            this.toast('小程序名称不得小于4个字');
             return false;
         }
         if (!form.telphone) {
@@ -223,123 +394,12 @@ export default class AppEdit extends wepy.page {
             this.toast('输入详情地址');
             return false;
         }
-        return true;
-    }
-    methods = {
-        async bindCity (e) {
-            const { column, value } = e.detail;
-            if (column === 1) {
-                return;
-            }
-            const { dispLocalID } = this.areas[0][value];
-            const [err, data] = await get(cityApi + dispLocalID);
-            if (err) {
-                this.toast(err);
-                return;
-            }
-            this.areas = [this.areas[0], data];
-            this.$apply();
-        },
-        setCity (e) {
-            const arr = e.detail.value;
-            const cityIdx = arr[1] && 0;
-            const province = this.areas[0][arr[0]];
-            const city = this.areas[1][cityIdx];
-            this.selCity = [province.localName, city.localName];
-            this.updateForm({
-                province: province.dispLocalID,
-                provinceName: province.localName,
-                city: city.dispLocalID,
-                cityName: city.localName,
-            });
-        },
-        async setLogo () {
-            const { tempFilePaths } = await wepy.chooseImage({
-                count: 1,
-                sizeType: 'compressed ',
-            });
-            const filePath = tempFilePaths[0];
-            console.log({ filePath });
-            try {
-                const response = await wepy.uploadFile({
-                    url: uploadApi,
-                    filePath,
-                    name: 'content',
-                });
-                const res = JSON.parse(response.data);
-                const { state, msg, data } = res;
-                if (state === 100) {
-                    this.tempLogo = filePath;
-                    this.updateForm({ headImg: data.content });
-                } else {
-                    this.toast(msg);
-                }
-            } catch ({ errMsg }) {
-                this.toast(errMsg);
-            }
-        },
-        setAppName (e) {
-            let nickName = e.detail.value;
-            nickName = filteremoji(nickName);
-            this.updateForm({ nickName });
-            return {
-                value: nickName,
-            };
-        },
-        setMobile (e) {
-            const telphone = e.detail.value;
-            this.updateForm({ telphone });
-        },
-        async setLocation () {
-            const { address, latitude, longitude } = await wepy.chooseLocation();
-            this.updateForm({ address, addressLatitude: latitude, addressLongitude: longitude });
-        },
-        setDetailAdress (e) {
-            let address = e.detail.value;
-            address = filteremoji(address);
-            this.updateForm({ address });
-            return {
-                value: address,
-            };
-        },
-        async bindSave () {
-            const { form } = this.data;
-            const verify = await this.verify();
-            if (!verify) return;
-            const sendData = {
-                mpid: this.mpid, // 小程序id
-                logo: form.headImg, // 小程序logo 只有优享小程序能改
-                telphone: form.telphone, // 电话
-                mpname: form.nickName, // 小程序名称 只有优享小程序能改
-                privince: form.province,
-                city: form.city, // 城市
-                address: form.address, // 地址
-                lat: form.addressLatitude, // 纬度
-                lnt: form.addressLongitude, // 经度
-                cate1: form.cate1 || '',
-                cate2: form.cate2 || '',
-                cate3: form.cate3 || '',
-            };
-            console.log(sendData);
-            const [e, res] = await get(saveAppApi, sendData);
-            if (e) {
-                this.toast(res.msg);
-            } else {
-                console.log(res);
-                wepy.navigateBack();
-            }
-        },
-    }
-    async onLoad (options) {
-        const mpid = options.mpid || wepy.getStorageSync('current_mpid');
-        if (!mpid) {
-            wepy.navigateBack();
+        // 所属行业至少选择两项
+        if (!form.cate1 || !form.cate2) {
+            this.toast('所属行业至少选择两项');
+            return false;
         }
-        this.mpid = mpid;
-        await this.getAppInfo(this.mpid);
-        await this.getLocation();
-        await this.getProvinces();
-        this.defaultSelCityIndex();
+        return true;
     }
 }
 </script>
@@ -426,6 +486,29 @@ export default class AppEdit extends wepy.page {
                 color: #333333;
                 text-align: right;
                 vertical-align: middle;
+            }
+            .appedit-form-cate {
+                margin-left: 40rpx;
+                display: inline-block;
+                width: 460rpx;
+                overflow: hidden;
+                white-space: nowrap;
+                font-family: PingFangSC-Regular;
+                font-size: 30rpx;
+                color: #333333;
+                text-align: right;
+                vertical-align: middle;
+            }
+            .appedit-form-arrow {
+                display: inline-block;
+                content: '';
+                width: 15rpx;
+                height: 25rpx;
+                vertical-align: middle;
+                margin-left: 25rpx;
+                background: url('https://static.58.com/lbg/mengchong/image/icon/arrow-right.png')
+                    no-repeat;
+                background-size: 100%;
             }
             .appedit-form-appname {
                 overflow: hidden;
