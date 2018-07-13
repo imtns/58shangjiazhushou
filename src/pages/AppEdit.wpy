@@ -20,7 +20,7 @@
                 <text class="appedit-form-label">联系电话</text>
                 <input class="appedit-form-input" maxlength='11' type="number" @input="setMobile" placeholder="请输入" placeholder-class="appedit-form-placeholder" value="{{form.telphone}}"/>
             </view>
-            <!-- 同镇用户所属行业只可编辑一次，mpSource:2 代表同镇，所属行业已编辑 -->
+            <!-- 同镇用户所属行业只可编辑一次，mpSource:3 代表同镇，所属行业已编辑 -->
             <view class="appedit-content-list-item"
              wx:if="{{!cateEditable}}">
                 <text class="appedit-form-label">所属行业</text>
@@ -237,7 +237,7 @@ export default class AppEdit extends wepy.page {
         }
         this.mpid = mpid;
         await this.getAppInfo(this.mpid);
-        await this.recordFirstCateStatus(this.form);
+        this.recordFirstCateStatus(this.form);
         await this.getLocation();
         await this.getProvinces();
         this.defaultSelCityIndex();
@@ -250,6 +250,7 @@ export default class AppEdit extends wepy.page {
     // 或者mpSource!==3则可以编辑
     recordFirstCateStatus (appInfo) {
         const { mpSource, cate2 } = appInfo;
+        console.log('mpSource', mpSource, 'cate2', cate2);
         this.cateEditable = !!(mpSource && mpSource.toString() === '3' && !cate2)
             || (mpSource && mpSource.toString() !== '3');
     }
