@@ -55,11 +55,12 @@
         <view class="section">
             <view class="item required border-bottom">
                 <text>预约区域</text>
-                <picker mode="region" value="{{ formatValidEndtime }}"
-                :class="{ placeholder: validEndtime === null }"
-                @change="dataAction('validEndtime')">
-                    {{ formatValidEndtime || '去选择' }}<view class="icon more"></view>
-                </picker>
+                <navigator
+                :class="{ placeholder: region === '' }"
+                url="/pages/multiSelector">
+                    {{ region  || '去选择' }}
+                    <view class="icon more"></view>
+                </navigator>
             </view>
             <view class="item required">
                 <text>预约地址</text>
@@ -121,10 +122,18 @@
 import wepy from 'wepy';
 import Mixin from '../mixins';
 import { get, post } from '../utils/ajax';
-import { LOAD_SERVICE, SAVE_COUPON } from '../utils/url';
+import { LOAD_SERVICE, INSERT_SERVICE, SAVE_SERVICE } from '../utils/url';
 import { alert, picSrcDomain } from '../utils';
 import imageUploader from '../components/UploadFile';
 import globalService from '../utils/globalService';
+
+const isEmpty = v => {
+    if (v === '' || v === null || v === undefined) {
+        return true;
+    }
+
+    return false;
+};
 
 export default class Index extends wepy.page {
     config = {
@@ -153,8 +162,8 @@ export default class Index extends wepy.page {
             cityStr: '', // 城市名
             areaStr: '', // 区名
             address: '', // *详细地址
-            addressLongitude: '', // *经度
-            addressLatitude: '', // *纬度
+            addressLongitude: '116.39722', // *经度
+            addressLatitude: '39.90960', // *纬度
             province: 0, // *省id
             city: 0, // *城市id
             area: 0, // *区域id
@@ -162,6 +171,8 @@ export default class Index extends wepy.page {
         },
         showImageDelete: false,
         defaultImages: [],
+        region: '',
+        canSubmit: false,
     }
 
     mixins = [Mixin]
@@ -169,7 +180,7 @@ export default class Index extends wepy.page {
     methods = {
         setImages({ images }) {
             if (images.length) {
-                this.form.pics = images[0];
+                [this.form.pics] = images;
             }
         },
 
@@ -181,6 +192,7 @@ export default class Index extends wepy.page {
             try {
                 // 数据过滤
                 const { form } = this;
+                let requestUrl = '';
                 const postData = {};
                 Object.keys(form).forEach(key => {
                     if (form[key]) {
@@ -188,9 +200,13 @@ export default class Index extends wepy.page {
                     }
                 });
 
-                this.validator(postData);
+                if (form.id) {
+                    requestUrl = SAVE_SERVICE;
+                } else {
+                    requestUrl = INSERT_SERVICE;
+                }
 
-                await post(SAVE_COUPON, postData);
+                await post(requestUrl, postData);
                 wepy.navigateBack();
             } catch (e) {
                 alert(e);
@@ -202,31 +218,11 @@ export default class Index extends wepy.page {
             this.form[prop] = e.detail.value;
         },
 
-        // dataAction(prop, v) {
-        //     let value = v;
-        //     // 数据预处理
-        //     if (prop === 'validType') {
-        //         value = +value;
-        //     } else {
-        //         value = value && value.detail && value.detail.value;
-        //     }
-
-        //     // 数据校验
-        //     const validate = this.validator(prop, value);
-        //     if (!validate.result) {
-        //         alert(validate.msg);
-        //         return;
-        //     }
-
-        //     this[prop] = value;
-        //     this.updateData();
-        // },
-
         async setLocation () {
             const {
                 address,
                 latitude: addressLatitude,
-                longitude: addressLongitude
+                longitude: addressLongitude,
             } = await wepy.chooseLocation();
             Object.assign(this.form, {
                 address,
@@ -237,15 +233,30 @@ export default class Index extends wepy.page {
         },
     }
 
-    validator(data) {
-        let msg = '';
-        if (data.couponDiscard < 0 || data.couponDiscard > 99) {
-            msg = '享受折扣应该介于0至9.9折';
-        }
+    computed = {
+        region() {
+            const { provinceStr, cityStr, areaStr } = this.form;
 
-        if (msg) {
-            throw new Error(msg);
-        }
+            if (!provinceStr || !cityStr || !areaStr) {
+                return '';
+            }
+
+            return `${provinceStr} ${cityStr} ${areaStr}`;
+        },
+        canSubmit() {
+            let result = true;
+            const requiredFields = ['serviceName', 'pics', 'price', 'durationUnit',
+                'duration', 'serviceStarttime', 'serviceEndtime',
+                'provinceStr', 'cityStr', 'areaStr', 'address', 'payType'];
+
+            requiredFields.forEach(key => {
+                if (isEmpty(this.form[key])) {
+                    result = false;
+                }
+            });
+
+            return result;
+        },
     }
 
     async onLoad(options) {
@@ -259,8 +270,14 @@ export default class Index extends wepy.page {
 
     onShow() {
         // 每次onShow同步数据
-        const couponManage = globalService.get('couponManage');
-        Object.assign(this.form, couponManage);
+        const regionData = globalService.get('multiSelector');
+        const {
+            province, city, area,
+        } = regionData;
+
+        if (province && city && area) {
+            Object.assign(this.form, regionData);
+        }
     }
 
     async loadData(id) {
