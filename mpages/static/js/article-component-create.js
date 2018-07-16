@@ -1,8 +1,11 @@
 var Page = {
+    ppu: '',
+    group: '',
+    id: '',
     pop:function(cont) {
         var NONE = 'none',
             $ele = $('div.mask,div.dialog'),
-            $tips2 = $('.dialog p.content');
+            $tips2 = $('.dialog p.dialog-content');
             $tips2.text(cont);
             $ele.removeClass(NONE);
     },
@@ -14,6 +17,18 @@ var Page = {
             return decodeURIComponent(r[2]);
         } else {
             return null;
+        }
+    },
+    init() {
+        Page.ppu = Page.getKey('ppu');
+        Page.group = Page.getKey('groupId');
+        Page.id = Page.getKey('id');
+        if (Page.id) {
+            // 编辑,数据回填
+            Page.loadData();
+        } else {
+            // 默认
+            $('.item-file-div').removeClass('none');
         }
     },
     initEvent: function () {
@@ -79,7 +94,7 @@ var Page = {
             $('.item-file-div').removeClass('none');
         });
         $('.save-btn').on('click', function() {
-            var group = Page.getKey('group'),
+            var group = Page.group,
                 title = $('._title').val(),
                 intro = $('._content').find('p:first-child').text().substring(0, 20),
                 source = $('_source').val(),
@@ -87,8 +102,8 @@ var Page = {
                 temp = $('._content' ).find(),
                 content = $("._content").html(),
                 cover = $('#cover').attr('src') ? $('#cover').attr('src').split(".cn")[1].replace(/([/])\1+/g, "$1") : '';
-            if (!title || title.length > 15) {
-                Page.pop("文章标题为空或多于15个字");
+            if (!title) {
+                Page.pop("请填写文章标题");
                 return;
             };
             if (!cover) {
@@ -99,11 +114,21 @@ var Page = {
                 Page.pop("请编辑文章内容");
                 return;
             };
+            if (title.length > 15) {
+                Page.pop("文章标题不能多于15个字");
+                return;
+            };
             if (content.length >= 20000) {
                 Page.pop("文章内容不得大于20000个字符");
                 return;
             };
-            $.post('/businessArticle/insert',{
+            var url;
+            if (Page.id) {
+                url = '/businessArticle/update/' + Page.id;
+            } else {
+                url = '/businessArticle/insert/';
+            }
+            $.post(url,{
                 group: group,
                 title: title,
                 cover: cover,
@@ -113,7 +138,10 @@ var Page = {
                 content: content
                 },function (res) {
                     if (res.state == 100) {
+                        Page.pop('操作成功');
                         location.href = '/html/article-component-list/'+ location.pathname.split('/')[3] +'?group=' + queryString.getKey('group') + '&name=' + queryString.getKey('name');
+                    } else {
+                        Page.pop(res.msg);
                     }
                 }
             )
@@ -121,6 +149,33 @@ var Page = {
         $('.mask,._sure-btn').on('click', function() {
             $('.mask,.dialog').addClass('none');
         });
+    },
+    loadData: function() {
+        $.ajax('/businessAticle/detail/' + Page.id, {
+            ppu:Page.ppu
+        }, function(data) {
+            if (data.state == 100) {
+                var listData = data.data,
+                    title = data.data.title,
+                    content = data.data.content,
+                    author = data.data.author,
+                    source = data.data.source,
+                    intro = data.data.intro,
+                    cover = data.data.cover;
+                    $('._title').val(title);
+                    $('._author').val(author);
+                    $('._source').val(source);
+                    $("#editor .zeditor-content").html(content);
+                    if (!cover) {
+                        $('.item-file-div').removeClass('none');
+                    } else {
+                        $('.item-upload-img').removeClass('none').find('#cover').attr('src', cover);
+                    }
+            } else {
+                Page.pop(data.msg);
+            }
+        });
     }
 };
+Page.init();
 Page.initEvent();
