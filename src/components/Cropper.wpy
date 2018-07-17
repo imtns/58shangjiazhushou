@@ -160,7 +160,8 @@ export default class Cropper extends wepy.component {
                         that.cropperH = windowWRPX;
                         that.cropperL = Math.ceil((windowWRPX -
                         (windowWRPX * innerAspectRadio)) / 2);
-                        that.cropperT = Math.ceil(((windowWRPX / innerAspectRadio) - windowWRPX) / 2);
+                        that.cropperT = Math.ceil(((windowWRPX / innerAspectRadio) -
+                        windowWRPX) / 2);
                         // 裁剪框宽高
                         // 宽<高，宽度填满，高度根据高度，按照裁剪比例来
                         that.cutW = (windowWRPX * cutCoefficient) * innerAspectRadio;

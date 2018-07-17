@@ -1,5 +1,6 @@
 <template>
-    <view class="container">
+    <view class="container" :class="{ iphoneX: isIphoneX }">
+        <!-- <image src="/pages/assets/follow-public.png"/> -->
         <button open-type="contact">点击输入888关注</button>
     </view>
 </template>
@@ -8,18 +9,42 @@
 import wepy from 'wepy';
 
 export default class Index extends wepy.page {
+    data = {
+        isIphoneX: false,
+    }
     config = {
-        navigationBarTitleText: 'test',
+        navigationBarTitleText: '关联公众号',
     }
     async onLoad() {
-        console.log('onLoad');
+        const { model = '' } = await wepy.getSystemInfo();
+        if (~model.toLowerCase().indexOf('iphone x')) {
+            this.isIphoneX = true;
+        }
     }
 }
 </script>
 
 <style lang="scss">
+.container {
+    height: 100%;
+    background: url('/follow-public.png') no-repeat;
+    background-size: 750rpx auto;
+    background-position: 0 -128rpx;
+    background-color: #3A62F9;
+    &.iphoneX {
+        background-position: 0 0;
+    }
+    // image {
+    //     margin-top: -128rpx;
+    //     width: 750rpx;
+    //     height: 1334rpx;
+    // }
+}
+
 button {
-    margin: 966rpx 85rpx 140rpx;
+    position: absolute;
+    left: 85rpx;
+    bottom: 140rpx;
     background-image: linear-gradient(-33deg, #3AB5FF 0%, #B4EC51 100%, #B4EC51 100%);
     border-radius: 8rpx;
     font-size: 40rpx;
