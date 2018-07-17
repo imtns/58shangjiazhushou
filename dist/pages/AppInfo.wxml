@@ -36,9 +36,7 @@
                 <view class="qrcode-tip">点击保存</view>
                 <view class="qrcode-name">微信小程序码</view>
                 <!-- 访问微信小程序 -->
-                <navigator target="miniProgram" open-type="navigate" app-id="{{appInfo.authorizerAppid}}" path="/pages/index/index" url="/pages/home" version="develop">
-                    <view class="qrcode-visit">访问小程序</view>
-                </navigator>
+                <view class="qrcode-name">点击长按识别</view>
             </view>
             <!-- 小程序支付码 -->
             <view class="appinfo-codelist-li last" wx:if="{{appInfo.payQrcodeUrl}}">
