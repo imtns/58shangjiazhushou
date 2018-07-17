@@ -24,7 +24,8 @@
                 <view class="crop-mask" style="border-top-width:{{cutT}}rpx;border-right-width:{{cropperW-cutL-cutW}}rpx;border-bottom-width:{{cropperH-cutT-cutH}}rpx;border-left-width:{{cutL}}rpx;"></view>
             </view>
         </view>
-        <canvas canvas-id="myCanvas" style="position:absolute;border: 1px solid red; width:{{qualityWidth}}px;height:{{qualityWidth/innerAspectRadio}}px;top:-9999px;left:-9999px;"></canvas>
+        <canvas canvas-id="myCanvas" style="position:absolute;border: 1px solid red; width:{{qualityWidth}}px;height:{{qualityWidth / innerAspectRadio}}px;top:600rpx;left:-9999px"></canvas>
+        <canvas canvas-id="myCanvas2" style="position:absolute;border: 1px solid red; width:{{canvasWidth}}px;height:{{canvasWidth}}px;top:600rpx;right:0;"></canvas>
         <view class="options">
             <view class="option-item restore" @tap="restore">还原</view>
             <view class="option-item rotate" @tap="rotateImage">旋转</view>
@@ -56,25 +57,21 @@ let initDragCutW = 0;
 let initDragCutL = 0;
 let initDragCutH = 0;
 let initDragCutT = 0;
-const qualityWidth = 1080;
-let innerAspectRadio = 1;
 // 移动时 手势位移与 实际元素位移的比
 const dragScaleP = 2;
-const ctx = wx.createCanvasContext('myCanvas');
+let ctx = null;
 const cutCoefficient = 0.8; // 裁剪系数
 let originSrc = '';
+let drawL = 0;
+let drawT = 0;
 
 export default class Cropper extends wepy.component {
-    props = {
-        imageSrc: {
-            type: String,
-            default: '',
-        },
-        ratio: String,
-    }
     data = {
+        imageSrc: '',
         isShowImg: false,
+        ratio: '',
         cutRatio: '',
+        canvasWidth: windowWRPX,
         // 初始化的宽高
         cropperInitW: windowWRPX,
         cropperInitH: windowWRPX,
@@ -95,28 +92,28 @@ export default class Cropper extends wepy.component {
         cutH: 0,
         cutL: 0,
         cutT: 0,
-        qualityWidth,
-        innerAspectRadio,
+        qualityWidth: 300,
+        innerAspectRadio: 1,
 
         testRange: [['1111', 'k12j'], ['jwiefj', 'wijfeiewj']],
-    };
+    }
+
+    onLoad() {
+        ctx = wx.createCanvasContext('myCanvas');
+    }
 
     events = {
-        'crop-loadImage'() {
+        'crop-loadImage'(imageSrc, ratio = '', first) {
             const that = this;
-            const { ratio, imageSrc } = that;
+            const { qualityWidth } = that;
+            let { innerAspectRadio } = that;
             let cutRatio = null;
+            that.imageSrc = imageSrc;
+            that.ratio = ratio; // 通过ratio控制是否可以自由拉伸
 
-            // 保存原始数据
-            originSrc = imageSrc;
-
-            if (ratio) {
-                const [width, height] = ratio.split(',');
-                cutRatio = +width / +height;
-                this.cutRatio = cutRatio;
-                this.$apply();
-            } else {
-                cutRatio = innerAspectRadio;
+            if (first === true) {
+                // 保存原始数据
+                originSrc = imageSrc;
             }
 
             wx.showLoading({
@@ -124,9 +121,24 @@ export default class Cropper extends wepy.component {
             });
 
             wx.getImageInfo({
-                src: that.imageSrc,
+                src: imageSrc,
                 success(res) {
                     innerAspectRadio = res.width / res.height;
+
+                    // 用于canvas2
+                    const canvasWidth = Math.max(qualityWidth, qualityWidth / innerAspectRadio);
+                    that.canvasWidth = canvasWidth;
+
+                    // 处理裁剪比例
+                    if (typeof ratio === 'string' && ratio) {
+                        const [width, height] = ratio.split(',');
+                        cutRatio = +width / +height;
+                    } else {
+                        cutRatio = innerAspectRadio;
+                    }
+                    that.cutRatio = cutRatio;
+
+
                     // 根据图片的宽高显示不同的效果   保证图片可以正常显示
                     if (innerAspectRadio >= 1) {
                         that.cropperW = windowWRPX;
@@ -155,6 +167,9 @@ export default class Cropper extends wepy.component {
                         that.imageW = res.width * pixelRatio;
                         that.imageH = res.height * pixelRatio;
                         that.innerAspectRadio = innerAspectRadio;
+                        that.cropperInitH = 1206;
+                        // 用于canvas2
+                        drawT = (canvasWidth - (qualityWidth / innerAspectRadio)) / 2;
                     } else {
                         that.cropperW = windowWRPX * innerAspectRadio;
                         that.cropperH = windowWRPX;
@@ -175,19 +190,21 @@ export default class Cropper extends wepy.component {
                         that.imageW = res.width * pixelRatio;
                         that.imageH = res.height * pixelRatio;
                         that.innerAspectRadio = innerAspectRadio;
+                        that.cropperInitH = that.cropperInitW / innerAspectRadio;
+                        // 用于canvas2
+                        drawL = (canvasWidth - qualityWidth) / 2;
                     }
                     that.isShowImg = true;
 
                     ctx.drawImage(
-                        that.imageSrc,
+                        imageSrc,
                         0,
                         0,
                         qualityWidth,
                         qualityWidth / innerAspectRadio,
                     );
                     ctx.draw();
-
-                    that.cropperInitH = that.cropperInitW / innerAspectRadio;
+                    that.innerAspectRadio = innerAspectRadio;
 
                     that.$apply();
                     wx.hideLoading();
@@ -199,8 +216,7 @@ export default class Cropper extends wepy.component {
     methods = {
 
         restore() {
-            this.imageSrc = originSrc;
-            this.$emit('crop-loadImage');
+            this.$emit('crop-loadImage', originSrc, this.ratio, false);
         },
 
         // 拖动时候触发的touchStart事件
@@ -237,7 +253,7 @@ export default class Cropper extends wepy.component {
         dragMove(e) {
             const that = this;
             const dragType = e.target.dataset.drag;
-            const { cutRatio } = that;
+            const { cutRatio, ratio } = that;
 
             if (~['right', 'left', 'top', 'bottom'].indexOf(dragType)) {
                 return;
@@ -332,7 +348,7 @@ export default class Cropper extends wepy.component {
                         ) {
                             this.cutH = initDragCutH - dragLengthY;
 
-                            if (cutRatio) {
+                            if (ratio) {
                                 this.cutW = (initDragCutH - dragLengthY) * cutRatio;
                             }
                         }
@@ -346,7 +362,7 @@ export default class Cropper extends wepy.component {
                         ) {
                             this.cutW = initDragCutW - dragLengthX;
 
-                            if (cutRatio) {
+                            if (ratio) {
                                 this.cutH = (initDragCutW - dragLengthX) / cutRatio;
                             }
                         } else {
@@ -362,17 +378,55 @@ export default class Cropper extends wepy.component {
             }
         },
 
+        // 通过canvas2专门处理图片旋转
         rotateImage() {
             const that = this;
+            const { qualityWidth, innerAspectRadio } = that;
             const x = qualityWidth / 2;
             const y = (qualityWidth / innerAspectRadio) / 2;
+            const ctx2 = wx.createCanvasContext('myCanvas2');
 
-            ctx.save();
+            ctx2.save();
             // 旋转坐标系，仅适用于每次旋转90度
-            ctx.translate(x, y);
+            ctx2.translate(x, y);
             // 以坐标系原点为圆心旋转
-            ctx.rotate((90 * Math.PI) / 180);
-            ctx.translate(-x, -y);
+            ctx2.rotate((90 * Math.PI) / 180);
+            ctx2.translate(-x, -y);
+
+            // 交换drawT drawL
+            const temp = drawT;
+            drawT = drawL;
+            drawL = temp;
+
+            // ctx2.rect(0, 0, -150, 75)
+            // ctx2.setFillStyle('red')
+            // ctx2.fill()
+
+            ctx2.drawImage(
+                that.imageSrc,
+                drawL,
+                -drawT,
+                qualityWidth,
+                qualityWidth / innerAspectRadio,
+            );
+            ctx2.draw(false, () => {
+                wx.canvasToTempFilePath({
+                    x: drawL,
+                    y: drawT,
+                    width:qualityWidth / innerAspectRadio,
+                    height: qualityWidth,
+                    quality: 0.5,
+                    canvasId: 'myCanvas2',
+                    success(res) {
+                        that.qualityWidth = qualityWidth / innerAspectRadio;
+                        that.$apply();
+                        console.log(res.tempFilePath);
+                        that.$emit('crop-loadImage', res.tempFilePath, that.ratio, false);
+                    },
+                });
+            });
+
+            return;
 
             // // 改变画布方向
             // const qualityWidthNew = qualityWidth / innerAspectRadio;
@@ -383,19 +437,22 @@ export default class Cropper extends wepy.component {
             // });
             // that.$apply();
 
+            // 
+
             ctx.drawImage(
                 that.imageSrc,
-                0,
-                0,
+                drawT,
+                drawL,
                 qualityWidth,
                 qualityWidth / innerAspectRadio,
             );
             ctx.draw(false, () => {
                 wx.canvasToTempFilePath({
-                    x: 0,
-                    y: 0,
-                    destWidth: qualityWidth,
-                    destHeight: qualityWidth / innerAspectRadio,
+                    x: drawT,
+                    y: drawL,
+                    width: qualityWidth / innerAspectRadio,
+                    // destWidth: qualityWidth / innerAspectRadio,
+                    // destHeight: qualityWidth,
                     quality: 0.5,
                     canvasId: 'myCanvas',
                     success(res) {
@@ -413,6 +470,7 @@ export default class Cropper extends wepy.component {
         // 获取图片
         getImageInfo() {
             const that = this;
+            const { qualityWidth, innerAspectRadio } = that;
 
             wx.showLoading({
                 title: '图片生成中...',
@@ -442,9 +500,9 @@ export default class Cropper extends wepy.component {
                     success(res) {
                         wx.hideLoading();
                         // 成功获得地址的地方
-                        // console.log(res.tempFilePath);
-                        console.log('裁剪结果');
                         console.log(res.tempFilePath);
+                        that.$emit('after-crop', res.tempFilePath);
+                        // that.closeCrop();
                         wx.previewImage({
                             current: '', // 当前显示图片的http链接
                             urls: [res.tempFilePath], // 需要预览的图片http链接列表
@@ -453,6 +511,12 @@ export default class Cropper extends wepy.component {
                 });
             });
         },
+    }
+
+    closeCrop() {
+        this.imageSrc = '';
+        this.isShowImg = false;
+        this.$apply();
     }
 }
 </script>
@@ -466,6 +530,7 @@ export default class Cropper extends wepy.component {
     right: 0;
     bottom: 0;
     background-color: #000;
+    z-index: 999;
 }
 
 .wx-corpper {
