@@ -401,7 +401,7 @@ var AppEdit = function (_wepy$page) {
                 cate2 = appInfo.cate2;
 
             console.log('mpSource', mpSource, 'cate2', cate2);
-            this.cateEditable = !!(mpSource && mpSource.toString() === '3' && !cate2) || mpSource && mpSource.toString() !== '3';
+            this.cateEditable = !(mpSource && mpSource.toString() === '3');
         }
         // 更新所属行业类别
 
