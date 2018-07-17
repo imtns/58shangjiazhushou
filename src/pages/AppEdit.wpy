@@ -251,8 +251,7 @@ export default class AppEdit extends wepy.page {
     recordFirstCateStatus (appInfo) {
         const { mpSource, cate2 } = appInfo;
         console.log('mpSource', mpSource, 'cate2', cate2);
-        this.cateEditable = !!(mpSource && mpSource.toString() === '3' && !cate2)
-            || (mpSource && mpSource.toString() !== '3');
+        this.cateEditable = !(mpSource && mpSource.toString() === '3');
     }
     // 更新所属行业类别
     updateCateChooice () {
