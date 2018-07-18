@@ -6,6 +6,7 @@ export const sleep = (time = 300) => new Promise((resolve) => {
 
 // alert
 export const alert = (content, title, callBack) => {
+    // showCancel设为false，然后在success里判断用户点的确定还是取消？
     wepy.showModal({
         showCancel: false,
         title: title || '注意',
@@ -20,6 +21,23 @@ export const alert = (content, title, callBack) => {
         },
     });
 };
+
+// alert的Promise版本
+export const alertP = (...props) => {
+    const [content, title = '注意'] = props;
+    return new Promise((resolve, reject) => {
+        wx.showModal({
+            title,
+            content,
+            success(res) {
+                resolve(res);
+            },
+            fail(err) {
+                reject(err);
+            },
+        });
+    });
+}
 
 // toast
 export const toast = (title) => {

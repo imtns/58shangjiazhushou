@@ -48,7 +48,7 @@ import wepy from 'wepy';
 import Mixin from '../mixins';
 import { LOAD_RESOURCE_URL, DELETE_RESOURCE, SAVE_RESOURCE_URL } from '../utils/url';
 import { get } from '../utils/ajax';
-import { toast, alert, picSrcDomain, sleep } from '../utils';
+import { toast, alert, alertP, picSrcDomain, sleep } from '../utils';
 import uploader from '../utils/uploaderP';
 import EmptyPage from '../components/EmptyPage';
 import Pop from '../components/Dialog';
@@ -157,6 +157,13 @@ export default class Index extends wepy.page {
          */
         async deleteItem() {
             try {
+                const { cancel } = await alertP(`确认删除所选的${selectedIds.length}项素材？`);
+                if (cancel) {
+                    this.isEditing = false;
+                    this.$apply();
+                    return;
+                }
+
                 await Promise.all(selectedIds.map(id => get(DELETE_RESOURCE + id)));
 
                 toast('删除成功！');
