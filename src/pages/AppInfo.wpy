@@ -9,6 +9,7 @@
             <view class="appinfo-youxiang {{(appInfo.app_type==1 || appInfo.app_type==2)?'':'disable'}}">优享</view>
             <view class="appinfo-weixin {{appInfo.app_type==2?'':'disable'}}">微信</view>
         </view>
+        <view class="appinfo-status">
             <view class="appinfo-auth" wx:if="{{appInfo.app_type==2}}">授权状态：{{appInfo.status_desc}}</view>
             <view class="appinfo-verify">审核状态：{{appInfo.lastpublishState_desc}}</view>
             <view class="appinfo-telephone">联系电话：{{appInfo.telphone}}</view>
@@ -70,12 +71,6 @@
                     <view class="qrcode-openpay">去开通</view>
                 </navigator>
             </view>
-        <view class="appinfo-qrcode" wx:if="{{qrcodeUrl}}">
-            <view class="appinfo-qrcode-label">小程序码：</view>
-            <image class="appinfo-qrcode-img" src="{{qrcodeUrl}}" @tap="bindScanQrcode({{qrcodeUrl}})"/>
-        </view>
-        <view class="appinfo-qrcode-off" wx:else>
-            <view class="">小程序码：上线后展示</view>
         </view>
         <navigator url="/pages/AppEdit?mpid={{appInfo.mpid}}"><view class="appinfo-edit">编辑小程序</view></navigator>
     </view>
@@ -152,7 +147,7 @@ export default class AppInfo extends wepy.page {
         },
     }
     methods = {
-        bindScanQrcode (qrcodeUrl) {
+        bindClickPreview (qrcodeUrl) {
             wepy.previewImage({
                 urls: [picSrcDomain() + qrcodeUrl],
             });

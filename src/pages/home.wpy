@@ -425,7 +425,7 @@ export default class Home extends wepy.page {
             return;
         }
         switch (text) {
-            case '我的小程序员':
+            case '我的小程序':
                 wepy.navigateTo({
                     url: 'myMp',
                 });
