@@ -5,37 +5,55 @@
                 <image src="{{ imageSrc }}" style="width:{{cropperW}}rpx;height:{{cropperH}}rpx"></image>
                 <view class="wx-corpper-crop-box" bindtouchstart="contentStartMove" bindtouchmove="contentMoveing" style="width:{{cutW}}rpx;height:{{cutH}}rpx;left:{{cutL}}rpx;top:{{cutT}}rpx">
                     <view class="wx-cropper-view-box">
-                        <view class="wx-cropper-dashed-h"></view>
-                        <view class="wx-cropper-dashed-v"></view>
+                        <block wx:if="{{ !ratio }}">
+                            <view class="wx-cropper-dashed-h"></view>
+                            <view class="wx-cropper-dashed-v"></view>
+                        </block>
                         <view class="wx-cropper-line-t" data-drag="top" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
                         <view class="wx-cropper-line-r" data-drag="right" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
                         <view class="wx-cropper-line-b" data-drag="bottom" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
                         <view class="wx-cropper-line-l" data-drag="left" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
-                        <view class="wx-cropper-point point-t" data-drag="top" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
-                        <view class="wx-cropper-corner-point point-tr" data-drag="topTight"></view>
-                        <view class="wx-cropper-point point-r" data-drag="right" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
+                        <block wx:if="{{ !ratio }}">
+                            <view class="wx-cropper-point point-t" data-drag="top" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
+                            <view class="wx-cropper-corner-point point-tr" data-drag="topTight"></view>
+                            <view class="wx-cropper-point point-r" data-drag="right" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
+                            <view class="wx-cropper-point point-b" data-drag="bottom" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
+                            <view class="wx-cropper-corner-point point-bl" data-drag="bottomLeft"></view>
+                            <view class="wx-cropper-point point-l" data-drag="left" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
+                            <view class="wx-cropper-corner-point point-lt" data-drag="leftTop"></view>
+                        </block>
                         <view class="wx-cropper-corner-point point-rb" data-drag="rightBottom" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
-                        <view class="wx-cropper-point point-b" data-drag="bottom" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
-                        <view class="wx-cropper-corner-point point-bl" data-drag="bottomLeft"></view>
-                        <view class="wx-cropper-point point-l" data-drag="left" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
-                        <view class="wx-cropper-corner-point point-lt" data-drag="leftTop"></view>
                     </view>
                 </view>
                 <view class="crop-mask" style="border-top-width:{{cutT}}rpx;border-right-width:{{cropperW-cutL-cutW}}rpx;border-bottom-width:{{cropperH-cutT-cutH}}rpx;border-left-width:{{cutL}}rpx;"></view>
             </view>
         </view>
         <canvas canvas-id="myCanvas" style="position:absolute;border: 1px solid red; width:{{qualityWidth}}px;height:{{qualityWidth / innerAspectRadio}}px;top:600rpx;left:-9999px"></canvas>
-        <canvas canvas-id="myCanvas2" style="position:absolute;border: 1px solid red; width:{{canvasWidth}}px;height:{{canvasWidth}}px;top:600rpx;right:0;"></canvas>
+        <canvas canvas-id="myCanvas2" style="position:absolute;border: 1px solid red; width:{{canvasWidth}}px;height:{{canvasWidth}}px;top:600rpx;right:-9999px;"></canvas>
         <view class="options">
             <view class="option-item restore" @tap="restore">还原</view>
             <view class="option-item rotate" @tap="rotateImage">旋转</view>
-            <view class="option-item cancel">取消</view>
+            <view class="option-item cancel" @tap="cancel">取消</view>
             <view class="option-item crop" @tap="getImageInfo">裁剪</view>
         </view>
   </view>
 </template>
 
 <script>
+/**
+ * 使用方法：
+ * 将<cropper>组件插入到父组件，在父组件中$broadcast事件’crop-loadImage’
+ * 并在父组件中添加事件'after-crop'，接收裁剪后的图片临时地址
+ *
+ * 'crop-loadImage'参数：
+ * imageSrc {String} 图片链接，必须为临时地址，或者已下载的图片
+ * ratio {String} 裁剪比例，没有则自由裁剪
+ * first {Boolean} 是否为第一次加载图片
+ *
+ * 'after-crop'参数：
+ * tempFilePath {String} 裁剪后的图片临时地址
+ */
+
 import wepy from 'wepy';
 
 // pages/wx-cropper/index.js
@@ -92,10 +110,8 @@ export default class Cropper extends wepy.component {
         cutH: 0,
         cutL: 0,
         cutT: 0,
-        qualityWidth: 300,
+        qualityWidth: 720,
         innerAspectRadio: 1,
-
-        testRange: [['1111', 'k12j'], ['jwiefj', 'wijfeiewj']],
     }
 
     onLoad() {
@@ -103,7 +119,7 @@ export default class Cropper extends wepy.component {
     }
 
     events = {
-        'crop-loadImage'(imageSrc, ratio = '', first) {
+        'crop-loadImage'(imageSrc, ratio = '', first = false) {
             const that = this;
             const { qualityWidth } = that;
             let { innerAspectRadio } = that;
@@ -214,6 +230,10 @@ export default class Cropper extends wepy.component {
     }
 
     methods = {
+
+        cancel() {
+            this.closeCrop();
+        },
 
         restore() {
             this.$emit('crop-loadImage', originSrc, this.ratio, false);
@@ -385,6 +405,9 @@ export default class Cropper extends wepy.component {
             const x = qualityWidth / 2;
             const y = (qualityWidth / innerAspectRadio) / 2;
             const ctx2 = wx.createCanvasContext('myCanvas2');
+            wx.showLoading({
+                title: '图片加载中...',
+            });
 
             ctx2.save();
             // 旋转坐标系，仅适用于每次旋转90度
@@ -398,10 +421,6 @@ export default class Cropper extends wepy.component {
             drawT = drawL;
             drawL = temp;
 
-            // ctx2.rect(0, 0, -150, 75)
-            // ctx2.setFillStyle('red')
-            // ctx2.fill()
-
             ctx2.drawImage(
                 that.imageSrc,
                 drawL,
@@ -413,55 +432,14 @@ export default class Cropper extends wepy.component {
                 wx.canvasToTempFilePath({
                     x: drawL,
                     y: drawT,
-                    width:qualityWidth / innerAspectRadio,
+                    width: qualityWidth / innerAspectRadio,
                     height: qualityWidth,
-                    quality: 0.5,
+                    quality: 1,
                     canvasId: 'myCanvas2',
                     success(res) {
                         that.qualityWidth = qualityWidth / innerAspectRadio;
                         that.$apply();
-                        console.log(res.tempFilePath);
                         that.$emit('crop-loadImage', res.tempFilePath, that.ratio, false);
-                    },
-                });
-            });
-
-            return;
-
-            // // 改变画布方向
-            // const qualityWidthNew = qualityWidth / innerAspectRadio;
-            // const innerAspectRadioNew = 1 / innerAspectRadio;
-            // Object.assign(that, {
-            //     qualityWidth: qualityWidthNew,
-            //     innerAspectRadio: innerAspectRadioNew,
-            // });
-            // that.$apply();
-
-            // 
-
-            ctx.drawImage(
-                that.imageSrc,
-                drawT,
-                drawL,
-                qualityWidth,
-                qualityWidth / innerAspectRadio,
-            );
-            ctx.draw(false, () => {
-                wx.canvasToTempFilePath({
-                    x: drawT,
-                    y: drawL,
-                    width: qualityWidth / innerAspectRadio,
-                    // destWidth: qualityWidth / innerAspectRadio,
-                    // destHeight: qualityWidth,
-                    quality: 0.5,
-                    canvasId: 'myCanvas',
-                    success(res) {
-                        wx.hideLoading();
-                        // 成功获得地址的地方
-                        // console.log(res.tempFilePath);
-                        console.log(res.tempFilePath);
-                        that.imageSrc = res.tempFilePath;
-                        that.$apply();
                     },
                 });
             });
@@ -500,9 +478,8 @@ export default class Cropper extends wepy.component {
                     success(res) {
                         wx.hideLoading();
                         // 成功获得地址的地方
-                        console.log(res.tempFilePath);
                         that.$emit('after-crop', res.tempFilePath);
-                        // that.closeCrop();
+                        that.closeCrop();
                         wx.previewImage({
                             current: '', // 当前显示图片的http链接
                             urls: [res.tempFilePath], // 需要预览的图片http链接列表

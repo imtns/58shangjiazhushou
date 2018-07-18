@@ -2,8 +2,7 @@
     <view class="notice-container">
         <view class="follow-public">
             <text>关注公众号接收通知</text>
-            <!-- <navigator class="follow-action" url="/pages/followPublic">马上关注</navigator> -->
-            <view class="follow-action" @tap="cropImage">马上关注</view>
+            <navigator class="follow-action" url="/pages/followPublic">马上关注</navigator>
             <cropper></cropper>
         </view>
         <view class="notice-header">
@@ -73,34 +72,6 @@ export default class NoticeList extends wepy.page {
             this.sendParams = Object.assign({}, this.sendParams, this.sendParams.page);
             this.loadNoticeList();
         },
-        cropImage() {            
-            wx.chooseImage({
-                count: 1, // 默认9
-                sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
-                sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
-                success: res => {
-                    const src = res.tempFilePaths[0];
-                    //  获取裁剪图片资源后，给data添加src属性及其值
-
-                    
-                },
-            });
-        },
-    }
-    events = {
-        'after-crop'(tempFilePath) {
-            console.log(tempFilePath);
-        },
-    }
-
-    afterCrop = (tempFilePath) => {
-        console.log(tempFilePath);
-        console.log(this);
-    }
-    async onLoad() {
-        this.$broadcast('crop-loadImage',
-        'http://tmp/wxf03e52adc4b13448.o6zAJsx73XFN7vI_v0xNKxf2-l9E.Uqes1tgSzsYQ4576cdc627a0ab55ccb25e0e9858f06f.jpeg', '', true);
-
     }
     async onShow() {
         this.loadList();
