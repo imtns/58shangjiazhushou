@@ -1,0 +1,222 @@
+/* 基础样式 */
+.mt-10{
+    margin-top:10rpx;
+}
+.mt-20{
+    margin-top:20rpx;
+}
+.mt-30{
+    margin-top:30rpx;
+}
+.ml-20{
+    margin-left:20rpx;
+}
+.mod-list-reserve{
+    overflow: hidden;
+}
+/* 大图 */
+.mod-reserve-item-one{
+    margin-bottom:30rpx;
+}
+.mod-reserve-table-one{
+    width:100%;
+}
+.mod-reserve-image-one{
+    display:block;
+    width:100%;
+    height:388rpx;
+}
+.mod-reserve-title-one{
+    font-size: 28rpx;
+    color: #333333;
+    letter-spacing: -0.68rpx;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.mod-reserve-price-one{
+    font-size: 24rpx;
+    color: #FF552E;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.price-content{
+    display:inline-block;
+    font-size: 36rpx;
+    color:#FF552E;
+}
+.mod-reserve-button-one-wrap{
+    line-height: 88rpx;
+}
+.mod-reserve-button-one{
+    float:right;
+    width:220rpx;
+    line-height: 80rpx;
+    text-align: center;
+    font-size: 32rpx;
+    color:#fff;
+    background: #FF552E;
+}
+/* 中图 */
+.mod-reserve-item-two{
+    display:inline-block;
+    width:330rpx;
+    margin:0 30rpx 30rpx 0;
+}
+.mod-reserve-image-two{
+    display:block;
+    width:100%;
+    height:248rpx;
+}
+.mod-reserve-title-two{
+    font-size: 28rpx;
+    color: #110909;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.mod-reserve-price-two{
+    float:left;
+    line-height: 50rpx;
+    font-size: 24rpx;
+    color: #FF552E;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.mod-reserve-button-two{
+    float:right;
+    display:table-cell;
+    width:120rpx;
+    line-height: 50rpx;
+    text-align: center;
+    font-size:26rpx;
+    background: #FFEEEA;
+    color: #FF552E;
+}
+.price-content-two{
+    display:inline-block;
+    font-size:36rpx;
+    color:#ff552e;
+}
+
+/* 横向滑动 */
+.mod-list-three{
+    height: 340rpx;
+    white-space: nowrap;
+    padding-bottom:30rpx;
+}
+.mod-reserve-item-three{
+    display:inline-block;
+    width:300rpx;
+}
+.mod-reserve-image-three{
+    display:block;
+    width:100%;
+    height:225rpx;
+}
+.mod-reserve-title-three{
+    font-size: 28rpx;
+    color: #333333;
+    margin-top:18rpx;
+    overflow:hidden;
+    white-space: nowrap;
+}
+.mod-reserve-price-three{
+    float:left;
+    line-height: 50rpx;
+    font-size: 24rpx;
+    color: #FF552E;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.mod-reserve-button-three{
+    float:right;
+    width:120rpx;
+    line-height: 50rpx;
+    text-align: center;
+    font-size: 26rpx;
+    color:#ff552e;
+    background: #FFEEEA;
+}
+.price-content-three{
+    display: inline-table;
+    font-size:30rpx;
+    color:#ff552e;
+}
+/* 横向列表 */
+.mod-reserve-item-four{
+    margin-bottom:30rpx;
+    clear:both;
+    overflow: hidden;
+}
+.mod-reserve-image-four{
+    float:left;
+    width:264rpx;
+    height: 198rpx;
+    overflow: hidden;
+    margin-right:20rpx;
+}
+.mod-reserve-title-four{
+    font-size: 32rpx;
+    color: #333333;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.mod-reserve-price-four{
+    font-size: 24rpx;
+    color: #FF552E;
+}
+.mod-reserve-button-four{
+    width:120rpx;
+    line-height: 50rpx;
+    overflow: hidden;
+    text-align: center;
+    font-size: 22rpx;
+    color:#ff552e;
+    background: #FFEEEA;
+}
+/* 双图 */
+.mod-reserve-item-five{
+    display:inline-block;
+    width:336rpx;
+    margin:0 18rpx 30rpx 0;
+}
+.mod-reserve-image-five{
+    display:block;
+    width:100%;
+    height:448rpx;
+}
+.mod-reserve-title-five{
+    font-size: 28rpx;
+    color: #333333;
+    margin-top:18rpx;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.mod-reserve-price-five{
+    float:left;
+    line-height: 50rpx;
+    font-size: 24rpx;
+    color: #FF552E;
+    margin-top:4rpx;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.mod-reserve-button-five{
+    float:right;
+    width:120rpx;
+    line-height: 50rpx;
+    text-align: center;
+    overflow: hidden;
+    font-size:26rpx;
+    background: #FFEEEA;
+    color:#ff552e;
+}
+.price-content-five{
+    display:inline-block;
+    font-size: 30rpx;
+    color:#FF552E;
+}
+
+
+.last-child{
+    margin-right:0;
+}

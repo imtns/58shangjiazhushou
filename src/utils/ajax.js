@@ -1,10 +1,12 @@
+/* eslint-disable */
+
+import wepy from 'wepy';
 import { toast } from '../utils';
 
 const host = 'https://yaofa.58.com';
 
 const http = (method, ...props) => new Promise((resolve, reject) => {
-    const [url] = props;
-    let [data, callback] = props;
+    let [url, data, callback] = props;
     if (typeof data === 'function') {
         callback = data;
         data = {};
@@ -29,17 +31,17 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
         },
         success(response) {
             console.log('response', response);
-            const { state, msg } = response.data;
+            const { state, msg, data } = response.data;
             if (state === 100) {
                 resolve(response.data);
                 // callback && callback(null, response.data);
-            } else if (state === -10001) {
+            } else if (state == -10001) {
                 toast(msg);
-                // setTimeout(() => {
-                //     wepy.reLaunch({
-                //         url: '../pages/intro',
-                //     });
-                // }, 1000);
+                setTimeout(() => {
+                    wepy.reLaunch({
+                        url: '../pages/intro',
+                    });
+                }, 1000);
                 reject(msg);
                 // callback && callback(null, response.data);
             } else {

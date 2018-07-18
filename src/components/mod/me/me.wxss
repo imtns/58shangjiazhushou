@@ -1,0 +1,54 @@
+.mod-me-container{
+    margin-bottom:20rpx;
+    position: relative;   
+    width: 750rpx;
+}
+.mod-me {
+    display: inline-block;
+    width: 100%;
+    background-color: white;
+    padding: 17rpx 30rpx;
+    position: relative;
+}
+
+.mod-me-line::after {
+    position: absolute;
+    display: block;
+    content: ' ';
+    width: 100%;
+    margin-left:-30rpx;
+    height: 2rpx;
+    bottom: 1rpx;
+    border-top: 2rpx solid #F3F3F3;
+}
+
+.mod-me-list {
+    display: flex;
+    height: 88rpx;
+    line-height: 88rpx;
+    align-items: center;
+}
+
+.mod-me-text {
+    flex: 1;
+    margin-left: 40rpx;
+    font-size: 29rpx;
+    color: #333;
+    font-weight: 400;
+}
+
+.mod-me-text-number {
+    opacity: .3;
+    font-size: 28rpx;
+    text-align: right;
+}
+
+.mod-me-space {
+    margin-top: 20rpx;
+}
+
+.mod-me-icon {
+    width: 54rpx;
+    height: 54rpx;
+    vertical-align: middle;
+}

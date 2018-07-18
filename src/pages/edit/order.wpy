@@ -1,0 +1,213 @@
+<template>
+    <view class="shopPic-container">
+        <view class="title">
+            {{reserveTitle}}
+        </view>
+        <scroll-view class="list" scroll-x>
+            <view class="item">
+                <view class="thumb"><image mode="aspectFill" src="../assets/test.png"></image></view>
+                <view class="desc">家庭装修</view>
+                <view class="info">
+                    <view class="price">￥<text class="price-number">100</text></view>
+                    <view class="reserve-button">预约</view>
+                </view>
+            </view>
+            <view class="item">
+                <view class="thumb"><image mode="aspectFill" src="../assets/test.png"></image></view>
+                <view class="desc">家庭装修</view>
+                <view class="info">
+                    <view class="price">￥<text  class="price-number">100</text></view>
+                    <view class="reserve-button">预约</view>
+                </view>
+            </view>
+            <view class="item">
+                <view class="thumb"><image mode="aspectFill" src="../assets/test.png"></image></view>
+                <view class="desc">预置内容文字远呀速度</view>
+                <view class="info">
+                    <view class="price">￥<text class="price-number">100</text></view>
+                    <view class="reserve-button">预约</view>
+                </view>
+            </view>
+        </scroll-view>
+                <scroll-view class="list" scroll-x>
+            <view class="item">
+                <view class="thumb"><image mode="aspectFill" src="../assets/test.png"></image></view>
+                <view class="desc">家庭装修</view>
+                <view class="info">
+                    <view class="price">￥<text class="price-number">100</text></view>
+                    <view class="reserve-button">预约</view>
+                </view>
+            </view>
+            <view class="item">
+                <view class="thumb"><image mode="aspectFill" src="../assets/test.png"></image></view>
+                <view class="desc">家庭装修</view>
+                <view class="info">
+                    <view class="price">￥<text  class="price-number">100</text></view>
+                    <view class="reserve-button">预约</view>
+                </view>
+            </view>
+            <view class="item">
+                <view class="thumb"><image mode="aspectFill" src="../assets/test.png"></image></view>
+                <view class="desc">家庭装修</view>
+                <view class="info">
+                    <view class="price">￥<text class="price-number">100</text></view>
+                    <view class="reserve-button">预约</view>
+                </view>
+            </view>
+        </scroll-view>
+    </view>
+    <view class="shopPic-editLayer">
+        <view class="saveBar" @tap="saveTitle">保存</view>
+        <view class="tipBar">默认展示所有预约服务</view>
+        <view class="edit-cell">
+            <view class="edit-label">标题名称</view>
+            <view class="edit-input">
+                <input data-name="name"  @input="bindKeyInput" class="weui-input" name="name" maxlength='16' placeholder="16字以内" />
+            </view>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+
+export default class Order extends wepy.page {
+  config = {
+      navigationBarTitleText: '预约服务',
+  };
+  data = {
+      reserveTitle: '预约组件标题',
+  }
+  methods = {
+      saveTitle(e) {
+          console.log(e);
+      },
+      bindKeyInput(e) {
+          this.reserveTitle = e.detail.value;
+      },
+  }
+}
+</script>
+<style lang="scss">
+.shopPic-editLayer {
+  width: 100%;
+  box-sizing: border-box;
+  height: 394rpx;
+  position: fixed;
+  bottom: 0;
+  background: rgb(91, 93, 95);
+  z-index: 10;
+  padding: 0 30rpx;
+  .saveBar {
+    height: 86rpx;
+    box-sizing: border-box;
+    margin: 0 -30rpx;
+    padding-right: 30rpx;
+    background: #46484a;
+    color: white;
+    line-height: 86rpx;
+    font-size: 32rpx;
+    text-align: right;
+  }
+  .tipBar {
+    height: 86rpx;
+    padding-right: 30rpx;
+    line-height: 86rpx;
+    color:#999;
+    font-size: 26rpx;
+    background:#5B5D5F;
+  }
+  .edit-cell {
+    height: 88rpx;
+    display: flex;
+    font-size: 30rpx;
+    background: #545658;
+    columns: #333333;
+    align-items: center;
+    margin: 0 -30rpx;
+    padding: 0 30rpx;
+    border-bottom: 1rpx solid #585d5f;
+    .edit-label {
+      width: 324rpx;
+      color: #999;
+    }
+    .edit-input {
+      width: 396rpx;
+      color: #d8d8d8;
+      text-align: right;
+    }
+  }
+}
+.space {
+  margin-top: 20rpx !important;
+}
+.shopPic-container {
+  margin-top: 25rpx;
+  width: 100%;
+  background: white;
+  .title {
+    text-align: center;
+    font-size: 34rpx;
+    color: #333;
+    padding: 30rpx 0 0;
+  }
+}
+.shopPic-container .list {
+  width: 100%;
+  margin: 0 auto;
+  overflow: scroll;
+  white-space: nowrap;
+  .item {
+    margin: 30rpx 20rpx 30rpx 0;
+    width: 300rpx;
+    height: 356rpx;
+    display: inline-block;
+    position: relative;
+    &:first-child{
+        margin-left:30rpx;
+    }
+    .thumb {
+      width: 100%;
+      height: 225rpx;
+      image {
+        width: 100%;
+        overflow: hidden;
+        height: 100%;
+      }
+    }
+    .desc {
+      position: relative;
+      color: #333;
+      padding-top: 31rpx;
+      height: 40rpx;
+      width: 300rpx;
+      text-overflow: ellipsis;
+      display: block;
+      font-size: 28rpx;
+    }
+    .info {
+      margin-top: 10rpx;
+      display: flex;
+      justify-content: space-between;
+      color: #ff552e;
+      .price {
+        font-size: 24rpx;
+      }
+      .price-number {
+        font-size: 36rpx;
+        display: inline-block;
+      }
+      .reserve-button {
+        background: #ffeeea;
+        width: 120rpx;
+        height: 50rpx;
+        color: #ff552e;
+        font-size: 26rpx;
+        line-height: 50rpx;
+        text-align: center;
+      }
+    }
+  }
+}
+</style>
+
+

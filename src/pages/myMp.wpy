@@ -46,6 +46,7 @@
                     </view>
                     <view class="btns">
                         <view bindtap="shouquan" wx:if="{{item.app_type === 2}}" data-status="{{item.status}}">{{item.status === 1 ? '重新授权' : '去授权'}}</view>
+                        <view wx:if="{{item.app_type === 1}}" bindtap="upgrade" data-id="{{item.id}}">升级</view>
                         <view :class="{'grey': !item.address}" bindtap="decorate" data-address="{{item.address}}">装修</view>
                         <view bindtap="checkDetail" data-address="{{item.address}}" data-id="{{item.id}}">查看</view>
                     </view>
@@ -85,6 +86,12 @@ export default class Index extends wepy.page {
                     url: `UploadInfo?mpid=${id}`,
                 });
             }
+        },
+        upgrade(type) {
+            const { id } = type.target.dataset;
+            wepy.navigateTo({
+                url: `purchase?mpid=${id}`,
+            });
         },
         checkDetail(type) {
             if (type.target.dataset.address) {

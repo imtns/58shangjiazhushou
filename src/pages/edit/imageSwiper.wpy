@@ -1,0 +1,253 @@
+<template>
+    <view class="banner-container">
+        <view class="list">
+            <view class="item">
+                <swiper indicator-dots="{{indicatorDots}}">
+                <block wx:for="{{pageData.images}}">
+                    <swiper-item>
+                        <image src="{{item.src}}" class="slide-image"/>
+                    </swiper-item>
+                </block>
+                </swiper>
+            </view>
+        </view>
+    </view>
+    <view class="hasSaved">已保存</view>
+    <view class="banner-editLayer">
+        <view class="saveBar">保存</view>
+        <view class="edit-cell">
+            <view class="edit-label">标题名称</view>
+            <view class="edit-input">
+                <input data-name="name"  class="weui-input" name="name" placeholder="请输入名称" />
+            </view>
+        </view>
+        <scroll-view scroll-x class="scrollView">
+            <view class="addButton">
+
+            </view>
+            <view class="tobeAdded">
+                <view class="scroll-view-item addButton" style="{{pageData.images.length==3?'display:none':''}}" @tap="addBanner">
+                   <image src="../assets/plus.png"></image>
+                </view>
+                <repeat for="{{pageData.images}}" key="index" index="index" item="item">
+                    <view class="scroll-view-item {{thumbActive == index?'active':''}}" data-index="{{index}}"  @tap="thumbClick">
+                        <image src="{{item.src}}"></image>
+                        <view class="span active">{{index}}</view>
+                        <image class="del active" src="../assets/del.png" @tap="del" data-item="{{item}}"></image>
+                    </view>
+                </repeat>
+            </view>
+        </scroll-view>
+        <view class="edit-cell space">
+            <view class="edit-label">图片名称</view>
+            <view class="edit-input">
+                <input data-name="name"  class="weui-input" name="name" auto-focus placeholder="请输入名称" />
+            </view>
+        </view>
+         <view class="edit-cell">
+            <view class="edit-label">跳转链接</view>
+            <view class="edit-input">
+                <input data-name="name"  class="weui-input" name="name" auto-focus placeholder="请输入名称" />
+            </view>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+import Mixin from './mixin';
+import { uploader } from '../../utils/uploader';
+import { toast } from '../../utils';
+
+export default class ImageSwiper extends wepy.page {
+  config = {
+      navigationBarTitleText: '轮播广告',
+  };
+  mixins = [Mixin];
+
+  data = {
+      indicatorDots: true,
+      thumbActive: false,
+  };
+  methods = {
+      async addBanner() {
+          const { tempFilePaths } = await wepy.chooseImage();
+          uploader(tempFilePaths[0], (e, result) => {
+              if (e) {
+                  toast('上传失败，请重试。');
+                  return;
+              }
+              toast('上传成功。');
+              this.pageData.images.push(`https://pic1.58cdn.com.cn${result.content}`);
+          });
+      //   this.imgUrls.push('../assets/test.png');
+      //   this.thumbs.push('../assets/test.png');
+      },
+      del(e) {
+          const { item } = e.currentTarget.dataset;
+          this.pagePage.images.slice(item);
+      },
+      thumbClick(e) {
+          this.thumbActive = e.currentTarget.dataset.index;
+      },
+  };
+}
+</script>
+<style lang="scss">
+.banner-editLayer {
+  width: 100%;
+  box-sizing: border-box;
+  height: 594rpx;
+  position: fixed;
+  bottom: 0;
+  background: rgb(91, 93, 95);
+  z-index: 10;
+  padding: 0 30rpx;
+  .saveBar {
+    height: 86rpx;
+    box-sizing: border-box;
+    margin: 0 -30rpx;
+    padding-right: 30rpx;
+    background: #46484a;
+    color: white;
+    line-height: 86rpx;
+    font-size: 32rpx;
+    text-align: right;
+  }
+  .scrollView {
+    height: 186rpx;
+    width: 110%;
+    margin-right: -30rpx;
+    margin-left: -30rpx;
+    padding-left: 30rpx;
+    white-space: nowrap;
+    overflow: scroll;
+    background: #545658;
+    line-height: 186rpx;
+
+    .scroll-view-item {
+      position: relative;
+      width: 200rpx;
+      height: 114rpx;
+      margin-right: 20rpx;
+      box-sizing: border-box;
+      vertical-align: middle;
+      display: inline-block;
+      border: 1rpx solid #aaa;
+      image {
+        width: 100%;
+        height: 100%;
+      }
+      &.active {
+        border: 1rpx solid #4e88ff;
+      }
+      &.addButton {
+        background: #aaa;
+        image {
+          width: 64rpx;
+          height: 64rpx;
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+        }
+      }
+      .span {
+        width: 40rpx;
+        height: 36rpx;
+        background: rgb(170, 170, 170);
+        color: white;
+        text-align: center;
+        font-size: 26rpx;
+        line-height: 36rpx;
+        white-space: nowrap;
+        display: block;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        &.active {
+          background: rgb(78, 136, 255);
+        }
+      }
+      .del {
+        display: none;
+        position: absolute;
+        top: 5rpx;
+        right: 5rpx;
+        width: 32rpx;
+        height: 32rpx;
+        &.active {
+          display: block;
+        }
+      }
+      &:last-child {
+        margin-right: 50rpx;
+      }
+    }
+  }
+  .edit-cell {
+    height: 88rpx;
+    display: flex;
+    font-size: 30rpx;
+    background: #545658;
+    columns: #333333;
+    align-items: center;
+    margin: 0 -30rpx;
+    padding: 0 30rpx;
+    border-bottom: 1rpx solid #585d5f;
+    .edit-label {
+      width: 324rpx;
+      color: #999;
+    }
+    .edit-input {
+      width: 396rpx;
+      color: #d8d8d8;
+      text-align: right;
+    }
+  }
+}
+.space {
+  margin-top: 20rpx !important;
+}
+.banner-container {
+  margin-top: 25rpx;
+  width: 100%;
+  background: white;
+
+  .title {
+    text-align: center;
+    font-size: 34rpx;
+    color: #333;
+    padding: 30rpx 0 0;
+  }
+}
+.hasSaved {
+  width: 256rpx;
+  height: 100rpx;
+  background: #333;
+  color: white;
+  font-size: 32rpx;
+  margin: 37rpx auto 0;
+  line-height: 100rpx;
+  text-align: center;
+  border-radius: 4rpx;
+}
+.banner-container .list {
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 100rpx;
+  .item {
+    flex: 0 0 1;
+    width: 100%;
+    display: block;
+    margin-bottom: 0;
+    position: relative;
+    image {
+      width: 100%;
+    }
+  }
+}
+</style>
+
+

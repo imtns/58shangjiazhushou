@@ -1,0 +1,276 @@
+<template>
+    <view class="mod-me-container">
+        <view class="mod-me mod-me-line" hidden="{{!me.order}}">
+            <view class="mod-me-list ">
+                <image class="mod-me-icon" src="../assets/me/order.png"></image>
+                <view class="mod-me-text">我的订单</view>
+                <view class="mod-arrow"></view>
+            </view>
+        </view>
+        <view class="mod-me" hidden="{{!me.coupon}}">
+            <view class="mod-me-list">
+                <image class="mod-me-icon" src="../assets/me/coupon.png"></image>
+                <view class="mod-me-text">我的优惠券</view>
+                <view class="mod-arrow"></view>
+            </view>
+        </view>
+        <view class="mod-me mod-me-space mod-me-line"  hidden="{{!me.address}}">
+            <view class="mod-me-list">
+                <image class="mod-me-icon" src="../assets/me/address.png"></image>
+                <view class="mod-me-text">服务地址</view>
+                <view class="mod-arrow"></view>
+            </view>
+        </view>
+        <view class="mod-me" hidden="{{!me.tel}}">
+            <view class="mod-me-list">
+                <image class="mod-me-icon" src="../assets/me/hotline.png"></image>
+                <view class="mod-me-text">客服热线</view>
+                <view class="mod-me-text mod-me-me-number">{{telnum}}</view>
+                <view class="mod-arrow"></view>
+            </view>
+        </view>
+    </view>
+    <view class="me-editLayer">
+        <view class="saveBar">
+            <text class="label" hidden="{{!editMultiple}}">+添加文章</text>
+            <text class="save">保存</text>
+        </view>
+       <view class="me-scroll">
+            <checkbox-group bindchange="checkboxChange">
+                <label class="me-checkbox">
+                    <checkbox class="checkSqure" value="order" checked="{{true}}" />我的订单
+                </label>
+                <label class="me-checkbox">
+                    <checkbox class="checkSqure" value="coupon" checked="{{true}}" />我的优惠券
+                </label>
+                <label class="me-checkbox">
+                    <checkbox class="checkSqure" value="address" checked="{{true}}" />服务地址
+                </label>
+                <label class="me-checkbox">
+                    <checkbox class="checkSqure" value="tel" checked="{{true}}" />客服热线
+                </label>
+            </checkbox-group>
+        </view>
+         <view class="edit-cell space">
+            <view class="edit-label">客服热线</view>
+            <view class="edit-input">
+                <input data-name="name" maxlength="14" bindinput="telInput" class="weui-input" name="name" type="number" auto-focus placeholder="请输入" />
+            </view>
+        </view>
+        <scroll-view scroll-y class="edit-cell-tip">
+            注：此处设置显示的功能，会在顾客使用小程序时生效。
+            服务地址：顾客填写上门服务的地址、电话、姓名等信息；
+            客服热线：顾客可以直接拨打设置好的电话；
+            优惠券：顾客在此处领取和使用优惠券；
+            我的订单：顾客下单后，即可在此处查看订单状态。
+        </scroll-view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+
+export default class Me extends wepy.page {
+  config = {
+      navigationBarTitleText: '个人中心',
+  };
+  data = {
+      me: {
+          order: true,
+          coupon: true,
+          address: true,
+          tel: true,
+      },
+      telnum: '',
+  }
+  methods = {
+      checkboxChange(e) {
+          Object.keys(this.me).forEach(item => {
+              this.me[item] = e.detail.value.indexOf(item) > -1;
+          });
+      },
+      telInput(e) {
+          this.telnum = e.detail.value;
+      },
+  }
+}
+</script>
+<style lang="scss">
+.mod-me-container {
+  margin: 20rpx 0;
+}
+.mod-me {
+  display: inline-block;
+  width: 100%;
+  background-color: white;
+  padding: 0rpx 30rpx;
+  position: relative;
+}
+
+.mod-me-line::after {
+  position: absolute;
+  display: block;
+  content: ' ';
+  width: 100%;
+  margin-left: -30rpx;
+  height: 2rpx;
+  bottom: 1rpx;
+  border-top: 2rpx solid #f3f3f3;
+}
+
+.mod-me-list {
+  display: flex;
+  height: 88rpx;
+  line-height: 88rpx;
+  align-items: center;
+  position: relative;
+}
+
+.mod-me-text {
+  flex: 1;
+  margin-left: 40rpx;
+  font-size: 29rpx;
+  color: #333;
+  font-weight: 400;
+}
+
+.mod-me-me-number {
+  opacity: 0.3;
+  font-size: 28rpx;
+  text-align: right;
+  margin-right:90rpx;
+}
+
+.mod-me-space {
+  margin-top: 20rpx;
+}
+
+.mod-me-icon {
+  width: 54rpx;
+  height: 54rpx;
+  vertical-align: middle;
+}
+.mod-arrow {
+  right: 55rpx;
+  position: absolute;
+}
+.mod-arrow:after {
+  display: block;
+  content: '';
+  height: 26rpx;
+  width: 16rpx;
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAaCAYAAAC+aNwHAAAAAXNSR0IArs4c6QAAAZ5JREFUOBGdlLFLw0AUxnPaIl0EpUPXDJ0DTt1cHFyKutRB0EEHUVAEQSyKoiiCIAqKiIuLQ53EDo5dhFzSJP+Ki4hCmvMLuTsIJphnlnd59/2+u3e8O8OQn+MEi7bt3QshmMoViUNKFEVihDG2DKM7qonyMACvcu5H2Mntv01gsA4DgXitnakDGGwkJt4VldV6x/G3YhPb9i90kjrg3NuW5ZxTWa237WAnNnEc70wnqQOU05blnFBZrUc5+0k53pFOUgc40MOkHP+Aymo9dnKclBPsxUlS3ysXzoNTIaJdxoy2vgtqskhkTLwnOjZWRJ/SoITN5DD9y9REkR/AaxK+KaJPadBIK/Kmkt8MXHNvScIP5Gvuuv4C4AG2/giYduiAWwBDNFAH8HCqJvmT2wfo/zk8c09olW6jMdHCcxdmGWRuCSs3sWIH8Gu5LObz4Njw1w4ATw8GxjPmetXq6Gy9Xv/OWlnlUgb9fjAVhlEXvm+12njTNM0vJcyLJTXhusEk4Bf0Ny+VxEwROGa1AQ7sA3CvUim3LMv6VMZ/xR8Pge7bkM3opAAAAABJRU5ErkJggg==')
+    no-repeat;
+  background-size: 16rpx 26rpx;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.me-editLayer {
+  width: 100%;
+  box-sizing: border-box;
+  height: 740rpx;
+  position: fixed;
+  bottom: 0;
+  background: rgb(91, 93, 95);
+  z-index: 10;
+  padding: 0 30rpx;
+  .saveBar {
+    height: 86rpx;
+    box-sizing: border-box;
+    margin: 0 -30rpx;
+    padding-right: 30rpx;
+    background: #46484a;
+    color: white;
+    line-height: 86rpx;
+    font-size: 32rpx;
+    .label {
+      width: 200rpx;
+      margin-left: 30rpx;
+      text-align: left;
+    }
+    .save {
+      width: 100rpx;
+      float: right;
+      text-align: right;
+    }
+  }
+  .edit-cell {
+    height: 88rpx;
+    display: flex;
+    font-size: 30rpx;
+    background: #545658;
+    columns: #333333;
+    align-items: center;
+    margin: 0 -30rpx;
+    padding: 0 30rpx;
+    margin-top: 20rpx;
+    border-bottom: 1rpx solid #585d5f;
+    .edit-label {
+      width: 324rpx;
+      color: #999;
+      .arrow {
+        position: relative;
+        top: -4rpx;
+        display: inline-block;
+        width: 0;
+        height: 0;
+        margin-left: 10rpx;
+        border-style: solid;
+        border-width: 10rpx 10rpx 0 10rpx;
+        border-color: #ffffff transparent transparent transparent;
+      }
+    }
+    .edit-input {
+      width: 396rpx;
+      color: #d8d8d8;
+      text-align: right;
+    }
+  }
+  .me-scroll {
+    background: #545658;
+    height: 328rpx;
+    padding: 0 30rpx 30rpx;
+    margin: 0rpx -30rpx;
+    .me-checkbox {
+      display: flex;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #dbdbdb;
+      height: 82rpx;
+      border-bottom: 1rpx solid #5b5d5f;
+      font-size: 30rpx;
+      align-items: center;
+      checkbox {
+        margin-right: 10rpx;
+      }
+      checkbox .wx-checkbox-input {
+        width: 24rpx;
+        height: 24rpx;
+        background: transparent;
+        border: 1rpx solid #bdbdbd;
+        border-radius: 50%;
+      }
+      checkbox .wx-checkbox-input.wx-checkbox-input-checked {
+        background: #4e88ff;
+      }
+      checkbox .wx-checkbox-input.wx-checkbox-input-checked::before {
+        font-size: 24rpx;
+        color: #fff;
+      }
+    }
+  }
+}
+.edit-cell-tip{
+    font-size:26rpx;
+    color:#999;
+    padding-top:20rpx;
+    height:150rpx;
+    overflow: scroll;
+}
+checkbox .wx-checkbox-input {
+  width: 20rpx;
+  height: 20rpx;
+}
+</style>

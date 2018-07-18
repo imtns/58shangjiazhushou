@@ -1,0 +1,33 @@
+.mod-pay{
+    font-family: PingFangSC-Regular;
+    height:100rpx;
+    padding:0 30rpx 0;
+}
+.pay-icon,.pay-text,.pay-button{
+    display:inline-block;
+    vertical-align: middle;
+}
+.pay-icon{
+    width:58rpx;
+    height: 58rpx;
+    background:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADoAAAA6CAYAAADhu0ooAAAAAXNSR0IArs4c6QAABPxJREFUaAXtW22IFVUYfmZ2V0Nss6Wy3CALwhAqtcCKcqUPoi+FQBSTRYgCEyIJqp+xkUH92giCCql+2Iogff2QVOjahy2Y2lK2Fin9qKj8djNt70fvM7O3fc/x7s5x9szde4ceGOad97znnPeZ95wzM+ecCVADlRXz70K5tBwVLJLkTjmm1zBrJNWQOPMLAuxE2LIp6Nu7w3Yu0IrKynnXYrj8pui6tL4J5QLawseCjft+rPr+H9HKigV3oFz8QKJ4cTWxqc8BjiFsXRr07fmMPCKiUSSL5f7ckKxGiGRbw4WMbBjp2FzzEskqSZ7JKe6KCKKBp1TartNzJ7e03B1Go2vumFmE5AkSSnj5CMk3hGOrMORz0h3zbgNulOPSK4C2qe75fFgOnwX+/A345ktgnxzu6Awqy26oONlPvwhY0g1cNcfJPHOjnw8AH74LDJ1wqioedV1MG4kk/eUNp0+OcCPK5tookdTE6BN9cwD7aDLYJ220TQFmXQ1cOEP6qshZYvgf4NRx4NdDAGUN+ubQX92IcuDRILHrFgCtbVqbncz6Oi4D2uXtdHCPSdb2bQwv3JquPboykvUiqR1nnaxbw/ZNpynZjajKEIlsrpOFlHWnI5p1nxzvJqasOx3R8Rxp0LT/iaYOzMmjQM/jQPetwPq18WMhqTA+OmjLPC+uAViGZ/iP6Ja3gG/7gTOn5fn2OdD7XLLLtKEt8/A99v0NyXnO08I/0XLZdGFgF/DFVlOnr5hGG41iUV95kf0TfWAVcME007l3XgFOc6LOAnVM02BeluEZ/onOvBJ45CnTzeOHgfdeNXW8oo5pGszLMjzDP1E6eO9y4PqFpqvbNgM/fTeqo0ydBvMwbwbIhigdXdMDTFPz3uy7b7wA8KzlKinaMk9GyI7oJZcDq58x3T70PbC1Lz4oa9CWeTKC29dL2soXLwX6ZXXg68JoCZteG5Wr0k2yMEDbDOGf6OBe4Ktt0jxLsdv2u+nff51LhzYbXor1YQtwyz3yGTj/XLsJaPwT7X0WOPL7+bnEG6PRvx14/ROtmbDsn+h9K4EdW4ASIyrzbpWRgzMDJ46YDnfMBKZMNXWhDBt3PmzqPFz5J7pktUxayWFj/27g+UdN7ZPrgbk3m7qMrrIbdTNyOG2x/iPK/rbz4/hZqb0aki8UGxt7ZYl5hqll0130YDwgmSkTuvJP9O2XgaN/uDn1w0Btu4P7m4DoqnVA4SMZhKyvGM6oH7ReEq6ZKxFtN8kGEtGuh0ydhyv/Eb39foCHjVqDUffTORyMGCkbtXS2jafrGrV7KtkupnO2ORfMOVrq6oT6EW3vAJ7oiWfcOetOmbo6wX8fHc/xsfrveHk8pdUvop4cTltMOqL2ilba2tPkS1l3OqKch50spKzbjSj3DmhwnbI4rDX1kVkn69awfdNpSnYjyg0SGmw+XKfkq17KpqSLS5RZB+uy10aZ0fZtjMLcRl3Ons+abRbByrlhYrJB3xzgFlEunTcCKZsQfXJY1mc2N6K05FaXRiJLX+iTI7jP6JTYqgnYhJzNuaFqiEQHhdqcBHrNnnwgjLZnNzuNJP9lC3rIPehJdk2fzn32JCHN91M5dVHOIQrB5oHF8agrG+2lCR/LHUlyIjdBRDT6m0A22ueKbPXngZE/JeKICuPobwLZaC+iWhHivWhKFKKfBkb+kCCDqI/aVPL4g8+/O0ZkrABd4dcAAAAASUVORK5CYII=') no-repeat top left;
+    background-size:100%;
+}
+.pay-text{
+    margin-left:20rpx;
+    font-size: 34rpx;
+    color: #333333;
+    line-height: 100rpx;
+}
+.pay-button{
+    float:right;
+    margin-top:20rpx;
+    width:120rpx;
+    height: 60rpx;
+    line-height: 60rpx;
+    background: #FF552E;
+    border-radius: 6rpx;
+    text-align: center;
+    font-size: 32rpx;
+    color: #FFFFFF;
+}

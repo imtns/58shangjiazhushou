@@ -1,0 +1,192 @@
+/* 基本结构 */
+.table{
+    display:table;
+}
+.inline-table{
+    display:inline-table;
+}
+.cell{
+    display:table-cell;
+    vertical-align: middle;
+}
+.c-center{
+    text-align: center;
+}
+.mr-10{
+    margin-right: 10rpx;
+}
+.mr-20{
+    margin-right: 20rpx;
+}
+.mt-5{
+    margin-top:5rpx;
+}
+.mt-40{
+    margin-top:40rpx;
+}
+
+/* 文字样式 */
+.font-normal{
+    color:#fff;
+    font-size:24rpx;
+}
+.font-large{
+    font-size:40rpx;
+}
+.font-large2{
+    font-size:50rpx;
+}
+.font-gray1{
+    color:#ccc;
+}
+.font-gray2{
+    color:#aaa;
+}
+.font-yellow2{
+    color:#FFE37F;
+}
+.one-text{
+    overflow:hidden;
+    text-overflow: clip;
+    white-space: nowrap;
+    word-break:keep-all;
+}
+.view-coupon{
+    padding:0 10rpx 0;
+    background:initial;
+    margin-bottom:10rpx;
+    margin-top:-10rpx;
+}
+.view-coupon2{
+    padding:0 20rpx 0;
+    background:initial;
+    margin-bottom:10rpx;
+    margin-top:-10rpx;
+}
+
+/* 优惠券样式一 */
+.coupon-shadow{
+    width:730rpx;
+    height: 200rpx;
+    padding:10rpx;
+    background:url('http://img.58cdn.com.cn/lbg/jianzhan/images/bg-coupon1.png') no-repeat top left;
+    background-size:100%;
+}
+.coupon-box{
+    width:100%;
+    height:180rpx;
+}
+/* 左侧 */
+.coupon-left{
+    width:174rpx;
+    max-width:174rpx;
+    line-height: 180rpx;
+    font-size: 60rpx;
+    color: #FF552E;
+    vertical-align: middle;
+    text-align: center;
+}
+.coupon-discount{
+    font-size: 30rpx;
+    color: #FF552E;
+}
+/* 右侧 */
+.coupon-right{
+    position:relative;
+    padding:25rpx 30rpx;
+}
+.first-row{
+    line-height: 45rpx;
+    font-size: 32rpx;
+    color: #FFFFFF;
+}
+.second-row,.receive-button{
+    line-height: 40rpx;
+    font-size: 28rpx;
+    color: #FFFFFF;
+}
+.last-row{
+    margin-top:14rpx;
+    line-height: 34rpx;
+    font-size: 24rpx;
+    color: #FFE37F;
+}
+.first-row,.second-row,.last-row{
+    max-width: 346rpx;
+}
+.receive-button{
+    width:160rpx;
+    line-height: 60rpx;
+    text-align: center;
+    position: absolute;
+    top:50%;
+    transform:translateY(-50%);
+    right:30rpx;
+    color: #FF9C02;
+    background: #FFFFFF;
+    border-radius: 30rpx;
+}
+/* 优惠券样式二 */
+.coupons-scroll{
+    height: 180rpx;
+    white-space: nowrap;
+}
+.coupon{
+    width:315rpx;
+    height: 180rpx;
+    padding-left:30rpx;
+    padding-right:8rpx;
+    color:#fff;
+    background:url('http://img.58cdn.com.cn/lbg/jianzhan/images/bg-coupon2.png') no-repeat top left;
+    background-size:100% 200rpx;
+    border-radius: 3rpx;
+}
+
+.coupon-right-2{
+    width:64rpx;
+    padding:0 21rpx;
+    white-space: normal;
+    text-align: center;
+}
+/* 优惠卷二结构 */
+.view-coupon2{
+    padding:0 20rpx 0;
+    background-color:initial;
+}
+.coupons-scroll{
+    height: 188rpx;
+    white-space: nowrap;
+}
+.coupon2-wrap{
+    display:flex;
+    /* overflow: hidden; */
+}
+.coupon2-shadow{
+    width:335rpx;
+    height:188rpx;
+    padding:4rpx 10rpx;
+    background:url('http://img.58cdn.com.cn/lbg/jianzhan/images/bg-coupon2.png') no-repeat top left;
+    background-size:100% 100%;
+}
+.coupon2{
+    height: 180rpx;
+    width:315rpx;
+}
+.none-coupon{
+    width:335rpx;
+    height:188rpx;
+    background:url('http://img.58cdn.com.cn/lbg/jianzhan/images/none-coupon.png') no-repeat top left;
+    background-size:100% 100%;
+}
+.coupon2-left{
+    width:250rpx;
+    max-width:250rpx;
+    padding-left:30rpx;
+}
+.coupon2-right{
+    width:64rpx;
+    vertical-align: middle;
+    padding:0 21rpx;
+    white-space: normal;
+    text-align: center;
+}

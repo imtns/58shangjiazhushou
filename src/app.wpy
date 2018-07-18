@@ -8,8 +8,19 @@ export default class extends wepy.app {
         super();
         this.use('promisify');
     }
+
     config = {
         pages: [
+            'pages/reserve/reserve',
+            'pages/edit/me',
+            'pages/edit/text',
+            'pages/edit/order',
+            'pages/edit/imageSwiper',
+            'pages/edit/video',
+            'pages/edit/title',
+            'pages/edit/article',
+            'pages/edit/shopPic',
+            'pages/templateList',
             'pages/home', // 登陆之后的主页
             'pages/intro', // 没有登陆的介绍页面
             'pages/myMp', // 我的小程序
@@ -36,6 +47,7 @@ export default class extends wepy.app {
             'pages/OrderList', // 订单列表
             'pages/OrderDetail', // 订单详情
             'pages/purchase',
+
         ],
         window: {
             backgroundTextStyle: 'light',
@@ -45,8 +57,8 @@ export default class extends wepy.app {
         },
     }
     onLaunch () {
-        console.log('onlainch');
-        wepy.setStorageSync('ppu', 'UID=48917864286479&UN=zf3e85&TT=d81202a65af05aa8cb1ea5f6d92254d1&PBODY=JhH_NY6a8n2PvW6ZgBv_B1CwuIJH84mNnuJt4PxcpEQDl5QPvba4IdoMpCpk_GxpEfRtc9RPAvrK6G4o9J3zhKHmVv33iBDKO8EVnmRq6yp2ETgstCBISr9016TKao2yDyUeZG32vv_2yuyG01uAnqTlUL1vaRpLJ3fRd9NqySA&VER=1');
+        console.log('onlaunch');
+        wepy.setStorageSync('ppu', 'UID=50181655951373&UN=zq16nv8iu&TT=429e5a35672fe8ecd01a335a73c9839b&PBODY=HKi-bGXLkujN9HvdoyIUZOfGl7pYKgBjaTDf8KyC5wqFPua9_R9YkOm560PqzzjsUyVnRv4V7NCQFjeMyhkGgHpgwkCQqeXn0xs3PuGKTcf0TsB0CReZBCAIv4sugIf04uuxZaWrsBHIMjAo902xjV30T608aiwPOgzByfBFWXw&VER=1');
     }
     onShow (options) {
         const { path } = options;
@@ -69,6 +81,11 @@ export default class extends wepy.app {
             if (extraData.ppu !== undefined) { // 如果获取ppu成功
                 console.log(`获取PPU成功！ ${extraData.ppu}`);
                 wepy.setStorageSync('ppu', extraData.ppu);
+                wx.setClipboardData({
+                    data: extraData.ppu,
+                    success() {
+                    },
+                });
                 setTimeout(() => {
                     wepy.reLaunch({
                         url: '/pages/home',
@@ -82,4 +99,21 @@ export default class extends wepy.app {
 
 <style lang="scss">
 @import './app.scss';
+@import "css/common.scss";   
+@import "components/mod/information/information.wxss"; 
+@import "components/mod/imageSwiper/imageSwiper.wxss";
+@import "components/mod/images/images.wxss";
+@import "components/mod/me/me.wxss";
+@import "components/mod/text/text.wxss";  
+@import "components/mod/title/title.wxss";  
+@import "components/mod/video/video.wxss"; 
+@import "components/mod/call/call.wxss";
+@import "components/mod/services/services.wxss"; 
+@import "components/mod/article/article.wxss";
+@import "components/mod/evaluation/evaluation.wxss"; 
+@import "components/mod/reserve/reserve.wxss";  
+@import "components/mod/coupon/coupon.wxss";    
+@import "components/mod/pay/pay.wxss";   
+@import "components/mod/branch/branch.wxss";   
 </style>
+      
