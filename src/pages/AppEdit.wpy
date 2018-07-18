@@ -395,7 +395,7 @@ export default class AppEdit extends wepy.page {
             return false;
         }
         // 所属行业至少选择两项
-        if (!form.cate1 || !form.cate2) {
+        if ((!form.cate1 || !form.cate2) && form.mpSource.toString() !== '3') {
             this.toast('所属行业至少选择两项');
             return false;
         }

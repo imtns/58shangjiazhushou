@@ -731,7 +731,7 @@ var AppEdit = function (_wepy$page) {
                                 return _context9.abrupt('return', false);
 
                             case 24:
-                                if (!(!form.cate1 || !form.cate2)) {
+                                if (!((!form.cate1 || !form.cate2) && form.mpSource.toString() !== '3')) {
                                     _context9.next = 27;
                                     break;
                                 }
