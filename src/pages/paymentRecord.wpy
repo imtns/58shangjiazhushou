@@ -65,7 +65,7 @@ export default class PaymentRecord extends wepy.page {
     async loadData() {
         try {
             console.log('loadData', this.sendParams);
-            const data = await get('/mplogic/getgroupmsglist', this.sendParams);
+            const { data } = await get('/mplogic/getgroupmsglist', this.sendParams);
             const { msglist, amountTotal } = data;
             if (this.sendParams.pageSize === 1 && (msglist.length === 0 || !msglist)) {
                 // 没有数据
