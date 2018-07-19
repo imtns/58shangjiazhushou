@@ -56,6 +56,9 @@ var Page = {
                         formData = new FormData();
                     formData.append('source',$(self).get(0).files[0]);
                     document.domain = '58.com';
+                    Object.assign(formData, {
+                        test: Page.ppu
+                    });
                     $.ajax({
                         url: '/fileUpload',
                         type: 'POST',
@@ -87,6 +90,9 @@ var Page = {
             var self = this,
             formData = new FormData();
             formData.append('sources', $(self).get(0).files[0]);
+            Object.assign(formData, {
+                test: Page.ppu
+            });
             $.ajax({
                 url: '/fileUpload',
                 type: 'POST',

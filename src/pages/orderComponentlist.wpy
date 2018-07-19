@@ -114,7 +114,7 @@ export default class ArticleComponentList extends wepy.page {
         this.groupList = this.groupList.concat(data);
         this.$apply();
     }
-    editChose(id, index, name) {
+    editChose(id, index) {
         if (this.isEditing) {
             const item = this.groupList[index];
             const itemIndex = this.delList.length === 0 ? -2 : this.delList.indexOf(id);
@@ -135,7 +135,7 @@ export default class ArticleComponentList extends wepy.page {
         wepy.navigateTo({
             url: `orderComponentDetail?id=${id}`,
         });
-    },
+    }
     edit() {
         this.editStatus = true;
         this.$apply();

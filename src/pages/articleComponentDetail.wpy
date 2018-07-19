@@ -23,6 +23,8 @@
 <script>
 import wepy from 'wepy';
 
+import { get } from '../utils/ajax';
+
 export default class Index extends wepy.page {
     config = {
         navigationBarTitleText: '文章详情',
