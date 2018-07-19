@@ -13,7 +13,7 @@ export default class ArticleComponentAdd extends wepy.page {
     }
     onLoad() {
         const v = (+new Date() * 1).toString(36);
-        this.url = 'https://yaofa.58.com/uhtml/articleComponentAdd?v=${v}';
+        this.url = `https://yaofa.58.com/uhtml/articleComponentAdd?v=${v}`;
         this.$apply();
         console.log(this.url);
     }

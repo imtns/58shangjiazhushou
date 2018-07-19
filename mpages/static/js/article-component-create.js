@@ -71,7 +71,7 @@ var Page = {
                                     cb(url + '?w=750');
                                 $('.icon-tupian-btn').replaceWith('<input type="file" class="icon-tupian icon-tupian-btn" data-type="image">');
                             } else {
-                                Page.toast($errorPop, res.msg);
+                                Page.toast($errorPop, data.msg);
                             }
                         }
                     });
