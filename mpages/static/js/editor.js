@@ -217,7 +217,7 @@
                 params.selectImage && params.selectImage(function (url) {
                     const $p = window.$p;
                     if ($p && $p.parent().dom) {
-                        $p.after('<p><image src="' + url + '"/></p>');
+                        $p.after('<p><image src="' + url + '" class="rich-text-img"/></p>');
                     } else {
                         $editor.append('<p><image src="' + url + '"/></p>');
                     }
@@ -320,11 +320,11 @@
             var p = utils.focusDom();
             var bcr1 = $editor.dom.getBoundingClientRect();
             var bcr2 = p.getBoundingClientRect();
-            $editorBtn.css({
-                display: 'block',
-                left: bcr2.x - bcr1.x,
-                top: bcr2.y - bcr1.y - 30
-            });
+            // $editorBtn.css({
+            //     display: 'block',
+            //     left: bcr2.x - bcr1.x,
+            //     top: bcr2.y - bcr1.y - 30
+            // });
         };
 
         var keyup = function keyup(e) {

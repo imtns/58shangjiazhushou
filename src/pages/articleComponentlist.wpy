@@ -10,11 +10,17 @@
                 <view class="line"></view>
             </view>
             <scroll-view
-                class="article-list {{editStatus ? 'edit' : ''}}"
+                class="article-list {{isEditing ? 'edit' : ''}}"
                 style="height:{{height}};"
                 scroll-y="true"
                 wx:if="{{listData.length>0}}">
-                <view wx:for="{{listData}}" wx:key="index" class="list-item article-item {{item.choseStatu ? 'selected' : ''}}" data-item="{{item}}" @tap.stop="editChose({{ item.id }}, {{ index }}, {{item.name}})">
+                <view
+                    wx:for="{{listData}}"
+                    wx:key="index"
+                    class="list-item article-item"
+                    :class="{ selected: item.choseStatu}"
+                    data-item="{{item}}"
+                    @tap.stop="editChose({{ item.id }}, {{ index }}, {{item.name}})">
                     <view class="article-title">{{item.title}}</view>
                     <view class="article-detail">
                         <view class="article-detail-flex">
@@ -25,9 +31,9 @@
                             <view class="article-base">来源：</view>
                             <view class="base-text base-over">{{item.source || '未知'}}</view>
                         </view>
-                        <view class="article-detail-flex" wx:if="{{item.updateTime!=nul}}">
+                        <view class="article-detail-flex">
                             <view class="article-base">时间：</view>
-                            <view class="base-text">{{item.updateTime}}</view>
+                            <view class="base-text">{{item.createTime}}</view>
                         </view>
                     </view>
                     <view class="article-preview-con">{{item.intro}}</view>
@@ -37,11 +43,11 @@
             <EmptyPage wx:if="{{listData.length===0}}"></EmptyPage>
         </view>
     </view>
-    <view class="options" wx:if="{{!editStatus}}">
+    <view class="options" wx:if="{{!isEditing}}">
         <view class="button edit" bindtap="edit" wx:if="{{listData.length > 0}}">编辑</view>
         <view class="button" bindtap="addArticle">添加文章</view>
     </view>
-    <view class="options" wx:if="{{editStatus}}">
+    <view class="options" wx:if="{{isEditing}}">
         <view class="button edit" bindtap="cancle">取消</view>
         <view class="button" bindtap="toDelete">删除</view>
     </view>
@@ -73,6 +79,7 @@ export default class ArticleComponentList extends wepy.page {
         pageNum: 1,
         pageSize: 20,
         isLoading: true,
+        isEditing: false,
     }
     onLoad(option) {
         console.log(option);
@@ -96,6 +103,29 @@ export default class ArticleComponentList extends wepy.page {
         this.$apply();
         this.loadList();
     }
+    methods = {
+        editChose(id, index, name) {
+            if (this.isEditing) {
+                const item = this.listData[index];
+                const itemIndex = this.delList.length === 0 ? -2 : this.delList.indexOf(id);
+                console.log(itemIndex);
+                if (item) {
+                    item.choseStatu = !item.choseStatu;
+                }
+                if (itemIndex < 0) {
+                    this.delList.push(id);
+                } else {
+                    this.delList.splice(itemIndex, 1);
+                }
+                this.$apply();
+                return;
+            }
+            // 点击跳转文章详情页面
+            wepy.navigateTo({
+                url: `articleComponentDetail?group=${this.group}&id=${id}&name=${name}`,
+            });
+        },
+    }
     async loadList() {
         try {
             const { pageSize, pageNum, group } = this;
@@ -104,67 +134,53 @@ export default class ArticleComponentList extends wepy.page {
                 pageNum,
                 group,
             });
-            if (this.pageNum === 1 && (data.length === 0 || !data)) {
+            const nData = data.data;
+            if (this.pageNum === 1 && (nData.length === 0 || !nData)) {
                 this.isLoading = false;
                 toast('没有数据');
                 return;
             }
-            if (this.pageNum > 1 && data.length < this.pageSzie) {
+            if (this.pageNum > 1 && nData.length < this.pageSzie) {
                 this.isLoading = false;
                 toast('没有更多数据');
                 return;
             }
-            data.foreach(item => {
+            nData.forEach(item => {
                 Object.assign(item, {
                     choseStatu: false,
                 });
             });
-            this.listData = this.listData.concat(data);
+            this.listData = this.listData.concat(nData);
             this.$apply();
         } catch (e) {
             console.log(e);
         }
     }
-    editChose(id, index, name) {
-        if (this.isEditing) {
-            const item = this.groupList[index];
-            const itemIndex = this.delList.length === 0 ? -2 : this.delList.indexOf(id);
-            console.log(itemIndex);
-            if (item) {
-                item.choseStatu = !item.choseStatu;
-            }
-            if (itemIndex < 0) {
-                this.delList.push(id);
-            } else {
-                this.delList.splice(itemIndex, 1);
-            }
-            this.$apply();
-            console.log(this.delList);
-            return;
-        }
-        // 点击跳转文章详情页面
-        wepy.navigateTo({
-            url: `articleComponentDetail?group=${this.group}&id=${id}&name=${name}`,
-        });
-    }
+
     edit() {
-        this.editStatus = true;
+        this.isEditing = !this.isEditing;
+        this.delList = [];
         this.$apply();
     }
     async toDelete() {
-        const { delList } = this;
-        if (delList.length === 0) {
-            alert('请选择要删除的文章');
-            return;
+        try {
+            const { delList } = this;
+            if (delList.length === 0) {
+                alert('请选择要删除的文章');
+                return;
+            }
+            const ids = delList.join();
+            await get('/businessArticle/delete/0', {
+                ids: ids,
+            });
+            alert('删除成功！');
+            this.loadList();
+            this.delList = [];
+            this.isEditing = false;
+            this.$apply();
+        } catch (e) {
+            console.log(e);
         }
-        const ids = delList.join();
-        await get('/businessArticle/delete/0', {
-            ids: ids,
-        });
-        alert('删除成功！');
-        this.loadList();
-        this.editStatus = false;
-        this.$apply();
     }
     cancle() {
         const dataList = this.listData;
@@ -173,7 +189,7 @@ export default class ArticleComponentList extends wepy.page {
                 choseStatu: false,
             });
         });
-        this.editStatus = false;
+        this.isEditing = false;
         this.listData = dataList;
         this.$apply();
     }

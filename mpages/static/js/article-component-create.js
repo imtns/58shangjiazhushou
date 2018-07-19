@@ -35,7 +35,7 @@ var Page = {
         }
     },
     init() {
-        Page.ppu = Page.getKey('ppu');
+        Page.ppu = decodeURIComponent(Page.getKey('ppu'));
         Page.group = Page.getKey('group');
         Page.id = Page.getKey('id');
         Page.name = Page.getKey('name');
@@ -64,11 +64,6 @@ var Page = {
                         data: formData,
                         contentType: false,
                         processData: false,
-                        header: {
-                            'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-                            PPU: Page.ppu || 'wanghongyue',
-                            reqfrom: 'biz_assistant',
-                        },
                         success: function(data) {
                             var data = JSON.parse(data);
                             if (data.state == 100) {
@@ -92,11 +87,6 @@ var Page = {
                 url: '/fileUpload',
                 type: 'POST',
                 data: formData,
-                header: {
-                    'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-                    PPU: Page.ppu || 'wanghongyue',
-                    reqfrom: 'biz_assistant',
-                },
                 contentType: false,
                 processData: false,
                 success: function(res) {
@@ -166,7 +156,7 @@ var Page = {
                     content: content,
                     test: Page.test,
                 },
-                header: {
+                headers: {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
                     PPU: Page.ppu || 'wanghongyue',
                     reqfrom: 'biz_assistant',
@@ -193,16 +183,17 @@ var Page = {
     },
     loadData: function() {
         $.ajax({
-            url: '/businessAticle/detail/' + Page.id,
+            url: '/businessArticle/detail/' + Page.id,
             data: {
                 test: Page.test,
             },
-            header: {
+            headers: {
                 'content-type': 'application/json',
                 PPU: Page.ppu || 'wanghongyue',
                 reqfrom: 'biz_assistant',
             },
             success: function(data) {
+                var data = JSON.parse(data);
                 if (data.state == 100) {
                     var listData = data.data,
                         title = data.data.title,
@@ -221,7 +212,7 @@ var Page = {
                             $('.item-upload-img').removeClass('none').find('#cover').attr('src', 'https://pic1.58cdn.com.cn' + cover);
                         }
                 } else {
-                    Page.toast($errorPop, res.msg);
+                    Page.toast($errorPop, data.msg);
                 }
             }
         });

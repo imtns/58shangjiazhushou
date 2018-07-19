@@ -42,7 +42,7 @@
             <view class="block"></view>
         </view>
         <view class="options">
-            <button class="button edit" @tap="edit" wx:if="{{groupList.length > 0 || works.length > 0}}">{{ isEditing ? '取消' : '编辑' }}</button>
+            <button class="button edit" @tap="edit" wx:if="{{groupList.length > 0 || works.length > 0}}" data-status="{{isEditing}}">{{ isEditing ? '取消' : '编辑' }}</button>
             <button class="button" wx:if="{{ isEditing }}" @tap="deleteItem">删除</button>
             <button class="button" wx:else @tap="uploadFile({{ curTab }})">{{ optionNames[curTab] }}</button>
         </view>
@@ -160,9 +160,21 @@ export default class Index extends wepy.page {
             }
         },
 
-        edit() {
+        edit(e) {
+            const { status } = e.currentTarget.dataset;
+            const dataList = this.groupList;
+            if (status) {
+                dataList.forEach(item => {
+                    Object.assign(item, {
+                        choseStatu: false,
+                    });
+                });
+                this.groupList = dataList;
+            }
             selectedIds = [];
+            this.delList = [];
             this.isEditing = !this.isEditing;
+            this.$apply();
         },
 
         /**
@@ -240,7 +252,6 @@ export default class Index extends wepy.page {
             if (this.isEditing) {
                 const item = this.groupList[index];
                 const itemIndex = this.delList.length === 0 ? -2 : this.delList.indexOf(id);
-                console.log(itemIndex);
                 if (item) {
                     item.choseStatu = !item.choseStatu;
                 }
@@ -250,7 +261,6 @@ export default class Index extends wepy.page {
                     this.delList.splice(itemIndex, 1);
                 }
                 this.$apply();
-                console.log(this.delList);
                 return;
             }
             // 点击跳转文章详情页面
@@ -259,7 +269,6 @@ export default class Index extends wepy.page {
             });
         },
         showDialog(id = '', name = '') {
-            console.log(11111);
             if (name) {
                 this.name = name;
                 this.id = id;
@@ -361,7 +370,6 @@ export default class Index extends wepy.page {
                     choseStatu: false,
                 });
             });
-            console.log('article', data);
             this.groupList = data;
             this.$apply();
         } catch (e) {
