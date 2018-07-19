@@ -1,19 +1,24 @@
 <template>
     <view class="container">
+        <!-- <block wx:if="{{groupList.length > 0}}">
+            <GroupComponent list="{{groupList}}"></GroupComponent>
+        </block> -->
         <view class="group-list article-group-list {{isEditing ? 'edit' : ''}}" wx:if="{{groupList.length > 0}}">
             <view
                 class="group-item article-group-item"
-                bindtap="editChose"
+                @tap.stop="editChose({{ item.id }}, {{ index }}, {{item.name}})"
                 wx:for="{{groupList}}"
                 wx:key="index"
                 data-item="{{item}}">
-                <view class="group-line article-group-line selected">
+                <view class="group-line article-group-line"
+                :class="{ selected: item.choseStatu}">
                     <view class="group-name article-group-name">{{item.name}}</view>
-                    <view class="group-size article-group-size">(13)</view>
+                    <view class="group-size article-group-size"> ({{item.count}})</view>
                     <view class="group-angel article-group-angel" wx:if="{{!isEditing}}"></view>
-                    <view class="rename-btn article-rename-btn" wx:if="{{isEditing}}">重命名</view>
+                    <view class="rename-btn article-rename-btn" wx:if="{{isEditing}}" @tap.catch.stop="showDialog({{item.id}}, {{item.name}})">重命名</view>
                 </view>
             </view>
+            <view class="block"></view>
         </view>
         <EmptyPage wx:if="{{groupList.length === 0}}"></EmptyPage>
     </view>
@@ -33,6 +38,7 @@ import { get } from '../utils/ajax';
 
 import Pop from '../components/Dialog';
 import EmptyPage from '../components/EmptyPage';
+import GroupComponent from '../components/GroupComponent';
 
 export default class OrderComponentGroup extends wepy.page {
     config = {
@@ -41,6 +47,7 @@ export default class OrderComponentGroup extends wepy.page {
     components = {
         EmptyPage,
         Pop,
+        GroupComponent,
     }
     data = {
         isEditing: false,
@@ -48,27 +55,45 @@ export default class OrderComponentGroup extends wepy.page {
         title: '没有预约分组~',
         showPop: false,
         delList: [],
+        mpId: '',
+        id: '',
+        name: '',
     }
     async onLoad() {
         await sleep();
         console.log('onLoad');
+        const mpId = wepy.getStorageSync('current_mpid');
+        this.mpId = mpId;
+        this.$apply();
+        this.loadData();
     }
     methods = {
-        showDialog() {
+        showDialog(id = '', name = '') {
+            if (name) {
+                this.name = name;
+                this.id = id;
+                this.$broadcast('postData', name);
+            }
             this.showPop = true;
             this.$apply();
         },
         async addGroup(content) {
             try {
-                await get('/businessService/addGroup', {
-                    mpId: this.mpId,
+                let url = '';
+                if (this.name) {
+                    url = `/businessService/updateGroup/${this.id}`;
+                } else {
+                    url = '/businessService/addGroup';
+                }
+                await get(url, {
                     name: content,
+                    mpid: this.mpId,
                 });
                 this.showPop = false;
                 this.$apply();
                 toast('添加成功！');
                 this.page = 1;
-                this.loadData(this.curTab);
+                this.loadData();
             } catch (e) {
                 console.log(e);
             }
@@ -79,7 +104,10 @@ export default class OrderComponentGroup extends wepy.page {
         },
         edit() {
             this.delList = [];
+            this.name = '';
+            this.id = '';
             this.isEditing = !this.isEditing;
+            this.$apply();
         },
         async deleteItem() {
             try {
@@ -89,52 +117,40 @@ export default class OrderComponentGroup extends wepy.page {
                     return;
                 }
                 const ids = delList.join();
-                await get('/businessService/delGroup/', {
-                    ids,
-                });
+                await get(`/businessService/delGroup/0?ids=${ids}`);
+                this.delList = [];
+                this.$apply();
+                this.loadData();
             } catch (e) {
-                console.log(e);
+                toast(e);
             }
         },
-        editChose(e) {
-            const { id } = e.currentTarget.dataset.item;
-            if (this.editStatus) {
-                const selArr = this.delList;
-                const dataList = this.listData;
-                const index = this.delList.length === 0 ? -2 : this.delList.indexOf(id);
-                if (index < 0) {
-                    selArr.push(id);
-                    dataList.forEach(item => {
-                        if (item.id === id) {
-                            Object.assign(item, {
-                                choseStatu: true,
-                            });
-                        }
-                    });
-                } else {
-                    dataList.forEach(item => {
-                        if (item.id === id) {
-                            Object.assign(item, {
-                                choseStatu: false,
-                            });
-                        }
-                    });
-                    selArr.splice(index, 1);
+        editChose(id, index, name) {
+            if (this.isEditing) {
+                const item = this.groupList[index];
+                const itemIndex = this.delList.length === 0 ? -2 : this.delList.indexOf(id);
+                console.log(itemIndex);
+                if (item) {
+                    item.choseStatu = !item.choseStatu;
                 }
-                this.listData = dataList;
-                this.delList = selArr;
+                if (itemIndex < 0) {
+                    this.delList.push(id);
+                } else {
+                    this.delList.splice(itemIndex, 1);
+                }
                 this.$apply();
+                console.log(this.delList);
                 return;
             }
             // 点击跳转文章详情页面
             wepy.navigateTo({
-                url: `orderComponentlist?id=${id}`,
+                url: `orderComponentlist?id=${id}&name=${name}`,
             });
         },
     }
     async loadData() {
         const { data } = await get('/businessService/groups', {
-            mpId: this.mpId,
+            mpid: this.mpId,
         });
         if (!data || data.length === 0) return;
         data.forEach(item => {
@@ -154,5 +170,8 @@ export default class OrderComponentGroup extends wepy.page {
 page{
     width:100%;
     height:auto;
+}
+.empty-box{
+    margin-top:150rpx;
 }
 </style>

@@ -7,7 +7,7 @@
             :class="{ selected: curTab === item.name }"
             @tap="selectTab({{ item.name }})">{{ item.label }}</view>
         </view>
-        <EmptyPage wx:if="{{groupList.length === 0 || works.length === 0}}"></EmptyPage>
+        <EmptyPage wx:if="{{curTab === 'article' && !groupList.length}}"></EmptyPage>
         <view class="work-list" wx:if="{{ curTab === 'image' || curTab === 'video' }}">
             <view class="content">
                 <view class="work-box" wx:for="{{ works }}" wx:key="id">
@@ -25,14 +25,21 @@
             </view>
         </view>
         <view class="group-list article-group-list {{isEditing ? 'edit' : ''}}" wx:if="{{groupList.length > 0}}">
-            <view class="group-item article-group-item" bindtap="editChose" wx:for="{{groupList}}" wx:key="index" data-item="{{item}}">
-                <view class="group-line article-group-line selected">
+            <view
+                class="group-item article-group-item"
+                @tap.stop="editChose({{ item.id }}, {{ index }}, {{item.name}})"
+                wx:for="{{groupList}}"
+                wx:key="index"
+                data-item="{{item}}">
+                <view class="group-line article-group-line"
+                :class="{ selected: item.choseStatu}">
                     <view class="group-name article-group-name">{{item.name}}</view>
-                    <view class="group-size article-group-size">(13)</view>
+                    <view class="group-size article-group-size"> ({{item.count}})</view>
                     <view class="group-angel article-group-angel" wx:if="{{!isEditing}}"></view>
-                    <view class="rename-btn article-rename-btn" wx:if="{{isEditing}}">重命名</view>
+                    <view class="rename-btn article-rename-btn" wx:if="{{isEditing}}" @tap.catch.stop="showDialog({{item.id}}, {{item.name}})">重命名</view>
                 </view>
             </view>
+            <view class="block"></view>
         </view>
         <view class="options">
             <button class="button edit" @tap="edit" wx:if="{{groupList.length > 0 || works.length > 0}}">{{ isEditing ? '取消' : '编辑' }}</button>
@@ -70,7 +77,7 @@ export default class Index extends wepy.page {
     mixins = [Mixin]
 
     data = {
-        curTab: 'article',
+        curTab: 'image',
         tabbarItems: [
             {
                 label: '图片',
@@ -97,10 +104,17 @@ export default class Index extends wepy.page {
         title: '没有文章分组~',
         isEditing: false,
         showPop: false,
+        name: '',
+        id: '',
+        delList: [],
+        mpId: '',
     }
 
     async onLoad() {
         await this.loadData(this.curTab);
+        const mpId = wepy.getStorageSync('current_mpid');
+        this.mpId = mpId;
+        this.$apply();
     }
 
     methods = {
@@ -193,57 +207,66 @@ export default class Index extends wepy.page {
                 default:
                     break;
             }
-
+            if (type === 'article') return;
             this.initData();
             this.loadData(this.curTab);
         },
         async addGroup(content) {
-            await get('/businessArticle/addgroup', {
-                name: content,
-            });
-            this.showPop = false;
-            this.$apply();
-            toast('添加成功！');
-            this.loadData(this.curTab);
+            try {
+                let url = '';
+                if (this.name) {
+                    url = `/businessArticle/updategroup/${this.id}`;
+                } else {
+                    url = '/businessArticle/addgroup';
+                }
+                await get(url, {
+                    name: content,
+                });
+                this.showPop = false;
+                this.$apply();
+                toast('操作成功！');
+                this.loadData(this.curTab);
+            } catch (e) {
+                this.errorHandler(e);
+                this.showPop = false;
+                toast(e);
+            }
         },
         close() {
             this.showPop = false;
             this.$apply();
         },
-        editChose(e) {
-            const { id } = e.currentTarget.dataset.item;
+        editChose(id, index, name) {
             if (this.isEditing) {
-                const selArr = selectedIds;
-                const dataList = this.listData;
-                const index = selectedIds.length === 0 ? -2 : selectedIds.indexOf(id);
-                if (index < 0) {
-                    selArr.push(id);
-                    dataList.forEach(item => {
-                        if (item.id === id) {
-                            Object.assign(item, {
-                                choseStatu: true,
-                            });
-                        }
-                    });
-                } else {
-                    dataList.forEach(item => {
-                        if (item.id === id) {
-                            Object.assign(item, {
-                                choseStatu: false,
-                            });
-                        }
-                    });
-                    selArr.splice(index, 1);
+                const item = this.groupList[index];
+                const itemIndex = this.delList.length === 0 ? -2 : this.delList.indexOf(id);
+                console.log(itemIndex);
+                if (item) {
+                    item.choseStatu = !item.choseStatu;
                 }
-                this.listData = dataList;
-                selectedIds = selArr;
+                if (itemIndex < 0) {
+                    this.delList.push(id);
+                } else {
+                    this.delList.splice(itemIndex, 1);
+                }
                 this.$apply();
+                console.log(this.delList);
                 return;
             }
             // 点击跳转文章详情页面
             wepy.navigateTo({
-                url: `articleComponentlist?id=${id}`,
+                url: `articleComponentlist?group=${id}&name=${name}`,
             });
+        },
+        showDialog(id = '', name = '') {
+            console.log(11111);
+            if (name) {
+                this.name = name;
+                this.id = id;
+                this.$broadcast('postData', name);
+            }
+            this.showPop = true;
+            this.$apply();
         },
     }
 
@@ -330,15 +353,20 @@ export default class Index extends wepy.page {
     }
 
     async loadArticle() {
-        // const { data } = get('/businessArticle/groups');
-        // if (!data && data.length === 0) return;
-        // data.forEach(item => {
-        //     Object.assign(item, {
-        //         choseStatu: false,
-        //     });
-        // });
-        // this.groupList = data;
-        // this.$apply();
+        try {
+            const { data } = await get('/businessArticle/groups');
+            if (!data || data.length === 0) return;
+            data.forEach(item => {
+                Object.assign(item, {
+                    choseStatu: false,
+                });
+            });
+            console.log('article', data);
+            this.groupList = data;
+            this.$apply();
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     async uploadImage() {
@@ -382,6 +410,11 @@ export default class Index extends wepy.page {
     }
 
     showDialog() {
+        const { groupList } = this;
+        if (groupList && groupList.length >= 10) {
+            toast(' 分组数量达到最大（10个），无法创建更多。');
+            return;
+        }
         this.showPop = true;
         this.$apply();
     }

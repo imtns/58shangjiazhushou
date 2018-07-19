@@ -1,0 +1,35 @@
+<template lang="wxml">
+    <view class="group-list article-group-list {{isEditing ? 'edit' : ''}}" wx:if="{{groupList.length > 0}}">
+            <view class="group-item article-group-item"></view>
+            <view
+                class="group-item article-group-item"
+                @tap.stop="editChose({{ item.id }}, {{ index }}, {{item.name}})"
+                wx:for="{{groupList}}"
+                wx:key="index"
+                data-item="{{item}}">
+                <view class="group-line article-group-line"
+                :class="{ selected: item.choseStatu}">
+                    <view class="group-name article-group-name">{{item.name}}</view>
+                    <view class="group-size article-group-size"> ({{item.count}})</view>
+                    <view class="group-angel article-group-angel" wx:if="{{!isEditing}}"></view>
+                    <view class="rename-btn article-rename-btn" wx:if="{{isEditing}}" @tap.catch.stop="showDialog({{item.id}}, {{item.name}})">重命名</view>
+                </view>
+            </view>
+            <view class="block"></view>
+        </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class GroupComponent extends wepy.component {
+    onLoad() {
+        console.log('onLoad');
+    }
+    data = {
+    }
+}
+</script>
+
+<style lang="scss">
+</style>

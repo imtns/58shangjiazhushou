@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>文章添加</title>
+    <script>
+        (function(win,lib){var doc=win.document;var docEl=doc.documentElement;var dpr=0;var tid;var flexible=lib.flexible||(lib.flexible={});var isIPhone=win.navigator.appVersion.match(/iphone/gi);var devicePixelRatio=win.devicePixelRatio;if(isIPhone){if(devicePixelRatio>=3&&(!dpr||dpr>=3)){dpr=3}else if(devicePixelRatio>=2&&(!dpr||dpr>=2)){dpr=2}else{dpr=1}}else{dpr=1}docEl.setAttribute("data-dpr",dpr);if(doc.readyState==="complete"){doc.body.style.fontSize=12+"px"}else{doc.addEventListener("DOMContentLoaded",function(){doc.body.style.fontSize=12+"px"},false)}function refreshRem(){var width=docEl.getBoundingClientRect().width;var rem=width/7.5;docEl.style.fontSize=rem+"px";flexible.rem=win.rem=rem}var evt="onorientationchange"in window?"orientationchange":"resize";win.addEventListener(evt,function(){clearTimeout(tid);tid=setTimeout(refreshRem,300)},false);win.addEventListener("pageshow",function(e){if(e.persisted){clearTimeout(tid);tid=setTimeout(refreshRem,300)}},false);refreshRem();flexible.dpr=win.dpr=dpr;flexible.refreshRem=refreshRem;flexible.rem2px=function(d){var val=parseFloat(d)*this.rem;if(typeof d==="string"&&d.match(/rem$/)){val+="px"}return val};flexible.px2rem=function(d){var val=parseFloat(d)/this.rem;if(typeof d==="string"&&d.match(/px$/)){val+="rem"}return val}})(window,window["lib"]||(window["lib"]={}));
+    </script>
+    <script>
+        window.__staticConfigUrl = 'https://static.58.com/lbg/shangjiaxcxht/zhushou/js/create-version.js';
+    </script>
+    <script type="text/javascript" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/js/static-loader.js"></script>
+</head>
+<body>
+    <div class="wrap">
+        <div class="wrap-items">
+            <div class="item-flex">
+                <div class="item-text required">标题</div>
+                <div class="item-input-div">
+                    <input type="text" class="item-input _title" placeholder="请输入20字以内" value="">
+                </div>
+            </div>
+            <div class="item-flex item-file">
+                <div class="item-upload-img none">
+                    <img src="" id="cover"/>
+                    <div class="exchange-img">替换图片</div>
+                </div>
+
+                <div class="item-file-div none">
+                    <div class="item-upload">添加图片</div>
+                    <input type="file" class="item-file-btn" id="item-file-btn">
+                </div>
+            </div>
+            <!-- <div class="item-flex">
+                <div class="item-text _author required" id="group">分组</div>
+                <div class="item-input-div">
+                    <div class="item-chose">去选择</div>
+                </div>
+            </div> -->
+            <div class="item-flex">
+                <div class="item-text">作者</div>
+                <div class="item-input-div">
+                    <input type="text" class="item-input _author" placeholder="请输入10字以内" value="">
+                </div>
+            </div>
+            <div class="item-flex">
+                <div class="item-text">来源</div>
+                <div class="item-input-div">
+                    <input type="text" class="item-input _source" placeholder="请输入10字以内" value="">
+                </div>
+            </div>
+        </div>
+        <div class="wrap-content _wrap-content">
+            <div class="item-flex no-border">
+                <div class="item-text required">文本内容上传</div>
+            </div>
+            <div class="zeditor-btn-main">
+                <img src="//static.58.com/lbg/shangjiaxcxht/zhushou/img/upload-icon.png" class="icon-tupian"/>
+                <input type='file' class='icon-tupian icon-tupian-btn' data-type="image">
+            </div>
+            <div id="editor" class="editor _content">
+            </div>
+        </div>
+        <div class="block"></div>
+        <div class="btn save-btn">保存</div>
+    </div>
+    <!-- mask -->
+    <div class="mask none"></div>
+    <!-- toast -->
+    <div class="win2 none">
+        <div class="tips2 tips-submiting none">
+            <span class="icon"></span>
+            <p>正在处理</p>
+        </div>
+        <div class="before tips2 tips-error none">
+            <span class="icon"></span>
+            <p class="error-infor"></p>
+        </div>
+        <div class="tips2 tips-success none">
+            <span class="icon"></span>
+            <p>保存成功！</p>
+        </div>
+    </div>
+</body>
+</html>

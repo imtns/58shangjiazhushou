@@ -14,7 +14,7 @@
                 style="height:{{height}};"
                 scroll-y="true"
                 wx:if="{{listData.length>0}}">
-                <view wx:for="{{listData}}" wx:key="index" class="list-item article-item {{item.choseStatu ? 'selected' : ''}}" data-item="{{item}}" bindtap="editChose">
+                <view wx:for="{{listData}}" wx:key="index" class="list-item article-item {{item.choseStatu ? 'selected' : ''}}" data-item="{{item}}" @tap.stop="editChose({{ item.id }}, {{ index }}, {{item.name}})">
                     <view class="article-title">{{item.title}}</view>
                     <view class="article-detail">
                         <view class="article-detail-flex">
@@ -39,7 +39,7 @@
     </view>
     <view class="options" wx:if="{{!editStatus}}">
         <view class="button edit" bindtap="edit" wx:if="{{listData.length > 0}}">编辑</view>
-        <view class="button" bindtap="addArticleGroup">添加文章</view>
+        <view class="button" bindtap="addArticle">添加文章</view>
     </view>
     <view class="options" wx:if="{{editStatus}}">
         <view class="button edit" bindtap="cancle">取消</view>
@@ -49,12 +49,10 @@
 
 <script>
 import wepy from 'wepy';
-import { alert } from '../utils';
+import { alert, toast } from '../utils';
 import { get } from '../utils/ajax';
 import EmptyPage from '../components/EmptyPage';
 
-const pageNum = 1;
-const pageSize = 20;
 export default class ArticleComponentList extends wepy.page {
     config = {
         navigationBarTitleText: '文章管理',
@@ -69,13 +67,18 @@ export default class ArticleComponentList extends wepy.page {
         listData: [],
         delList: [],
         id: '',
+        group: '',
         name: '',
         title: '没有文章~',
+        pageNum: 1,
+        pageSize: 20,
+        isLoading: true,
     }
     onLoad(option) {
+        console.log(option);
         try {
-            const { id = '', name = '' } = option;
-            this.id = id;
+            const { group = '', name = '' } = option;
+            this.group = group;
             this.name = name;
             this.$apply();
             const { windowHeight } = wepy.getSystemInfoSync();
@@ -86,55 +89,62 @@ export default class ArticleComponentList extends wepy.page {
             console.log(e);
         }
     }
-
-    async loadList() {
-        console.log('loadlist');
-        const { data } = await get('/businessArticle/list', {
-            pageSize: pageSize,
-            pageNum: pageNum,
-            group: this.id,
-        });
-        data.foreach(item => {
-            Object.assign(item, {
-                choseStatu: false,
-            });
-        });
-        this.listData = data;
+    onReachBottom() {
+        if (!this.isloading) return;
+        const pageNum = this.pageNum + 1;
+        this.pageNum = pageNum;
         this.$apply();
+        this.loadList();
     }
-    editChose(e) {
-        const { id } = e.currentTarget.dataset.item;
-        if (this.editStatus) {
-            const selArr = this.delList;
-            const dataList = this.listData;
-            const index = this.delList.length === 0 ? -2 : this.delList.indexOf(id);
-            if (index < 0) {
-                selArr.push(id);
-                dataList.forEach(item => {
-                    if (item.id === id) {
-                        Object.assign(item, {
-                            choseStatu: true,
-                        });
-                    }
-                });
-            } else {
-                dataList.forEach(item => {
-                    if (item.id === id) {
-                        Object.assign(item, {
-                            choseStatu: false,
-                        });
-                    }
-                });
-                selArr.splice(index, 1);
+    async loadList() {
+        try {
+            const { pageSize, pageNum, group } = this;
+            const { data } = await get('/businessArticle/list', {
+                pageSize,
+                pageNum,
+                group,
+            });
+            if (this.pageNum === 1 && (data.length === 0 || !data)) {
+                this.isLoading = false;
+                toast('没有数据');
+                return;
             }
-            this.listData = dataList;
-            this.delList = selArr;
+            if (this.pageNum > 1 && data.length < this.pageSzie) {
+                this.isLoading = false;
+                toast('没有更多数据');
+                return;
+            }
+            data.foreach(item => {
+                Object.assign(item, {
+                    choseStatu: false,
+                });
+            });
+            this.listData = this.listData.concat(data);
             this.$apply();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    editChose(id, index, name) {
+        if (this.isEditing) {
+            const item = this.groupList[index];
+            const itemIndex = this.delList.length === 0 ? -2 : this.delList.indexOf(id);
+            console.log(itemIndex);
+            if (item) {
+                item.choseStatu = !item.choseStatu;
+            }
+            if (itemIndex < 0) {
+                this.delList.push(id);
+            } else {
+                this.delList.splice(itemIndex, 1);
+            }
+            this.$apply();
+            console.log(this.delList);
             return;
         }
         // 点击跳转文章详情页面
         wepy.navigateTo({
-            url: `articleDetail?id=${id}`,
+            url: `articleComponentDetail?group=${this.group}&id=${id}&name=${name}`,
         });
     }
     edit() {
@@ -167,9 +177,10 @@ export default class ArticleComponentList extends wepy.page {
         this.listData = dataList;
         this.$apply();
     }
-    addArticleGroup() {
+    addArticle() {
+        const ppu = wepy.getStorageSync('ppu');
         wepy.navigateTo({
-            url: `articleGroup?id=${this.id}`,
+            url: `articleComponentCreate?ppu=${ppu}&group=${this.group}&name=${this.name}`,
         });
     }
 }

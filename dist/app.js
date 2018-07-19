@@ -67,7 +67,8 @@ var _class = function (_wepy$app) {
             'pages/accountNoticeList', // 入账提醒页面
             'pages/OrderList', // 订单列表
             'pages/OrderDetail', // 订单详情
-            'pages/articleComponentCreate', // 文章添加
+            'pages/articleComponentCreate', // 文章添加(不选分组)
+            'pages/articleComponentAdd', // 文章添加(选分组)
             'pages/articleComponentlist', // 文章列表
             'pages/articleComponentDetail', // 文章详情
             'pages/articleChoseGroup', // 选择分组

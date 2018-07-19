@@ -34,10 +34,12 @@ export default class PayChoseTime extends wepy.page {
         startDate: '请选择',
         endDate: '请选择',
         choseMonth: '1',
+        currentDate: '',
     }
     async onLoad() {
         await sleep();
         console.log('onLoad');
+        this.getCurrent();
     }
     choseType(e) {
         const { type } = e.currentTarget.dataset;
@@ -50,7 +52,7 @@ export default class PayChoseTime extends wepy.page {
     selectMonth(e) {
         const val = e.detail.value;
         const timeZone = this.getDays(val);
-        wepy.reLaunch({
+        wepy.redirectTo({
             url: `paymentRecord?startDate=${timeZone[0]}&endDate=${timeZone[1]}`,
         });
     }
@@ -75,13 +77,13 @@ export default class PayChoseTime extends wepy.page {
         this.startDate = `${startDate} 00:00:00`;
         this.endDate = `${val} 24:00:00`;
         this.$apply();
-        wepy.reLaunch({
+        wepy.redirectTo({
             url: `paymentRecord?startDate=${this.startDate}&endDate=${this.endDate}`,
         });
     }
     getDays(date) {
         const nDate = date.split('-');
-        const year = nDate[0];
+        const year = nDate[0] < 10 ? `200${nDate[0]}` : `20${nDate[0]}`;
         const month = nDate[1];
         const days = new Date(year, month, 0).getDate();
         const startDay = '01';
@@ -89,13 +91,14 @@ export default class PayChoseTime extends wepy.page {
         console.log(year, month, startDay, endDay);
         return [`${year}-${month}-${startDay} 00:00:00`, `${year}-${month}-${endDay} 24:00:00`];
     }
-    formatDate(date) {
-        const nDate = new Date(date);
-        const year = nDate.getFullYear();
-        const month = (nDate.getMonth() + 1) < 10 ? `0${nDate.getMonth() + 1}` : nDate.getMonth() + 1;
-        const day = nDate.getDate();
-        console.log(year, month, day);
-        return `${year} - ${month} - ${day}`;
+    // 获取当前日期
+    getCurrent() {
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1) < 10 ? `0${(date.getMonth() + 1)}` : (date.getMonth() + 1);
+        const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+        this.currentDate = `${year}-${month}-${day}`;
+        this.$apply();
     }
 }
 </script>

@@ -17,8 +17,9 @@ export default class ArticleComponentCreate extends wepy.page {
         wepy.setNavigationBarTitle({
             title: id ? '文章编辑' : '文章添加',
         });
-        this.url = `articleComponentCreate?ppu=${ppu}&group=${group}&id=${id}`;
+        this.url = `https://yaofa.58.com/uhtml/articleComponentCreate?ppu=${ppu}&group=${group}&id=${id}`;
         this.$apply();
+        console.log(this.url);
     }
 }
 </script>

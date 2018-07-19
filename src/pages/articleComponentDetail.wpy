@@ -29,20 +29,23 @@ export default class Index extends wepy.page {
     }
     data = {
         id: '',
+        group: '',
     }
     async onLoad(option) {
-        const { id = '' } = option;
+        const { group = '', id = '' } = option;
+        this.group = group;
         this.id = id;
         this.$apply();
         this.loadData();
     }
     async loadData() {
-        // await get(`/businessArticle/detail/${this.id}`);
+        await get(`/businessArticle/detail/${this.id}`);
     }
     toEdit() {
-        // wx.navigateTo({
-        //     url: 'articleCreate',
-        // });
+        const ppu = wepy.getStorageSync('ppu');
+        wepy.navigateTo({
+            url: `articleComponentCreate?ppu=${ppu}&group=${this.group}&id=${this.id}`,
+        });
     }
 }
 </script>
