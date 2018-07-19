@@ -3,10 +3,10 @@ import { LOAD_COUPON_LIST } from '../utils/url';
 import { get } from '../utils/ajax';
 
 export default class CouponMixin extends wepy.mixin {
-    formatTime(v, type = 'YYYY-DD-MM') {
+    formatTime(v = '', type = 'YYYY-DD-MM') {
         const regRes = v.match(/([\d]{4})-([\d]{2})-([\d]{2})/);
         if (!regRes) {
-            return;
+            return v;
         }
 
         let result = '';
@@ -38,7 +38,10 @@ export default class CouponMixin extends wepy.mixin {
                 let { couponCondition } = coupon;
                 const { validStarttime, validEndtime, validType } = coupon;
 
-                if (validEndtime && (new Date(validEndtime)).getTime() - Date.now() < 0) {
+                if (validEndtime && 
+                    // 还需要加上有效期当天的那一整天24小时的时间
+                    ((new Date(validEndtime)).getTime() + 24 * 60 * 60 * 1000) - Date.now() < 0
+                ) {
                     coupon.unable = true;
                 }
 

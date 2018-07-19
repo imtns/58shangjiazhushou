@@ -1,11 +1,9 @@
 <template>
     <view class="container">
 
-        <scroll-view class="column" wx:for="{{ contentList }}"
-        scroll-y
+        <scroll-view class="column" wx:for="{{ contentList }}" scroll-y
         wx:key="index" wx:for-index="colIndex" wx:for-item="column"
-        :class="{ selected: curColumn === colIndex }"
-        @tap="selectColumn({{ colIndex }})">
+        :class="{ selected: boldColumn === colIndex }">
 
             <view class="content-box" wx:for="{{ column }}"
             wx:key="id" wx:for-index="conIndex" wx:for-item="content"
@@ -26,6 +24,7 @@ import globalService from '../utils/globalService';
 
 const config = {
     region: {
+        size: 3,
         apiList: [
             '/local/provinces',
             '/local/citys/',
@@ -40,6 +39,7 @@ const config = {
 
             return curUrl + priKey;
         },
+        // 展示的名字
         showProp: 'localName',
         priKey: 'dispLocalID', // 需要传的id名,
         selectAction(item, colIndex) {
@@ -76,6 +76,64 @@ const config = {
             this.result = result;
         },
     },
+    // 行业选择器
+    trade: {
+        size: 3,
+        apiList: [
+            '/cate/dispcate/byparentid',
+            '/cate/dispcate/byparentid',
+            '/cate/dispcate/byparentid',
+        ],
+        formatFunction(index) {
+            const curUrl = this.apiList[index];
+
+            return curUrl;
+        },
+        getData(index, priKey = '') {
+            const mpid = wepy.getStorageSync('current_mpid');
+
+            if (index === 0) {
+                return {
+                    mpid,
+                };
+            }
+
+            return {
+                parentid: priKey,
+            };
+        },
+        priKey: 'cateId',
+        showProp: 'name',
+        selectAction(item, colIndex) {
+            let { result } = this;
+            const { cateId, name } = item;
+
+            if (!result) {
+                result = {};
+            }
+
+            if (colIndex === 0) {
+                Object.assign(result, {
+                    cate1: cateId,
+                    cate1Name: name,
+                });
+            }
+
+            if (colIndex === 1) {
+                Object.assign(result, {
+                    cate2: cateId,
+                    cate2Name: name,
+                });
+            }
+
+            if (colIndex === 2) {
+                Object.assign(result, {
+                    cate3: cateId,
+                    cate3Name: name,
+                });
+            }
+        },
+    },
 };
 
 export default class Index extends wepy.page {
@@ -91,7 +149,7 @@ export default class Index extends wepy.page {
         type: 'region',
         showProp: '',
         priKey: '',
-        curColumn: 0,
+        boldColumn: 0,
         result: {},
     }
 
@@ -107,6 +165,10 @@ export default class Index extends wepy.page {
             const content = column[conIndex] || {};
             const priKey = content[this.priKey];
 
+            // 选中当前列
+            // 将该操作赋在选中item的事件而不是column的事件，是因为存在点击的column空白部分的情况
+            this.boldColumn = (+colIdx) + 1; // 突出显示下一列
+
             // 渲染背景色
             column.forEach(item => {
                 const con = item;
@@ -118,47 +180,86 @@ export default class Index extends wepy.page {
 
             // 如果还不是最后一列，则展示下一列
             if (+colIndex < this.size - 1) {
-                const { data: col } = await get(this.getFormatUrl(colIndex + 1, priKey));
+                const { data: col } = await get(...this.getHttpParams(colIndex + 1, priKey));
                 this.contentList[colIndex + 1] = col;
+
+                // 如果没有子类了，就是最后一个
+                if (!col || !col.length) {
+                    this.successAction();
+                }
 
                 // 重置之后的 i + 2列，因为i + 1列上面已经重置了
                 for (let i = colIndex + 2; i < this.size; i += 1) {
                     this.contentList[i] = [];
                 }
             } else {
-                globalService.set('multiSelector', this.result);
+                this.successAction();
             }
 
             this.$apply();
         },
-
-        selectColumn(idx) {
-            const index = idx;
-            this.curColumn = +index;
-        },
     }
 
-    async onLoad() {
+    successAction() {
+        globalService.set('multiSelector', this.result);
+        console.log(this.result);
+        setTimeout(() => {
+            wepy.navigateBack();
+        }, 300);
+    }
+
+    getHttpParams(index, priKey) {
+        return [
+            this.getFormatUrl(index, priKey),
+            (this.getData && this.getData(index, priKey)) || {},
+        ];
+    }
+
+    async onLoad(options) {
+        const { type = 'region' } = options;
+        this.type = type;
+
         // 初始化列表
         for (let i = 0; i < this.columnIds.length; i += 1) {
             this.contentList[i] = [];
         }
 
-        this.loadConfig(config[this.type]);
+        this.loadConfig(config[type]);
 
         // 渲染第一个列表，第一个列表总是要渲染的
-        const { data: firstCol } = await get(this.getFormatUrl(0));
+        const { data: firstCol } = await get(...this.getHttpParams(0));
         this.contentList[0] = firstCol;
 
         this.$apply();
     }
 
     loadConfig(subConfig) {
-        this.apiList = subConfig.apiList;
-        this.getFormatUrl = subConfig.formatFunction.bind(this);
-        this.selectAction = subConfig.selectAction.bind(this);
-        this.showProp = subConfig.showProp;
-        this.priKey = subConfig.priKey;
+        if (!subConfig) {
+            return;
+        }
+
+        const {
+            apiList,
+            showProp,
+            priKey,
+            type,
+            size,
+            formatFunction = () => {},
+            selectAction = () => {},
+            getData = () => {},
+        } = subConfig;
+
+        Object.assign(this, {
+            apiList,
+            showProp,
+            priKey,
+            type,
+            size,
+            getFormatUrl: formatFunction.bind(this),
+            selectAction: selectAction.bind(this),
+            getData: getData.bind(this),
+        });
+
         this.$apply();
     }
 }

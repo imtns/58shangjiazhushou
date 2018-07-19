@@ -1,4 +1,7 @@
-const data = {};
+const data = {
+    refresh: false, // 刷新页面
+    multiSelector: {}, // 用于选择器
+};
 
 const foos = {
     resetCoupon() {
@@ -13,7 +16,7 @@ module.exports = {
 
     set(key, v) {
         data[key] = v;
-        console.log(data);
+        // console.log(data);
     },
 
     commit(name) {

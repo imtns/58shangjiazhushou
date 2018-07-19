@@ -9,7 +9,7 @@
         </view>
         <EmptyPage wx:if="{{groupList.length === 0 || works.length === 0}}"></EmptyPage>
         <view class="work-list" wx:if="{{ curTab === 'image' || curTab === 'video' }}">
-            <view class="content">
+            <view class="content" wx:if="{{ works.length }}">
                 <view class="work-box" wx:for="{{ works }}" wx:key="id">
                     <image
                     class="item"
@@ -23,6 +23,10 @@
                     @tap.stop="selectItem({{ item.id }}, {{ index }})"></view>
                 </view>
             </view>
+            <!-- <view wx:else style="margin:30rpx;text-align:center;color:#bdbdbd;">---啥也没有---</view> -->
+            <block wx:else>
+                <EmptyPage></EmptyPage>
+            </block>
         </view>
         <view class="group-list article-group-list {{isEditing ? 'edit' : ''}}" wx:if="{{groupList.length > 0}}">
             <view class="group-item article-group-item" bindtap="editChose" wx:for="{{groupList}}" wx:key="index" data-item="{{item}}">
@@ -161,6 +165,11 @@ export default class Index extends wepy.page {
                 if (cancel) {
                     this.isEditing = false;
                     this.$apply();
+                    this.selectedIds = [];
+                    this.works.forEach((...props) => {
+                        const [item] = props;
+                        item.checked = false;
+                    });
                     return;
                 }
 
@@ -190,7 +199,7 @@ export default class Index extends wepy.page {
                 case 'video':
                     await this.uploadVideo();
                     // 上传图片延迟2秒刷新，配合toast的2秒延迟
-                    await sleep(2000);
+                    await sleep(3000);
                     break;
 
                 case 'article':
@@ -298,7 +307,7 @@ export default class Index extends wepy.page {
 
         try {
             const { data } = await get(LOAD_RESOURCE_URL, postData);
-            if (!data || !data.length) {
+            if ((!data || !data.length) && this.works.length) {
                 toast('已经到底了');
             }
 
@@ -318,8 +327,10 @@ export default class Index extends wepy.page {
 
                     // 在这里添加try catch是有必要的，若不添加，报错了会终止循环
                     try {
-                        const extend = JSON.parse(workItem.extend);
-                        resourceUrl = `${extend.sourceCoverUrl}?w=100`; // 封面图片
+                        if (workItem.extend) {
+                            const extend = JSON.parse(workItem.extend);
+                            resourceUrl = `${extend.sourceCoverUrl}?w=100`; // 封面图片
+                        }
                     } catch (e) {
                         this.errorHandler(e);
                     }
@@ -365,10 +376,10 @@ export default class Index extends wepy.page {
         try {
             const { tempFilePath } = await wepy.chooseVideo();
             await this.uploadResource(tempFilePath, 'video');
-            toast('上传成功');
+            toast('上传成功', 3000);
         } catch (e) {
             this.errorHandler('上传失败', e);
-            toast('上传失败');
+            toast('上传失败', 3000);
         }
     }
 

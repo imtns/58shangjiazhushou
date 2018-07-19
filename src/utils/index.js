@@ -1,4 +1,15 @@
 import wepy from 'wepy';
+import globalService from './globalService';
+
+module.exports.globalService = globalService;
+
+export const isEmpty =  v => {
+    if (v === '' || v === null || v === undefined) {
+        return true;
+    }
+
+    return false;
+};
 
 export const sleep = (time = 300) => new Promise((resolve) => {
     setTimeout(() => { resolve(); }, time);
@@ -40,11 +51,11 @@ export const alertP = (...props) => {
 }
 
 // toast
-export const toast = (title) => {
+export const toast = (title, duration = 1500) => {
     wepy.showToast({
         title,
         icon: 'none',
-        duration: 2000,
+        duration,
     });
 };
 export const toastSync = (title) => wepy.showToast({

@@ -29,6 +29,7 @@ import CouponMixin from '../mixins/coupon';
 import { post } from '../utils/ajax';
 import { DELETE_COUPON } from '../utils/url';
 import { alertP } from '../utils';
+import globalService from '../utils/globalService';
 
 export default class Index extends wepy.page {
     config = {
@@ -80,6 +81,13 @@ export default class Index extends wepy.page {
 
     onLoad() {
         this.loadData();
+    }
+
+    onShow() {
+        if (globalService.get('refresh')) {
+            globalService.set('refresh', false);
+            this.loadData();
+        }
     }
 
     async loadData() {

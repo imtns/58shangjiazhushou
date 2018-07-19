@@ -16,22 +16,26 @@
             <view class="item required">
                 <text>服务价格</text>
                 <input
+                class="price-font input-price"
                 type="digit"
                 placeholder="请输入价格"
                 placeholder-class="placeholder"
                 value="{{ form.price }}"
                 @change="setFormData('price')"/>
+                <text class="unit">元/次</text>
             </view>
         </view>
         <view class="section">
             <view class="item required">
                 <text>服务时长</text>
                 <input
+                class="input-duration"
                 type="number"
                 placeholder="请输入时间"
                 placeholder-class="placeholder"
                 value="{{ form.duration }}"
                 @change="setFormData('duration')"/>
+                <text class="unit">分钟</text>
             </view>
         </view>
         <view class="section">
@@ -123,17 +127,9 @@ import wepy from 'wepy';
 import Mixin from '../mixins';
 import { get, post } from '../utils/ajax';
 import { LOAD_SERVICE, INSERT_SERVICE, SAVE_SERVICE } from '../utils/url';
-import { alert, picSrcDomain } from '../utils';
+import { alert, picSrcDomain, isEmpty } from '../utils';
 import imageUploader from '../components/UploadFile';
 import globalService from '../utils/globalService';
-
-const isEmpty = v => {
-    if (v === '' || v === null || v === undefined) {
-        return true;
-    }
-
-    return false;
-};
 
 export default class Index extends wepy.page {
     config = {
@@ -190,15 +186,19 @@ export default class Index extends wepy.page {
             }
 
             try {
-                // 数据过滤
-                const { form } = this;
                 let requestUrl = '';
+
+                // 数据过滤，不提交未填写字段
+                const { form } = this;
                 const postData = {};
                 Object.keys(form).forEach(key => {
-                    if (form[key]) {
+                    if (form[key] && typeof form[key] !== 'number') {
                         postData[key] = form[key];
                     }
                 });
+
+                // 校验数据
+                this.validator(postData);
 
                 if (form.id) {
                     requestUrl = SAVE_SERVICE;
@@ -214,22 +214,31 @@ export default class Index extends wepy.page {
             }
         },
 
+        /**
+         * prop 字段名
+         * e 事件对象
+         */
         setFormData(prop, e) {
             this.form[prop] = e.detail.value;
         },
 
         async setLocation () {
-            const {
-                address,
-                latitude: addressLatitude,
-                longitude: addressLongitude,
-            } = await wepy.chooseLocation();
-            Object.assign(this.form, {
-                address,
-                addressLatitude,
-                addressLongitude,
-            });
-            this.$apply();
+            try {
+                const {
+                    address,
+                    latitude: addressLatitude,
+                    longitude: addressLongitude,
+                } = await wepy.chooseLocation();
+
+                Object.assign(this.form, {
+                    address,
+                    addressLatitude,
+                    addressLongitude,
+                });
+                this.$apply();
+            } catch (e) {
+                this.errorHandler(e);
+            }
         },
     }
 
@@ -277,6 +286,30 @@ export default class Index extends wepy.page {
 
         if (province && city && area) {
             Object.assign(this.form, regionData);
+        }
+    }
+
+    // 校验数据
+    validator(data) {
+        // 校验必填字段
+        const {
+            serviceStarttime, serviceEndtime, price, duration, durationUnit,
+        } = data;
+
+        if (serviceStarttime < serviceEndtime) {
+            throw new Error('预约结束时间必须大于开始时间');
+        }
+
+        if (price > 1e5) {
+            throw new Error('输入价格不超过10万');
+        }
+
+        if (duration > 1440 && durationUnit === 1) {
+            throw new Error('输入时长不得大于1440分钟');
+        }
+
+        if (duration > 24 && durationUnit === 2) {
+            throw new Error('输入时长不得大于24小时');
         }
     }
 
@@ -386,10 +419,15 @@ view {
     .item {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         padding: 23rpx 0;
         margin: 0 30rpx;
         position: relative;
         height: 89rpx;
+
+        .price-font {
+            color: #FF937B;
+        }
 
         &.border-bottom {
             border-bottom: 1rpx solid #f3f3f3;
@@ -410,6 +448,21 @@ view {
             height: 30rpx;
             line-height: 30rpx;
             text-align: right;
+            position: relative;
+        }
+        .input-price {
+            margin-right: 84rpx;
+        }
+        .input-duration {
+            margin-right: 69rpx;
+        }
+        .unit {
+            position: absolute;
+            top: 0;
+            right: 0;
+            line-height: 89rpx;
+            font-size: 28rpx;
+            color: #666;
         }
 
         text {

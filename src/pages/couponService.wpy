@@ -25,7 +25,7 @@
                     </view>
                 </view>
             </view>
-            <view wx:else style="margin: 30rpx;text-align: center">---啥也没有---</view>
+            <view wx:else style="margin:30rpx;text-align:center;color:#bdbdbd;">---啥也没有---</view>
         </view>
         <view class="options">
             <button class="edit" @tap="chooseAll">全选当前分组</button>
@@ -317,7 +317,7 @@ view {
                 margin-right: 30rpx;
                 margin-left: 40rpx;
                 border-radius: 8rpx;
-                background-color: 120rpx;
+                background-color: #FFF;
                 border: 1rpx solid #eee;
                 box-shadow: 2rpx 6rpx 6rpx 0 rgba(213,219,255,0.30);
             }

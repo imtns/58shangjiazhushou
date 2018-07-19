@@ -71,7 +71,7 @@
             </view>
         </view>
 
-        <button class="save" @tap="save">保存</button>
+        <button class="save" :class="{ disabled: !canSubmit }" @tap="save">保存</button>
     </view>
 </template>
 
@@ -80,7 +80,7 @@ import wepy from 'wepy';
 import Mixin from '../mixins';
 import { get, post } from '../utils/ajax';
 import { LOAD_COUPON, SAVE_COUPON } from '../utils/url';
-import { alert } from '../utils';
+import { alert, isEmpty } from '../utils';
 
 import globalService from '../utils/globalService';
 
@@ -105,6 +105,50 @@ export default class Index extends wepy.page {
             validEndtime: '',
             applyType: '',
             serviceIds: '',
+            limitAmount: 0, // 满多少使用
+            reliefAmount: 0, // 满减
+            couponDiscard: 0, // 打几折，需要，50表示5折
+        },
+        canSubmit: false,
+    }
+
+    computed = {
+        canSubmit() {
+            let result = true;
+            const { couponType, validType, applyType } = this.form;
+            const requiredFields = ['title', 'subTitle', 'couponType', 'limitAmount',
+                'validType', 'totalCount', 'applyType'];
+
+            // 优惠券类型和生效时间，选中其中一种类型，另一种类型的字段不需要填写
+            // 优惠券类型
+            if (couponType === 1) {
+                // 代金券
+                requiredFields.push('reliefAmount');
+            } else if (couponType === 2) {
+                // 折扣券
+                requiredFields.push('couponDiscard');
+            }
+            // 生效时间
+            if (validType === 1) {
+                // 固定时间
+                requiredFields.push('validStarttime', 'validEndtime');
+            } else if (validType === 2) {
+                // 领取后生效
+                requiredFields.push('validDays', 'validAfterDays');
+            }
+
+            // 选择适用产品，选择全部产品时，serviceIds不填
+            if (applyType !== 1) {
+                requiredFields.push('serviceIds');
+            }
+
+            requiredFields.forEach(key => {
+                if (isEmpty(this.form[key])) {
+                    result = false;
+                }
+            });
+
+            return result;
         },
     }
 
@@ -112,8 +156,12 @@ export default class Index extends wepy.page {
 
     methods = {
         async save() {
+            if (!this.canSubmit) {
+                return;
+            }
+
             try {
-                // 数据过滤
+                // 数据过滤，过滤未提交的数据
                 const { form } = this;
                 const postData = {};
                 Object.keys(form).forEach(key => {
@@ -125,6 +173,7 @@ export default class Index extends wepy.page {
                 this.validator(postData);
 
                 await post(SAVE_COUPON, postData);
+                globalService.set('refresh', true);
                 wepy.navigateBack();
             } catch (e) {
                 alert(e);
@@ -138,9 +187,17 @@ export default class Index extends wepy.page {
     }
 
     validator(data) {
+        const {
+            couponDiscard, validType, limitAmount, reliefAmount,
+        } = data;
         let msg = '';
-        if (data.couponDiscard < 0 || data.couponDiscard > 99) {
+
+        if (couponDiscard < 0 || couponDiscard > 99) {
             msg = '享受折扣应该介于0至9.9折';
+        }
+
+        if (validType === 1 && limitAmount < reliefAmount) {
+            msg = '满减金额应当小于消费金额';
         }
 
         if (msg) {
@@ -159,8 +216,39 @@ export default class Index extends wepy.page {
 
     onShow() {
         // 每次onShow同步数据
-        const couponManage = globalService.get('couponManage');
-        Object.assign(this.form, couponManage);
+        // 只同步跳转到编辑页修改的字段
+        const {
+            // 优惠券类型
+            couponType,
+            limitAmount,
+            reliefAmount,
+            couponDiscard,
+
+            // 生效时间
+            validType,
+            validDays,
+            validAfterDays,
+            validStarttime,
+            validEndtime,
+
+            // 适用产品
+            applyType,
+            serviceIds,
+        } = globalService.get('couponManage');
+
+        Object.assign(this.form, {
+            couponType,
+            limitAmount,
+            reliefAmount,
+            couponDiscard,
+            validType,
+            validDays,
+            validAfterDays,
+            validStarttime,
+            validEndtime,
+            applyType,
+            serviceIds,
+        });
     }
 
     async loadData(id) {
@@ -292,6 +380,10 @@ button.save {
     left: 0;
     right: 0;
     border-radius: 0;
+
+    &.disabled {
+        background-color: #C5C5C5;
+    }
 
     &::after {
         content: none;
