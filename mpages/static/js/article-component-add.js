@@ -1,11 +1,18 @@
+
 var $errorPop = $('div.tips-error');
 var Page = {
     ppu: '',
     group: '',
-    id: '',
     name: '',
     saveStatus: '',
     test: 'test',
+    pop:function(cont) {
+        var NONE = 'none',
+            $ele = $('div.mask,div._dialog'),
+            $tips2 = $('._dialog p.dialog-content');
+            $tips2.text(cont);
+            $ele.removeClass(NONE);
+    },
     toast: function(tar, cont) {
         var NONE = 'none',
             $ele = $('div.mask,div.win2'),
@@ -36,17 +43,8 @@ var Page = {
     },
     init() {
         Page.ppu = Page.getKey('ppu');
-        Page.group = Page.getKey('group');
-        Page.id = Page.getKey('id');
-        Page.name = Page.getKey('name');
-        if (Page.id) {
-            // 编辑,数据回填
-            Page.loadData();
-            document.title = '文章编辑';
-        } else {
-            // 默认
-            $('.item-file-div').removeClass('none');
-        }
+        $('.item-file-div').removeClass('none');
+        Page.loadGroupData();
     },
     initEvent: function () {
         //初始化文章编辑框
@@ -58,6 +56,9 @@ var Page = {
                         formData = new FormData();
                     formData.append('source',$(self).get(0).files[0]);
                     document.domain = '58.com';
+                    Object.assign(formData, {
+                        test: Page.ppu
+                    });
                     $.ajax({
                         url: '/fileUpload',
                         type: 'POST',
@@ -67,6 +68,7 @@ var Page = {
                         header: {
                             'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
                             PPU: Page.ppu || 'wanghongyue',
+                            // 'YkuYdY8rk5As4T2QaJ7v': '45797966958100',
                             reqfrom: 'biz_assistant',
                         },
                         success: function(data) {
@@ -88,6 +90,9 @@ var Page = {
             var self = this,
             formData = new FormData();
             formData.append('sources', $(self).get(0).files[0]);
+            Object.assign(formData, {
+                test: Page.ppu
+            });
             $.ajax({
                 url: '/fileUpload',
                 type: 'POST',
@@ -95,6 +100,7 @@ var Page = {
                 header: {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
                     PPU: Page.ppu || 'wanghongyue',
+                    // 'YkuYdY8rk5As4T2QaJ7v': '45797966958100',
                     reqfrom: 'biz_assistant',
                 },
                 contentType: false,
@@ -133,6 +139,10 @@ var Page = {
             };
             if (!cover) {
                 Page.toast($errorPop, '请上传文章头图');
+                return;
+            }
+            if (!Page.group) {
+                Page.toast($errorPop, '请选择所属分组');
                 return;
             }
             if (temp.length == 1 && temp.html() == '<br>') {
@@ -182,44 +192,99 @@ var Page = {
                 }
             });
         })
-        $('.mask,._sure-btn').on('click', function() {
-            $('.mask,.dialog').addClass('none');
+        $('.mask,._cancel-btn,._sure-btn').on('click', function() {
+            $('.mask,._dialog,.dialog-create-group').addClass('none');
+            $('.dialog-content-input').val('');
             if (Page.save) {
                 wx.miniProgram.navigateTo({
                     url: '/pages/articleComponentlist?group=' + Page.group + '&name=' + Page.name
                 });
             }
         });
+        $('.item-chose').on('click', function() {
+            $('.mask,.group-dialog').removeClass('none');
+        })
+        $('._create-btn').on('click', function() {
+            $('.group-dialog').addClass('none');
+            $('.dialog-create-group').removeClass('none');
+        })
+        // 请求添加分组
+        $('._sure-create').on('click', function() {
+            var name = $('.dialog-content-input').val();
+            if (!name) {
+                Page.toast($errorPop, '请输入分组名称！');
+                return;
+            }
+            if (name.length > 15) {
+                Page.toast($errorPop, '分组名称不得超过15个字！');
+                return;
+            }
+            $.ajax({
+                url: '/businessArticle/addgroup',
+                data: {
+                    name:name,
+                    test: Page.test,
+                },
+                header: {
+                    'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
+                    PPU: Page.ppu || 'wanghongyue',
+                    reqfrom: 'biz_assistant',
+                },
+                success:function(res) {
+                    var res = JSON.parse(res);
+                    if(res.state == 100){
+                        $('.mask,.group-dialog').removeClass('none');
+                        location.reload();
+                    }else{
+                        Page.toast($errorPop, res.msg);
+                    }
+                }
+            });
+            $('.mask,.dialog-create-group').addClass('none');
+            $('.dialog-content-input').val('');
+        });
+        // 选择分组
+        $('.group-dialog-list').on('click', '.group-dialog-item', function() {
+            var flag = $(this).hasClass('selected');
+            if (!flag) {
+                var item = $(this).data(item);
+                $(this).addClass('selected').siblings('.group-dialog-item').removeClass('selected');
+                $('._chose-btn').data('item', item);
+            } else {
+                $(this).removeClass('selected')
+            }
+        })
+        $('._chose-btn').on('click', function() {
+            var item = $(this).data('item');
+            if (!item) {
+                Page.toast($errorPop, '请选择文章分组！');
+                return;
+            }
+            $(this).text(item.name);
+            Page.name = item.name;
+            Page.group = item.group;
+        });
     },
-    loadData: function() {
+    loadGroupData: function() {
         $.ajax({
-            url: '/businessAticle/detail/' + Page.id,
+            url: '/businessArticle/groups',
             data: {
                 test: Page.test,
             },
             header: {
-                'content-type': 'application/json',
+                'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
                 PPU: Page.ppu || 'wanghongyue',
                 reqfrom: 'biz_assistant',
             },
-            success: function(data) {
-                if (data.state == 100) {
-                    var listData = data.data,
-                        title = data.data.title,
-                        content = data.data.content,
-                        author = data.data.author,
-                        source = data.data.source,
-                        intro = data.data.intro,
-                        cover = data.data.cover;
-                        $('._title').val(title);
-                        $('._author').val(author);
-                        $('._source').val(source);
-                        $("#editor .zeditor-content").html(content);
-                        if (!cover) {
-                            $('.item-file-div').removeClass('none');
-                        } else {
-                            $('.item-upload-img').removeClass('none').find('#cover').attr('src', 'https://pic1.58cdn.com.cn' + cover);
-                        }
+            success: function(res) {
+                var res = JSON.parse(res);
+                if (res.state == 100) {
+                    var data = res.data,
+                        html = '';
+                    for(var i=0 ;i<data.length;i++) {
+                        html += '<div class="group-dialog-item" data-item="'+data[i]+'">' + data[i].name + '</div>';
+                    }
+                    $('.group-dialog-list').html(html);
                 } else {
                     Page.toast($errorPop, res.msg);
                 }

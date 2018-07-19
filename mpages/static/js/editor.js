@@ -195,7 +195,7 @@
             console.error('节点配置不正确。');
             return;
         }
-        $(dom).addClass('zeditor-container').html("\n            <div class=\"zeditor-btn-main\">\n            <img src=\'http://static.58.com/lbg/shangjiaxcxht/zhushou/img/upload-icon.png\' class=\'icon-tupian\'>\n            <input type=\'file\' class=\'icon-tupian icon-tupian-btn\' data-type=\"image\">\n            </div>\n            <div class=\"zeditor-content\" contenteditable=\"true\" ></div>\n            ");
+        $(dom).addClass('zeditor-container').html("\n            <div class=\"zeditor-content\" contenteditable=\"true\" ></div>\n            ");
         var $editor = $('.zeditor-content');
         $editor.focus();
         var $editorBtn = $('.zeditor-btn-main');
@@ -340,10 +340,10 @@
         };
 
         var bindEvent = function bindEvent() {
-            $editor.html(content).on('paste', paste).on('touchend', mouseup).on('blur', blur);
+            $editor.html(content).on('paste', paste).on('mouseup', mouseup).on('keyup', keyup).on('blur', blur);
             $editorBtn.on('click', editorBtnClick);
             document.addEventListener('click', function (e) {
-                if (!$(e.target).closest('.zeditor-contaimer')) {
+                if (!$(e.target).closest('.zeditor-container')) {
                     editorBtnHide();
                 }
             });

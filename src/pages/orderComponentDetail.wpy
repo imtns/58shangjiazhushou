@@ -1,50 +1,54 @@
 <template>
     <view class="container">
-        <view class="order-banner"></view>
+        <view class="order-banner">
+            <image src="http://pic1.58cdn.com.cn/{{pics}}"></image>
+        </view>
         <view class="item-flex">
             <view class="item-flex-line height-100">
-                <view class="item-base">家庭厨房保洁</view>
+                <view class="item-base">{{serviceName}}</view>
                 <view class="item-base align-right"><image src="./assets/phone-icon.png"></image></view>
             </view>
         </view>
         <view class="item-flex margin-top-20">
             <view class="item-flex-line">
                 <view class="item-base">服务时长</view>
-                <view class="item-base align-right">180分钟</view>
+                <view class="item-base align-right">{{duration}} {{durationUnit === 1 ? '分钟' : '小时'}}</view>
             </view>
         </view>
         <view class="item-flex">
             <view class="item-flex-line">
                 <view class="item-base">可预约时间段</view>
-                <view class="item-base align-right">9:00-18:00</view>
+                <view class="item-base align-right">{{serviceStartTime - serviceEndTime}}</view>
             </view>
         </view>
         <view class="item-flex">
             <view class="item-flex-line">
                 <view class="item-base">商家地址</view>
-                <view class="item-base align-right right-angel padding-right-20">石景山区海特花园</view>
+                <view class="item-base align-right right-angel padding-right-20">{{address}}</view>
             </view>
         </view>
-        <view class="item-flex">
+        <!-- <view class="item-flex">
             <view class="item-flex-line">
                 <view class="item-base">优惠劵</view>
                 <view class="item-base align-right right-angel padding-right-20">有可使用的优惠劵</view>
             </view>
-        </view>
+        </view> -->
         <view class="item-flex margin-top-20">
             <view class="item-flex-line"><view class="item-base">服务详情</view></view>
-            <view class="item-flex-text">你姐夫的速尔寄偶滴神文件的苏菲实际开发你们范借口接口飞碟说吧范借款方吧昵称吧妇女健康飓风重新你艰苦奋斗几女妇产科继续女积分即可将虚拟机女剑客</view>
+            <view class="item-flex-text">{{serviceDetailInfo}}</view>
         </view>
     </view>
     <view class="block"></view>
     <view class="options">
-        <view class="button edit">上架</view>
+        <view class="button edit" @tap="manageProduct">{{status === 2 ? '上架' : '下架'}}</view>
         <view class="button">编辑</view>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
+import { get } from '../utils/ajax';
+import { toast } from '../utils';
 
 export default class OrderComponentDetail extends wepy.page {
     config = {
@@ -52,11 +56,70 @@ export default class OrderComponentDetail extends wepy.page {
     }
     data = {
         id: '',
+        mpid: '',
+        pics: '',
+        serviceName: '',
+        serviceDuaring: '',
+        serviceStartTime: '',
+        serviceEndTime: '',
+        address: '',
+        serviceDetailInfo: '',
+        duration: '',
+        durationUnit: '',
+        status: '',
     }
     onLoad(option) {
         const { id = '' } = option;
         this.id = id;
+        this.mpid = wepy.getStorageSync('current_mpid');
         this.$apply();
+        this.loadData();
+    }
+    async loadData() {
+        try {
+            const { data } = await get(`/businessService/get/${this.id}`, {
+                mpid: this.mpid,
+            });
+            const {
+                pics,
+                serviceName,
+                serviceDuaring,
+                serviceStartTime,
+                serviceEndTime,
+                address,
+                serviceDetailInfo,
+                duration,
+                durationUnit,
+                status,
+            } = data;
+            Object.assign(this, {
+                pics,
+                serviceName,
+                serviceDuaring,
+                serviceStartTime,
+                serviceEndTime,
+                address,
+                serviceDetailInfo,
+                duration,
+                durationUnit,
+                status,
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    async manageProduct() {
+        try {
+            const { id, status } = this;
+            const msg = status === 2 ? '下架成功!' : '上架成功!';
+            await get('/businessService/update', {
+                id,
+                status,
+            });
+            toast(msg);
+        } catch (e) {
+            console.log(e);
+        }
     }
 }
 </script>
@@ -70,6 +133,10 @@ export default class OrderComponentDetail extends wepy.page {
     .order-banner{
         width:100%;
         height:562rpx;
+        image{
+            width:100%;
+            height:100%;
+        }
     }
     .item-flex{
         background:#fff;

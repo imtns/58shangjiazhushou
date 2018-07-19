@@ -1,0 +1,27 @@
+<template>
+    <web-view src="{{url}}"></web-view>
+</template>
+<script>
+import wepy from 'wepy';
+
+export default class ArticleComponentAdd extends wepy.page {
+    config = {
+        navigationBarTitleText: '文章添加',
+    }
+    data = {
+        url: '',
+    }
+    onLoad() {
+        const ppu = wx.getStorageSync('ppu');
+        this.url = `https://yaofa.58.com/uhtml/articleComponentAdd?ppu=${ppu}`;
+        this.$apply();
+        console.log(this.url);
+    }
+}
+</script>
+<style lang="scss">
+
+</style>
+<!--
+    此页面用于文章添加选分组，入口从编辑页面进来
+-->

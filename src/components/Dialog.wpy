@@ -2,14 +2,14 @@
     <view class="mask" wx:if="{{showPop}}" catchtouchmove="stopPro">
         <view class="pop">
             <view class="pop-title">
-                新建分组
+                {{title}}
             </view>
             <view class="pop-body">
-                <input placeholder="请输入分组名称" cursor-spacing="80" @input="input"></input>
+                <input placeholder="请输入分组名称" cursor-spacing="80" @input="input" value="{{content}}"></input>
             </view>
             <view class="pop-options">
                 <view class="pop-btn" @tap="close">取消</view>
-                <view class="pop-btn enter" @tap="add">创建</view>
+                <view class="pop-btn enter" @tap="add">{{surebtnText}}</view>
             </view>
         </view>
     </view>
@@ -29,10 +29,15 @@ export default class Pop extends wepy.component {
     data = {
         showPop: false,
         content: '',
+        title: '新建分组',
+        surebtnText: '创建',
     }
     methods = {
         close() {
             this.$emit('close');
+            this.title = '新建分组';
+            this.surebtnText = '创建';
+            this.content = '';
         },
         async add() {
             console.log(this.content);
@@ -47,13 +52,27 @@ export default class Pop extends wepy.component {
             }
             this.$emit('addGroup', this.content);
             this.content = '';
+            this.$apply();
         },
         input(e) {
             this.content = e.detail.value;
         },
     }
+    events = {
+        postData: (name) => {
+            if (name) {
+                this.title = '编辑分组';
+                this.surebtnText = '确定';
+                this.content = name;
+            } else {
+                this.title = '新建分组';
+                this.surebtnText = '创建';
+                this.content = '';
+            }
+            this.$apply();
+        },
+    }
     onLoad() {
-        console.log('onLoad');
     }
 }
 </script>

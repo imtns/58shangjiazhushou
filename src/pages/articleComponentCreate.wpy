@@ -10,15 +10,19 @@ export default class ArticleComponentCreate extends wepy.page {
     }
     data = {
         url: '',
-        id: '',
     }
     onLoad(option) {
-        const { id } = option;
-        this.id = id;
+        const ppu = wx.getStorageSync('ppu');
+        const { id = '', group = '' } = option;
+        wepy.setNavigationBarTitle({
+            title: id ? '文章编辑' : '文章添加',
+        });
+        this.url = `https://yaofa.58.com/uhtml/articleComponentCreate?ppu=${ppu}&group=${group}&id=${id}`;
         this.$apply();
+        console.log(this.url);
     }
 }
 </script>
 <style lang="scss">
-    
+
 </style>

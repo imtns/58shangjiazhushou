@@ -1,51 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-<head document.domain="static.58.com">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>文章添加</title>
-    <link rel="stylesheet" href="../static/css/article-component-create.css">
     <script>
         (function(win,lib){var doc=win.document;var docEl=doc.documentElement;var dpr=0;var tid;var flexible=lib.flexible||(lib.flexible={});var isIPhone=win.navigator.appVersion.match(/iphone/gi);var devicePixelRatio=win.devicePixelRatio;if(isIPhone){if(devicePixelRatio>=3&&(!dpr||dpr>=3)){dpr=3}else if(devicePixelRatio>=2&&(!dpr||dpr>=2)){dpr=2}else{dpr=1}}else{dpr=1}docEl.setAttribute("data-dpr",dpr);if(doc.readyState==="complete"){doc.body.style.fontSize=12+"px"}else{doc.addEventListener("DOMContentLoaded",function(){doc.body.style.fontSize=12+"px"},false)}function refreshRem(){var width=docEl.getBoundingClientRect().width;var rem=width/7.5;docEl.style.fontSize=rem+"px";flexible.rem=win.rem=rem}var evt="onorientationchange"in window?"orientationchange":"resize";win.addEventListener(evt,function(){clearTimeout(tid);tid=setTimeout(refreshRem,300)},false);win.addEventListener("pageshow",function(e){if(e.persisted){clearTimeout(tid);tid=setTimeout(refreshRem,300)}},false);refreshRem();flexible.dpr=win.dpr=dpr;flexible.refreshRem=refreshRem;flexible.rem2px=function(d){var val=parseFloat(d)*this.rem;if(typeof d==="string"&&d.match(/rem$/)){val+="px"}return val};flexible.px2rem=function(d){var val=parseFloat(d)/this.rem;if(typeof d==="string"&&d.match(/px$/)){val+="rem"}return val}})(window,window["lib"]||(window["lib"]={}));
     </script>
+    <script>
+        window.__staticConfigUrl = 'https://static.58.com/lbg/shangjiaxcxht/zhushou/js/add-version.js';
+    </script>
+    <script type="text/javascript" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/js/static-loader.js"></script>
 </head>
 <body>
     <div class="wrap">
         <div class="wrap-items">
             <div class="item-flex">
-                <div class="item-text required _title">标题</div>
+                <div class="item-text required">标题</div>
                 <div class="item-input-div">
-                    <input type="text" class="item-input" placeholder="请输入20字以内" value="">
+                    <input type="text" class="item-input _title" placeholder="请输入20字以内" value="">
                 </div>
             </div>
             <div class="item-flex item-file">
-                <div class="item-upload-img">
-                    <img src="https://img.58cdn.com.cn/lbg/jianzhan/images/youxiang/banjia.png" id="cover"/>
+                <div class="item-upload-img none">
+                    <img src="" id="cover"/>
                     <div class="exchange-img">替换图片</div>
                 </div>
 
-                <div class="item-file-div">
+                <div class="item-file-div none">
                     <div class="item-upload">添加图片</div>
                     <input type="file" class="item-file-btn" id="item-file-btn">
                 </div>
             </div>
-            <!-- <div class="item-flex">
+            <div class="item-flex">
                 <div class="item-text _author required" id="group">分组</div>
                 <div class="item-input-div">
                     <div class="item-chose">去选择</div>
                 </div>
-            </div> -->
+            </div>
             <div class="item-flex">
-                <div class="item-text _author">作者</div>
+                <div class="item-text">作者</div>
                 <div class="item-input-div">
-                    <input type="text" class="item-input" placeholder="请输入10字以内" value="">
+                    <input type="text" class="item-input _author" placeholder="请输入10字以内" value="">
                 </div>
             </div>
             <div class="item-flex">
-                <div class="item-text _source">来源</div>
+                <div class="item-text">来源</div>
                 <div class="item-input-div">
-                    <input type="text" class="item-input" placeholder="请输入10字以内" value="">
+                    <input type="text" class="item-input _source" placeholder="请输入10字以内" value="">
                 </div>
             </div>
         </div>
@@ -53,23 +56,57 @@
             <div class="item-flex no-border">
                 <div class="item-text required">文本内容上传</div>
             </div>
+            <div class="zeditor-btn-main">
+                <img src='//static.58.com/lbg/shangjiaxcxht/zhushou/img/upload-icon.png' class='icon-tupian'>
+                <input type='file' class='icon-tupian icon-tupian-btn' data-type="image">
+            </div>
             <div id="editor" class="editor _content">
             </div>
         </div>
         <div class="block"></div>
         <div class="btn save-btn">保存</div>
     </div>
-    <div class="mask"></div>
-    <div class="dialog">
+    <div class="mask none"></div>
+    <!-- toast -->
+    <div class="win2 none">
+        <div class="tips2 tips-submiting none">
+            <span class="icon"></span>
+            <p>正在处理</p>
+        </div>
+        <div class="before tips2 tips-error none">
+            <span class="icon"></span>
+            <p class="error-infor"></p>
+        </div>
+        <div class="tips2 tips-success none">
+            <span class="icon"></span>
+            <p>保存成功！</p>
+        </div>
+    </div>
+    <!-- dialog 废弃-->
+    <div class="dialog _dialog none">
         <h2 class="dialog-title">提示</h2>
-        <p class="dialog-content">删除分组将同时删除组内所有除</p>
+        <p class="dialog-content">内容</p>
         <div class="dialog-action-bar">
             <a href="javascript:void(0);" class="btn _sure-btn">确定</a>
         </div>
     </div>
-    <script src="../static/js/zepto.min.js"></script>
-    <script src="../static/js/editor.js"></script>
-    <script src="../static/js/article-component-create.js"></script>
-    <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
+    <!-- 新建分组 -->
+    <div class="dialog dialog-create-group none">
+        <h2 class="dialog-title">新建分组</h2>
+        <input type="text" placeholder="请输入分组名称(最多15个字)" class="dialog-content dialog-content-input">
+        <div class="dialog-action-bar">
+            <a href="javascript:void(0);" class="btn _cancel-btn">取消</a>
+            <a href="javascript:void(0);" class="btn _ok-btn _sure-create">创建</a>
+        </div>
+    </div>
+    <!-- 分组列表 -->
+    <div class="group-dialog none">
+        <div class="group-dialog-list"> 
+        </div>
+        <div class="dialog-action-bar">
+            <a href="javascript:void(0);" class="btn _ok-btn _create-btn">新建分组</a>
+            <a href="javascript:void(0);" class="btn _chose-btn">确认</a>
+        </div>
+    </div>
 </body>
 </html>
