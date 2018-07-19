@@ -85,7 +85,9 @@ var _class = function (_wepy$app) {
             'pages/couponPreview', // 优惠券预览
             'pages/orderComponentEdit', // 预约编辑
             'pages/OpenPay', // 开通支付
-            'pages/CateSelector'],
+            'pages/CateSelector', // 类目选择
+            'pages/multiSelector', // 多级选择页面
+            'pages/followPublic'],
             window: {
                 backgroundTextStyle: 'light',
                 navigationBarBackgroundColor: '#fff',

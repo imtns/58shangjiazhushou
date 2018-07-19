@@ -29,7 +29,8 @@
                 </view>
                 <text class="appedit-form-arrow"></text>
             </view>
-            <navigator url="/pages/CateSelector?cate1={{form.cate1}}&cate2={{form.cate2}}&cate3={{form.cate3}}" wx:else>
+            <!-- <navigator url="/pages/CateSelector?cate1={{form.cate1}}&cate2={{form.cate2}}&cate3={{form.cate3}}" wx:else> -->
+            <navigator url="/pages/multiSelector?type=trade" wx:else>
                 <view class="appedit-content-list-item">
                     <text class="appedit-form-label">所属行业</text>
                     <view class="appedit-form-cate">
@@ -73,7 +74,7 @@
 
 <script>
 import wepy from 'wepy';
-import { picSrcDomain, filteremoji, toastSync } from '../utils';
+import { picSrcDomain, filteremoji, toastSync, globalService } from '../utils';
 import { get } from '../utils/ajaxP';
 
 const host = 'https://yaofa.58.com';
@@ -243,7 +244,7 @@ export default class AppEdit extends wepy.page {
         this.defaultSelCityIndex();
     }
     onShow () {
-        this.updateCateChooice();
+        this.updateCateChoice();
     }
     // 记录页面加载是所属行业类别编辑状态
     // 如果小程序属于同镇mpSource= 3且所属行业cate2为空则可以编辑
@@ -255,25 +256,49 @@ export default class AppEdit extends wepy.page {
             || (mpSource && mpSource.toString() !== '3');
     }
     // 更新所属行业类别
-    updateCateChooice () {
-        if (!this.$parent.globalData || !this.$parent.globalData.cateChooice) return;
-        const form = {};
-        console.log('cateChooice0', this.$parent.globalData.cateChooice);
-        // 从所属类目值选择页面返回重新赋值
-        const cateChooice = (this.$parent.globalData && this.$parent.globalData.cateChooice) ?
-            this.$parent.globalData.cateChooice : [{}, {}, {}];
-        console.log('cateChooice1', cateChooice);
-        cateChooice.map((item, index) => {
-            form[`cate${index + 1}`] = item.cateId || '';
-            form[`cate${index + 1}Name`] = item.name || '';
-            return item;
+    updateCateChoice() {
+        const {
+            cate1 = '',
+            cate1Name = '',
+            cate2 = '',
+            cate2Name = '',
+            cate3 = '',
+            cate3Name = '',
+        } = globalService.get('multiSelector');
+
+        // 检查
+        if ([cate1, cate2, cate3].every(v => typeof v !== 'number')) {
+            return;
+        }
+
+        this.updateForm({
+            cate1,
+            cate1Name,
+            cate2,
+            cate2Name,
+            cate3,
+            cate3Name,
         });
-        // 更新完成删除全局所属类目字段cateChooice
-        this.$parent.globalData
-            && this.$parent.globalData.cateChooice
-            && (this.$parent.globalData.cateChooice = undefined);
-        this.updateForm(form);
     }
+    // updateCateChoice () {
+    //     if (!this.$parent.globalData || !this.$parent.globalData.cateChooice) return;
+    //     const form = {};
+    //     console.log('cateChooice0', this.$parent.globalData.cateChooice);
+    //     // 从所属类目值选择页面返回重新赋值
+    //     const cateChooice = (this.$parent.globalData && this.$parent.globalData.cateChooice) ?
+    //         this.$parent.globalData.cateChooice : [{}, {}, {}];
+    //     console.log('cateChooice1', cateChooice);
+    //     cateChooice.map((item, index) => {
+    //         form[`cate${index + 1}`] = item.cateId || '';
+    //         form[`cate${index + 1}Name`] = item.name || '';
+    //         return item;
+    //     });
+    //     // 更新完成删除全局所属类目字段cateChooice
+    //     this.$parent.globalData
+    //         && this.$parent.globalData.cateChooice
+    //         && (this.$parent.globalData.cateChooice = undefined);
+    //     this.updateForm(form);
+    // }
     defaultSelCityIndex () {
         const { city, province } = this.form;
         let pIndex = 0;

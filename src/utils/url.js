@@ -10,3 +10,6 @@ export const DELETE_COUPON = '/businessCoupon/delete/'; // 删除单个优惠券
 
 export const LOAD_SERVICE_GROUPS = '/businessService/groups'; // 获取预约组件分组
 export const LOAD_SERVICE_LIST = '/businessService/listByPageForUser'; // 获取服务组件
+export const LOAD_SERVICE = '/businessService/get/'; // 获取预约服务组件内容
+export const INSERT_SERVICE = '/businessService/insert'; // 新增
+export const SAVE_SERVICE = '/businessService/update'; // 更新

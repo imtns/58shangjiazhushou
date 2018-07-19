@@ -10,7 +10,6 @@ import wepy from 'wepy';
 
 export default class EmptyPage extends wepy.component {
     onLoad() {
-        console.log('onLoad');
         this.title = this.$parent.title;
     }
     data = {

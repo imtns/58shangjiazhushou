@@ -1,0 +1,304 @@
+<template>
+    <view class="container">
+
+        <scroll-view class="column" wx:for="{{ contentList }}" scroll-y
+        wx:key="index" wx:for-index="colIndex" wx:for-item="column"
+        :class="{ selected: boldColumn === colIndex }">
+
+            <view class="content-box" wx:for="{{ column }}"
+            wx:key="id" wx:for-index="conIndex" wx:for-item="content"
+            wx:if="{{ column.length != 0 }}"
+            :class="{ selected: content.checked }"
+            @tap="selectItem({{ colIndex }}, {{ conIndex }})">
+                <view class="content">{{ content[showProp] }}</view>
+            </view>
+
+        </scroll-view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { get } from '../utils/ajax';
+import globalService from '../utils/globalService';
+
+const config = {
+    region: {
+        size: 3,
+        apiList: [
+            '/local/provinces',
+            '/local/citys/',
+            '/local/areas/',
+        ],
+        // 格式化请求url的函数
+        formatFunction(index, priKey) {
+            const curUrl = this.apiList[index];
+            if (index === 0) {
+                return curUrl;
+            }
+
+            return curUrl + priKey;
+        },
+        // 展示的名字
+        showProp: 'localName',
+        priKey: 'dispLocalID', // 需要传的id名,
+        selectAction(item, colIndex) {
+            let { result } = this;
+            const { dispLocalID, localName } = item;
+            if (!result) {
+                result = {};
+            }
+
+            // 省
+            if (colIndex === 0) {
+                Object.assign(result, {
+                    province: dispLocalID,
+                    provinceStr: localName,
+                });
+            }
+
+            // 市
+            if (colIndex === 1) {
+                Object.assign(result, {
+                    city: dispLocalID,
+                    cityStr: localName,
+                });
+            }
+
+            // 区
+            if (colIndex === 2) {
+                Object.assign(result, {
+                    area: dispLocalID,
+                    areaStr: localName,
+                });
+            }
+
+            this.result = result;
+        },
+    },
+    // 行业选择器
+    trade: {
+        size: 3,
+        apiList: [
+            '/cate/dispcate/byparentid',
+            '/cate/dispcate/byparentid',
+            '/cate/dispcate/byparentid',
+        ],
+        formatFunction(index) {
+            const curUrl = this.apiList[index];
+
+            return curUrl;
+        },
+        getData(index, priKey = '') {
+            const mpid = wepy.getStorageSync('current_mpid');
+
+            if (index === 0) {
+                return {
+                    mpid,
+                };
+            }
+
+            return {
+                parentid: priKey,
+            };
+        },
+        priKey: 'cateId',
+        showProp: 'name',
+        selectAction(item, colIndex) {
+            let { result } = this;
+            const { cateId, name } = item;
+
+            if (!result) {
+                result = {};
+            }
+
+            if (colIndex === 0) {
+                Object.assign(result, {
+                    cate1: cateId,
+                    cate1Name: name,
+                });
+            }
+
+            if (colIndex === 1) {
+                Object.assign(result, {
+                    cate2: cateId,
+                    cate2Name: name,
+                });
+            }
+
+            if (colIndex === 2) {
+                Object.assign(result, {
+                    cate3: cateId,
+                    cate3Name: name,
+                });
+            }
+        },
+    },
+};
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '选择',
+    }
+
+    data = {
+        size: 3,
+        columnIds: [], // 标识当前列选择的id
+        apiList: [], // 接口列表，与columnIds对应
+        contentList: [], // 列表内容
+        type: 'region',
+        showProp: '',
+        priKey: '',
+        boldColumn: 0,
+        result: {},
+    }
+
+    methods = {
+        /**
+         * colIndex 当前列
+         * conIndex 当前选中的item
+         */
+        async selectItem(colIdx, conIdx) {
+            const colIndex = +colIdx;
+            const conIndex = +conIdx;
+            const column = this.contentList[colIndex] || [];
+            const content = column[conIndex] || {};
+            const priKey = content[this.priKey];
+
+            // 选中当前列
+            // 将该操作赋在选中item的事件而不是column的事件，是因为存在点击的column空白部分的情况
+            this.boldColumn = (+colIdx) + 1; // 突出显示下一列
+
+            // 渲染背景色
+            column.forEach(item => {
+                const con = item;
+                con.checked = false;
+            });
+            content.checked = true;
+
+            this.selectAction && this.selectAction(content, colIndex);
+
+            // 如果还不是最后一列，则展示下一列
+            if (+colIndex < this.size - 1) {
+                const { data: col } = await get(...this.getHttpParams(colIndex + 1, priKey));
+                this.contentList[colIndex + 1] = col;
+
+                // 如果没有子类了，就是最后一个
+                if (!col || !col.length) {
+                    this.successAction();
+                }
+
+                // 重置之后的 i + 2列，因为i + 1列上面已经重置了
+                for (let i = colIndex + 2; i < this.size; i += 1) {
+                    this.contentList[i] = [];
+                }
+            } else {
+                this.successAction();
+            }
+
+            this.$apply();
+        },
+    }
+
+    successAction() {
+        globalService.set('multiSelector', this.result);
+        console.log(this.result);
+        setTimeout(() => {
+            wepy.navigateBack();
+        }, 300);
+    }
+
+    getHttpParams(index, priKey) {
+        return [
+            this.getFormatUrl(index, priKey),
+            (this.getData && this.getData(index, priKey)) || {},
+        ];
+    }
+
+    async onLoad(options) {
+        const { type = 'region' } = options;
+        this.type = type;
+
+        // 初始化列表
+        for (let i = 0; i < this.columnIds.length; i += 1) {
+            this.contentList[i] = [];
+        }
+
+        this.loadConfig(config[type]);
+
+        // 渲染第一个列表，第一个列表总是要渲染的
+        const { data: firstCol } = await get(...this.getHttpParams(0));
+        this.contentList[0] = firstCol;
+
+        this.$apply();
+    }
+
+    loadConfig(subConfig) {
+        if (!subConfig) {
+            return;
+        }
+
+        const {
+            apiList,
+            showProp,
+            priKey,
+            type,
+            size,
+            formatFunction = () => {},
+            selectAction = () => {},
+            getData = () => {},
+        } = subConfig;
+
+        Object.assign(this, {
+            apiList,
+            showProp,
+            priKey,
+            type,
+            size,
+            getFormatUrl: formatFunction.bind(this),
+            selectAction: selectAction.bind(this),
+            getData: getData.bind(this),
+        });
+
+        this.$apply();
+    }
+}
+</script>
+
+<style lang="scss">
+.container {
+    display: flex;
+    height: 100%;
+}
+
+.column {
+    background-color: #FBFBFB;
+    width: 33%;
+    color: #333;
+    font-size: 28rpx;
+    height: 100%;
+    box-shadow: -5rpx 0rpx 30rpx 0rpx rgba(0,0,0,0.05);
+
+    &.selected {
+        background-color: #FFF;
+    }
+
+    .content-box {
+        padding: 0 30rpx;
+
+        &.selected {
+            color: #FFF;
+            background-color: #3a87ff;
+
+            .content {
+                border: none;
+            }
+        }
+
+        .content {
+            padding: 24rpx 0;
+            border-bottom: 1rpx solid #f3f3f3;
+        }
+    }
+}
+</style>

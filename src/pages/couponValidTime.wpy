@@ -65,7 +65,7 @@ import CouponMixin from '../mixins/coupon';
 
 export default class Index extends wepy.page {
     config = {
-        navigationBarTitleText: '优惠券类型',
+        navigationBarTitleText: '生效时间',
     }
 
     mixins = [CouponMixin]
@@ -104,10 +104,10 @@ export default class Index extends wepy.page {
 
     computed = {
         formatValidStarttime() {
-            return this.formatTime(this.validStarttime);
+            return this.formatTime(this.validStarttime || '');
         },
         formatValidEndtime() {
-            return this.formatTime(this.validEndtime);
+            return this.formatTime(this.validEndtime || '');
         },
     }
 

@@ -28,6 +28,8 @@ import CouponMixin from '../mixins/coupon';
 
 import { post } from '../utils/ajax';
 import { DELETE_COUPON } from '../utils/url';
+import { alertP } from '../utils';
+import globalService from '../utils/globalService';
 
 export default class Index extends wepy.page {
     config = {
@@ -59,6 +61,13 @@ export default class Index extends wepy.page {
 
         async deleteItems() {
             try {
+                const { cancel } = await alertP('确认删除所选优惠券？');
+                if (cancel) {
+                    this.isEditing = false;
+                    this.$apply();
+                    return;
+                }
+
                 const ids = this.coupons.filter(item => item.checked).map(item => item.id);
                 await Promise.all(ids.map(id => post(DELETE_COUPON + id)));
                 this.isEditing = false;
@@ -72,6 +81,13 @@ export default class Index extends wepy.page {
 
     onLoad() {
         this.loadData();
+    }
+
+    onShow() {
+        if (globalService.get('refresh')) {
+            globalService.set('refresh', false);
+            this.loadData();
+        }
     }
 
     async loadData() {
