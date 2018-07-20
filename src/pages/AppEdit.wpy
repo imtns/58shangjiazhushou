@@ -69,12 +69,14 @@
         </view>
         <view class="appedit-submit submit-enable" @tap="bindSave" wx:if="{{enableSave}}">保存</view>
         <view class="appedit-submit" @tap="bindSave" wx:else>保存</view>
+        <cropper></cropper>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
-import { picSrcDomain, filteremoji, toastSync, globalService } from '../utils';
+import Cropper from '../components/Cropper';
+import { picSrcDomain, filteremoji, toastSync, globalService, alertP } from '../utils';
 import { get } from '../utils/ajaxP';
 
 const host = 'https://yaofa.58.com';
@@ -87,6 +89,9 @@ const saveAppApi = '/mplogic/modifympinfo';
 export default class AppEdit extends wepy.page {
     config = {
         navigationBarTitleText: '小程序编辑',
+    }
+    components = {
+        cropper: Cropper,
     }
     data = {
         logoUrl: '',
@@ -101,6 +106,11 @@ export default class AppEdit extends wepy.page {
         },
         tempLogo: '',
         cateEditable: true, // 所属行业是否可以编辑
+    }
+    events = {
+        'after-crop'(tempPath) {
+            this.uploadLogo(tempPath);
+        },
     }
     computed = {
         enableSave () {
@@ -159,24 +169,12 @@ export default class AppEdit extends wepy.page {
                 count: 1,
                 sizeType: 'compressed ',
             });
-            const filePath = tempFilePaths[0];
-            console.log({ filePath });
-            try {
-                const response = await wepy.uploadFile({
-                    url: uploadApi,
-                    filePath,
-                    name: 'content',
-                });
-                const res = JSON.parse(response.data);
-                const { state, msg, data } = res;
-                if (state === 100) {
-                    this.tempLogo = filePath;
-                    this.updateForm({ headImg: data.content });
-                } else {
-                    this.toast(msg);
-                }
-            } catch ({ errMsg }) {
-                this.toast(errMsg);
+            const { confirm } = await alertP('是否裁剪图片？', '提示');
+
+            if (confirm) {
+                this.$broadcast('crop-loadImage', tempFilePaths[0], '1,1', true);
+            } else {
+                this.uploadLogo(tempFilePaths[0]);
             }
         },
         setAppName (e) {
@@ -231,6 +229,27 @@ export default class AppEdit extends wepy.page {
             }
         },
     }
+
+    async uploadLogo(tempPath) {
+        try {
+            const response = await wepy.uploadFile({
+                url: uploadApi,
+                filePath: tempPath,
+                name: 'content',
+            });
+            const res = JSON.parse(response.data);
+            const { state, msg, data } = res;
+            if (state === 100) {
+                this.tempLogo = tempPath;
+                this.updateForm({ headImg: data.content });
+            } else {
+                this.toast(msg);
+            }
+        } catch ({ errMsg }) {
+            this.toast(errMsg);
+        }
+    }
+
     async onLoad (options) {
         const mpid = options.mpid || wepy.getStorageSync('current_mpid');
         if (!mpid) {
