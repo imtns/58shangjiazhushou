@@ -1,21 +1,22 @@
 <template>
     <view class="container">
-        <view class="article-title">阳台设计中需要注意哪些安全问题阳台设计中需要注意哪些安全问题</view>
+        <view class="article-title">{{title}}</view>
         <view class="article-intro">
             <view class="article-detail-flex">
                 <view class="article-base">作者：</view>
-                <view class="base-text base-over">未知</view>
+                <view class="base-text base-over">{{author}}</view>
             </view>
             <view class="article-detail-flex">
                 <view class="article-base">来源：</view>
-                <view class="base-text base-over">未知</view>
+                <view class="base-text base-over">{{source}}</view>
             </view>
             <view class="article-detail-flex">
                 <view class="article-base">时间：</view>
-                <view class="base-text">未知</view>
+                <view class="base-text">{{createTime}}</view>
             </view>
         </view>
-        <view class="article-content"></view>
+        <rich-text class="article-content" nodes="{{content}}"></rich-text>
+        <view class="block"></view>
     </view>
     <view class="button article-edit-btn" @tap="toEdit">编辑</view>
 </template>
@@ -32,16 +33,38 @@ export default class Index extends wepy.page {
     data = {
         id: '',
         group: '',
+        title: '',
+        author: '',
+        source: '',
+        createTime: '',
+        content: '',
     }
     async onLoad(option) {
         const { group = '', id = '' } = option;
+        console.log(option);
         this.group = group;
         this.id = id;
         this.$apply();
         this.loadData();
     }
     async loadData() {
-        await get(`/businessArticle/detail/${this.id}`);
+        const { id } = this;
+        const { data } = await get(`/businessArticle/detail/${id}`);
+        const {
+            title,
+            author,
+            source,
+            createTime,
+            content,
+        } = data;
+        Object.assign(this, {
+            title,
+            author,
+            source,
+            createTime,
+            content,
+        });
+        this.$apply();
     }
     toEdit() {
         const ppu = wepy.getStorageSync('ppu');
@@ -57,14 +80,15 @@ export default class Index extends wepy.page {
     page{
         width:100%;
         height:100%;
-        display:flex;
-        flex-direction:column;
+        // display:flex;
+        // flex-direction:column;
+        position:relative;
     }
     .container{
         background:#fff;
-        flex:1;
-        display:flex;
-        flex-direction:column;
+        // flex:1;
+        // display:flex;
+        // flex-direction:column;
         padding: 32rpx 40rpx 0;
         box-sizing:border-box;
         .article-title{
@@ -108,6 +132,27 @@ export default class Index extends wepy.page {
         }
         .article-content{
             flex:1;
+            padding:20rpx 0;
+            line-height:60rpx;
+            letter-spacing: 0.3rpx;
+            font-family: PingFangSC-Regular;
+            font-size: 30rpx;
+            color: #666666;
+            .rich-text-img{
+                width:670rpx;
+                height:503rpx;
+                margin:40rpx 0;
+                border-radius:6rpx;
+            }
         }
+        .block{
+            width:100%;
+            height:102rpx;
+        }
+    }
+    .article-edit-btn{
+        position:fixed;
+        left:0;
+        bottom:0;
     }
 </style>

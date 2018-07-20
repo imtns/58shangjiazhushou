@@ -229,7 +229,7 @@ html, body{
     width:100%;
     height:90%;
     padding:.2rem;
-    overflow:auto;
+    overflow-y:scroll;
 }
 .zeditor-content p{
     font-size:0.3rem;
@@ -371,7 +371,7 @@ html, body{
     padding-left:0.5rem;
     box-sizing:border-box;
     background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png) no-repeat left center;
-    background-size:0.4rem 0.4rem;
+    background-size:0.3rem 0.3rem;
     font-family: PingFangSC-Regular;
     font-size: 0.30rem;
     color: #666666;
@@ -379,7 +379,7 @@ html, body{
 }
 .group-dialog-item.selected{
     background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/selected-icon.png) no-repeat left center;
-    background-size:0.4rem 0.4rem;
+    background-size:0.3rem 0.3rem;
 }
 .group-dialog .dialog-action-bar,.group-dialog .dialog-action-bar .btn{
     height:1.02rem;
@@ -526,7 +526,7 @@ html, body{
 }
 .win2 .tips2 p {
     line-height:3;
-    font-size:16px;
+    font-size:0.32rem;
     color:#cacaca;
     text-align:center
 }

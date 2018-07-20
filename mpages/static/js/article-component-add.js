@@ -13,9 +13,10 @@ var Page = {
             $tips2.text(cont);
             $ele.removeClass(NONE);
     },
-    toast: function(tar, cont) {
+    toast: function(tar, cont, mask = false) {
+        var $ele;
+        $ele = mask ? $('div.win2') : $('div.mask,div.win2');
         var NONE = 'none',
-            $ele = $('div.mask,div.win2'),
             $tips2 = $('div.tips2');
 
         $tips2.addClass(NONE); //这一步的目的是为了防止目前有在显示的窗口冲突
@@ -42,7 +43,7 @@ var Page = {
         }
     },
     init() {
-        Page.ppu = Page.getKey('ppu');
+        Page.ppu = decodeURIComponent(Page.getKey('ppu'));
         $('.item-file-div').removeClass('none');
         Page.loadGroupData();
     },
@@ -56,21 +57,12 @@ var Page = {
                         formData = new FormData();
                     formData.append('source',$(self).get(0).files[0]);
                     document.domain = '58.com';
-                    Object.assign(formData, {
-                        test: Page.ppu
-                    });
                     $.ajax({
                         url: '/fileUpload',
                         type: 'POST',
                         data: formData,
                         contentType: false,
                         processData: false,
-                        header: {
-                            'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-                            PPU: Page.ppu || 'wanghongyue',
-                            // 'YkuYdY8rk5As4T2QaJ7v': '45797966958100',
-                            reqfrom: 'biz_assistant',
-                        },
                         success: function(data) {
                             var data = JSON.parse(data);
                             if (data.state == 100) {
@@ -90,19 +82,10 @@ var Page = {
             var self = this,
             formData = new FormData();
             formData.append('sources', $(self).get(0).files[0]);
-            Object.assign(formData, {
-                test: Page.ppu
-            });
             $.ajax({
                 url: '/fileUpload',
                 type: 'POST',
                 data: formData,
-                header: {
-                    'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-                    PPU: Page.ppu || 'wanghongyue',
-                    // 'YkuYdY8rk5As4T2QaJ7v': '45797966958100',
-                    reqfrom: 'biz_assistant',
-                },
                 contentType: false,
                 processData: false,
                 success: function(res) {
@@ -176,7 +159,7 @@ var Page = {
                     content: content,
                     test: Page.test,
                 },
-                header: {
+                headers: {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
                     PPU: Page.ppu || 'wanghongyue',
                     reqfrom: 'biz_assistant',
@@ -185,21 +168,20 @@ var Page = {
                     var res = JSON.parse(res);
                     if (res.state == 100) {
                         Page.toast($('div.tips-success'));
-                        Page.saveStatus = true;
+                        setTimeout(function() {
+                            wx.miniProgram.navigateTo({
+                                url: '/pages/articleComponentlist?group=' + Page.group + '&name=' + Page.name
+                            });
+                        },2000);
                     } else {
                         Page.toast($errorPop, res.msg);
                     }
                 }
             });
         })
-        $('.mask,._cancel-btn,._sure-btn').on('click', function() {
+        $('._cancel-btn').on('click', function() {
             $('.mask,._dialog,.dialog-create-group').addClass('none');
             $('.dialog-content-input').val('');
-            if (Page.save) {
-                wx.miniProgram.navigateTo({
-                    url: '/pages/articleComponentlist?group=' + Page.group + '&name=' + Page.name
-                });
-            }
         });
         $('.item-chose').on('click', function() {
             $('.mask,.group-dialog').removeClass('none');
@@ -212,11 +194,11 @@ var Page = {
         $('._sure-create').on('click', function() {
             var name = $('.dialog-content-input').val();
             if (!name) {
-                Page.toast($errorPop, '请输入分组名称！');
+                Page.toast($errorPop, '请输入分组名称！', true);
                 return;
             }
             if (name.length > 15) {
-                Page.toast($errorPop, '分组名称不得超过15个字！');
+                Page.toast($errorPop, '分组名称不得超过15个字！', true);
                 return;
             }
             $.ajax({
@@ -225,7 +207,7 @@ var Page = {
                     name:name,
                     test: Page.test,
                 },
-                header: {
+                headers: {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
                     PPU: Page.ppu || 'wanghongyue',
                     reqfrom: 'biz_assistant',
@@ -244,25 +226,30 @@ var Page = {
             $('.dialog-content-input').val('');
         });
         // 选择分组
-        $('.group-dialog-list').on('click', '.group-dialog-item', function() {
+        $('.group-dialog-list').attr('cursor','pointer').on('touchstart', '.group-dialog-item', function() {
             var flag = $(this).hasClass('selected');
             if (!flag) {
-                var item = $(this).data(item);
+                var name = $(this).data('name'),
+                    group = $(this).data('id');
                 $(this).addClass('selected').siblings('.group-dialog-item').removeClass('selected');
-                $('._chose-btn').data('item', item);
+                $('._chose-btn').data('name', name).data('group', group);
             } else {
                 $(this).removeClass('selected')
             }
         })
         $('._chose-btn').on('click', function() {
-            var item = $(this).data('item');
-            if (!item) {
+            var name = $(this).data('name'),
+                group = $(this).data('group');
+            if (!name) {
                 Page.toast($errorPop, '请选择文章分组！');
                 return;
             }
-            $(this).text(item.name);
-            Page.name = item.name;
-            Page.group = item.group;
+            $('.item-chose').text(name);
+            Page.name = name;
+            Page.group = group;
+            $('.mask,.group-dialog').addClass('none');
+            $(this).data(name,'');
+            $(this).data(group,'');
         });
     },
     loadGroupData: function() {
@@ -271,7 +258,7 @@ var Page = {
             data: {
                 test: Page.test,
             },
-            header: {
+            headers: {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
                 PPU: Page.ppu || 'wanghongyue',
                 reqfrom: 'biz_assistant',
@@ -282,7 +269,7 @@ var Page = {
                     var data = res.data,
                         html = '';
                     for(var i=0 ;i<data.length;i++) {
-                        html += '<div class="group-dialog-item" data-item="'+data[i]+'">' + data[i].name + '</div>';
+                        html += '<div class="group-dialog-item" data-id="'+data[i].id+'" data-name="'+data[i].name+'">' + data[i].name + '</div>';
                     }
                     $('.group-dialog-list').html(html);
                 } else {
