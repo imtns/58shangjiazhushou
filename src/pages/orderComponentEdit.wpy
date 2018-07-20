@@ -192,7 +192,7 @@ export default class Index extends wepy.page {
                 const { form } = this;
                 const postData = {};
                 Object.keys(form).forEach(key => {
-                    if (form[key] && typeof form[key] !== 'number') {
+                    if (form[key]) {
                         postData[key] = form[key];
                     }
                 });
@@ -209,8 +209,15 @@ export default class Index extends wepy.page {
                 await post(requestUrl, postData);
                 wepy.navigateBack();
             } catch (e) {
-                alert(e);
                 this.errorHandler(e);
+
+                let msg = '';
+                if (typeof e === 'object') {
+                    msg = e.message;
+                } else {
+                    msg = e;
+                }
+                alert(msg);
             }
         },
 
@@ -269,12 +276,20 @@ export default class Index extends wepy.page {
     }
 
     async onLoad(options) {
-        const { id } = options;
+        const { id, resourceGroup } = options;
+        const mpid = wepy.getStorageSync('current_mpid');
 
         if (id) {
             await this.loadData(id);
             this.updateData();
         }
+
+        this.mpid = mpid;
+        Object.assign(this.form, {
+            resourceGroup,
+            mpid,
+        });
+        this.$apply();
     }
 
     onShow() {
@@ -296,7 +311,7 @@ export default class Index extends wepy.page {
             serviceStarttime, serviceEndtime, price, duration, durationUnit,
         } = data;
 
-        if (serviceStarttime < serviceEndtime) {
+        if (serviceStarttime > serviceEndtime) {
             throw new Error('预约结束时间必须大于开始时间');
         }
 
@@ -315,7 +330,7 @@ export default class Index extends wepy.page {
 
     async loadData(id) {
         try {
-            const mpid = wepy.getStorageSync('current_mpid');
+            const { mpid } = this;
             const { data: service } = await get(LOAD_SERVICE + id, {
                 mpid,
             });
