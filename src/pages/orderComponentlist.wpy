@@ -131,9 +131,9 @@ export default class ArticleComponentList extends wepy.page {
             console.log(this.delList);
             return;
         }
-        // 点击跳转文章详情页面
+        // 点击跳转详情页面
         wepy.navigateTo({
-            url: `orderComponentDetail?id=${id}`,
+            url: `orderComponentDetail?id=${id}&resourceGroup=${this.resourceGroup}`,
         });
     }
     edit() {
@@ -174,7 +174,7 @@ export default class ArticleComponentList extends wepy.page {
     addGroup() {
         // 添加预约服务
         wepy.navigateTo({
-            url: `orderComponentEdit?id=${this.id}`,
+            url: `orderComponentEdit?resourceGroup=${this.id}`,
         });
     }
     async manageProduct(e) {
