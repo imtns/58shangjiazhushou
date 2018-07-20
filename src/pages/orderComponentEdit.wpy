@@ -275,8 +275,7 @@ export default class Index extends wepy.page {
         },
     }
 
-    async onLoad(options) {
-        const { id, resourceGroup } = options;
+    async onLoad({ id, resourceGroup }) {
         const mpid = wepy.getStorageSync('current_mpid');
 
         if (id) {

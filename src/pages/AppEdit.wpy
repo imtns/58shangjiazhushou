@@ -76,7 +76,7 @@
 <script>
 import wepy from 'wepy';
 import Cropper from '../components/Cropper';
-import { picSrcDomain, filteremoji, toastSync, globalService, alertP } from '../utils';
+import { picSrcDomain, filteremoji, toastSync, globalService, alertP, getNetStatus } from '../utils';
 import { get } from '../utils/ajaxP';
 
 const host = 'https://yaofa.58.com';
@@ -165,16 +165,28 @@ export default class AppEdit extends wepy.page {
             });
         },
         async setLogo () {
-            const { tempFilePaths } = await wepy.chooseImage({
-                count: 1,
-                sizeType: 'compressed ',
-            });
-            const { confirm } = await alertP('是否裁剪图片？', '提示');
+            try {
+                const netStatus = await getNetStatus();
+                console.log(netStatus);
 
-            if (confirm) {
-                this.$broadcast('crop-loadImage', tempFilePaths[0], '1,1', true);
-            } else {
-                this.uploadLogo(tempFilePaths[0]);
+                if (netStatus === 0) {
+                    toastSync('无网络');
+                    return;
+                }
+
+                const { tempFilePaths } = await wepy.chooseImage({
+                    count: 1,
+                    sizeType: 'compressed ',
+                });
+                const { confirm } = await alertP('是否裁剪图片？', '提示');
+
+                if (confirm) {
+                    this.$broadcast('crop-loadImage', tempFilePaths[0], '1,1', true);
+                } else {
+                    this.uploadLogo(tempFilePaths[0]);
+                }
+            } catch (e) {
+                console.log(e);
             }
         },
         setAppName (e) {

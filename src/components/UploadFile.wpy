@@ -25,7 +25,7 @@
 </template>
 <script>
 import wepy from 'wepy';
-import { toastSync } from '../utils';
+import { toastSync, getNetStatus, toast } from '../utils';
 
 const host = 'https://yaofa.58.com';
 export default class Uploader extends wepy.component {
@@ -222,58 +222,74 @@ export default class Uploader extends wepy.component {
         },
     }
     uploadImage (file) {
-        return new Promise((resolve) => {
-            wepy.uploadFile({
-                url: host + this.uploadImageApi,
-                filePath: file,
-                name: 'content',
-            }).then((response) => {
-                try {
-                    console.log(response);
-                    const res = JSON.parse(response.data);
-                    const { state, msg, data } = res;
-                    if (state === 100) {
-                        resolve([null, data]);
-                    } else {
-                        resolve([msg]);
+        return getNetStatus().then(netStatus => {
+            // 无网络环境下不能上传图片
+            if (netStatus === 0) {
+                toast('无网络');
+                return;
+            }
+
+            return new Promise(resolve => {
+                wepy.uploadFile({
+                    url: host + this.uploadImageApi,
+                    filePath: file,
+                    name: 'content',
+                }).then((response) => {
+                    try {
+                        console.log(response);
+                        const res = JSON.parse(response.data);
+                        const { state, msg, data } = res;
+                        if (state === 100) {
+                            resolve([null, data]);
+                        } else {
+                            resolve([msg]);
+                        }
+                        console.log(res);
+                    } catch (e) {
+                        console.log(e);
+                        resolve([e]);
                     }
-                    console.log(res);
-                } catch (e) {
+                }).catch((e) => {
                     console.log(e);
-                    resolve([e]);
-                }
-            }).catch((e) => {
-                console.log(e);
-                const { errMsg } = e;
-                resolve([errMsg]);
+                    const { errMsg } = e;
+                    resolve([errMsg]);
+                });
             });
         });
     }
     uploadVideo (file) {
-        return new Promise((resolve) => {
-            wepy.uploadFile({
-                url: host + this.uploadVideoApi,
-                filePath: file,
-                name: 'content',
-            }).then((response) => {
-                try {
-                    console.log(response);
-                    const res = JSON.parse(response.data);
-                    const { state, msg, data } = res;
-                    if (state === 100) {
-                        resolve([null, data]);
-                    } else {
-                        resolve([msg]);
+        return getNetStatus().then(netStatus => {
+            // 只有wifi环境下才能上传视频
+            if (netStatus !== 1) {
+                toast('请切换到wifi环境下');
+                return;
+            }
+
+            return new Promise((resolve) => {
+                wepy.uploadFile({
+                    url: host + this.uploadVideoApi,
+                    filePath: file,
+                    name: 'content',
+                }).then((response) => {
+                    try {
+                        console.log(response);
+                        const res = JSON.parse(response.data);
+                        const { state, msg, data } = res;
+                        if (state === 100) {
+                            resolve([null, data]);
+                        } else {
+                            resolve([msg]);
+                        }
+                        console.log(res);
+                    } catch (e) {
+                        console.log(e);
+                        resolve([e]);
                     }
-                    console.log(res);
-                } catch (e) {
+                }).catch((e) => {
                     console.log(e);
-                    resolve([e]);
-                }
-            }).catch((e) => {
-                console.log(e);
-                const { errMsg } = e;
-                resolve([errMsg]);
+                    const { errMsg } = e;
+                    resolve([errMsg]);
+                });
             });
         });
     }

@@ -59,7 +59,7 @@ import wepy from 'wepy';
 import Mixin from '../mixins';
 import { LOAD_RESOURCE_URL, DELETE_RESOURCE, SAVE_RESOURCE_URL } from '../utils/url';
 import { get } from '../utils/ajax';
-import { toast, alert, alertP, picSrcDomain, sleep } from '../utils';
+import { toast, alert, alertP, picSrcDomain, sleep, getNetStatus } from '../utils';
 import uploader from '../utils/uploaderP';
 import EmptyPage from '../components/EmptyPage';
 import Pop from '../components/Dialog';
@@ -217,27 +217,45 @@ export default class Index extends wepy.page {
          * 上传素材
          */
         async uploadFile(type) {
-            switch (type) {
-                case 'image':
-                    await this.uploadImage();
-                    break;
+            try {
+                const netStatus = await getNetStatus();
 
-                case 'video':
-                    await this.uploadVideo();
-                    // 上传图片延迟2秒刷新，配合toast的2秒延迟
-                    await sleep(3000);
-                    break;
+                if (netStatus === 0) {
+                    toast('无网络');
+                    return;
+                }
 
-                case 'article':
-                    await this.showDialog();
-                    break;
+                if (netStatus === 2 && type === 'video') {
+                    const { cancel } = await alertP('确定在移动网络下上传视频？', '提示');
+                    if (cancel) {
+                        return;
+                    }
+                }
 
-                default:
-                    break;
+                switch (type) {
+                    case 'image':
+                        await this.uploadImage();
+                        break;
+
+                    case 'video':
+                        await this.uploadVideo();
+                        // 上传图片延迟2秒刷新，配合toast的2秒延迟
+                        await sleep(3000);
+                        break;
+
+                    case 'article':
+                        await this.showDialog();
+                        break;
+
+                    default:
+                        break;
+                }
+                if (type === 'article') return;
+                this.initData();
+                this.loadData(this.curTab);
+            } catch (e) {
+                console.log(e);
             }
-            if (type === 'article') return;
-            this.initData();
-            this.loadData(this.curTab);
         },
         async addGroup(content) {
             try {
