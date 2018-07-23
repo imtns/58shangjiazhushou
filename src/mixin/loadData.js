@@ -206,8 +206,6 @@ module.exports = {
         }
         console.log(app.globalData.extConfig);
         try {
-            wx.setStorageSync('releaseId', '1016613019867746304');
-            wx.setStorageSync('mpId', '1001014495864229888');
             const response = await get(pageDataUrl, postData);
             // const response = await get('/business/template/loadall', {
             //     pageKey: 'index',
