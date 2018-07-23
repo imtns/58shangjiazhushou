@@ -1,8 +1,1 @@
-'use strict';
-
-var pages = require('./pages.js');
-
-module.exports = function getPage(route, options) {
-    return pages[route] || options.page || 'index';
-};
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImdldFBhZ2UuanMiXSwibmFtZXMiOlsicGFnZXMiLCJyZXF1aXJlIiwibW9kdWxlIiwiZXhwb3J0cyIsImdldFBhZ2UiLCJyb3V0ZSIsIm9wdGlvbnMiLCJwYWdlIl0sIm1hcHBpbmdzIjoiOztBQUFBLElBQU1BLFFBQVFDLFFBQVEsU0FBUixDQUFkOztBQUVBQyxPQUFPQyxPQUFQLEdBQWlCLFNBQVNDLE9BQVQsQ0FBaUJDLEtBQWpCLEVBQXdCQyxPQUF4QixFQUFpQztBQUM5QyxXQUFPTixNQUFNSyxLQUFOLEtBQWdCQyxRQUFRQyxJQUF4QixJQUFnQyxPQUF2QztBQUNILENBRkQiLCJmaWxlIjoiZ2V0UGFnZS5qcyIsInNvdXJjZXNDb250ZW50IjpbImNvbnN0IHBhZ2VzID0gcmVxdWlyZSgnLi9wYWdlcycpO1xyXG5cclxubW9kdWxlLmV4cG9ydHMgPSBmdW5jdGlvbiBnZXRQYWdlKHJvdXRlLCBvcHRpb25zKSB7XHJcbiAgICByZXR1cm4gcGFnZXNbcm91dGVdIHx8IG9wdGlvbnMucGFnZSB8fCAnaW5kZXgnO1xyXG59O1xyXG5cclxuIl19
+"use strict";var pages=require("./pages.js");module.exports=function(e,r){return pages[e]||r.page||"index"};
