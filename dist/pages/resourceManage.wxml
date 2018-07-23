@@ -16,7 +16,7 @@
                     <view class="work-mask {{item.checked ? 'checked' : ''}}" wx:if="{{ isEditing }}" catchtap="selectItem" data-wpyselectitem-a="{{ item.id }}" data-wpyselectitem-b="{{ index }}"/>
                 </view>
             </view>
-            <!-- <view wx:else style="margin:30rpx;text-align:center;color:#bdbdbd;">---啥也没有---</view> -->
+            <!-- <view wx:else style="margin:30rpx;text-align:center;color:#bdbdbd;">啥也没有</view> -->
             <block wx:else>
                 
     <view class="empty-box">

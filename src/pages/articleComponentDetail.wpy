@@ -34,6 +34,7 @@ export default class Index extends wepy.page {
     data = {
         id: '',
         group: '',
+        name: '',
         title: '',
         author: '',
         source: '',
@@ -42,10 +43,11 @@ export default class Index extends wepy.page {
         content: '',
     }
     async onLoad(option) {
-        const { group = '', id = '' } = option;
-        console.log(option);
+        console.log('detail', option);
+        const { group = '', id = '', name = '' } = option;
         this.group = group;
         this.id = id;
+        this.name = name;
         this.$apply();
         this.loadData();
     }
@@ -73,7 +75,7 @@ export default class Index extends wepy.page {
     toEdit() {
         const ppu = wepy.getStorageSync('ppu');
         wepy.navigateTo({
-            url: `articleComponentCreate?ppu=${ppu}&group=${this.group}&id=${this.id}`,
+            url: `articleComponentCreate?ppu=${ppu}&group=${this.group}&id=${this.id}&name=${this.name}`,
         });
     }
 }
