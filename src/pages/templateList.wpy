@@ -30,7 +30,7 @@ import wepy from 'wepy';
 import { get } from '../utils/ajax';
 
 const basicTemplateUrl = '/business/templateList';
-const myTemplateUrl = `/business/myTemplateList/${wx.getStorageSync('mpId')}`;
+const myTemplateUrl = `/business/myTemplateList/${wx.getStorageSync('current_mpid')}`;
 const getTemplateIdUrl = '/business/init/struct';
 const app = require('../utils/globalData');
 
@@ -86,15 +86,12 @@ export default class Index extends wepy.page {
               const { id } = e.currentTarget.dataset;
               const { data } = await get(getTemplateIdUrl, {
                   templeteid: id,
-                  mpId: wx.getStorageSync('mpId'),
+                  mpId: wx.getStorageSync('current_mpid'),
               });
               wx.setStorageSync('releaseId', data.id);
-              wx.navigateTo({
-                  url: 'reserve/reserve',
-              });
           }
           wx.navigateTo({
-              url: 'reserve/reserve',
+              url: 'index/index',
           });
       },
   };
@@ -102,7 +99,7 @@ export default class Index extends wepy.page {
       const { data } = await get(basicTemplateUrl, {
           pageNum: 1,
           pageSize: 20,
-          mpId: wx.getStorageSync('mpId'),
+          mpId: wx.getStorageSync('current_mpid'),
           cate: -1,
       });
       this.list = data;

@@ -20,22 +20,20 @@ module.exports = {
     // },
     onMenuFixed(e) {
         const { index } = e.currentTarget.dataset;
-        const { _page_data } = this.data;
-        _page_data[index].props.cfg.showCallMenu = !_page_data[index].props.cfg.showCallMenu;
+        const { page_data } = this.data;
+        page_data[index].props.cfg.showCallMenu = !page_data[index].props.cfg.showCallMenu;
         this.setData({
-            page_data: _page_data,
+            page_data: page_data,
         });
     },
-    tabQrcode(e) {
-        this.sendLogCode();
-        const { releaseId } = getApp().globalData.extConfig;
-        get(`/releaseMpCode/${releaseId}`, {
+    async tabQrcode(e) {
+        // this.sendLogCode();
+        // const { releaseId } = getApp().globalData.extConfig;
+        const { data } = await get(`/releaseMpCode/${wx.getStorageSync('releaseId')}`, {
             packing: 'packing',
-        }, (e, res) => {
-            if (e) return;
-            wx.previewImage({
-                urls: [picSrcDomain() + res],
-            });
+        })
+        wx.previewImage({
+            urls: [picSrcDomain() + data],
         });
     },
 };

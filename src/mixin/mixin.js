@@ -66,10 +66,10 @@ const mixinConfig = {
             // extraInfo,
         });
     },
-    onUnload() {
-        console.log('unload');
-        app.globalData.pageData = {};
-    },
+    // onUnload() {
+    //     console.log('unload');
+    //     app.globalData.pageData = {};
+    // },
     // onShow() {
     //     this.setData({
     //         page_data: app.globalData.pageData,

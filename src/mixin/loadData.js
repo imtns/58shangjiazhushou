@@ -193,7 +193,7 @@ module.exports = {
         const postData = {
             pageKey: page,
             releaseId: wx.getStorageSync('releaseId'),
-            mpid: wx.getStorageSync('mpId'),
+            mpid: wx.getStorageSync('current_mpid'),
         };
         if (page === 'detail') {
             postData.serviceDetailId = this.options.id;
@@ -206,15 +206,7 @@ module.exports = {
         }
         console.log(app.globalData.extConfig);
         try {
-            wx.setStorageSync('releaseId', '1016613019867746304');
-            wx.setStorageSync('mpId', '1001014495864229888');
             const response = await get(pageDataUrl, postData);
-            // const response = await get('/business/template/loadall', {
-            //     pageKey: 'index',
-            //     releaseId: wx.getStorageSync('releaseId'),
-            //     mpid: wx.getStorageSync('mpId', '1001014495864229888'),
-            //     appid: app.globalData.extConfig.appId,
-            // });
             const modulesData = JSON.parse(JSON.stringify(response.data));
             app.globalData.modules = modulesParse.show(modulesData);
             /* eslint-disable camelcase */
@@ -227,14 +219,16 @@ module.exports = {
                 page_data = parseCfgAndData(response.data);
             }
             // 图片组件数据
-            this.imagesViewState(page_data);
+            // this.imagesViewState(page_data);
 
             const newPageData = {
                 pageType: page,
                 current: 0,
                 page_data: page_data,
             };
-            app.globalData.pageData = page_data;
+            if (page === 'index') {
+                app.globalData.pageData = page_data;
+            }
             this.setData(newPageData);
             cb && cb();
         } catch (e) {

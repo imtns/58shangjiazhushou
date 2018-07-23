@@ -7,9 +7,16 @@ const { post } = require('../utils/ajax');
 
 module.exports = {
     showEdit(e) {
-        const {
-            name,
-        } = e.currentTarget.dataset;
+        const { name, title } = e.currentTarget.dataset;
+        if (title === 'evaluation' || title === 'information') {
+            this.setData({
+                noEdit: true,
+            });
+        } else {
+            this.setData({
+                noEdit: false,
+            });
+        }
         if (!this.data.isEditing || this.data.editLayer[name]) return;
         this.setData({
             editLayer: {},
@@ -79,6 +86,7 @@ module.exports = {
     // });
     },
     goEdit(e) {
+        if (this.noEdit) return;
         const {
             id,
             name,
