@@ -1,0 +1,39 @@
+@import "./../components/Coupon.wxss";
+@import "./../components/CouponList.wxss";
+.preview-scroll {
+  height: 492rpx;
+  width: 750rpx;
+}
+
+.preview-scroll .previewer {
+  background-color: #fff;
+  margin-top: 30rpx;
+  padding: 0 20rpx;
+  overflow: hidden;
+}
+
+.preview-scroll .previewer.row {
+  background-color: inherit;
+  margin-top: 150rpx;
+}
+
+.options {
+  width: 100%;
+  height: 86rpx;
+  color: #fff;
+  font-size: 32rpx;
+  line-height: 86rpx;
+  display: flex;
+  justify-content: space-between;
+  background-color: #46484A;
+  padding: 0 30rpx;
+  position: fixed;
+  bottom: 628rpx;
+}
+
+.select-scroll {
+  height: 628rpx;
+  background-color: #5b5d5f;
+  position: fixed;
+  bottom: 0;
+}

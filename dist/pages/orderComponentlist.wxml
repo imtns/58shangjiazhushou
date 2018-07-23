@@ -1,0 +1,40 @@
+
+    <view class="container">
+        <view class="banner">
+            <image class="banner-icon" src="./assets/banner-icon.png"/>
+        </view>
+        <view class="items-body">
+            <view class="article-header">
+                <view class="line"/>
+                <view class="article-header-text">{{name}}</view>
+                <view class="line"/>
+            </view>
+            <scroll-view class="article-list {{editStatus ? 'edit' : ''}}" style="height:{{height}};" scroll-y="true"  wx:if="{{listData.length > 0}}">
+                <view class="list-item order-component-list" bindtap="editChose" wx:for="{{listData}}" data-item="{{item}}">
+                    <image class="list-image" src="{{item.src}}"/>
+                    <view class="list-detail">
+                        <view class="list-title">{{item.name}}</view>
+                        <view class="list-intro">服务价格：<text>{{item.price}}</text>元/次
+                        </view>
+                    </view>
+                    <view class="border-btn" wx:if="{{item.status === 0}}" bindtap="manageProduct" data-status="{{item}}">上架</view>
+                    <view class="border-btn xiajia" bindtap="manageProduct" data-status="{{item}}" wx:if="{{item.status === 2}}">下架</view>
+                </view>
+                <view class="block"/>
+            </scroll-view>
+            
+    <view class="empty-box" wx:if="{{!listData.length}}">
+        <image class="empty-icon" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/emptyIcon.png"/>
+        <view class="empty-text">{{$EmptyPage$title}}</view>
+    </view>
+
+        </view>
+    </view>
+    <view class="options"  wx:if="{{!editStatus}}">
+        <view class="button edit" bindtap="edit" wx:if="{{listData.length}}">编辑</view>
+        <view class="button" bindtap="addGroup">添加服务</view>
+    </view>
+    <view class="options"  wx:if="{{editStatus}}">
+        <view class="button edit" bindtap="cancle">取消</view>
+        <view class="button" bindtap="toDelete">删除</view>
+    </view>

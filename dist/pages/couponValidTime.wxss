@@ -1,0 +1,90 @@
+view {
+  box-sizing: border-box;
+}
+
+.container {
+  font-size: 30rpx;
+}
+
+.container .section {
+  padding: 0 30rpx;
+  background-color: #FFF;
+  margin-bottom: 20rpx;
+  overflow: hidden;
+}
+
+.container .section .item {
+  height: 89rpx;
+  padding: 23rpx 0;
+  display: flex;
+  justify-content: space-between;
+  height: 89rpx;
+}
+
+.container .section .item text {
+  color: #999;
+}
+
+.container .section .item.border-bottom {
+  border-bottom: 1rpx solid #f3f3f3;
+}
+
+.container .section .item.required::before {
+  display: block;
+  content: '*';
+  width: 14rpx;
+  height: 37rpx;
+  font-size: 26rpx;
+  color: #FFA100;
+  position: absolute;
+  left: -15rpx;
+}
+
+.container .section .item.select-type text {
+  flex-grow: 2;
+}
+
+.container .section .item .radio-button {
+  font-size: 28rpx;
+  color: #666;
+  display: flex;
+}
+
+.container .section .item .radio-button.first {
+  margin-right: 100rpx;
+}
+
+.container .section .item .radio-button .icon-radio {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 14rpx;
+  background-image: url("/resource-unchecked.png");
+  background-size: 40rpx 40rpx;
+}
+
+.container .section .item .radio-button.checked .icon-radio {
+  background-image: url("/resource-checked.png");
+}
+
+.container .section .item .placeholder {
+  font-size: 28rpx;
+  color: #BDBDBD;
+}
+
+.container .section .item input {
+  text-align: right;
+  width: 396rpx;
+  height: 40rpx;
+}
+
+.icon {
+  display: inline-block;
+}
+
+.icon.more {
+  width: 25rpx;
+  height: 25rpx;
+  background: url("/coupon-more.png") no-repeat;
+  background-size: auto 25rpx;
+  background-position: right;
+}

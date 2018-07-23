@@ -1,0 +1,116 @@
+
+    <view class="uploadInfo">
+        <view class="article">
+            <view class="title" bindtap="bindUploadText">
+                <view class="text">文本内容</view>
+                <view class="action">点击上传文本</view>
+            </view>
+            <view class="inputArea">
+                <textarea placeholder="请输入" bindinput="setText" maxLength="100" placeholder-style="font-size: 28rpx;color: #BDBDBD;"/>
+                <view class="numTip">{{form.text.length||0}}/100</view>
+            </view>
+        </view>
+        <!-- <view class="main-body">
+            <view class="main-title">上传图片</view>
+            <view class="main-boy-line main-body-flex">
+                <view class="main-upload"></view>
+                <view class="main-show-image">
+                    <image class="main-upload-image" src=""/>
+                    <view class="main-del-image"></view>
+                </view>
+                <view class="main-show-image">
+                    <image class="main-upload-image" src=""/>
+                    <view class="main-del-image"></view>
+                </view>
+                <view class="main-show-image">
+                    <image class="main-upload-image" src=""/>
+                    <view class="main-del-image"></view>
+                </view>
+                <view class="main-show-image">
+                    <image class="main-upload-image" src=""/>
+                    <view class="main-del-image"></view>
+                </view>
+                <view class="main-show-image">
+                    <image class="main-upload-image" src=""/>
+                    <view class="main-del-image"></view>
+                </view>
+            </view>
+        </view> -->
+        
+    <view class="mod-upload">
+        <view class="main-body">
+            <view class="main-title"  wx:if="{{ $imageuploader$showType === 'normal' }}">上传{{$imageuploader$titleStatus[$imageuploader$uploadtype-1]}}</view>
+            <view class="main-body-flex {{$imageuploader$showType === \'normal\' ? 'main-$imageuploader$boy-$imageuploader$line' : ''}}" >
+                <view class="main-upload-order {{$imageuploader$vm.length === 0 ? 'show-add' : ''}}" bindtap="$imageuploader$bindUploadImage"  wx:if="{{ $imageuploader$showType === 'order' }}">
+                    <view class="inner-title" wx:if="{{ $imageuploader$vm.length === 0 }}">添加图片</view>
+                    <block wx:if="{{ $imageuploader$showType === 'order' && $imageuploader$vm.length > 0 }}">
+                        <image class="image-preview" mode="aspectFill" src="{{ $imageuploader$vm[0] }}"/>
+                        <view class="replace-image">替换图片</view>
+                    </block>
+                </view>
+                <block wx:if="{{ $imageuploader$showType === 'normal' }}">
+                    <view class="main-upload" bindtap="$imageuploader$bindUploadImage" wx:if="{{$imageuploader$uploadtype=='1' && $imageuploader$vm.length<$imageuploader$maxCount-0}}"/>
+                    <view class="main-upload" bindtap="$imageuploader$bindUploadVideo" wx:if="{{$imageuploader$uploadtype=='2' && $imageuploader$vm.length<$imageuploader$maxCount-0}}"/>
+                    <view class="main-show-image" wx:for="{{$imageuploader$vm}}" wx:key="index">
+                        <image class="main-upload-image" data-index="{{index}}" src="{{item}}" bindtap="$imageuploader$bindPreviewImage" wx:if="{{$imageuploader$uploadtype==='1'}}" data-wpybindpreviewimage-a="{{index}}"/>
+                        <view class="main-upload-video" data-index="{{index}}" bindtap="$imageuploader$bindPlayVideo" wx:else data-wpybindplayvideo-a="{{item}}"><image class="main-upload-video-arrow" src="https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/img/video-play.png"/></view>
+                        <view class="main-del-image" hidden="{{$imageuploader$loading}}" catchtap="$imageuploader$onCancelImage" wx:if="{{$imageuploader$showDelete}}"/>
+                    </view>
+                </block>
+            </view>
+        </view>
+    </view>
+
+        <view class="main-title">注：最多上传10张，大小不超过4M</view>
+        <!-- <view class="main-body">
+        <view class="main-title">上传视频</view>
+            <view class="main-boy-line main-body-flex">
+                <view class="main-upload"></view>
+                <view class="main-show-image">
+                    <image class="main-upload-image" src=""/>
+                    <view class="main-del-image"></view>
+                </view>
+            </view>
+        </view> -->
+        
+    <view class="mod-upload">
+        <view class="main-body">
+            <view class="main-title"  wx:if="{{ $videouploader$showType === 'normal' }}">上传{{$videouploader$titleStatus[$videouploader$uploadtype-1]}}</view>
+            <view class="main-body-flex {{$videouploader$showType === \'normal\' ? 'main-$videouploader$boy-$videouploader$line' : ''}}" >
+                <view class="main-upload-order {{$videouploader$vm.length === 0 ? 'show-add' : ''}}" bindtap="$videouploader$bindUploadImage"  wx:if="{{ $videouploader$showType === 'order' }}">
+                    <view class="inner-title" wx:if="{{ $videouploader$vm.length === 0 }}">添加图片</view>
+                    <block wx:if="{{ $videouploader$showType === 'order' && $videouploader$vm.length > 0 }}">
+                        <image class="image-preview" mode="aspectFill" src="{{ $videouploader$vm[0] }}"/>
+                        <view class="replace-image">替换图片</view>
+                    </block>
+                </view>
+                <block wx:if="{{ $videouploader$showType === 'normal' }}">
+                    <view class="main-upload" bindtap="$videouploader$bindUploadImage" wx:if="{{$videouploader$uploadtype=='1' && $videouploader$vm.length<$videouploader$maxCount-0}}"/>
+                    <view class="main-upload" bindtap="$videouploader$bindUploadVideo" wx:if="{{$videouploader$uploadtype=='2' && $videouploader$vm.length<$videouploader$maxCount-0}}"/>
+                    <view class="main-show-image" wx:for="{{$videouploader$vm}}" wx:key="index">
+                        <image class="main-upload-image" data-index="{{index}}" src="{{item}}" bindtap="$videouploader$bindPreviewImage" wx:if="{{$videouploader$uploadtype==='1'}}" data-wpybindpreviewimage-a="{{index}}"/>
+                        <view class="main-upload-video" data-index="{{index}}" bindtap="$videouploader$bindPlayVideo" wx:else data-wpybindplayvideo-a="{{item}}"><image class="main-upload-video-arrow" src="https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/img/video-play.png"/></view>
+                        <view class="main-del-image" hidden="{{$videouploader$loading}}" catchtap="$videouploader$onCancelImage" wx:if="{{$videouploader$showDelete}}"/>
+                    </view>
+                </block>
+            </view>
+        </view>
+    </view>
+
+        <view class="main-title">注：最多上传5个，大小不超过200M</view>
+        <view class="main-body">
+            <view class="main-boy-line">
+                <view class="main-body-text" style="color:#ccc; font-size:30rpx;">文章</view>
+                <navigator url="/pages/UploadArticle?mpid={{form.mpid}}"><view class="addArticle">+上传新文章</view></navigator>
+            </view>
+        </view>
+        <block wx:for="{{form.articles}}" wx:for-index="index" wx:for-item="item" wx:key="key">
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-text" style="color:#333; font-size:30rpx;">{{item.title}}</view>
+                </view>
+            </view>
+        </block>
+        
+        <view class="main-button {{form.enable?'':'main-button-disable'}}" bindtap="submitSave">完成</view>
+    </view>

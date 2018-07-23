@@ -1,0 +1,34 @@
+
+    <view class="notice-container">
+        <scroll-view class="notice-list"  wx:if="{{orderList.length>0}}" scroll-y="true" lower-threshold="50" bindscrolltolower="orderListMore">
+            <view wx:for="{{orderList}}" wx:key="index" data-item="{{item}}">
+                <navigator class="notice-item" url="/pages/OrderDetail?id={{item.content.orderId}}" hover-class="none">
+                    <view class="notice-time">{{item.createTime}}</view>
+                    <view class="notice-content">
+                        <view class="notice">
+                            <view class="notice-logo"><image src="{{item.mpLogo}}?w=120&h=120"/></view>
+                            <view class="notice-name">{{item.title}}</view>
+                            <view class="notice-num">{{item.content.orderId}}</view>
+                            <view class="notice-unread" wx:if="{{item.status === 1}}"/>
+                        </view>
+                        <view class="order">服务名称<view>{{item.content.serviceName}}</view></view>
+                        <view class="order">服务时间<view>{{item.content.startTime}}</view></view>
+                        <view class="order">下单时间<view>{{item.content.createTime}}</view></view>
+                        <view class="order order-status">订单状态
+                            <view wx:if="{{item.content.status === 0}}">已下单</view>
+                            <view wx:if="{{item.content.status === 1}}">已接单</view>
+                            <view wx:if="{{item.content.status === 2}}">已完成</view>
+                            <view wx:if="{{item.content.status === 3}}">已取消</view>
+                            <view wx:if="{{item.content.status === 4}}">已删除</view>
+                            <view wx:if="{{item.content.status === 11}}">已支付</view>
+                        </view>
+                        <view class="account-total">共计费用<view class="num">￥<view>{{item.content.realAmount}}</view></view></view>
+                    </view>
+                </navigator>
+            </view>
+        </scroll-view>
+        <view class="emptyBox"  wx:if="{{orderList.length<=0}}">
+            <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/empty.png" class="emptyIcon"/>
+            <view class="emptyText">暂无通知</view>
+        </view>
+    </view>

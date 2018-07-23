@@ -165,7 +165,11 @@ var Page = {
                     var res = JSON.parse(res);
                     if (res.state == 100) {
                         Page.toast($('div.tips-success'));
-                        Page.saveStatus = true;
+                        setTimeout(function() {
+                            wx.miniProgram.navigateTo({
+                                url: '/pages/articleComponentlist?group=' + Page.group + '&name=' + Page.name
+                            });
+                        },2000);
                     } else {
                         Page.toast($errorPop, res.msg);
                     }
@@ -174,11 +178,6 @@ var Page = {
         })
         $('.mask,._sure-btn').on('click', function() {
             $('.mask,.dialog').addClass('none');
-            if (Page.save) {
-                wx.miniProgram.navigateTo({
-                    url: '/pages/articleComponentlist?group=' + Page.group + '&name=' + Page.name
-                });
-            }
         });
     },
     loadData: function() {
