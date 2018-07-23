@@ -11,15 +11,15 @@ const http = (method, ...props) => {
         data = {};
     }
 
-    let { appid, releaseId,test } = app.globalData.extConfig;
+    let { appId, releaseId,test } = app.globalData.extConfig;
 
-    if (!appid) {
+    if (!appId) {
         notSupportTips();
         return;
     }
 
     console.log('发送请求：', method, props);
-    let mediaor = test ? { appid, releaseId, test } : { appid, releaseId }
+    let mediaor = test ? { appid, releaseId, test } : { appId, releaseId }
     const sendData = Object.assign({}, data, mediaor);
 
     !noLoading&&wx.showLoading && wx.showLoading({title: '加载中', mask: true});
