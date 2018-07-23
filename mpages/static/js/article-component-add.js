@@ -2,6 +2,7 @@
 var $errorPop = $('div.tips-error');
 var Page = {
     ppu: '',
+    id: '',
     group: '',
     name: '',
     saveStatus: '',
@@ -44,6 +45,7 @@ var Page = {
     },
     init() {
         Page.ppu = decodeURIComponent(Page.getKey('ppu'));
+        Page.id = page.getKey('id');
         $('.item-file-div').removeClass('none');
         Page.loadGroupData();
     },
@@ -170,7 +172,7 @@ var Page = {
                         Page.toast($('div.tips-success'));
                         setTimeout(function() {
                             wx.miniProgram.navigateTo({
-                                url: '/pages/articleComponentlist?group=' + Page.group + '&name=' + Page.name
+                                url: '/pages/edit/article?id=' + Page.id
                             });
                         },2000);
                     } else {

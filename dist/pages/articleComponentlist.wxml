@@ -23,7 +23,7 @@
                         </view>
                         <view class="article-detail-flex">
                             <view class="article-base">时间：</view>
-                            <view class="base-text">{{item.createTime}}</view>
+                            <view class="base-text">{{item.updateTime}}</view>
                         </view>
                     </view>
                     <view class="article-preview-con">{{item.intro}}</view>
