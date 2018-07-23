@@ -42,7 +42,7 @@ var PayChoseTime = function (_wepy$page) {
             month: '请选择',
             startDate: '请选择',
             endDate: '请选择',
-            choseMonth: '1',
+            choseMonth: '2',
             currentDate: ''
         }, _temp), _possibleConstructorReturn(_this, _ret);
     }

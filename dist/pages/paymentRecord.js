@@ -75,9 +75,18 @@ var PaymentRecord = function (_wepy$page) {
                                 });
                                 this.timeZone = startDate && endDate ? startDate.split(' ')[0] + ' ' + endDate.split(' ')[0] : '总共';
                                 this.$apply();
+
+                                if (option) {
+                                    _context.next = 7;
+                                    break;
+                                }
+
+                                return _context.abrupt('return');
+
+                            case 7:
                                 this.loadData();
 
-                            case 6:
+                            case 8:
                             case 'end':
                                 return _context.stop();
                         }

@@ -37,17 +37,7 @@ view {
 
 .pay-header .select-icon {
   color: #666;
-}
-
-.pay-header .select-icon:before {
-  display: inline-block;
-  float: left;
-  content: "";
-  width: 40rpx;
-  height: 40rpx;
-  background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png) no-repeat;
-  margin: 24rpx 10rpx 0 0;
-  background-size: 40rpx 40rpx;
+  text-align: center;
 }
 
 .pay-header .selected.select-icon::before {
