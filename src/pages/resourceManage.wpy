@@ -23,7 +23,7 @@
                     @tap.stop="selectItem({{ item.id }}, {{ index }})"></view>
                 </view>
             </view>
-            <!-- <view wx:else style="margin:30rpx;text-align:center;color:#bdbdbd;">---啥也没有---</view> -->
+            <!-- <view wx:else style="margin:30rpx;text-align:center;color:#bdbdbd;">啥也没有</view> -->
             <block wx:else>
                 <EmptyPage></EmptyPage>
             </block>

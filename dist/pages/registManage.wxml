@@ -48,11 +48,11 @@
             </view>
             <view class="main-body">
                 <view class="main-boy-line">
-                    <view class="main-body-title">商标注册证</view>
+                    <view class="main-body-title"  wx:if="{{form.wechatNameType === '1'}}">商标注册证</view>
                     
     <view class="main-upload" bindtap="$UploaderCom$tap" wx:if="{{!form.wechatBrandRegist}}"/>
 
-                    <view class="main-show-image"  wx:if="{{form.wechatBrandRegist}}">
+                    <view class="main-show-image" wx:if="{{form.wechatBrandRegist}}">
                         <image class="main-upload-image" src="{{form.wechatBrandRegist}}"/>
                         <view class="main-del-image" bindtap="delAuthPaper" data-key="wechatBrandRegist"/>
                     </view>
@@ -61,7 +61,7 @@
             </view>
             <view class="main-body">
                 <view class="main-boy-line">
-                    <view class="main-body-title">商标授权书（选填）</view>
+                    <view class="main-body-title" wx:if="{{form.wechatNameType === '1'}}">商标授权书（选填）</view>
                     
     <view class="main-upload" bindtap="$anotherUploaderCom$tap" wx:if="{{!form.wechatBrandAuth}}"/>
 
