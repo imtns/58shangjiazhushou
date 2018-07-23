@@ -10,9 +10,9 @@ var _wepy = require('./../npm/wepy/lib/wepy.js');
 
 var _wepy2 = _interopRequireDefault(_wepy);
 
-var _mixins = require('./../mixins/index.js');
+var _mixin = require('./../mixin/index.js');
 
-var _mixins2 = _interopRequireDefault(_mixins);
+var _mixin2 = _interopRequireDefault(_mixin);
 
 var _ajax = require('./../utils/ajax.js');
 
@@ -114,7 +114,7 @@ var Index = function (_wepy$page) {
 
                 return result;
             }
-        }, _this.mixins = [_mixins2.default], _this.methods = {
+        }, _this.mixins = [_mixin2.default], _this.methods = {
             save: function () {
                 var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
                     var form, postData;

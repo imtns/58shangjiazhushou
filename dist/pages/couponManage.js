@@ -14,11 +14,11 @@ var _CouponList = require('./../components/CouponList.js');
 
 var _CouponList2 = _interopRequireDefault(_CouponList);
 
-var _mixins = require('./../mixins/index.js');
+var _mixin = require('./../mixin/index.js');
 
-var _mixins2 = _interopRequireDefault(_mixins);
+var _mixin2 = _interopRequireDefault(_mixin);
 
-var _coupon = require('./../mixins/coupon.js');
+var _coupon = require('./../mixin/coupon.js');
 
 var _coupon2 = _interopRequireDefault(_coupon);
 
@@ -60,7 +60,7 @@ var Index = function (_wepy$page) {
             navigationBarTitleText: '优惠券管理'
         }, _this.$repeat = {}, _this.$props = { "couponList": { "xmlns:v-bind": "", "v-bind:coupons.sync": "coupons", "v-bind:isEditing.sync": "isEditing" } }, _this.$events = {}, _this.components = {
             couponList: _CouponList2.default
-        }, _this.mixins = [_mixins2.default, _coupon2.default], _this.data = {
+        }, _this.mixins = [_mixin2.default, _coupon2.default], _this.data = {
             coupons: [],
             couponNone: false,
             isEditing: false

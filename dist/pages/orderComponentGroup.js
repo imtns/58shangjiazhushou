@@ -132,7 +132,18 @@ var OrderComponentGroup = function (_wepy$page) {
                 this.showPop = false;
                 this.$apply();
             },
-            edit: function edit() {
+            edit: function edit(e) {
+                var status = e.currentTarget.dataset.status;
+
+                var dataList = this.groupList;
+                if (status) {
+                    dataList.forEach(function (item) {
+                        Object.assign(item, {
+                            choseStatu: false
+                        });
+                    });
+                    this.groupList = dataList;
+                }
                 this.delList = [];
                 this.name = '';
                 this.id = '';
@@ -160,7 +171,9 @@ var OrderComponentGroup = function (_wepy$page) {
                                 case 5:
                                     ids = delList.join();
                                     _context2.next = 8;
-                                    return (0, _ajax.get)('/businessService/delGroup/0?ids=' + ids);
+                                    return (0, _ajax.get)('/businessService/delGroup/0', {
+                                        ids: ids
+                                    });
 
                                 case 8:
                                     this.delList = [];

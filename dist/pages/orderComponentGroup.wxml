@@ -22,7 +22,7 @@
 
     </view>
     <view class="options">
-        <button class="button edit" bindtap="edit"  wx:if="{{groupList.length > 0 || works.length > 0}}">{{ isEditing ? '取消' : '编辑' }}</button>
+        <button class="button edit" bindtap="edit"  wx:if="{{groupList.length > 0 || works.length > 0}}" data-status="{{isEditing}}">{{ isEditing ? '取消' : '编辑' }}</button>
         <button class="button"  wx:if="{{ isEditing }}" bindtap="deleteItem">删除</button>
         <button wx:else bindtap="showDialog" class="button">添加分组</button>
     </view>

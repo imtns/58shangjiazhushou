@@ -16,7 +16,7 @@ var _globalService2 = _interopRequireDefault(_globalService);
 
 var _utils = require('./../utils/index.js');
 
-var _coupon = require('./../mixins/coupon.js');
+var _coupon = require('./../mixin/coupon.js');
 
 var _coupon2 = _interopRequireDefault(_coupon);
 

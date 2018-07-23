@@ -10,9 +10,9 @@ var _wepy = require('./../npm/wepy/lib/wepy.js');
 
 var _wepy2 = _interopRequireDefault(_wepy);
 
-var _mixins = require('./../mixins/index.js');
+var _mixin = require('./../mixin/index.js');
 
-var _mixins2 = _interopRequireDefault(_mixins);
+var _mixin2 = _interopRequireDefault(_mixin);
 
 var _utils = require('./../utils/index.js');
 
@@ -53,7 +53,7 @@ var Index = function (_wepy$page) {
 
         return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Index.__proto__ || Object.getPrototypeOf(Index)).call.apply(_ref, [this].concat(args))), _this), _this.config = {
             navigationBarTitleText: '优惠券适用产品'
-        }, _this.mixins = [_mixins2.default], _this.data = {
+        }, _this.mixins = [_mixin2.default], _this.data = {
             services: [],
             showProduct: false,
             groups: [{
