@@ -1,0 +1,1 @@
+"use strict";var route=require("./route.js");module.exports={getRoute:function(t){var r=this.$parent.globalData.extConfig.tabBar.list,a=route[t]||route.custom+"?ptype="+t,e="custom";return r.forEach(function(t){"/"+t.pagePath===a&&(e="tabbar")}),{url:a,type:e}},navigateTo:function(t){"tabbar"===t.type?wx.switchTab({url:t.url}):wx.navigateTo({url:t.url})}};

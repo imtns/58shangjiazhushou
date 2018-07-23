@@ -1,0 +1,1 @@
+"use strict";module.exports={onPlayEnd:function(t){t.target.id==this.data.curVideo&&this.setData({curVideo:0})},onPlayVideo:function(t){wx.createVideoContext(t.target.id,this);if(this.data.curVideo&&this.data.curVideo!=t.target.id){wx.createVideoContext(this.data.curVideo,this).pause(),this.setData({curVideo:t.target.id})}else this.setData({curVideo:t.target.id})}};

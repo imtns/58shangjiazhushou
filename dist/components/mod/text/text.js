@@ -1,0 +1,1 @@
+"use strict";module.exports={changeIndicatorDots:function(t){var a=t.currentTarget.dataset.indicator;this.setData({indicatorDots:!a})},changeAutoplay:function(){this.setData({autoplay:!this.data.cfg.autoplay})},intervalChange:function(t){this.setData({interval:t.detail.value})},durationChange:function(t){this.setData({duration:t.detail.value})}};

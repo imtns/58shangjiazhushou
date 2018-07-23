@@ -1,0 +1,1 @@
+"use strict";function bindEvent(n){var e=arguments.length>1&&void 0!==arguments[1]?arguments[1]:new Function;quen.push({name:n,callback:e})}function emitEvent(n,e){quen.map(function(t){var i=t.name,a=t.callback;i==n&&a.call(null,e)})}var quen=[];module.exports={bindEvent:bindEvent,emitEvent:emitEvent};

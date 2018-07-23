@@ -1,0 +1,1 @@
+"use strict";var _require=require("./../../../utils/index.js"),previewImage=_require.previewImage;module.exports={imageSwiperChange:function(e){var t=e.currentTarget.dataset.index,a=e.detail.current,r=this.data.page_data,i=r[t],s=i.props.cfg.images[a||0],d=s.title,g=s.desc,p={current:a};d&&(p.title=d),g&&(p.desc=g),Object.assign(i.props,p),this.setData({page_data:r})}};

@@ -1,0 +1,1 @@
+"use strict";var mixin=require("./../../mixin/mixin.js");Page(mixin({data:{pageKey:"news"}}));

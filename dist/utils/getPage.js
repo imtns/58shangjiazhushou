@@ -1,0 +1,1 @@
+"use strict";var pages=require("./pages.js");module.exports=function(e,r){return pages[e]||r.page||"index"};

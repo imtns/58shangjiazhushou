@@ -1,0 +1,1 @@
+"use strict";var data={refresh:!1,multiSelector:{}},foos={resetCoupon:function(){data.couponManage={}}};module.exports={get:function(o){return data[o]||{}},set:function(o,t){data[o]=t},commit:function(o){foos[o]&&foos[o]()}};

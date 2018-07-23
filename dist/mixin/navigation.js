@@ -1,0 +1,1 @@
+"use strict";var _getRoute=require("./../utils/getRoute.js");module.exports={onNavigationTo:function(e){var t=e.currentTarget.dataset.pagekey;if(console.log(t),t){var o=(0,_getRoute.getRoute)(t);(0,_getRoute.navigateTo)(o)}}};
