@@ -1,0 +1,55 @@
+/* 上传区 */
+.mod-upload {
+    margin: 20rpx 0 0;
+    padding: 27rpx 30rpx 33rpx;
+    background: #fff;
+}
+
+.upload-title {
+    line-height: 40rpx;
+    font-size: 28rpx;
+    color: #666;
+}
+
+.upload-title-txt {
+    font-size: 28rpx;
+    color: #aaa;
+    text-align: left;
+}
+
+.upload-images {
+    margin: 20rpx 0 30rpx;
+    margin-left:-20rpx;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.upload-image-item {
+    margin-left: 20rpx;
+    margin-bottom: 10rpx;
+    border-radius: 8rpx;
+    display:inline-block;
+    width:116rpx;
+    height: 116rpx;
+}
+
+.upload-image-cancel::before {
+    content: '';
+    width: 22rpx;
+    height: 22rpx;
+    display: inline-block;
+    position: relative;
+    left: 90rpx;
+    top: 0;
+    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAMAAADzapwJAAAANlBMVEUAAAD/iGz/iGz/iWz/iW7/im3/jnH/lnj/iW3/iGz/iGz/iGz/+Pb/oYv/////+fj/n4j/lXxdESqnAAAAC3RSTlMA8tnLeWAbEa/krk0A+MkAAACFSURBVBjTdZFRDsQgCETBarWLaHv/y27AkrRJZz5UXhAdoKVaWmJOrVR6KLPc4kyhfZOHtv2mh7x0LO65r3yva6fzWuQ6bc1ElY2OrhZrH8a5UvGkbtxo92uFmm0O1BcPGyUJPmdQSRRGdI4xNUwBDIp8P/kDHwR2gHnQKtBYMAYwNDDiP164EI+5dr7dAAAAAElFTkSuQmCC') no-repeat left top;
+    background-size: 100%;
+}
+
+.upload-image-add {
+    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHQAAAB0CAYAAABUmhYnAAAAAXNSR0IArs4c6QAABL1JREFUeAHtnU9rE1EUxTPToA1URdSdFNGNkEJo028gdetGXLkSBZf+w266U0GLFXTrzqVgVyJYv0KSJqUhi4JIF+JCRDAkJE0Tz6sdiKEtzfBe7uudExgmycy7993faXLnZCZNkBq4VSqVqU6ncxtPz2FZyefz96NdSqXSQrfbfRI9DoLgGbYvRI+53T2fXq83D96bWL6Mj48/z2azPyL+Zh30P1hbWzvdbreLEOrd2NjYJwi7Pjs72+jfh/dlCWxsbJys1+sX8cK6Bp3ezszMfD9wRvgL+E/kA3fmRhIgAfsECoXCKbS7WyZyWC6Xs8Vi8an9NIw4KgJojwHeghfN8U+4vb19Z1SJmccNgenp6d+I/MYczIa4M4e+uewmFaOOkMBno6URdBIv2a8jTMxUDgjAPhag49UUGmrPQXyGFCIQwsvUhXIzLQmQAAkkiADsZ8scFPGmhADcyrGwWq1OKKmHZYBA2Gw2/5CEHgJ8y9WjZSqTyRynoIoExbnRNn2oIkFZCgmQgM8E6EN9VifG3OhDY0DzfQh9qO8KDTk/2pYhgfm8O32oz+rEmBt9aAxoHEICJEAC8QjQh8bj5u0o+lBvpYk/sfTu+VC132fBVY0vgefhLqIlfPnqUXxc/o9Mgg+NxDRq9N/3X50hZ0gfOiQw33enD/VdoRjzC3EJ/YkY4zjEUwJJ6KGeorc/LfpQ+0xFI9KHiuJ3k5znQ91wFYvKHiqG3n5i+lD7TEUj0oeK4neTnD7UDVexqOyhYujtJ6YPtc9UNCJ9qCh+N8npQ91wFYvKHiqG3n5i+lD7TEUj0oeK4neTnD7UDVexqOyhYujtJ6YPtc9UNCJ9qCh+N8npQ91wFYvKHiqG3n5i40PT9sMeLuLAFe2HG2RhrxH9f2CRK/Slfajmq9jFaqMPtfCq9ymEZA9d8gmE5bmI1GZ8qNpvnUUCDfZMfPtMbc2mVv6/3Eh5JWv6UCVCRmVI9tBoDlxbIsDzoZZA+hJG2of6wkHVPOhDVcmJHxFQVk+iy+H5UGXy83yoMkFNOfShykRlD1UkKH2oIjFNKfShygQ15dCHKhOVPVSRoPShisQ0pdCHKhPUlEMfqkxU9lBFgtKHKhLTlEIfqkxQUw59qDJR2UMVCUofqkhMU0pSfGj/Vez995XJuVvO4JXlOqtMRlU7V84no9RkVEkfqkxn+lBlgrIcEiABnwnQh/qsToy5JcWHxkBzdIfwfOjR1W7PmfOz3D2xHM0n6UOPpm77zpo+dF803EACJEACtgnQh9omKhyPPlRYABfp6UNdUBWMSR8qCN92avpQ20SF49GHCgvA9CRAAkkiQB+qSO1qtTqBctohLv2bxHJWUW2JLKXVal1C4ZthEAQPsNxLJAVFRXe73fMo52NQqVSmtra2VuBhpnDY+0tRjYkrBR/9hWEul1vHK3S52Wy+ShwBZQVDx+5OSVA2vbq6ekFZferLqdVqZ0ql0vX+Qnd+WQnKdvDkt2gDdjoHkS9jqeFXFH5Gz3PtB4FyuZxFz7zRaDTuYkbvodMHaNgzs9vvp7Jy2PYaO5kj4Ams5/P5/KIZYG7wOy8Q5PG/R6kUt4+WT6fTuQnmmXQ6fcW0zEgHs/4LxZQ/ZYqTqY4AAAAASUVORK5CYII=') no-repeat center;
+    background-size: 100% 100%;
+}
+
+.upload-image-add::after {
+    display: none;
+}

@@ -1,3 +1,4 @@
+/*eslint-disable */
 import wepy from 'wepy';
 import { LOAD_COUPON_LIST } from '../utils/url';
 import { get } from '../utils/ajax';
@@ -38,7 +39,7 @@ export default class CouponMixin extends wepy.mixin {
                 let { couponCondition } = coupon;
                 const { validStarttime, validEndtime, validType } = coupon;
 
-                if (validEndtime && 
+                if (validEndtime &&
                     // 还需要加上有效期当天的那一整天24小时的时间
                     ((new Date(validEndtime)).getTime() + 24 * 60 * 60 * 1000) - Date.now() < 0
                 ) {

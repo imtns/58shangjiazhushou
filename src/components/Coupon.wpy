@@ -93,7 +93,7 @@ $radius: 4rpx;
         width: 200%;
     }
     .coupon-row-item {
-        background-image: url('/coupon-small.png');
+        background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/coupon-small.png');
         background-size: 315rpx 180rpx;
         width: 315rpx;
         height: 180rpx;
@@ -200,14 +200,14 @@ $radius: 4rpx;
         .checkbox {
             width: 40rpx;
             height: 40rpx;
-            background-image: url('/resource-unchecked.png');
+            background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-unchecked.png');
             background-size: 40rpx 40rpx;
             position: absolute;
             left: -83rpx;
             top: 70rpx;
 
             &.checked {
-                background-image: url('/resource-checked.png');
+                background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-checked.png');
             }
         }
         .mask {

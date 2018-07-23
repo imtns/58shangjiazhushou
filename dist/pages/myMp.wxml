@@ -57,6 +57,7 @@
                     </view>
                     <view class="btns">
                         <view bindtap="shouquan" wx:if="{{item.app_type === 2}}" data-status="{{item.status}}">{{item.status === 1 ? '重新授权' : '去授权'}}</view>
+                        <view wx:if="{{item.app_type === 1}}" bindtap="upgrade" data-id="{{item.id}}">升级</view>
                         <view bindtap="decorate" data-address="{{item.address}}" class="{{!item.address ? 'grey' : ''}}">装修</view>
                         <view bindtap="checkDetail" data-address="{{item.address}}" data-id="{{item.id}}">查看</view>
                     </view>

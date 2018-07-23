@@ -1,0 +1,344 @@
+<template>
+    <view class="article-container">
+        <view class="list">
+            <repeat for="{{list}}" index="index" item="item">
+                <view class="item" style="{{!item.checked?'display:none;':''}}">
+                    <view class="thumb"><image mode="aspectFill" src="{{item.cover}}"></image></view>
+                    <view class="articleDesc">
+                        <view class="title">{{item.title}}</view>
+                        <view class="desc">{{item.intro}}</view>
+                    </view>
+                </view>
+            </repeat>
+        </view>
+    </view>
+    <view class="article-editLayer">
+        <view class="saveBar">
+            <text class="label" @tap="addArticle">+添加文章</text>
+            <text class="save" @tap="save">保存</text>
+        </view>
+        <view class="edit-cell">
+            <view class="edit-label" @tap="showGroup">{{articleGroupName}}<view class="arrow"></view></view>
+            <view class="edit-input">
+                <checkbox-group bindchange="selectAll">
+                    <label class="checkbox">
+                        <checkbox class="checkSqure" value="全选当前分组" checked="{{false}}" />全选当前分组
+                    </label>
+                </checkbox-group>
+            </view>
+        </view>
+        <view class="noArticle" wx:if="{{list.length==0}}">
+            您还没有文章哦, 赶快去添加吧~
+        </view>
+        <scroll-view wx:else scroll-y class="article-scroll">
+            <checkbox-group bindchange="checkboxChange">
+                <repeat for="{{list}}" index="index" item="item">
+                    <label class="article-checkbox">
+                        <checkbox class="checkSqure" value="{{item.id}}" checked="{{item.checked}}" />{{item.title}}
+                    </label>
+                </repeat>
+            </checkbox-group>
+        </scroll-view>
+    </view>
+    <view class="article-group" hidden="{{!showGroup}}">
+        <scroll-view scroll-y>
+            <repeat for="{{group}}" index="index" item="item">
+                <view class="group" @tap="selectGroup" data-name="{{item.name}}" data-id="{{item.id}}">{{item.name}}</view>    
+            </repeat>
+        </scroll-view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+import Mixin from './mixin';
+import { picSrcDomain } from '../../utils';
+
+const app = require('../../utils/globalData');
+const { get } = require('../../utils/ajax');
+
+export default class Article extends wepy.page {
+  config = {
+      navigationBarTitleText: '文章',
+  };
+  mixins = [Mixin];
+  data = {
+      list: {},
+      showGroup: false,
+      group: {},
+      articleGroupName: '',
+      params: {
+          articleGroupId: '0',
+          articlePage: '1',
+          articleSize: '4',
+          articleIds: '0',
+      },
+  };
+  methods = {
+      addArticle() {
+          wepy.navigateTo({
+              url: '../articleComponentAdd',
+          });
+      },
+      showGroup() {
+          this.showGroup = !this.showGroup;
+      },
+      async selectGroup(e) {
+          const { id, name } = e.currentTarget.dataset;
+          this.articleGroupName = name;
+          this.params.articleGroupId = id;
+          await this.loadArticleList();
+          this.showGroup = false;
+          this.$apply();
+      },
+      selectAll(e) {
+          console.log(e);
+          this.list.forEach(item => {
+              item.checked = e.detail.value.length !== 0;
+          });
+      },
+      checkboxChange(e) {
+          console.log(e.detail.value);
+          this.list.map(item => {
+              if (e.detail.value.indexOf(item.id) === -1) {
+                  item.checked = false;
+              } else {
+                  item.checked = true;
+              }
+              return item;
+          });
+      },
+      save() {
+          const selectArticles = this.list.filter(obj => obj.checked === true);
+          this.params.articleIds = selectArticles.map(art => art.id).join(',');
+          selectArticles.forEach((item, index) => {
+              if (this.pageData[0].props.data[index]) {
+                  this.pageData[0].props.data[index].title = item.title;
+                  this.pageData[0].props.data[index].cover = item.cover;
+                  this.pageData[0].props.data[index].intro = item.intro;
+              }
+          });
+          console.log(JSON.stringify(this.params));
+          this.pageModule.params = this.params;
+          app.globalData.pageData[this.pageIndex].props = this.pageData[0].props;
+          //   console.log(app.globalData.pageData[this.pageIndex]);
+          //   const modulesData = JSON.parse(JSON.stringify(app.globalData.pageData));
+          //   app.globalData.modules = modulesParse.parsePageData(modulesData);
+          app.globalData.modules[this.pageIndex] = this.pageModule;
+          wx.navigateBack({
+              delta: 1,
+          });
+      },
+  };
+  async onLoad() {
+      await this.loadArticleGroup();
+      this.loadArticleList();
+      [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
+      console.log(this.pageModule);
+  }
+  async loadArticleList() {
+      const { data } = await get('/businessArticle/list', {
+          appid: this.extConfig.appId, group: this.params.articleGroupId, pageNum: this.params.pageNum, pageSize: this.params.pageSize,
+      });
+      console.log(data);
+      data.data.forEach(item => {
+          item.cover = picSrcDomain() + item.cover;
+      });
+      this.list = data.data;
+      this.list.forEach(item => {
+          item.checked = true;
+      });
+      this.params.articleIds = this.list.map(art => art.id).join(',');
+      this.$apply();
+  }
+  async loadArticleGroup() {
+      const { data } = await get('/businessArticle/groups', { appid: this.extConfig.appId });
+      this.group = data;
+      if (Object.keys(JSON.parse(this.pageData.params)).length !== 0) {
+          this.articleGroupName = this.group.find(obj => obj.id === JSON.parse(this.pageData.params).articleGroupId).name;
+          this.params.articleGroupId = this.group.find(obj => obj.id === JSON.parse(this.pageData.params).articleGroupId).id;
+      }
+      this.$apply();
+  }
+}
+</script>
+<style lang="scss">
+.article-group {
+  width: 296rpx;
+  height: 363rpx;
+  border-radius: 8rpx;
+  background: white;
+  z-index: 999;
+  white-space: nowrap;
+  overflow: scroll;
+  position: absolute;
+  left: 30rpx;
+  bottom: 60rpx;
+  .group {
+    width: 256rpx;
+    margin: 0 auto;
+    font-size: 28rpx;
+    color: #666;
+    padding: 20rpx 0;
+    border-bottom: 1rpx solid #f3f3f3;
+  }
+}
+.noArticle {
+  width: 100%;
+  height: 393rpx;
+  text-align: center;
+  line-height: 393rpx;
+  color: #999;
+  font-size: 30rpx;
+}
+
+.article-editLayer {
+  width: 100%;
+  box-sizing: border-box;
+  height: 594rpx;
+  position: fixed;
+  bottom: 0;
+  background: rgb(91, 93, 95);
+  z-index: 10;
+  padding: 0 30rpx;
+  .saveBar {
+    height: 86rpx;
+    box-sizing: border-box;
+    margin: 0 -30rpx;
+    padding-right: 30rpx;
+    background: #46484a;
+    color: white;
+    line-height: 86rpx;
+    font-size: 32rpx;
+    .label {
+      width: 200rpx;
+      margin-left: 30rpx;
+      text-align: left;
+    }
+    .save {
+      width: 100rpx;
+      float: right;
+      text-align: right;
+    }
+  }
+  .edit-cell {
+    height: 88rpx;
+    display: flex;
+    font-size: 30rpx;
+    background: #545658;
+    columns: #333333;
+    align-items: center;
+    margin: 0 -30rpx;
+    padding: 0 30rpx;
+    border-bottom: 1rpx solid #585d5f;
+    .edit-label {
+      width: 324rpx;
+      color: #999;
+      .arrow {
+        position: relative;
+        top: -4rpx;
+        display: inline-block;
+        width: 0;
+        height: 0;
+        margin-left: 10rpx;
+        border-style: solid;
+        border-width: 10rpx 10rpx 0 10rpx;
+        border-color: #ffffff transparent transparent transparent;
+      }
+    }
+    .edit-input {
+      width: 396rpx;
+      color: #d8d8d8;
+      text-align: right;
+    }
+  }
+  .article-scroll {
+    background: #545658;
+    height: 328rpx;
+    padding: 0 30rpx 30rpx;
+    margin: 20rpx -30rpx 0;
+    .article-checkbox {
+      width: 640rpx;
+      display: flex;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color:#dbdbdb;
+      height:82rpx;
+      border-bottom: 1rpx solid #5b5d5f;
+      font-size:30rpx;
+      align-items: center;
+      checkbox{
+          margin-right:10rpx;
+      }
+      checkbox .wx-checkbox-input {
+        width: 24rpx;
+        height: 24rpx;
+        background: transparent;
+        border: 1rpx solid #bdbdbd;
+        border-radius: 50%;
+      }
+      checkbox .wx-checkbox-input.wx-checkbox-input-checked {
+        background: #4e88ff;
+      }
+      checkbox .wx-checkbox-input.wx-checkbox-input-checked::before {
+        font-size: 24rpx;
+        color: #fff; 
+      }
+    }
+  }
+}
+checkbox .wx-checkbox-input {
+  width: 20rpx;
+  height: 20rpx;
+}
+.space {
+  margin-top: 20rpx !important;
+}
+.article-container {
+  background: white;
+  margin-top: 20rpx;
+  .list {
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 30rpx;
+    background: wihte;
+    .item {
+      display: flex;
+      margin-bottom: 0;
+      padding: 30rpx 0;
+      position: relative;
+      border-bottom: 1rpx solid #f3f3f3;
+      .thumb {
+        width: 192rpx;
+        height: 144rpx;
+        image {
+          width: 100%;
+          overflow: hidden;
+          height: 100%;
+        }
+      }
+      .articleDesc {
+        width: 470rpx;
+        margin-left: 26rpx;
+        .title {
+          font-size: 28rpx;
+          color: #353538;
+        }
+        .desc {
+          width: 470rpx;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          font-size: 24rpx;
+          color: #aaa;
+          margin-top: 9rpx;
+        }
+      }
+    }
+  }
+}
+</style>
+
+

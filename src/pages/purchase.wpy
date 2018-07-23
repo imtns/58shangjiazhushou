@@ -1,0 +1,48 @@
+<template>
+    <web-view src="{{src}}"></web-view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { get } from '../utils/ajax';
+
+const buySrc = 'https://ordermobile.58.com/ordermobile/app/product/buyMiniApp?fromProductItemCode=871817130073200000&productItemCode=861110090334300017,852215312393800001&source= up_mini_app&os=ios';
+const upgradeSrc = 'https://ordermobile.58.com/ordermobile/app/product/buyUpEnterpriseMiniApp?';
+export default class Purchase extends wepy.page {
+    config = {
+        navigationBarTitleText: '注册',
+    }
+    data = {
+        platform: '',
+        src: '',
+    }
+    async onLoad(options) {
+        const that = this;
+        wx.getSystemInfo({
+            success(res) {
+                if (res.platform === 'devtools') {
+                    that.platform = 'PC';
+                } else if (res.platform === 'ios') {
+                    that.platform = 'ios';
+                } else if (res.platform === 'android') {
+                    that.platform = 'android';
+                }
+            },
+        });
+        if (options.mpid) {
+            try {
+                const { data } = await get(`/order/getParam/${options.mpid}`);
+                that.src = `${upgradeSrc}productItemCode=861110090334300017&cityId=${data.cityId}&cateId=${data.cateId}&newSign=1&oldOrderId=${data.oldOrderId}&userId=${data.userId}&source=up_mini_app&os=${that.platform}`;
+                that.$apply();
+            } catch (e) {
+                console.log(e);
+            }
+        } else {
+            that.src = buySrc;
+        }
+    }
+}
+</script>
+<style lang="scss">
+
+</style>

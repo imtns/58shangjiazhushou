@@ -1,0 +1,248 @@
+.mod-goods-list{
+    overflow: hidden;
+}
+/* 大图 */
+.mod-goods-item-one{
+    margin-bottom:30rpx;
+}
+.mod-goods-image-one{
+    display:block;
+    width:100%;
+    height:388rpx;
+}
+.mod-goods-title-one,.mod-goods-price-one{
+    display:inline-block;
+    margin-top:18rpx;
+    line-height: 40rpx;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.mod-goods-title-one{
+    width:75%;
+    font-size: 28rpx;
+    color: #333333;
+    letter-spacing: -0.68rpx;
+}
+.mod-goods-price-one{
+    margin-left:5%;
+    width:20%;
+    font-size: 24rpx;
+    color: #FF552E;
+}
+.price-content{
+    display:inline-block;
+    font-size: 36rpx;
+    color:#F00250;
+}
+.mod-goods-desc-one{
+    overflow: hidden;
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:2;
+    text-overflow: ellipsis;
+    margin-top:14rpx;
+    font-size: 24rpx;
+    color: #999999;
+}
+/* 中图 */
+.mod-goods-item-two{
+    display:inline-block;
+    width:330rpx;
+    margin:0 30rpx 30rpx 0;
+}
+.mod-goods-image-two{
+    display:block;
+    width:100%;
+    height:248rpx;
+}
+.mod-goods-title-two{
+    font-size: 28rpx;
+    color: #333333;
+    margin-top:18rpx;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.mod-goods-price-two{
+    font-size: 24rpx;
+    color: #FF552E;
+    margin-top:5rpx;
+    overflow: hidden;
+    white-space: nowrap;
+}
+/* 小图 */
+.mod-goods-item-three{
+    display:inline-block;
+    width:220rpx;
+    margin:0 15rpx 30rpx 0;
+}
+.mod-goods-image-three{
+    display:block;
+    width:100%;
+    height:164rpx;
+}
+.mod-goods-title-three{
+    font-size: 28rpx;
+    color: #333333;
+    margin-top:18rpx;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.mod-goods-price-three{
+    font-size: 24rpx;
+    color: #FF552E;
+    margin-top:5rpx;
+    overflow: hidden;
+    white-space: nowrap;
+}
+/* 横向滑动 */
+.mod-goods-list-four{
+    height: 314rpx;
+    white-space: nowrap;
+}
+.mod-goods-item-four{
+    display:inline-block;
+    width:200rpx;
+    margin:0 15rpx 30rpx 0;
+}
+.mod-goods-image-four{
+    display:block;
+    width:100%;
+    height:200rpx;
+}
+.mod-goods-title-four{
+    font-size: 28rpx;
+    color: #333333;
+    margin-top:18rpx;
+    overflow:hidden;
+    white-space: nowrap;
+}
+.mod-goods-price-four{
+    font-size: 24rpx;
+    color: #FF552E;
+    margin-top:4rpx;
+    overflow: hidden;
+    white-space: nowrap;
+}
+/* 横向列表 */
+.mod-goods-item-five{
+    margin-bottom:30rpx;
+    clear:both;
+    overflow: hidden;
+}
+.mod-goods-image-five{
+    float:left;
+    width:264rpx;
+    height: 198rpx;
+    overflow: hidden;
+    margin-right:20rpx;
+}
+.mod-goods-title-five{
+    font-size: 32rpx;
+    color: #333333;
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:3;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.mod-goods-price-five{
+    font-size: 24rpx;
+    color: #FF552E;
+    margin-top:20rpx;
+}
+/* 双图 */
+.mod-goods-item-six{
+    display:inline-block;
+    width:336rpx;
+    margin:0 18rpx 30rpx 0;
+}
+.mod-goods-image-six{
+    display:block;
+    width:100%;
+    height:448rpx;
+}
+.mod-goods-title-six{
+    font-size: 28rpx;
+    color: #333333;
+    margin-top:18rpx;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.mod-goods-price-six{
+    font-size: 24rpx;
+    color: #FF552E;
+    margin-top:4rpx;
+    overflow: hidden;
+    white-space: nowrap;
+}
+/* 1大2中 */
+.mod-goods-item-seven-1,.mod-goods-item-seven-2,.mod-goods-item-seven-3{
+    margin-bottom:30rpx;
+}
+.mod-goods-item-seven-2,.mod-goods-item-seven-3{
+    display: inline-block;
+    width:336rpx;
+    margin:0 18rpx 30rpx 0;
+}
+.mod-goods-item-seven-3{
+    margin-right:0;
+}
+.mod-goods-image-seven-1{
+    display:block;
+    width:100%;
+    height:388rpx;
+}
+.mod-goods-title-seven-1,.mod-goods-price-seven-1{
+    display:inline-block;
+    margin-top:18rpx;
+    line-height: 40rpx;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.mod-goods-title-seven-1{
+    width:75%;
+    overflow: hidden;
+    font-size: 28rpx;
+    color: #333333;
+}
+.mod-goods-price-seven-1{
+    margin-left:5%;
+    width:20%;
+    overflow: hidden;
+    font-size: 24rpx;
+    color: #FF552E;
+}
+.mod-goods-desc-seven-1{
+    margin-top:14rpx;
+    display:-webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp:2;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: 24rpx;
+    color: #999999;
+}
+.mod-goods-image-seven-2,.mod-goods-image-seven-3{
+    display: block;
+    width:100%;
+    height: 252rpx;
+}
+.mod-goods-title-seven-2,.mod-goods-title-seven-3{
+    margin-top:18rpx;
+    font-size: 28rpx;
+    color: #333333;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.mod-goods-price-seven-2,.mod-goods-price-seven-3{
+    margin-top:4rpx;
+    font-size: 24rpx;
+    color: #FF552E;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+
+.last-child{
+    margin-right:0;
+}

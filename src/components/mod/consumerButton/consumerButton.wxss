@@ -1,0 +1,23 @@
+/* pages/mod/consumerButton/consumerButton.wxss */
+:host {
+    box-sizing: border-box;
+    font-weight: 300;
+    display: block;
+    /* position: relative; */
+}
+.reset-button {
+    position: static;
+    display: block;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-size: inherit;
+    text-align: inherit;
+    text-decoration: inherit;
+    line-height: inherit;
+    border-radius: 0;
+    -webkit-tap-highlight-color: transparent;
+    overflow: hidden;
+    color: inherit;
+    background-color: transparent;
+}

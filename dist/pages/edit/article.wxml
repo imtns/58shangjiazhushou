@@ -1,0 +1,49 @@
+
+    <view class="article-container">
+        <view class="list">
+            <block wx:for="{{list}}" wx:for-index="index" wx:for-item="item" wx:key="key">
+                <view class="item" style="{{!item.checked?'display:none;':''}}">
+                    <view class="thumb"><image mode="aspectFill" src="{{item.cover}}"/></view>
+                    <view class="articleDesc">
+                        <view class="title">{{item.title}}</view>
+                        <view class="desc">{{item.intro}}</view>
+                    </view>
+                </view>
+            </block>
+        </view>
+    </view>
+    <view class="article-editLayer">
+        <view class="saveBar">
+            <text class="label" bindtap="addArticle">+添加文章</text>
+            <text class="save" bindtap="save">保存</text>
+        </view>
+        <view class="edit-cell">
+            <view class="edit-label" bindtap="showGroup">{{articleGroupName}}<view class="arrow"/></view>
+            <view class="edit-input">
+                <checkbox-group bindchange="selectAll">
+                    <label class="checkbox">
+                        <checkbox class="checkSqure" value="全选当前分组" checked="{{false}}"/>全选当前分组
+                    </label>
+                </checkbox-group>
+            </view>
+        </view>
+        <view class="noArticle"  wx:if="{{list.length==0}}">
+            您还没有文章哦, 赶快去添加吧~
+        </view>
+        <scroll-view  wx:else scroll-y class="article-scroll">
+            <checkbox-group bindchange="checkboxChange">
+                <block wx:for="{{list}}" wx:for-index="index" wx:for-item="item" wx:key="key">
+                    <label class="article-checkbox">
+                        <checkbox class="checkSqure" value="{{item.id}}" checked="{{item.checked}}"/>{{item.title}}
+                    </label>
+                </block>
+            </checkbox-group>
+        </scroll-view>
+    </view>
+    <view class="article-group" hidden="{{!showGroup}}">
+        <scroll-view scroll-y>
+            <block wx:for="{{group}}" wx:for-index="index" wx:for-item="item" wx:key="key">
+                <view class="group" bindtap="selectGroup" data-name="{{item.name}}" data-id="{{item.id}}">{{item.name}}</view>    
+            </block>
+        </scroll-view>
+    </view>

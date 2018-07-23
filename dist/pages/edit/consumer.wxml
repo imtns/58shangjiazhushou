@@ -1,0 +1,67 @@
+
+    <view class="mod-me-container">
+        <view class="mod-me mod-me-line" hidden="{{pageData[0].props.cfg.order}}">
+            <view class="mod-me-list ">
+                <image class="mod-me-icon" src="../assets/me/order.png"/>
+                <view class="mod-me-text">我的订单</view>
+                <view class="mod-arrow"/>
+            </view>
+        </view>
+        <view class="mod-me" hidden="{{pageData[0].props.cfg.coupon}}">
+            <view class="mod-me-list">
+                <image class="mod-me-icon" src="../assets/me/coupon.png"/>
+                <view class="mod-me-text">我的优惠券</view>
+                <view class="mod-arrow"/>
+            </view>
+        </view>
+        <view class="mod-me mod-me-space mod-me-line" hidden="{{pageData[0].props.cfg.address}}">
+            <view class="mod-me-list">
+                <image class="mod-me-icon" src="../assets/me/address.png"/>
+                <view class="mod-me-text">服务地址</view>
+                <view class="mod-arrow"/>
+            </view>
+        </view>
+        <view class="mod-me" hidden="{{pageData[0].props.cfg.tel}}">
+            <view class="mod-me-list">
+                <image class="mod-me-icon" src="../assets/me/hotline.png"/>
+                <view class="mod-me-text">客服热线</view>
+                <view class="mod-me-text mod-me-me-number">{{telnum}}</view>
+                <view class="mod-arrow"/>
+            </view>
+        </view>
+    </view>
+    <view class="me-editLayer">
+        <view class="saveBar">
+            <text class="label" hidden="{{!editMultiple}}">+添加文章</text>
+            <text class="save" bindtap="save">保存</text>
+        </view>
+       <view class="me-scroll">
+            <checkbox-group bindchange="checkboxChange">
+                <label class="me-checkbox">
+                    <checkbox class="checkSqure" value="order" checked="{{!pageData[0].props.cfg.order}}"/>我的订单
+                </label>
+                <label class="me-checkbox">
+                    <checkbox class="checkSqure" value="coupon" checked="{{!pageData[0].props.cfg.coupon}}"/>我的优惠券
+                </label>
+                <label class="me-checkbox">
+                    <checkbox class="checkSqure" value="address" checked="{{!pageData[0].props.cfg.address}}"/>服务地址
+                </label>
+                <label class="me-checkbox">
+                    <checkbox class="checkSqure" value="tel" checked="{{!pageData[0].props.cfg.tel}}"/>客服热线
+                </label>
+            </checkbox-group>
+        </view>
+         <view class="edit-cell space">
+            <view class="edit-label">客服热线</view>
+            <view class="edit-input">
+                <input data-name="name" maxlength="14" value="{{telnum}}" bindinput="telInput" class="weui-input" name="name" type="number" auto-focus placeholder="请输入"/>
+            </view>
+        </view>
+        <scroll-view scroll-y class="edit-cell-tip">
+            注：此处设置显示的功能，会在顾客使用小程序时生效。
+            服务地址：顾客填写上门服务的地址、电话、姓名等信息；
+            客服热线：顾客可以直接拨打设置好的电话；
+            优惠券：顾客在此处领取和使用优惠券；
+            我的订单：顾客下单后，即可在此处查看订单状态。
+        </scroll-view>
+    </view>
