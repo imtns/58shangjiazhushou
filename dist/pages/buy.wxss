@@ -14,7 +14,6 @@ page .buy-container {
   width: 100vw;
   height: 100vh;
   padding: 56rpx 0 0;
-  background-image: -webkit-linear-gradient(295deg, #47b0ff 0%, #786dff 100%);
   background-image: linear-gradient(-205deg, #47b0ff 0%, #786dff 100%);
   background: url("https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/img/bg_buy.jpg") no-repeat;
   background-size: 100% 100%;

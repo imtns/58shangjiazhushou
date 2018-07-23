@@ -48,7 +48,6 @@ view {
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
-  background-image: -webkit-linear-gradient(315deg, #FFBD05 0%, #FF9602 100%);
   background-image: linear-gradient(135deg, #FFBD05 0%, #FF9602 100%);
   padding: 30rpx 24rpx;
   -webkit-box-align: center;
@@ -172,7 +171,6 @@ view {
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
-  background-image: -webkit-linear-gradient(315deg, #FFBD05 0%, #FF9602 100%);
   background-image: linear-gradient(135deg, #FFBD05 0%, #FF9602 100%);
   padding: 20rpx 24rpx;
   -webkit-box-align: center;

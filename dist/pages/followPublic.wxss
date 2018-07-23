@@ -14,7 +14,6 @@ button {
   position: absolute;
   left: 85rpx;
   bottom: 140rpx;
-  background-image: -webkit-linear-gradient(123deg, #3AB5FF 0%, #B4EC51 100%, #B4EC51 100%);
   background-image: linear-gradient(-33deg, #3AB5FF 0%, #B4EC51 100%, #B4EC51 100%);
   border-radius: 8rpx;
   font-size: 40rpx;

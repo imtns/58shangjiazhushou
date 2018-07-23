@@ -284,7 +284,7 @@ view,scroll-view{
     }
     .notice-list{
         width:100%;
-        margin-top:255rpx;
+        margin-top:335rpx;
         position: absolute;
         top:0;
         bottom: 0;
