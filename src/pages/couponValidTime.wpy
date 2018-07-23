@@ -61,7 +61,7 @@ import wepy from 'wepy';
 import globalService from '../utils/globalService';
 import { alert } from '../utils';
 
-import CouponMixin from '../mixins/coupon';
+import CouponMixin from '../mixin/coupon';
 
 export default class Index extends wepy.page {
     config = {

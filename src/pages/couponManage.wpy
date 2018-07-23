@@ -23,8 +23,8 @@
 <script>
 import wepy from 'wepy';
 import couponList from '../components/CouponList';
-import Mixin from '../mixins';
-import CouponMixin from '../mixins/coupon';
+import Mixin from '../mixin';
+import CouponMixin from '../mixin/coupon';
 
 import { post } from '../utils/ajax';
 import { DELETE_COUPON } from '../utils/url';

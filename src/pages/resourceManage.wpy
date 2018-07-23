@@ -56,7 +56,7 @@
 
 <script>
 import wepy from 'wepy';
-import Mixin from '../mixins';
+import Mixin from '../mixin';
 import { LOAD_RESOURCE_URL, DELETE_RESOURCE, SAVE_RESOURCE_URL } from '../utils/url';
 import { get } from '../utils/ajax';
 import { toast, alert, alertP, picSrcDomain, sleep, getNetStatus } from '../utils';
