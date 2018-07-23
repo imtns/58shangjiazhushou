@@ -1,0 +1,128 @@
+
+    <view class="container">
+        <scroll-view class="preview-scroll" scroll-y>
+            <view class="previewer {{type === \'row\' ? 'row' : ''}}" >
+                
+    <view class="coupons {{$couponView$viewType === \'row\' ? 'row' : ''}}" >
+        <block  wx:if="{{ $couponView$viewType === 'row' }}">
+            <view class="coupon-row-item" wx:for="{{ $couponView$coupons }}" wx:key="id">
+                <view class="coupon-row-left">
+                    <view class="value">
+                        <!-- 打折 -->
+                        <block wx:if="{{ item.couponType === 2 }}">
+                            <text class="bold">{{ item.couponDiscard / 10 || 9 }}</text>折
+                        </block>
+                        <!-- 满减 -->
+                        <block wx:else>
+                            ￥<text class="bold">{{ item.reliefAmount }}</text>
+                        </block>
+                    </view>
+                    <view class="subtitle">
+                        满{{ item.limitAmount }}可用
+                    </view>
+                    <!-- 固定时间类型 -->
+                    <view class="valid-time" wx:if="{{ item.validType === 1}}">
+                        {{ item.validEndtime }}前有效
+                    </view>
+                    <!-- 领取后生效 -->
+                    <view class="valid-time" wx:else>
+                        领取后{{ item.validAfterDays ? (item.validAfterDays + '天') : '立即' }}生效
+                    </view>
+                </view>
+                <view class="coupon-row-right">
+                    点击领取
+                </view>
+            </view>
+        </block>
+        <block  wx:else>
+            <view class="coupon-item" wx:for="{{ $couponView$coupons }}" wx:key="id">
+                <view class="coupon-left">
+                    <!-- 打折 -->
+                    <view class="discount" wx:if="{{ item.couponType === 2 }}">
+                        <text class="bold">{{ item.couponDiscard / 10 || 9 }}</text>折
+                    </view>
+                    <!-- 满减 -->
+                    <view class="reduce" wx:else>
+                        ￥<text class="bold">{{ item.reliefAmount }}</text>
+                    </view>
+                </view>
+                <view class="coupon-right">
+                    <view class="info">
+                        <view class="title">满{{ item.limitAmount }}可用</view>
+                        <view class="type">{{ item.subTitle }}</view>
+                        <!-- 固定时间类型 -->
+                        <view class="time" wx:if="{{ item.validType === 1}}">
+                            {{ item.validStarttime }}-{{ item.validEndtime }}
+                        </view>
+                        <!-- 领取后生效 -->
+                        <view class="time" wx:else>
+                            领取后{{ item.validAfterDays ? (item.validAfterDays + '天') : '立即' }}生效
+                        </view>
+                    </view>
+                    <button>立即领取</button>
+                </view>
+            </view>
+        </block>
+    </view>
+
+            </view>
+        </scroll-view>
+        <scroll-view class="select-scroll" scroll-y>
+            <view class="options">
+                <navigator url="/pages/couponEdit">+添加优惠券</navigator>
+                <view class="save" bindtap="save">保存</view>
+            </view>
+            
+    <view class="coupons {{$couponList$size === \'small\' ? 'small' : ''}}" >
+        <block wx:for="{{ $couponList$coupons }}" wx:for-index="$couponList$index" wx:for-item="$couponList$item" wx:key="$couponList$id">
+            <navigator class="coupon-list-item {{$couponList$item.unable ? 'unable' : ''}} {{$couponList$isEditing ? 'editing' : ''}}" url="{{ '/pages/couponEdit?id=' + $couponList$item.id }}">
+                <view class="coupon-list-left">
+                    <!-- 打折 -->
+                    <view class="discount"  wx:if="{{ $couponList$item.couponType === 2 }}">
+                        <text class="bold">{{ $couponList$item.couponDiscard / 10 || 9 }}</text>折
+                    </view>
+                    <!-- 满减 -->
+                    <view class="reduce"  wx:else>
+                        ￥<text class="bold">{{ $couponList$item.reliefAmount }}</text>
+                    </view>
+                </view>
+                <view class="coupon-list-middle">
+                    <view class="info">
+                        <view class="title">满{{ $couponList$item.limitAmount }}可用</view>
+                        <view class="type">{{ $couponList$item.subTitle }}</view>
+                        <!-- 固定时间类型 -->
+                        <view class="time" wx:if="{{ $couponList$item.validType === 1}}">
+                            {{ $couponList$item.validStarttime }}-{{ $couponList$item.validEndtime }}
+                        </view>
+                        <!-- 领取后生效 -->
+                        <view class="time" wx:else>
+                            领取后{{ $couponList$item.validAfterDays ? ($couponList$item.validAfterDays + '天') : '立即' }}生效
+                        </view>
+                    </view>
+                    <view class="disable" wx:if="{{ $couponList$item.unable }}">
+                        已失效
+                    </view>
+                </view>
+                <view class="coupon-list-right">
+                    <view>
+                        已领取
+                        <view class="count">
+                            {{ $couponList$item.getCount }}张
+                        </view>
+                    </view>
+                    <view>
+                        已使用
+                        <view class="count">
+                            {{ $couponList$item.useCount }}张
+                        </view>
+                    </view>
+                </view>
+                <view class="checkbox {{$couponList$item.checked ? 'checked' : ''}}">
+                </view>
+                <view class="mask" catchtap="$couponList$chooseCoupon" wx:if="{{ $couponList$isEditing }}" data-wpychoosecoupon-a="{{ $couponList$index }}"/>
+            </navigator>
+        </block>
+    </view>
+
+        </scroll-view>
+    </view>

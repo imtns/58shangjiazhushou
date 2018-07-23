@@ -1,0 +1,5 @@
+
+    <view class="container {{isIphoneX ? 'iphoneX' : ''}}" >
+        <!-- <image src="/pages/assets/follow-public.png"/> -->
+        <button open-type="contact">点击输入888关注</button>
+    </view>

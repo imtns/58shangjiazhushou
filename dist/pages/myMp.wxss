@@ -1,0 +1,129 @@
+.myMP {
+  padding: 0 30rpx;
+}
+
+.myMP .tips {
+  display: flex;
+  justify-content: space-between;
+  height: 80rpx;
+  line-height: 80rpx;
+  letter-spacing: 0;
+}
+
+.myMP .tips view {
+  font-size: 28rpx;
+  color: #999999;
+  padding: 0 10rpx;
+}
+
+.myMP .list {
+  background: #FFFFFF;
+  box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.1);
+  height: 246rpx;
+  padding: 0 30rpx;
+  margin-bottom: 20rpx;
+  position: relative;
+}
+
+.myMP .list .infos {
+  height: 175rpx;
+  display: flex;
+}
+
+.myMP .list .infos .logBox {
+  width: 124rpx;
+}
+
+.myMP .list .infos .logBox .logo {
+  width: 124rpx;
+  height: 124rpx;
+  margin-top: 24rpx;
+  border: 1rpx solid #E7E7E7;
+}
+
+.myMP .list .infos .details {
+  flex: 1;
+  padding-left: 20rpx;
+}
+
+.myMP .list .infos .details .title {
+  line-height: 40rpx;
+  margin-top: 22rpx;
+}
+
+.myMP .list .infos .details .title .share {
+  width: 80rpx;
+  border: none;
+  position: absolute;
+  font-size: 24rpx;
+  color: #999999;
+  right: 27rpx;
+  top: 25rpx;
+  padding: 0;
+  margin: 0;
+  text-align: right;
+  line-height: inherit;
+  background: url("https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mp_share.png") no-repeat left;
+  background-size: 26rpx 26rpx;
+}
+
+.myMP .list .infos .details .title .name {
+  display: inline-block;
+  font-size: 32rpx;
+  color: #333333;
+  width: 400rpx;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.myMP .list .infos .details .icons .icon {
+  display: inline-block;
+  width: 66rpx;
+  height: 38rpx;
+  margin: 0 3prx;
+}
+
+.myMP .list .infos .details .deadline {
+  font-size: 26rpx;
+  color: #999999;
+  padding-left: 5rpx;
+}
+
+.myMP .list .btns {
+  display: flex;
+  border-top: 1rpx solid #F3F3F3;
+  height: 72rpx;
+  line-height: 72rpx;
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.myMP .list .btns .grey {
+  color: #CCCCCC;
+}
+
+.myMP .list .btns view {
+  flex: 1;
+  text-align: center;
+}
+
+.myMP .shareContainer {
+  position: absolute;
+  background: #999999;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  left: 0;
+  right: 0;
+}
+
+.myMP .shareContainer .img {
+  position: absolute;
+  width: 628rpx;
+  height: 1110rpx;
+  left: 50%;
+  top: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  display: block;
+}

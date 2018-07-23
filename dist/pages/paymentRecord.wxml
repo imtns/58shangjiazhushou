@@ -1,0 +1,21 @@
+
+    <view class="container">
+        <view class="pay-header">
+            <view class="pay-left">
+                <view class="pay-record-time">{{timeZone}}</view>
+                <view class="pay-record-sum">总收入：<text>{{ amountTotal }}</text></view>
+            </view>
+            <view class="pay-right">
+                <text class="border-right-line" bindtap="resetTime">重置</text><text bindtap="choseTime">时间筛选</text>
+            </view>
+        </view>
+        <view class="payrecord-list">
+            <view class="payrecord-item"  wx:for="{{listData}}" wx:key="index">
+                <view class="payrecord-line">
+                    <view class="payrecord-com">{{item.content.from}}</view>
+                    <view class="payrecord-time">{{item.content.time}}</view>
+                    <view class="payrecord-money">￥<text>{{item.content.amount}}</text></view>
+                </view>
+            </view>
+        </view>
+    </view>

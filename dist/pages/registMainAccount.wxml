@@ -1,0 +1,72 @@
+
+    <view class="container">
+        <!-- 提示步骤start -->
+        
+    <view class="regist-remind-bar">
+        <block  wx:for="{{$RemindBar$steps}}" wx:key="index">
+            <view class="regist-remind-steps {{$RemindBar$currentstep >= item.index ? 'current-step' : ''}} {{item.index == 2 ? 'regist-remind-horizontal' : ''}}">
+                <view class="regist-remind-step">{{item.index}}</view>
+                <view class="regist-remind-text">{{item.text}}</view>
+            </view>
+        </block>
+    </view>
+
+        <!-- 提示步骤end -->
+        <!-- 主体账户信息start -->
+        <view class="main-accont-info">
+            <view class="main-title">主体信息登记</view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">企业类型（企业包括企业、分支机构、企业相关品牌）</view>
+                    <view class="main-body-button {{form.enterpriseType === item.type ? 'chosed' : ''}}"  wx:for="{{enterpriseTypeList}}" wx:key="{{index}}" bindtap="selectEnterpriseType" data-item="{{item}}">{{item.name}}</view>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">企业名称</view>
+                    <input class="main-body-input" type="text" placeholder="请输入" maxlength="100" bindblur="setText" placeholder-style="font-size: 26rpx; color: #CCCCCC;" data-name="enterpriseName"/>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">营业执照注册号/统一信用社代码</view>
+                    <input class="main-body-input" type="text" placeholder="请输入" maxlength="100" bindblur="setText" data-name="enterpriseCode" placeholder-style="font-size: 26rpx; color: #CCCCCC;"/>
+                </view>
+            </view>
+            <view class="main-title">银行账户</view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">企业开户名称/对外账户名</view>
+                    <input class="main-body-input" type="text" placeholder="对公账号需跟组织机构代码证上名称保持一致" maxlength="100" bindblur="setText" data-name="enterpriseAccountName" placeholder-style="font-size: 26rpx; color: #CCCCCC;"/>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">对公账户开户银行</view>
+                    <input class="main-body-input" type="text" placeholder="请输入" maxlength="100" bindblur="setText" data-name="enterpriseBank" placeholder-style="font-size: 26rpx; color: #CCCCCC;"/>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">对公银行账号</view>
+                    <input class="main-body-input" type="number" placeholder="请输入" maxlength="19" bindblur="setText" data-name="enterpriseAccount" placeholder-style="font-size: 26rpx; color: #CCCCCC;"/>
+                </view>
+            </view>
+            <view class="main-title">企业资质</view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">企业工商营业执照</view>
+                    
+    <view class="main-upload" bindtap="$UploaderCom$tap" wx:if="{{!form.enterpriseLicense}}"/>
+
+                    <view class="main-show-image"  wx:if="{{form.enterpriseLicense}}">
+                        <image class="main-upload-image" src="{{form.enterpriseLicense}}"/>
+                        <view class="main-del-image" bindtap="delAuthPaper" data-key="enterpriseLicense"/>
+                    </view>
+                    <view class="main-body-remind">只支持中国大陆工商局或市场监督管理局颁发的工商营业执照，且必须在有效期内</view>
+                </view>
+            </view>
+            <view class="main-button" bindtap="nextStep">下一步</view>
+        </view>
+        <!-- 主体账户信息end -->
+    </view>

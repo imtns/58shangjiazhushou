@@ -1,0 +1,42 @@
+
+    <view class="container">
+        <view class="section border-top">
+            <view class="item select-type">
+                <text>类型选择</text>
+                <view class="radio-button first {{validType === 1 ? 'checked' : ''}}"  bindtap="dataAction" data-wpydataaction-a="validType" data-wpydataaction-b="1">
+                    <view class="icon-radio"/>
+                    固定时间
+                </view>
+                <view class="radio-button {{validType === 2 ? 'checked' : ''}}" bindtap="dataAction" data-wpydataaction-a="validType" data-wpydataaction-b="2">
+                    <view class="icon-radio"/>
+                    领取后生效
+                </view>
+            </view>
+        </view>
+        <view class="section">
+            <block  wx:if="{{ validType === 1 }}">
+                <view class="item required border-bottom">
+                    <text>开始时间</text>
+                    <picker mode="date" value="{{ formatValidStarttime }}" bindchange="dataAction" class="{{validStarttime === null ? 'placeholder' : ''}}" data-wpydataaction-a="validStarttime">
+                        {{ formatValidStarttime || '去选择' }}<view class="icon more"/>
+                    </picker>
+                </view>
+                <view class="item required">
+                    <text>结束时间</text>
+                    <picker mode="date" value="{{ formatValidEndtime }}" bindchange="dataAction" class="{{validEndtime === null ? 'placeholder' : ''}}" data-wpydataaction-a="validEndtime">
+                        {{ formatValidEndtime || '去选择' }}<view class="icon more"/>
+                    </picker>
+                </view>
+            </block>
+            <block  wx:else>
+                <view class="item required border-bottom">
+                    <text>领券以后</text>
+                    <input type="number" placeholder="领券以后" placeholder-class="placeholder" value="{{ validAfterDays }}" bindblur="dataAction" data-wpydataaction-a="validAfterDays"/>
+                </view>
+                <view class="item required">
+                    <text>有效天数</text>
+                    <input type="number" placeholder="有效天数" placeholder-class="placeholder" value="{{ validDays }}" bindblur="dataAction" data-wpydataaction-a="validDays"/>
+                </view>
+            </block>
+        </view>
+    </view>
