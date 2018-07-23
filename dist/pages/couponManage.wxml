@@ -4,7 +4,7 @@
             
     <view class="coupons {{$couponList$size === \'small\' ? 'small' : ''}}" >
         <block wx:for="{{ $couponList$coupons }}" wx:for-index="$couponList$index" wx:for-item="$couponList$item" wx:key="$couponList$id">
-            <navigator class="coupon-list-item {{!$couponList$item.usable ? 'unable' : ''}} {{$couponList$isEditing ? 'editing' : ''}}" url="{{ '/pages/couponEdit?id=' + $couponList$item.id }}">
+            <view class="coupon-list-item {{!$couponList$item.usable ? 'unable' : ''}} {{$couponList$isEditing ? 'editing' : ''}}" bindtap="$couponList$choose" data-wpychoose-a="{{ $couponList$index }}" data-wpychoose-b="{{ '/pages/couponEdit?id=' + $couponList$item.id }}">
                 <view class="coupon-list-left">
                     <!-- 打折 -->
                     <view class="discount"  wx:if="{{ $couponList$item.couponType === 2 }}">
@@ -48,8 +48,8 @@
                 </view>
                 <view class="checkbox {{$couponList$item.checked ? 'checked' : ''}}">
                 </view>
-                <view class="mask" catchtap="$couponList$chooseCoupon" wx:if="{{ $couponList$isEditing }}" data-wpychoosecoupon-a="{{ $couponList$index }}"/>
-            </navigator>
+                <!-- <view class="mask" catchtap="choose({{ index }})" wx:if="{{ isEditing }}"></view> -->
+            </view>
         </block>
     </view>
 
