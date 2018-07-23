@@ -1,0 +1,288 @@
+<template>
+    <view class="shopPic-container">
+        <view class="mod-view mod-reserve" wx:if="{{pageData[0].props.data && pageData[0].props.data.length > 0}}">
+        <view class="mod-head" wx:if="{{pageData[0].props.cfg.title && pageData[0].props.cfg.title.length>0}}">{{reserveTitle}}</view>
+        <block wx:if="{{pageData[0].props.cfg.theme==='3'}}">
+            <!-- 横向滑动 -->
+            <scroll-view class="mod-list-three" scroll-x bindscrolltolower="loadMore" data-index="{{index}}" data-order-page="{{pageData[0].pageNum+1}}"
+                data-type="order" data-order-size="{{pageData[0].pageSize}}" data-total="{{pageData[0].props.data.total}}" wx:if="{{pageData[0].props.data.total>pageData[0].props.data.length}}">
+                <block wx:for="{{data}}" wx:key="{{item.id}}" wx:for-index="idx">
+                    <view class="mod-reserve-item-three {{idx>0?'ml-20':''}}">
+                        <consumer-button url="/pages/reserveDetail/reserveDetail?reserveId={{item.id}}">
+                            <image class="mod-reserve-image-three" src="{{item.pics+'?w=300&h=225'}}" mode="aspectFill" />
+                            <view class="mod-reserve-title-three mt-30">{{item.serviceName}}</view>
+                            <view class="mod-reserve-price-three mt-10">
+                                ￥
+                                <view class="price-content-three">{{item.price}}</view>次
+                            </view>
+                            <view class="mod-reserve-button-three mt-10">
+                                预约
+                            </view>
+                        </consumer-button>
+                    </view>
+                </block>
+            </scroll-view>
+            <scroll-view class="mod-list-three" scroll-x data-index="{{index}}" data-service-page="{{pageData[0].pageNum+1}}" data-type="order" data-service-size="{{pageData[0].pageSize}}"
+                data-total="{{pageData[0].props.data.total}}" wx:else>
+                <block wx:for="{{pageData[0].props.data}}" wx:key="{{item.id}}" wx:for-index="idx">
+                    <view class="mod-reserve-item-three {{idx>0?'ml-20':''}}">
+                        <consumer-button url="/pages/reserveDetail/reserveDetail?reserveId={{item.id}}">
+                            <image class="mod-reserve-image-three" src="{{item.pics+'?w=300&h=225'}}" mode="aspectFill" />
+                            <view class="mod-reserve-title-three mt-30">{{item.serviceName}}</view>
+                            <view class="mod-reserve-price-three mt-10">
+                                ￥
+                                <view class="price-content-three">{{item.price}}</view>次
+                            </view>
+                            <view class="mod-reserve-button-three mt-10">
+                                预约
+                            </view>
+                        </consumer-button>
+                    </view>
+                </block>
+            </scroll-view>
+        </block>
+        <view class="mod-list-reserve" wx:else>
+            <block wx:for="{{pageData[0].props.data}}" wx:key="{{item.id}}" wx:for-index="idx">
+                <!-- 中图 -->
+                <block wx:if="{{pageData[0].props.cfg.theme==='2'}}">
+                    <view class="mod-reserve-item-two{{ (~idx%2===0)?' last-child':''}}">
+                        <consumer-button url="/pages/reserveDetail/reserveDetail?reserveId={{item.id}}">
+                            <image class="mod-reserve-image-two" src="{{item.pics}}?w=330&h=248" mode="aspectFill" />
+                            <view class="mod-reserve-title-two mt-10">{{item.serviceName}}</view>
+                            <view class="mod-reserve-price-two mt-10">
+                                ￥
+                                <view class="price-content-two">{{item.price}}</view>次
+                            </view>
+                            <view class="mod-reserve-button-two mt-10">
+                                预约
+                            </view>
+                        </consumer-button>
+                    </view>
+                </block>
+                <!-- 横向列表 -->
+                <block wx:elif="{{pageData[0].props.cfg.theme==='4'}}">
+                    <view class="mod-reserve-item-four">
+                        <consumer-button url="/pages/reserveDetail/reserveDetail?reserveId={{item.id}}">
+                            <image class="mod-reserve-image-four" src="{{item.pics}}?w=264&h=198" mode="aspectFill" />
+                            <view class="mod-reserve-title-four">{{item.serviceName}}</view>
+                            <view class="mod-reserve-price-four mt-20">￥
+                                <view class="price-content">{{item.price}}</view>次
+                            </view>
+                            <view class="mod-reserve-button-four mt-30" url="/pages/reserveDetail/reserveDetail?reserveId={{item.id}}">
+                                预约
+                            </view>
+                        </consumer-button>
+                    </view>
+                </block>
+                <!-- 双图 -->
+                <block wx:elif="{{pageData[0].props.cfg.theme==='5'}}">
+                    <view class="mod-reserve-item-five{{ ~idx%2===0?' last-child':''}}">
+                        <consumer-button url="/pages/reserveDetail/reserveDetail?reserveId={{item.id}}">
+                            <image class="mod-reserve-image-five" src="{{item.pics}}?w=336&h=448" mode="aspectFill" />
+                            <view class="mod-reserve-title-five mt-10">{{item.serviceName}}</view>
+                            <view class="mod-reserve-price-five mt-10">
+                                ￥
+                                <view class="price-content-five">{{item.price}}</view>次
+                            </view>
+                            <view class="mod-reserve-button-five mt-10">
+                                预约
+                            </view>
+                        </consumer-button>
+                    </view>
+                </block>
+                <!-- 大图 -->
+                <block wx:else>
+                    <view class="mod-reserve-item-one">
+                        <consumer-button url="/pages/reserveDetail/reserveDetail?reserveId={{item.id}}">
+                            <image class="mod-reserve-image-one" src="{{item.pics+'?w=690&h=388'}}" mode="aspectFill" />
+                            <view class="mod-reserve-table-one table mt-20">
+                                <view class="cell">
+                                    <view class="mod-reserve-title-one">{{item.serviceName}}</view>
+                                    <view class="mod-reserve-price-one">￥
+                                        <view class="price-content">{{item.price}}</view>次
+                                    </view>
+                                </view>
+                                <view class="cell c-right mod-reserve-button-one-wrap">
+                                    <view class="mod-reserve-button-one">立即预约</view>
+                                </view>
+                            </view>
+                        </consumer-button>
+                    </view>
+                </block>
+            </block>
+        </view>
+        <view class="mod-more" bindtap="loadMore" wx:if="{{total > data.length && pageData[0].props.cfg.theme!=='3'}}" data-index="{{index}}" data-order-page="{{pageData[0].pageNum+1}}"
+            data-type="order" data-order-size="{{pageData[0].pageSize}}" data-total="{{total}}">查看更多</view>
+    </view>
+    <view class="shopPic-editLayer">
+        <view class="saveBar" @tap="saveTitle">保存</view>
+        <view class="tipBar">默认展示所有预约服务</view>
+        <view class="edit-cell">
+            <view class="edit-label">标题名称</view>
+            <view class="edit-input">
+                <input data-name="name"  @input="bindKeyInput" class="weui-input" name="name" maxlength='16' placeholder="16字以内" />
+            </view>
+        </view>
+    </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+import Mixin from './mixin';
+
+const app = require('../../utils/globalData');
+
+export default class Order extends wepy.page {
+  config = {
+      navigationBarTitleText: '预约服务',
+  };
+  mixins = [Mixin];
+
+  data = {
+      reserveTitle: '预约组件标题',
+  };
+  onLoad() {
+      this.reserveTitle = this.pageData[0].props.cfg.title;
+      [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
+  }
+  methods = {
+      saveTitle(e) {
+          console.log(e);
+          this.pageModule.cfg.title = this.reserveTitle;
+          this.pageData[0].props.cfg.title = this.reserveTitle;
+          [app.globalData.pageData[this.pageIndex]] = this.pageData;
+          app.globalData.modules[this.pageIndex] = this.pageModule;
+          wx.navigateBack({
+              delta: 1,
+          });
+      },
+      bindKeyInput(e) {
+          this.reserveTitle = e.detail.value;
+      },
+  };
+}
+</script>
+<style lang="scss">
+.shopPic-editLayer {
+  width: 100%;
+  box-sizing: border-box;
+  height: 394rpx;
+  position: fixed;
+  bottom: 0;
+  background: rgb(91, 93, 95);
+  z-index: 10;
+  padding: 0 30rpx;
+  .saveBar {
+    height: 86rpx;
+    box-sizing: border-box;
+    margin: 0 -30rpx;
+    padding-right: 30rpx;
+    background: #46484a;
+    color: white;
+    line-height: 86rpx;
+    font-size: 32rpx;
+    text-align: right;
+  }
+  .tipBar {
+    height: 86rpx;
+    padding-right: 30rpx;
+    line-height: 86rpx;
+    color: #999;
+    font-size: 26rpx;
+    background: #5b5d5f;
+  }
+  .edit-cell {
+    height: 88rpx;
+    display: flex;
+    font-size: 30rpx;
+    background: #545658;
+    columns: #333333;
+    align-items: center;
+    margin: 0 -30rpx;
+    padding: 0 30rpx;
+    border-bottom: 1rpx solid #585d5f;
+    .edit-label {
+      width: 324rpx;
+      color: #999;
+    }
+    .edit-input {
+      width: 396rpx;
+      color: #d8d8d8;
+      text-align: right;
+    }
+  }
+}
+.space {
+  margin-top: 20rpx !important;
+}
+.shopPic-container {
+  margin-top: 25rpx;
+  width: 100%;
+  background: white;
+  .title {
+    text-align: center;
+    font-size: 34rpx;
+    color: #333;
+    padding: 30rpx 0 0;
+  }
+}
+.shopPic-container .list {
+  width: 100%;
+  margin: 0 auto;
+  overflow: scroll;
+  white-space: nowrap;
+  .item {
+    margin: 30rpx 20rpx 30rpx 0;
+    width: 300rpx;
+    height: 356rpx;
+    display: inline-view;
+    position: relative;
+    &:first-child {
+      margin-left: 30rpx;
+    }
+    .thumb {
+      width: 100%;
+      height: 225rpx;
+      image {
+        width: 100%;
+        overflow: hidden;
+        height: 100%;
+      }
+    }
+    .desc {
+      position: relative;
+      color: #333;
+      margin-top: 31rpx;
+      height: 40rpx;
+      width: 300rpx;
+      text-overflow: ellipsis;
+      display: view;
+      font-size: 28rpx;
+    }
+    .info {
+      margin-top: 10rpx;
+      display: flex;
+      justify-content: space-between;
+      color: #ff552e;
+      .price {
+        font-size: 24rpx;
+      }
+      .price-number {
+        font-size: 36rpx;
+        display: inline-view;
+      }
+      .reserve-button {
+        background: #ffeeea;
+        width: 120rpx;
+        height: 50rpx;
+        color: #ff552e;
+        font-size: 26rpx;
+        line-height: 50rpx;
+        text-align: center;
+      }
+    }
+  }
+}
+</style>
+
+

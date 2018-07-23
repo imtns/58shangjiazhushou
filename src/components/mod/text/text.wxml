@@ -1,0 +1,15 @@
+<template name="text">
+    <view wx:if="{{cfg.theme==2}}" class="mod-view mod-text">
+      <view class="mod-text-icon"></view>
+      <swiper class="mod-text-swiper {{cfg.theme==1?'mo-text-swiper-orient':''}}" vertical="true" indicator-dots="{{!1}}" autoplay="!1" interval="3000" duration="1000">
+          <swiper-item wx:for="{{cfg.texts}}" wx:key="{{item.item}}">
+            <view class="mod-text-wrap">
+              <view class="mod-text-info">{{item.text}}</view>
+            </view>
+          </swiper-item>
+      </swiper>
+    </view>
+    <view wx:else class="mod-view mod-text1">
+      <text class="mod-text-info1">{{cfg.texts[0].text}}</text>
+    </view>
+</template>

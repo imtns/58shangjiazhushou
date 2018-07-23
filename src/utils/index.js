@@ -86,6 +86,16 @@ export const toast = (title, duration = 1500) => {
         duration,
     });
 };
+    // 不支持提示
+export const notSupportTips = () => {
+    wx.showModal({
+        title: '提示',
+        content: '此微信版本过低，请先升级微信。',
+        success(res) {
+            wx.setEnableDebug({ enableDebug: !res.confirm });
+        },
+    });
+};
 export const toastSync = (title) => wepy.showToast({
     title: title.toString(),
     icon: 'none',

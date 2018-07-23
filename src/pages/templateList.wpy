@@ -1,0 +1,267 @@
+<template>
+<view class="tabContainer">
+    <view class="tabs">
+        <view class="tab {{tabSelect == 1?'active':''}}" @tap="tabClick" data-distance='160' data-id='1'>我的模板</view>
+        <view class="tab {{tabSelect == 2?'active':''}}" @tap="tabClick" data-distance='532' data-id='2'>基础模板</view>
+    </view>
+    <view style="left:{{left}}rpx" class="tabs-underline"></view>
+</view>
+<view class="list" wx:if="{{list.length}}">
+    <repeat for="{{list}}" item="item" index="index">
+        <view class="item" @tap="goEdit" data-id="{{item.id}}">
+            <view wx:if="my" @tap="closeLayer" class="mySetting {{delLayer?'delLayer':''}}">   
+                <view class="delBtn" data-id="1" @tap.stop="del" hidden="{{!delLayer}}">删除</view>     
+            </view>
+            <view class="tip" hidden="{{!my}}">{{status[item.status]}}</view>
+            <view class="delTip" hidden="{{!my}}" @tap="showDelLayer">...</view>
+            <view class="thumb"><image mode="aspectFill" src="{{item.image}}"></image></view>
+            <view class="desc">{{item.userDesc}}</view>
+        </view>
+    </repeat>
+</view>
+<view wx:else class="emptyLayer">
+    <view class="icon"><image mode="aspectFill" src="assets/empty.png"></image></view>
+    <text class="noTemplateText">您还没有制作模板哦</text>
+</view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { get } from '../utils/ajax';
+
+const basicTemplateUrl = '/business/templateList';
+const myTemplateUrl = `/business/myTemplateList/${wx.getStorageSync('mpId')}`;
+const getTemplateIdUrl = '/business/init/struct';
+export default class Index extends wepy.page {
+  config = {
+      navigationBarTitleText: '店铺装修',
+  };
+  data = {
+      left: 160,
+      tabSelect: 1,
+      my: true,
+      delLayer: false,
+      list: {},
+      status: {
+          '-2': '删除',
+          '-1': '初始化',
+          0: '未审核',
+          1: '审核中',
+          2: '审核成功',
+          3: '审核失败',
+          4: '已上线',
+          5: '保存',
+      },
+  };
+  async onLoad() {
+      this.loadMyTemplate();
+  }
+  methods = {
+      tabClick(e) {
+          this.list = null;
+          const { distance, id } = e.target.dataset;
+          this.left = distance;
+          console.log(id);
+          this.tabSelect = id;
+          this.my = id === '1';
+          if (this.my) { this.loadMyTemplate(); } else { this.loadBasicTemplate(); }
+      },
+      showDelLayer() {
+          this.delLayer = true;
+      },
+      del(e) {
+          const { id } = e.target.dataset;
+          console.log(id);
+      },
+      closeLayer() {
+          this.delLayer = false;
+      },
+      async goEdit(e) {
+          if (this.my) {
+              console.log('my');
+          } else {
+              const { id } = e.currentTarget.dataset;
+              const { data } = await get(getTemplateIdUrl, {
+                  templeteid: id,
+                  mpId: wx.getStorageSync('mpId'),
+              });
+              wx.setStorageSync('releaseId', data.id);
+              wx.navigateTo({
+                  url: 'reserve/reserve',
+              });
+              console.log(data);
+          }
+      },
+  };
+  async loadBasicTemplate() {
+      const { data } = await get(basicTemplateUrl, {
+          pageNum: 1,
+          pageSize: 20,
+          mpId: wx.getStorageSync('mpId'),
+          cate: -1,
+      });
+      this.list = data;
+      this.$apply();
+  }
+  async loadMyTemplate() {
+      const { data } = await get(myTemplateUrl, {
+          pageNum: 1,
+          pageSize: 20,
+          v: 2,
+          appid: 'yxuEvbSU3M0zGwxuw',
+      });
+      this.list = data;
+      this.$apply();
+  }
+}
+</script>
+<style lang="scss">
+.emptyLayer{
+    position:absolute;
+    transform: translate(-50%,-50%);
+    left:50%;
+    top:50%;
+    text-align: center;
+    .icon{
+        width:209rpx;
+        height:209rpx;
+        margin:0 auto;
+        image{
+            width:100%;
+            height:100%;
+        }
+    }
+    .noTemplateText{
+        color:#bdbdbd;
+        display:block;
+        font-size:28rpx;
+        margin-top:30rpx;
+    }
+}
+.list {
+  width: 100%;
+  margin: 0 auto;
+  padding-left:18rpx;
+  .item {
+    margin: 20rpx;
+    width: 320rpx;
+    height: 248rpx;
+    position: relative;
+    float:left;
+    // margin-left:auto;
+    // margin-right:auto;
+    .mySetting {
+      width: 100%;
+      height: 248rpx;
+      position: absolute;
+      z-index: 199;
+      display:none;
+      left: 0;
+      top: 0;
+      .delBtn {
+        width: 94rpx;
+        height: 46rpx;
+        position: absolute;
+        transform: translate(-50%, -50%);
+        left: 50%;
+        top: 50%;
+        color: white;
+        background: #4e88ff;
+        border-radius: 4rpx;
+        font-size: 26rpx;
+        text-align: center;
+        line-height: 46rpx;
+      }
+      &.delLayer {
+        background: rgba(0, 0, 0, 0.3);
+        display:block;
+      }
+    }
+    .tip {
+      height: 40rpx;
+      padding: 4rpx 20rpx;
+      position: absolute;
+      top: 10rpx;
+      right: 0;
+      font-size: 24rpx;
+      line-height: 40rpx;
+      text-align: center;
+      color: white;
+      background-image: linear-gradient(-122deg, #3fb8ff 0%, #4e88ff 100%);
+      border-radius: 18rpx;
+    }
+    .delTip {
+      position: absolute;
+      right: 20rpx;
+      bottom: 20rpx;
+      color: #d8d8d8;
+      font-size: 45rpx;
+      z-index: 99;
+    }
+
+    .thumb {
+      width: 100%;
+      height: 180rpx;
+      image {
+        width: 100%;
+        overflow: hidden;
+        height: 100%;
+      }
+    }
+    .desc {
+      position: relative;
+      bottom: 0;
+      height: 68rpx;
+      background: white;
+      line-height: 68rpx;
+      color: #333;
+      font-size: 28rpx;
+      padding-left: 20rpx;
+    }
+    // &:nth-child(odd) {
+    //   margin-left: 20rpx;
+    // }
+    // &:nth-child(even) {
+    //   margin-right: 20rpx;
+    // }
+  }
+}
+.tabContainer {
+  border-top: 1rpx solid #f3f3f3;
+  border-bottom: 1rpx solid #f3f3f3;
+  position: relative;
+  width: 100%;
+  height: 88rpx;
+  top: 0;
+  z-index: 999;
+  background: white;
+  .tabs {
+    height: 88rpx;
+    display: flex;
+    align-items: center;
+    .tab {
+      flex: 1;
+      text-align: center;
+      margin: auto;
+      font-size: 30rpx;
+      color: #666;
+      &.active {
+        color: #4e88ff;
+      }
+    }
+  }
+}
+.tabs-underline {
+  text-align: center;
+  bottom: 1rpx;
+  width: 60rpx;
+  transition: 0.4s;
+  position: absolute;
+  height: 6rpx;
+  border-radius: 2rpx;
+  background-color: #4e88ff;
+}
+.list {
+}
+</style>
+
