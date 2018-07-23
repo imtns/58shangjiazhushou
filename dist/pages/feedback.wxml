@@ -1,0 +1,15 @@
+
+    <view class="container">
+        <view class="main-title">常见问题</view>
+        <view class="main-body"  wx:for="{{list}}" wx:key="index">
+            <view class="main-boy-line">
+                <view class="main-body-item" data-type="{{item.type}}" bindtap="tofeedbackDetail">{{item.text}}</view>
+            </view>
+        </view>
+        <view class="main-title">留言</view>
+        <view class="main-body">
+            <textarea class="main-body-textarea" placeholder="您的留言会及时通知到相关助理及管理员" placeholder-style="font-size: 30rpx;color: #CCCCCC" maxlength="500" bindinput="input" value="{{content}}"/>
+            <view class="main-text-size">{{content.length}}/500</view>
+        </view>
+        <view class="main-button" bindtap="submit" style="margin-bottom:100rpx;">提交</view>
+    </view>

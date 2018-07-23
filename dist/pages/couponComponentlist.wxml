@@ -1,0 +1,44 @@
+
+    <view class="container {{isEditing ? 'edit' : ''}}">
+        <view class="list-item coupon-component" bindtap="editChose">
+            <view class="coupon-discount">
+                <view>8.5</view>
+                <text>折</text>
+            </view>
+            <view class="coupon-detail">
+                <view class="coupon-money">满200可用</view>
+                <view class="coupon-cate">仅限家庭保洁服务类</view>
+                <view class="coupon-valid">领取后立即生效</view>
+            </view>
+            <view class="coupon-use">
+                <view class="coupon-use-text">已领取</view>
+                <view class="coupon-use-text coupon-use-num">100张</view>
+                <view class="coupon-use-text">已使用</view>
+                <view class="coupon-use-text coupon-use-num">0张</view>
+            </view>
+        </view>
+        <view class="list-item coupon-component invalid" bindtap="editChose">
+            <view class="coupon-discount">
+                <view>8.5</view>
+                <text>折</text>
+            </view>
+            <view class="coupon-detail">
+                <view class="coupon-money">满200可用</view>
+                <view class="coupon-cate">仅限家庭保洁服务类</view>
+                <view class="coupon-valid">领取后立即生效</view>
+            </view>
+            <view class="coupon-use">
+                <view class="coupon-use-text">已失效</view>
+            </view>
+        </view>
+        <!-- <EmptyPage wx:if="{{!listData.length}}"></EmptyPage>
+        <view class="block"></view> -->
+    </view>
+    <view class="options"  wx:if="{{!isEditing}}">
+        <view class="button edit" bindtap="edit">编辑</view>
+        <view class="button" bindtap="addcoupon">添加优惠劵</view>
+    </view>
+    <view class="options"  wx:if="{{isEditing}}">
+        <view class="button edit" bindtap="cancle">取消</view>
+        <view class="button" bindtap="toDelete">删除</view>
+    </view>

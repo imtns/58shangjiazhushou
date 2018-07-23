@@ -1,0 +1,22 @@
+
+    <view class="container">
+        <view class="article-title">{{title}}</view>
+        <view class="article-intro">
+            <view class="article-detail-flex">
+                <view class="article-base">作者：</view>
+                <view class="base-text base-over">{{author}}</view>
+            </view>
+            <view class="article-detail-flex middle">
+                <view class="article-base">来源：</view>
+                <view class="base-text base-over">{{source}}</view>
+            </view>
+            <view class="article-detail-flex">
+                <view class="article-base">时间：</view>
+                <view class="base-text">{{ updateTime || createTime}}</view>
+            </view>
+        </view>
+        <rich-text class="article-content" nodes="{{content}}"/>
+        
+    </view>
+    <view class="block"/>
+    <view class="button article-edit-btn" bindtap="toEdit">编辑</view>

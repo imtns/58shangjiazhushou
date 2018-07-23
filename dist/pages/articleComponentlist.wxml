@@ -17,18 +17,17 @@
                             <view class="article-base">作者：</view>
                             <view class="base-text base-over">{{item.author || '未知'}}</view>
                         </view>
-                        <view class="article-detail-flex">
+                        <view class="article-detail-flex middle">
                             <view class="article-base">来源：</view>
                             <view class="base-text base-over">{{item.source || '未知'}}</view>
                         </view>
                         <view class="article-detail-flex">
                             <view class="article-base">时间：</view>
-                            <view class="base-text">{{item.updateTime}}</view>
+                            <view class="base-text">{{item.updateTime || item.createTime}}</view>
                         </view>
                     </view>
                     <view class="article-preview-con">{{item.intro}}</view>
                 </view>
-                <view class="block"/>
             </scroll-view>
             
     <view class="empty-box" wx:if="{{listData.length===0}}">
@@ -38,6 +37,7 @@
 
         </view>
     </view>
+    <view class="block"/>
     <view class="options"  wx:if="{{!isEditing}}">
         <view class="button edit" bindtap="edit" wx:if="{{listData.length > 0}}">编辑</view>
         <view class="button" bindtap="addArticle">添加文章</view>

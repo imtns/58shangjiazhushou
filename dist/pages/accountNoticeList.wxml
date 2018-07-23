@@ -1,0 +1,25 @@
+
+    <view class="notice-container">
+        <view class="notice-header">
+            <view>支付主体</view>
+            <view class="attach-notice">入账金额</view>
+        </view>
+        <scroll-view class="notice-list"  wx:if="{{accountList.length>0}}" scroll-y="true" lower-threshold="50" bindscrolltolower="accountListMore">
+            <view wx:for="{{accountList}}" wx:key="index" data-item="{{item}}">
+                <view class="notice-item">
+                    <view class="notice-content">
+                        <view class="business-name">{{item.content.from}}</view>
+                        <view class="account-time">{{item.content.time}}</view>
+                    </view>
+                    <view class="notice-money">
+                        <view>￥</view>{{item.content.amount}}
+                    </view>
+                    <view class="notice-unread" wx:if="{{item.status === 1}}"/>
+                </view>
+            </view>
+        </scroll-view>
+        <view class="emptyBox"  wx:if="{{accountList.length <= 0}}">
+            <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/empty.png" class="emptyIcon"/>
+            <view class="emptyText">暂无通知</view>
+        </view>
+    </view>

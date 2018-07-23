@@ -84,7 +84,7 @@
             border-bottom:1rpx solid #f3f3f3;
             .article-detail-flex{
                 display:inline-block;
-                margin-right:10rpx;
+                // margin-right:10rpx;
                 line-height:50rpx;
                 .article-base,.base-text{
                     float:left;
@@ -104,6 +104,9 @@
                     overflow:hidden;
                     text-overflow:ellipsis;
                 }
+            }
+            .article-detail-flex.middle{
+                margin:0 60rpx 0 40rpx;
             }
         }
         .article-preview-con{
@@ -201,8 +204,9 @@
             background-size:40rpx 40rpx;
         }
     }
-    .block{
-        width:100%;
-        height:102rpx;
-    }
+
+}
+.block{
+    width:100%;
+    height:102rpx;
 }

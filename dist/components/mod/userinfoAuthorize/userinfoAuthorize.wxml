@@ -1,0 +1,2 @@
+<!--pages/mod/userinfoAuthorize/userinfoAuthorize.wxml-->
+<button open-type='getUserInfo' bindgetuserinfo='bindGetUserInfo'>{{}}</button>

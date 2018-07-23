@@ -1,0 +1,99 @@
+
+    <view class="container">
+        <view class="section">
+            <view class="item required border-bottom">
+                <text>服务名称</text>
+                <input type="text" placeholder="可用优惠券亮点吸引用户" placeholder-class="placeholder" value="{{ form.serviceName }}" bindchange="setFormData" data-wpysetformdata-a="serviceName"/>
+            </view>
+            
+    <view class="mod-upload">
+        <view class="main-body">
+            <view class="main-title"  wx:if="{{ $imageUploader$showType === 'normal' }}">上传{{$imageUploader$titleStatus[$imageUploader$uploadtype-1]}}</view>
+            <view class="main-body-flex {{$imageUploader$showType === \'normal\' ? 'main-$imageUploader$boy-$imageUploader$line' : ''}}" >
+                <view class="main-upload-order {{$imageUploader$vm.length === 0 ? 'show-add' : ''}}" bindtap="$imageUploader$bindUploadImage"  wx:if="{{ $imageUploader$showType === 'order' }}">
+                    <view class="inner-title" wx:if="{{ $imageUploader$vm.length === 0 }}">添加图片</view>
+                    <block wx:if="{{ $imageUploader$showType === 'order' && $imageUploader$vm.length > 0 }}">
+                        <image class="image-preview" mode="aspectFill" src="{{ $imageUploader$vm[0] }}"/>
+                        <view class="replace-image">替换图片</view>
+                    </block>
+                </view>
+                <block wx:if="{{ $imageUploader$showType === 'normal' }}">
+                    <view class="main-upload" bindtap="$imageUploader$bindUploadImage" wx:if="{{$imageUploader$uploadtype=='1' && $imageUploader$vm.length<$imageUploader$maxCount-0}}"/>
+                    <view class="main-upload" bindtap="$imageUploader$bindUploadVideo" wx:if="{{$imageUploader$uploadtype=='2' && $imageUploader$vm.length<$imageUploader$maxCount-0}}"/>
+                    <view class="main-show-image" wx:for="{{$imageUploader$vm}}" wx:key="index">
+                        <image class="main-upload-image" data-index="{{index}}" src="{{item}}" bindtap="$imageUploader$bindPreviewImage" wx:if="{{$imageUploader$uploadtype==='1'}}" data-wpybindpreviewimage-a="{{index}}"/>
+                        <view class="main-upload-video" data-index="{{index}}" bindtap="$imageUploader$bindPlayVideo" wx:else data-wpybindplayvideo-a="{{item}}"><image class="main-upload-video-arrow" src="https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/img/video-play.png"/></view>
+                        <view class="main-del-image" hidden="{{$imageUploader$loading}}" catchtap="$imageUploader$onCancelImage" wx:if="{{$imageUploader$showDelete}}"/>
+                    </view>
+                </block>
+            </view>
+        </view>
+    </view>
+
+            <view class="item required">
+                <text>服务价格</text>
+                <input class="price-font input-price" type="digit" placeholder="请输入价格" placeholder-class="placeholder" value="{{ form.price }}" bindchange="setFormData" data-wpysetformdata-a="price"/>
+                <text class="unit">元/次</text>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required">
+                <text>服务时长</text>
+                <input class="input-duration" type="number" placeholder="请输入时间" placeholder-class="placeholder" value="{{ form.duration }}" bindchange="setFormData" data-wpysetformdata-a="duration"/>
+                <text class="unit">分钟</text>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required border-bottom">
+                <text>服务开始时间</text>
+                <picker mode="time" value="{{ form.serviceStarttime }}" bindchange="setFormData" class="{{!form.serviceStarttime ? 'placeholder' : ''}}" data-wpysetformdata-a="serviceStarttime">
+                    {{ form.serviceStarttime || '去选择' }}<view class="icon more"/>
+                </picker>
+            </view>
+            <view class="item required">
+                <text>服务结束时间</text>
+                <picker mode="time" value="{{ form.serviceEndtime }}" bindchange="setFormData" class="{{!form.serviceEndtime ? 'placeholder' : ''}}" data-wpysetformdata-a="serviceEndtime">
+                    {{ form.serviceEndtime || '去选择' }}<view class="icon more"/>
+                </picker>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required border-bottom">
+                <text>预约区域</text>
+                <navigator url="/pages/multiSelector" class="{{region === \'\' ? 'placeholder' : ''}}">
+                    {{ region  || '去选择' }}
+                    <view class="icon more"/>
+                </navigator>
+            </view>
+            <view class="item required">
+                <text>预约地址</text>
+                <button class="locate" bindtap="setLocation">定位</button>
+            </view>
+            <input type="text" class="location-detail" placeholder="请输入详细地址" placeholder-class="placeholder" value="{{ form.address }}" bindchange="setFormData" data-wpysetformdata-a="address"/>
+            <map class="location-map" scale="14" longitude="{{ form.addressLongitude }}" latitude="{{ form.addressLatitude }}"/>
+        </view>
+        <view class="section">
+            <view class="item">
+                <text>服务详情</text>
+            </view>
+            <textarea class="service-detail" cols="30" rows="10" placeholder="详细描述下您的服务内容吧~" placeholder-class="placeholder" value="{{ form.serviceDetailInfo }}" bindblur="setFormData" data-wpysetformdata-a="serviceDetailInfo"/>
+        </view>
+        <view class="section">
+            <view class="item border-bottom">
+                <text>服务人姓名</text>
+                <input type="number" placeholder="请输入服务人姓名" placeholder-class="placeholder" value="{{ form.serviceUserName }}" bindchange="setFormData" data-wpysetformdata-a="serviceUserName"/>
+            </view>
+            <view class="item">
+                <text>服务人电话</text>
+                <input type="number" placeholder="请输入服务人电话" placeholder-class="placeholder" value="{{ form.serviceTelphone }}" bindchange="setFormData" data-wpysetformdata-a="serviceTelphone"/>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required">
+                <text>支付方式</text>
+                <view>本产品目前仅支持到店支付</view>
+            </view>
+        </view>
+
+        <button class="save {{!canSubmit ? 'disabled' : ''}}" bindtap="save">保存</button>
+    </view>

@@ -1,0 +1,8 @@
+<template name="pay">
+    <view class="mod-view mod-pay">
+        <view class="pay-icon"></view>
+        <view class="pay-text">买单</view>
+        <view class="pay-text"></view>
+        <navigator class="pay-button" url='/pages/payDetail/payDetail'>买单</navigator>
+    </view>
+</template>

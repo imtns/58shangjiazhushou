@@ -27,22 +27,22 @@
                             <view class="article-base">作者：</view>
                             <view class="base-text base-over">{{item.author || '未知'}}</view>
                         </view>
-                        <view class="article-detail-flex">
+                        <view class="article-detail-flex middle">
                             <view class="article-base">来源：</view>
                             <view class="base-text base-over">{{item.source || '未知'}}</view>
                         </view>
                         <view class="article-detail-flex">
                             <view class="article-base">时间：</view>
-                            <view class="base-text">{{item.updateTime}}</view>
+                            <view class="base-text">{{item.updateTime || item.createTime}}</view>
                         </view>
                     </view>
                     <view class="article-preview-con">{{item.intro}}</view>
                 </view>
-                <view class="block"></view>
             </scroll-view>
             <EmptyPage wx:if="{{listData.length===0}}"></EmptyPage>
         </view>
     </view>
+    <view class="block"></view>
     <view class="options" wx:if="{{!isEditing}}">
         <view class="button edit" bindtap="edit" wx:if="{{listData.length > 0}}">编辑</view>
         <view class="button" bindtap="addArticle">添加文章</view>
@@ -137,7 +137,7 @@ export default class ArticleComponentList extends wepy.page {
             const nData = data.data;
             if (this.pageNum === 1 && (nData.length === 0 || !nData)) {
                 this.isLoading = false;
-                toast('没有数据');
+                // toast('没有数据');
                 return;
             }
             if (this.pageNum > 1 && nData.length < this.pageSzie) {
@@ -150,7 +150,7 @@ export default class ArticleComponentList extends wepy.page {
                     choseStatu: false,
                 });
             });
-            this.listData = this.listData.concat(nData);
+            this.listData = this.pageNum === 1 ? nData : this.listData.concat(nData);
             this.$apply();
         } catch (e) {
             console.log(e);

@@ -60,6 +60,7 @@ export default class Pop extends wepy.component {
     }
     events = {
         postData: (name) => {
+            console.log('===========', name);
             if (name) {
                 this.title = '编辑分组';
                 this.surebtnText = '确定';

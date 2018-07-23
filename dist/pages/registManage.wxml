@@ -1,0 +1,79 @@
+
+    <view class="container">
+        <!-- 提示步骤start -->
+        
+    <view class="regist-remind-bar">
+        <block  wx:for="{{$RemindBar$steps}}" wx:key="index">
+            <view class="regist-remind-steps {{$RemindBar$currentstep >= item.index ? 'current-step' : ''}} {{item.index == 2 ? 'regist-remind-horizontal' : ''}}">
+                <view class="regist-remind-step">{{item.index}}</view>
+                <view class="regist-remind-text">{{item.text}}</view>
+            </view>
+        </block>
+    </view>
+
+        <!-- 提示步骤end -->
+        <!-- 管理员信息start -->
+        <view class="main-manage-info">
+            <view class="main-title">管理员信息登记</view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">管理员姓名</view>
+                    <input class="main-body-input" type="text" placeholder="请与申请公函上管理员姓名一致" maxlength="100" bindblur="setText" data-name="manager" placeholder-style="font-size: 26rpx; color: #CCCCCC;"/>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">身份证号码</view>
+                    <input class="main-body-input" type="idcard" placeholder="请输入" maxlength="18" bindblur="setText" data-name="managerId" placeholder-style="font-size: 26rpx; color: #CCCCCC;"/>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">电话号码</view>
+                    <input class="main-body-input" type="number" placeholder="请输入正确手机号，认证审核过程中将与您联系" maxlength="18" bindblur="setText" data-name="managerTel" placeholder-style="font-size: 26rpx; color: #CCCCCC;"/>
+                </view>
+            </view>
+            <view class="main-title">小程序信息</view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">命名</view>
+                    <input class="main-body-input" type="text" placeholder="提交前请用微信小程序检索检测名称是否可用" maxlength="100" bindblur="setText" data-name="wechatName" placeholder-style="font-size: 26rpx; color: #CCCCCC;"/>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">命名类型</view>
+                    <view class="main-body-button {{form.wechatNameType === item.type ? 'chosed' : ''}}"  wx:for="{{wechatNameType}}" wx:key="index" bindtap="selectWechatNameType" data-item="{{item}}">{{item.name}}</view>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">商标注册证</view>
+                    
+    <view class="main-upload" bindtap="$UploaderCom$tap" wx:if="{{!form.wechatBrandRegist}}"/>
+
+                    <view class="main-show-image"  wx:if="{{form.wechatBrandRegist}}">
+                        <image class="main-upload-image" src="{{form.wechatBrandRegist}}"/>
+                        <view class="main-del-image" bindtap="delAuthPaper" data-key="wechatBrandRegist"/>
+                    </view>
+                    <view class="main-body-remind">请上传小程序名称相关带的商标注册证，已证明你有权合理且善意使用该名称，否则审核不能通过</view>
+                </view>
+            </view>
+            <view class="main-body">
+                <view class="main-boy-line">
+                    <view class="main-body-title">商标授权书（选填）</view>
+                    
+    <view class="main-upload" bindtap="$anotherUploaderCom$tap" wx:if="{{!form.wechatBrandAuth}}"/>
+
+                    <view class="main-show-image" wx:if="{{form.wechatBrandAuth}}">
+                        <image class="main-upload-image" src="{{form.wechatBrandAuth}}"/>
+                        <view class="main-del-image" bindtap="delAuthPaper" data-key="wechatBrandAuth"/>
+                    </view>
+                </view>
+            </view>
+            <view class="main-title">注：原件照片、扫描件或加盖公章的复印件，支持jpg、jpeg、gif、png格式照片，大小不超过2M</view>
+            <view class="main-button" bindtap="registSuccess">完成</view>
+        </view>
+        <!-- 管理员信息end -->
+        <!-- 完成 -->
+    </view>

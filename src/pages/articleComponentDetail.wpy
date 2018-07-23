@@ -6,18 +6,19 @@
                 <view class="article-base">作者：</view>
                 <view class="base-text base-over">{{author}}</view>
             </view>
-            <view class="article-detail-flex">
+            <view class="article-detail-flex middle">
                 <view class="article-base">来源：</view>
                 <view class="base-text base-over">{{source}}</view>
             </view>
             <view class="article-detail-flex">
                 <view class="article-base">时间：</view>
-                <view class="base-text">{{createTime}}</view>
+                <view class="base-text">{{ updateTime || createTime}}</view>
             </view>
         </view>
         <rich-text class="article-content" nodes="{{content}}"></rich-text>
-        <view class="block"></view>
+        
     </view>
+    <view class="block"></view>
     <view class="button article-edit-btn" @tap="toEdit">编辑</view>
 </template>
 
@@ -37,6 +38,7 @@ export default class Index extends wepy.page {
         author: '',
         source: '',
         createTime: '',
+        updateTime: '',
         content: '',
     }
     async onLoad(option) {
@@ -56,6 +58,7 @@ export default class Index extends wepy.page {
             source,
             createTime,
             content,
+            updateTime,
         } = data;
         Object.assign(this, {
             title,
@@ -63,6 +66,7 @@ export default class Index extends wepy.page {
             source,
             createTime,
             content,
+            updateTime,
         });
         this.$apply();
     }
@@ -108,7 +112,6 @@ export default class Index extends wepy.page {
             border-bottom:1rpx solid #f3f3f3;
             .article-detail-flex{
                 display:inline-block;
-                margin-right:10rpx;
                 line-height:50rpx;
                 .article-base,.base-text{
                     float:left;
@@ -129,6 +132,9 @@ export default class Index extends wepy.page {
                     text-overflow:ellipsis;
                 }
             }
+            .article-detail-flex.middle{
+                margin:0 60rpx 0 40rpx;
+            }
         }
         .article-content{
             flex:1;
@@ -138,23 +144,23 @@ export default class Index extends wepy.page {
             font-family: PingFangSC-Regular;
             font-size: 30rpx;
             color: #666666;
-            // .rich-text-img{
-            //     width:670rpx;
-            //     height:503rpx;
-            //     margin:40rpx 0;
-            //     border-radius:6rpx;
-            // }
-            img,image{
+            .rich-text-img{
                 width:670rpx;
                 height:503rpx;
                 margin:40rpx 0;
                 border-radius:6rpx;
             }
+            // img,image{
+            //     width:670rpx;
+            //     height:503rpx;
+            //     margin:40rpx 0;
+            //     border-radius:6rpx;
+            // }
         }
-        .block{
-            width:100%;
-            height:102rpx;
-        }
+    }
+    .block{
+        width:100%;
+        height:102rpx;
     }
     .article-edit-btn{
         position:fixed;
