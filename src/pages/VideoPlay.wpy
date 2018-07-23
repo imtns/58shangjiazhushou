@@ -1,6 +1,6 @@
 <template>
     <view class='video-view'>
-        <video id="myVideo" @play="play" class='video-view-video' src="{{videoPath}}"></video>
+        <video id="myVideo" class='video-view-video' src="{{videoPath}}"></video>
     </view>
 </template>
 <script>
@@ -19,36 +19,34 @@ export default class VideoPlay extends wepy.page {
     data = {
         videoPath: '',
     }
-    methods = {
-        async play() {
-            const netStatus = await getNetStatus();
 
-            if (netStatus === 0) {
-                this.stopPlay();
-                return;
-            }
+    async checkPlay() {
+        const netStatus = await getNetStatus();
 
-            if (netStatus === 2) {
-                const { cancel } = await alertP('确认在移动网络下播放？', '提示');
-                if (cancel) {
-                    this.stopPlay();
-                }
+        if (netStatus === 0) {
+            return false;
+        }
+
+        if (netStatus === 2) {
+            const { cancel } = await alertP('确认在移动网络下播放？', '提示');
+            if (cancel) {
+                return false;
             }
-        },
-    }
-    stopPlay() {
-        this.videoContext.pause();
+        }
+
+        return true;
     }
     onLoad (options) {
         const { url } = options;
-        this.setData({
-            videoPath: url,
-        });
+        this.videoPath = url;
     }
-    onShow () {
+    async onShow () {
         const videoContext = wepy.createVideoContext('myVideo');
         this.videoContext = videoContext;
-        videoContext.play();
+
+        if (await this.checkPlay()) {
+            videoContext.play();
+        }
     }
 }
 </script>

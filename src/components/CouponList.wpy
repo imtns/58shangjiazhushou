@@ -97,7 +97,7 @@ $radius: 4rpx;
         box-shadow: 0 1rpx 10rpx 0 rgba(0,0,0,0.05);
         border-radius: $radius;
         position: relative;
-        transition: margin .5s;
+        // transition: margin .5s;
 
         &.editing {
             margin-left: 123rpx;

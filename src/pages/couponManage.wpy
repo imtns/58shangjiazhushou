@@ -88,6 +88,8 @@ export default class Index extends wepy.page {
             globalService.set('refresh', false);
             this.loadData();
         }
+        // 清空优惠券编辑页数据
+        globalService.set('couponManage', {});
     }
 
     async loadData() {

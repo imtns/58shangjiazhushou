@@ -12,6 +12,7 @@ const app = require('../utils/globalData');
 
 let pageDataUrl = '/business/template/loadall';
 const pageListUrl = '/business/pageList/';
+const loadTabbarUrl = '/business/getReleaseConfig/';
 const parseCfgAndData = ({
     modules,
 }) => modules.map(({
@@ -205,8 +206,6 @@ module.exports = {
         }
         console.log(app.globalData.extConfig);
         try {
-            wx.setStorageSync('releaseId', '1016613019867746304');
-            wx.setStorageSync('mpId', '1001014495864229888');
             const response = await get(pageDataUrl, postData);
             // const response = await get('/business/template/loadall', {
             //     pageKey: 'index',
@@ -244,6 +243,10 @@ module.exports = {
         this.setData({
             page_data: app.globalData.pageData,
         });
+    },
+    async loadTabbar() {
+        const { data } = await get(`${loadTabbarUrl}/${wx.getStorageSync('releaseId')}`);
+        app.globalData.tabBar = data.tabBar;
     },
     async loadPageList() {
         console.log(wx.getStorageSync('releaseId'));
