@@ -23,6 +23,30 @@ export default class CouponMixin extends wepy.mixin {
         return result;
     }
 
+    /**
+     * @desc 检查优惠券是否可以使用
+     * @param {Object} coupon 优惠券对象
+     * @return {Boolean} 可用返回true，不可用返回false
+     */
+    checkUsable(coupon) {
+        const { validEndtime, totalCount, useCount } = coupon;
+
+        // 时间过期
+        if (validEndtime && 
+            // 还需要加上有效期当天的那一整天24小时的时间
+            ((new Date(validEndtime)).getTime() + 24 * 60 * 60 * 1000) - Date.now() < 0
+        ) {
+            return false;
+        }
+
+        // 优惠券已使用数目和总数相等时
+        if (+useCount >= +totalCount) {
+            return false;
+        }
+
+        return true;
+    }
+
     async getCoupons({ mpId, pageNum, pageSize }) {
         let result = [];
 
@@ -38,12 +62,7 @@ export default class CouponMixin extends wepy.mixin {
                 let { couponCondition } = coupon;
                 const { validStarttime, validEndtime, validType } = coupon;
 
-                if (validEndtime && 
-                    // 还需要加上有效期当天的那一整天24小时的时间
-                    ((new Date(validEndtime)).getTime() + 24 * 60 * 60 * 1000) - Date.now() < 0
-                ) {
-                    coupon.unable = true;
-                }
+                coupon.usable = this.checkUsable(coupon);
 
                 if (couponCondition) {
                     try {

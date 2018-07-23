@@ -68,8 +68,8 @@ export default class Index extends wepy.page {
                 mpId,
             });
 
-            // 去除掉无库存和过期的
-            this.coupons = coupons.filter(item => !item.unable && item.totalCount > 0);
+            // 筛选出有库存的，并且可用的
+            this.coupons = coupons.filter(item => item.usable && item.totalCount > 0);
             this.$apply();
         } catch (e) {
             this.errorHandler(e);
