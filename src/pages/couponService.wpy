@@ -37,7 +37,7 @@
 <script>
 import wepy from 'wepy';
 
-import Mixin from '../mixins';
+import Mixin from '../mixin';
 
 import { picSrcDomain } from '../utils';
 import { LOAD_SERVICE_GROUPS, LOAD_SERVICE_LIST } from '../utils/url';
