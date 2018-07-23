@@ -161,11 +161,7 @@ page .buy-container .buy-list .buy-list-item .buy-app-pay {
           transform: translate(-50%, -50%);
   width: 360rpx;
   line-height: 88rpx;
-<<<<<<< HEAD
   background-image: -webkit-gradient(linear, left top, left bottom, from(#ffd700), to(#ff9b00));
-=======
-  background-image: -webkit-linear-gradient(top, #ffd700 0%, #ff9b00 100%);
->>>>>>> 1426bee2b7f1d7860dc1f1b3c34078876150de02
   background-image: linear-gradient(-180deg, #ffd700 0%, #ff9b00 100%);
   box-shadow: 0 0 9rpx 0 rgba(116, 127, 152, 0.5), inset 0 -15rpx 20rpx 0 #fbb100;
   border-radius: 100rpx;
