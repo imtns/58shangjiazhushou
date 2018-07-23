@@ -327,7 +327,6 @@ export default class Index extends wepy.page {
             this.name = name;
             this.id = id;
             this.$broadcast('postData', name);
-            this.$broadcast('postData', name);
             this.showPop = true;
             this.$apply();
         },

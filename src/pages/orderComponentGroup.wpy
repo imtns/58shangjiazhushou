@@ -69,11 +69,9 @@ export default class OrderComponentGroup extends wepy.page {
     }
     methods = {
         showDialog(id = '', name = '') {
-            if (name) {
-                this.name = name;
-                this.id = id;
-                this.$broadcast('postData', name);
-            }
+            this.name = name;
+            this.id = id;
+            this.$broadcast('postData', name);
             this.showPop = true;
             this.$apply();
         },
@@ -135,9 +133,12 @@ export default class OrderComponentGroup extends wepy.page {
                     ids,
                 });
                 this.delList = [];
+                this.isEditing = false;
                 this.$apply();
                 this.loadData();
             } catch (e) {
+                this.delList = [];
+                this.isEditing = false;
                 toast(e);
             }
         },
