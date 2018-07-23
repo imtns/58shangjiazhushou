@@ -230,6 +230,7 @@ html, body{
     height:90%;
     padding:.2rem;
     overflow-y:scroll;
+    box-sizing:border-box;
 }
 .zeditor-content p{
     font-size:0.3rem;

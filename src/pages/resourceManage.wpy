@@ -187,20 +187,30 @@ export default class Index extends wepy.page {
          */
         async deleteItem() {
             try {
-                const { cancel } = await alertP(`确认删除所选的${selectedIds.length}项素材？`);
-                if (cancel) {
-                    this.isEditing = false;
-                    this.$apply();
-                    this.selectedIds = [];
-                    this.works.forEach((...props) => {
-                        const [item] = props;
-                        item.checked = false;
+                if (this.curTab === 'article') {
+                    if (!this.delList.length) {
+                        alert('请选择要删除的分组！');
+                        return;
+                    }
+                    const ids = this.delList.join();
+                    await get('/businessArticle/delgroup/0', {
+                        ids,
                     });
-                    return;
+                } else {
+                    const { cancel } = await alertP(`确认删除所选的${selectedIds.length}项素材？`);
+                    if (cancel) {
+                        this.isEditing = false;
+                        this.$apply();
+                        this.selectedIds = [];
+                        this.works.forEach((...props) => {
+                            const [item] = props;
+                            item.checked = false;
+                        });
+                        return;
+                    }
+
+                    await Promise.all(selectedIds.map(id => get(DELETE_RESOURCE + id)));
                 }
-
-                await Promise.all(selectedIds.map(id => get(DELETE_RESOURCE + id)));
-
                 toast('删除成功！');
                 this.isEditing = false;
                 this.$apply();
@@ -210,6 +220,8 @@ export default class Index extends wepy.page {
             } catch (e) {
                 this.errorHandler(e);
                 toast('删除失败！');
+                this.isEditing = false;
+                this.$apply();
             }
         },
 
