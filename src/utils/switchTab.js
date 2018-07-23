@@ -19,7 +19,8 @@ module.exports = function switchTab(url) {
     } else {
         path = `/pages/custom/custom?ptype=${pageKey}`;
     }
-    wx.navigateTo({
+    app.globalData.pageData = {};
+    wx.redirectTo({
         url: path,
     })
 };

@@ -6,9 +6,9 @@ export default {
         const {
             index, current, pagekey, action,
         } = e.currentTarget.dataset;
-        if (action === 2) {
+        if (action === '2') {
             switchTab(pagekey);
-        } else if (action === 3) {
+        } else if (action === '3') {
             const images = this.data.page_data[current].props.cfg.images.map(img => img.src);
             previewImage(images, index);
         } else if (typeof action === 'undefined' && pagekey) {

@@ -1,0 +1,82 @@
+
+    <view class="buy-container">
+        <scroll-view scroll-x>
+            <view class="buy-list">
+                <view class="buy-list-item buy-list-item-first">
+                    <view class="buy-app-title">优享小程序</view>
+                    <view class="buy-app-bg"/>
+                    <view class="buy-app-feature-list">
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img app-feature-img11"/>
+                            <view class="app-feature-desc">开通仅需</view>
+                            <view class="app-feature-desc">网邻通资质</view>
+                        </view>
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img  app-feature-img10"/>
+                            <view class="app-feature-desc">58平台</view>
+                            <view class="app-feature-desc">审核速度快</view>
+                        </view>
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img app-feature-img7"/>
+                            <view class="app-feature-desc">支持600+行业</view>
+                            <view class="app-feature-desc">微信4项功能</view>
+                        </view>
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img app-feature-img6"/>
+                            <view class="app-feature-desc">1-3个工作日</view>
+                            <view class="app-feature-desc">等待时间</view>
+                        </view>
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img  app-feature-img8"/>
+                            <view class="app-feature-desc">版本功能</view>
+                            <view class="app-feature-desc">自动更新</view>
+                        </view>
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img app-feature-img9"/>
+                            <view class="app-feature-desc">审核成功率</view>
+                            <view class="app-feature-desc">几乎100%</view>
+                        </view>
+                    </view>
+                    <view class="buy-app-pay" bindtap="bindBuy">立即购买</view>
+                </view>
+                <view class="buy-list-item">
+                    <view class="buy-app-title">微信小程序</view>
+                    <view class="buy-app-bg"/>
+                    <view class="buy-app-feature-list">
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img app-feature-img4"/>
+                            <view class="app-feature-desc">开通微信</view>
+                            <view class="app-feature-desc">企业/个人资质</view>
+                        </view>
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img app-feature-img5"/>
+                            <view class="app-feature-desc">微信审核</view>
+                            <view class="app-feature-desc">速度较快</view>
+                        </view>
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img app-feature-img12"/>
+                            <view class="app-feature-desc">企业版400+行业</view>
+                            <view class="app-feature-desc">微信7项功能</view>
+                        </view>
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img app-feature-img3"/>
+                            <view class="app-feature-desc">企业版仅需</view>
+                            <view class="app-feature-desc">1-7个工作日</view>
+                        </view>
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img app-feature-img2"/>
+                            <view class="app-feature-desc">版本功能</view>
+                            <view class="app-feature-desc">自动更新</view>
+                        </view>
+                        <view class="buy-app-feature-list-item">
+                            <view class="app-feature-img app-feature-img1"/>
+                            <view class="app-feature-desc">企业版审核</view>
+                            <view class="app-feature-desc">成功率高</view>
+                        </view>
+                    </view>
+                    <view class="buy-app-pay" bindtap="bindBuy">立即购买</view>
+                </view>
+            </view>    
+        </scroll-view>
+        
+    </view>
