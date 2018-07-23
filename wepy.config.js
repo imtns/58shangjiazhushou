@@ -28,7 +28,7 @@ const config = {
             filter: /\.(wxss|scss)$/,
             base64Config: {
                 maxSize: 200,
-                basePath: `${__dirname }/bgimages`,
+                basePath: `${__dirname}/bgimages`,
             },
             autoprefixerConfig: {
                 browsers: ['last 11 iOS versions'],

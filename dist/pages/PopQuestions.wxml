@@ -1,9 +1,0 @@
-
-    <view class="container">
-        <view class="feedback-title">用户不能登录小程序的原因有以下几种可能：</view>
-        <view class="feedback-li lo-circle">登录时输入的"用户名或邮件"、"密码"有错误</view>
-        <view class="feedback-text pop-text">这种情况请检查用户名和密码，也可以“找回密码”，重试登录</view>
-        <view class="feedback-text pop-text">PC端修改密码后，在小程序登录时，忘记密码，需到PC端进行密码修改操作</view>
-        <view class="feedback-li lo-circle">微信绑定登录账号，需换绑、解绑，需到PC端个人中心进行操作</view>
-        <image class="feedback-img" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/info.jpeg" bindtap="preview"/>
-    </view>

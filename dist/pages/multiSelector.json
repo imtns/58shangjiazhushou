@@ -1,1 +1,0 @@
-{"region":{"size":3,"apiList":["/local/provinces","/local/citys/","/local/areas/"],"showProp":"localName","priKey":"dispLocalID"},"trade":{"size":3,"apiList":["/cate/dispcate/byparentid","/cate/dispcate/byparentid","/cate/dispcate/byparentid"],"priKey":"cateId","showProp":"name"}}
