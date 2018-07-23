@@ -1,4 +1,5 @@
 <template name="information">
+<view>dddddddddddd</view>
     <view class="mod-view mod-information">
         <view class="center">
             <image class="mod-information-logo" mode="aspectFill" src="{{logo}}?w=100&h=100" />

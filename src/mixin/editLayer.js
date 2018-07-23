@@ -1,48 +1,90 @@
-/*eslint-disable */
+
+import modulesParse from '../utils/modulesParse';
+import { toast } from '../utils';
+
 const app = require('../utils/globalData');
+const { post } = require('../utils/ajax');
 
 module.exports = {
-  showEdit(e) {
-    const { name } = e.currentTarget.dataset;
-    if (!this.data.isEditing || this.data.editLayer[name]) return;
-    this.setData({
-      editLayer: {}
-    })
-
-    this.setData({
-      ["editLayer." + name]: !this.data.editLayer[name]
-    })
-  },
-  cancelClick() {
-    this.setData({
-      editLayer: {},
-      isEditing:false,
-    })
-  },
-  editClick(e) {
-    this.setData({
-      isEditing: !this.data.isEditing
-    })
-    if (this.data.isEditing) {
-      console.log('编辑')
-      console.log(this.data.page_data)
-      const name = this.data.page_data[0].id;
-      if (this.data.page_data.length > 0) {
+    showEdit(e) {
+        const {
+            name,
+        } = e.currentTarget.dataset;
+        if (!this.data.isEditing || this.data.editLayer[name]) return;
         this.setData({
-          ["editLayer." + name]: true
-        })
-      }
-    } else {
-      this.setData({
-        editLayer: {}
-      })
-      console.log('保存')
-    }
-  },
-  goEdit(e) {
-    const { id,name } = e.currentTarget.dataset;
-    wx.navigateTo({
-      url: `../edit/${name}?id=${id}`
-    })
-  }
+            editLayer: {},
+        });
+
+        this.setData({
+            [`editLayer.${name}`]: !this.data.editLayer[name],
+        });
+    },
+    cancelClick() {
+        this.setData({
+            editLayer: {},
+            isEditing: false,
+        });
+    },
+    editClick() {
+        this.setData({
+            isEditing: !this.data.isEditing,
+        });
+        if (this.data.isEditing) {
+            console.log('编辑');
+            console.log(this.data.page_data);
+            const name = this.data.page_data[0].id;
+            if (this.data.page_data.length > 0) {
+                this.setData({
+                    [`editLayer.${name}`]: true,
+                });
+            }
+        } else {
+            this.setData({
+                editLayer: {},
+            });
+            this.goSave();
+            console.log('保存');
+        }
+    },
+    async goSave() {
+        const pageId = app.globalData.pageList.filter(obj => obj.pageKey === 'index')[0].id;
+        let modData = app.globalData.modules.map(({
+            id, name, cfg, params,
+        }) => {
+            if (Array.isArray(params)) params = {};
+            return {
+                id, name, cfg, params, page_id: pageId,
+            };
+        });
+        modData = JSON.parse(JSON.stringify(modData));
+        const emptymodData = [];
+        modData.forEach((item) => {
+            if (item.name === 'coupon' && item.params && !item.params.couponIds) {
+                toast('请补全组件中的优惠券。');
+                emptymodData.push(item);
+            }
+        });
+        if (emptymodData.length && emptymodData.length > 0) {
+            return;
+        }
+        await post('/business/templete/savemodules', {
+            businessPageId: pageId,
+            modulesJson: JSON.stringify(modulesParse.save(modData)),
+            releaseId: app.globalData.extConfig.extJson.ext.releaseId,
+            mpId: app.globalData.extConfig.extJson.ext.mpId,
+        });
+        toast('保存成功');
+    // wx.navigateBack({
+    //     delta: 1,
+    // });
+    },
+    goEdit(e) {
+        const {
+            id,
+            name,
+        } = e.currentTarget.dataset;
+        wx.navigateTo({
+            url: `../edit/${name}?id=${id}`,
+        });
+    },
 };

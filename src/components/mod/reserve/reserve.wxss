@@ -14,6 +14,9 @@
 .mod-list-reserve{
     overflow: hidden;
 }
+.reserve-relation{
+    position: relative;
+}
 /* 大图 */
 .mod-reserve-item-one{
     margin-bottom:30rpx;
@@ -46,6 +49,7 @@
 }
 .mod-reserve-button-one-wrap{
     line-height: 88rpx;
+    position:relative;
 }
 .mod-reserve-button-one{
     float:right;
@@ -73,23 +77,23 @@
     overflow: hidden;
     white-space: nowrap;
 }
-.mod-reserve-price-two{
-    float:left;
+.mod-reserve-price-two,.mod-reserve-button-two{
+    display:inline-block;
     line-height: 50rpx;
-    font-size: 24rpx;
     color: #FF552E;
     overflow: hidden;
     white-space: nowrap;
 }
+.mod-reserve-price-two{
+    width:210rpx;
+    font-size: 24rpx;
+}
 .mod-reserve-button-two{
-    float:right;
-    display:table-cell;
     width:120rpx;
-    line-height: 50rpx;
     text-align: center;
     font-size:26rpx;
     background: #FFEEEA;
-    color: #FF552E;
+    position:relative;
 }
 .price-content-two{
     display:inline-block;
@@ -130,6 +134,7 @@
 .mod-reserve-button-three{
     float:right;
     width:120rpx;
+    position:relative;
     line-height: 50rpx;
     text-align: center;
     font-size: 26rpx;
@@ -169,6 +174,7 @@
     line-height: 50rpx;
     overflow: hidden;
     text-align: center;
+    position: relative; /*处理自定义组件兄弟组件事件*/
     font-size: 22rpx;
     color:#ff552e;
     background: #FFEEEA;
@@ -209,6 +215,7 @@
     font-size:26rpx;
     background: #FFEEEA;
     color:#ff552e;
+    position:relative;
 }
 .price-content-five{
     display:inline-block;

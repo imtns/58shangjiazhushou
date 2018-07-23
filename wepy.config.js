@@ -28,7 +28,7 @@ const config = {
         parsecss: {
             filter: /\.(wxss|scss)$/,
             base64Config: {
-                maxSize: 60,
+                maxSize: 200,
                 basePath: `${__dirname}/bgimages`,
             },
             autoprefixerConfig: {

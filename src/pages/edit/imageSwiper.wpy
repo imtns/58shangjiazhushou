@@ -3,9 +3,9 @@
         <view class="list">
             <view class="item">
                 <swiper indicator-dots="{{indicatorDots}}">
-                <block wx:for="{{pageData.images}}">
+                <block wx:for="{{pageData[0].props.cfg.images}}">
                     <swiper-item>
-                        <image src="{{item.src}}" class="slide-image"/>
+                        <image src="{{item.src}}" class="slide-image" mode="aspectFill"/>
                     </swiper-item>
                 </block>
                 </swiper>
@@ -14,26 +14,20 @@
     </view>
     <view class="hasSaved">已保存</view>
     <view class="banner-editLayer">
-        <view class="saveBar">保存</view>
-        <view class="edit-cell">
-            <view class="edit-label">标题名称</view>
-            <view class="edit-input">
-                <input data-name="name"  class="weui-input" name="name" placeholder="请输入名称" />
-            </view>
-        </view>
+        <view class="saveBar" @tap="save">保存</view>
         <scroll-view scroll-x class="scrollView">
             <view class="addButton">
 
             </view>
             <view class="tobeAdded">
-                <view class="scroll-view-item addButton" style="{{pageData.images.length==3?'display:none':''}}" @tap="addBanner">
+                <view class="scroll-view-item addButton" style="{{pageData[0].props.cfg.images.length==3?'display:none':''}}" @tap="addBanner">
                    <image src="../assets/plus.png"></image>
                 </view>
-                <repeat for="{{pageData.images}}" key="index" index="index" item="item">
+                <repeat for="{{pageData[0].props.cfg.images}}" key="index" index="index" item="item">
                     <view class="scroll-view-item {{thumbActive == index?'active':''}}" data-index="{{index}}"  @tap="thumbClick">
-                        <image src="{{item.src}}"></image>
+                        <image src="{{item.src}}" mode="aspectFill"></image>
                         <view class="span active">{{index}}</view>
-                        <image class="del active" src="../assets/del.png" @tap="del" data-item="{{item}}"></image>
+                        <image class="del {{thumbActive == index?'active':''}}" src="../assets/del.png" @tap="del" data-index="{{index}}" />
                     </view>
                 </repeat>
             </view>
@@ -41,13 +35,13 @@
         <view class="edit-cell space">
             <view class="edit-label">图片名称</view>
             <view class="edit-input">
-                <input data-name="name"  class="weui-input" name="name" auto-focus placeholder="请输入名称" />
+                <input data-name="name" value="{{pageData[0].props.cfg.images[thumbActive].title}}"  class="weui-input" name="name" bindinput="bindNameInput" auto-focus placeholder="请输入名称" />
             </view>
         </view>
          <view class="edit-cell">
             <view class="edit-label">跳转链接</view>
             <view class="edit-input">
-                <input data-name="name"  class="weui-input" name="name" auto-focus placeholder="请输入名称" />
+                <input data-name="name"  value="{{pageData[0].props.cfg.images[thumbActive].linkName}}" class="weui-input" name="name" bindinput="bindLinkInput" auto-focus placeholder="请输入名称" />
             </view>
         </view>
     </view>
@@ -57,6 +51,13 @@ import wepy from 'wepy';
 import Mixin from './mixin';
 import { uploader } from '../../utils/uploader';
 import { toast } from '../../utils';
+// import modulesParse from '../../utils/modulesParse';
+
+const app = require('../../utils/globalData');
+
+const { picSrcDomain } = require('../../utils/index');
+
+const { post } = require('../../utils/ajax');
 
 export default class ImageSwiper extends wepy.page {
   config = {
@@ -66,8 +67,16 @@ export default class ImageSwiper extends wepy.page {
 
   data = {
       indicatorDots: true,
-      thumbActive: false,
+      thumbActive: 0,
+      picName: '',
+      linkName: '',
+      pageModule: {},
+      picDomain: picSrcDomain(),
   };
+  onLoad() {
+      [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
+      console.log(this.pageModule);
+  }
   methods = {
       async addBanner() {
           const { tempFilePaths } = await wepy.chooseImage();
@@ -77,19 +86,59 @@ export default class ImageSwiper extends wepy.page {
                   return;
               }
               toast('上传成功。');
-              this.pageData.images.push(`https://pic1.58cdn.com.cn${result.content}`);
+              const src = result.content;
+              const name = this.picName;
+              this.pageModule.cfg.images.push({
+                  src: src,
+                  pageKey: '',
+                  title: name,
+                  linkName: this.linkName,
+              });
+              this.pageData[0].props.cfg.images.push({
+                  src: this.picDomain + src,
+                  title: name,
+                  linkName: this.linkName,
+                  pageKey: '',
+              });
+              this.saveImage(src, name);
+              this.$apply();
           });
-      //   this.imgUrls.push('../assets/test.png');
-      //   this.thumbs.push('../assets/test.png');
       },
       del(e) {
-          const { item } = e.currentTarget.dataset;
-          this.pagePage.images.slice(item);
+          const { index } = e.currentTarget.dataset;
+          this.pageData[0].props.cfg.images.splice(index, 1);
+          this.pageModule.cfg.images.splice(index, 1);
       },
       thumbClick(e) {
           this.thumbActive = e.currentTarget.dataset.index;
       },
+      bindNameInput(e) {
+          this.pageData[0].props.cfg.images[this.thumbActive].title = e.detail.value;
+          this.pageModule.cfg.images[this.thumbActive].title = e.detail.value;
+      },
+      bindLinkInput(e) {
+          this.pageData[0].props.cfg.images[this.thumbActive].linkName = e.detail.value;
+          this.pageModule.cfg.images[this.thumbActive].linkName = e.detail.value;
+      },
+      save() {
+          [app.globalData.pageData[this.pageIndex]] = this.pageData;
+          console.log(app.globalData.pageData[this.pageIndex]);
+          //   const modulesData = JSON.parse(JSON.stringify(app.globalData.pageData));
+          //   app.globalData.modules = modulesParse.parsePageData(modulesData);
+          app.globalData.modules[this.pageIndex] = this.pageModule;
+          console.log(app.globalData.modules);
+          wx.navigateBack({
+              delta: 1,
+          });
+      },
   };
+  async saveImage(src, name) {
+      await post('/businessResource/insert', {
+          resourceType: 1,
+          resourceName: name,
+          resourceUrl: src,
+      });
+  }
 }
 </script>
 <style lang="scss">

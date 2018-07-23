@@ -15,7 +15,9 @@ import meMinx from '../components/mod/me/me';
 import payMinx from '../components/mod/pay/pay';
 import branchMinx from '../components/mod/branch/branch';
 import userinfoAuthorize from './userinfoAuthorize';
+import tabBarComponent from '../components/mod/tabBar/tabBar';
 
+const getPage = require('../utils/getPage');
 const app = require('../utils/globalData');
 
 const mixinConfig = {
@@ -25,27 +27,50 @@ const mixinConfig = {
         showUserinfoAuthorize: false,
         editLayer: {},
         isEditing: false,
+        pageModule: {},
+        tabBarItems: [],
+    },
+    async onLoad() {
+        const { model = '' } = wx.getSystemInfoSync();
+        if (~model.toLowerCase().indexOf('iphone x')) {
+            app.globalData.isIphoneX = true;
+        }
     },
     onReady() {
         console.log(app);
-        // const { userInfo } = app.globalData;
-        // this.setData({
-        //     showUserinfoAuthorize: !userInfo,
-        // });
-        // if (userInfo) {
         this.onPageReady();
-        // }
     },
-    onPageReady() {
+    onShow() {
+        this.refreshPage();
+    },
+    async onPageReady() {
         if (!wx.getExtConfigSync) {
             this.setData({ supportVersion: false });
             return;
         }
-        // this.getAppTitle((e) => {
-        //     if (e) return;
-        this.loadData();
-        // });
+        await this.loadExtJson();
+        await this.loadData();
+        await this.loadPageList();
+
+        const { extConfig = {}, isIphoneX } = app.globalData;
+        const { tabBar = {}, mpSource = '', extraInfo = null } = extConfig.extJson;
+        const { list = [] } = tabBar;
+        console.log(extConfig.extJson);
+        // app.globalData.tabMode = extConfig.extJson.tabMode;
+        const tabBarItems = list.map(item => Object.assign(item, { pageKey: getPage(item.pagePath) }));
+        this.setData({
+            isIphoneX,
+            tabBarItems,
+            env58: true,
+            mpSource,
+            extraInfo,
+        });
     },
+    // onShow() {
+    //     this.setData({
+    //         page_data: app.globalData.pageData,
+    //     });
+    // },
     onPullDownRefresh() {
         this.loadData(() => {
             wx.stopPullDownRefresh();
@@ -74,6 +99,7 @@ module.exports = function mixin(config) {
         branchMinx,
         userinfoAuthorize,
         editLayerMinx,
+        tabBarComponent,
     );
     return minx;
 };

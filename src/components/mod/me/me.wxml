@@ -1,5 +1,5 @@
 <template name="consumer">
-    <view class="mod-me-container mod-view">
+    <view class="mod-me-container">
         <block wx:if="{{!cfg.order}}">
             <view class="mod-me mod-me-line" style="margin-top:1rpx;">
                 <view class="mod-me-list ">

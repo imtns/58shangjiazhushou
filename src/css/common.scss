@@ -22,6 +22,7 @@ page {
 .container {
   position: relative;
   padding-bottom: 80rpx;
+  padding-top:66rpx;
 }
 
 .detail-container {
@@ -170,7 +171,9 @@ button::after {
 
 .btn-area {
   width: 100%;
-  position: relative;
+  top:0;
+  z-index: 999;
+  position: fixed;
   display: flex;
   height: 96rpx;
   justify-content: space-around;

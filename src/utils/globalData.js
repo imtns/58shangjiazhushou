@@ -8,10 +8,12 @@ export const globalData = {
   encryptedData: null,
   information: {},
   extConfig: {
-    releaseId:1015071474408558592,
-    appid:1001014495864229888
   },
   pageData:{},
+  pageList:{},
+  modules:{},
+  isIphoneX:false,
+  tabMode:1,
 }
 
 export function clearSessionId() {

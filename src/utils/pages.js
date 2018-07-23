@@ -1,5 +1,5 @@
 module.exports = {
-    'pages/reserve/reserve': 'index',
+    'pages/index/index': 'index',
     'pages/list/list': 'list',
     'pages/detail/detail': 'detail',
     'pages/news/news': 'news',

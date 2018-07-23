@@ -1,38 +1,26 @@
 <template>
     <view class="article-container">
         <view class="list">
-            <view class="item">
-                <view class="thumb"><image mode="aspectFill" src="../assets/test.png"></image></view>
-                <view class="articleDesc">
-                    <view class="title">钢丝钳的使用方式</view>
-                    <view class="desc">钢丝钳又称为老虎钳，虎头钳，图奥术大师多阿萨德阿萨德奥术大师多撒多阿萨德阿萨德</view>
+            <repeat for="{{list}}" index="index" item="item">
+                <view class="item" style="{{!item.checked?'display:none;':''}}">
+                    <view class="thumb"><image mode="aspectFill" src="{{item.cover}}"></image></view>
+                    <view class="articleDesc">
+                        <view class="title">{{item.title}}</view>
+                        <view class="desc">{{item.intro}}</view>
+                    </view>
                 </view>
-            </view>
-            <view class="item">
-                <view class="thumb"><image mode="aspectFill" src="../assets/test.png"></image></view>
-                <view class="articleDesc">
-                    <view class="title">钢丝钳的使(说的是) 阿萨德阿萨德撒的阿萨德阿萨德阿萨德阿萨德阿萨德</view>
-                    <view class="desc">钢丝钳又称为老虎钳，虎头钳，图奥术大师多阿萨德阿萨德</view>
-                </view>
-            </view>
-            <view class="item">
-                <view class="thumb"><image mode="aspectFill" src="../assets/test.png"></image></view>
-                <view class="articleDesc">
-                    <view class="title">钢丝钳的使用方式</view>
-                    <view class="desc">钢丝钳又称为老虎钳，虎头钳，图奥术大师多阿萨德阿萨德</view>
-                </view>
-            </view>
+            </repeat>
         </view>
     </view>
     <view class="article-editLayer">
         <view class="saveBar">
             <text class="label">+添加文章</text>
-            <text class="save">保存</text>
+            <text class="save" @tap="save">保存</text>
         </view>
         <view class="edit-cell">
-            <view class="edit-label" @tap="showGroup">分组名称<view class="arrow"></view></view>
+            <view class="edit-label" @tap="showGroup">{{articleGroupName}}<view class="arrow"></view></view>
             <view class="edit-input">
-                <checkbox-group bindchange="checkboxChange">
+                <checkbox-group bindchange="selectAll">
                     <label class="checkbox">
                         <checkbox class="checkSqure" value="全选当前分组" checked="{{false}}" />全选当前分组
                     </label>
@@ -44,54 +32,128 @@
         </view>
         <scroll-view wx:else scroll-y class="article-scroll">
             <checkbox-group bindchange="checkboxChange">
-                <label class="article-checkbox">
-                    <checkbox class="checkSqure" value="钢丝钳的使用方式" checked="{{false}}" />钢丝钳的使用方式
-                </label>
-                <label class="article-checkbox">
-                    <checkbox class="checkSqure" value="钢丝钳的使用方式钢丝钳的使用方式" checked="{{false}}" />钢丝钳的使用方式钢丝钳的使用方式
-                </label>
-                <label class="article-checkbox">
-                    <checkbox class="checkSqure" value="钢丝钳的使用方式" checked="{{false}}" />钢丝钳的使用方式
-                </label>
-                <label class="article-checkbox">
-                    <checkbox class="checkSqure" value="钢丝钳的使用方式钢丝钳的使用方式钢丝钳的使用方式钢丝钳的使用方式" checked="{{false}}" />钢丝钳的使用方式钢丝钳的使用方式钢丝钳的使用方式钢丝钳的使用方式
-                </label>
-                <label class="article-checkbox">
-                    <checkbox class="checkSqure" value="钢丝钳的使用方式" checked="{{false}}" />钢丝钳的使用方式
-                </label>
-                <label class="article-checkbox">
-                    <checkbox class="checkSqure" value="钢丝钳的使用方式钢丝钳的使用方式钢丝钳的使用方式钢丝钳的使用方式钢丝钳的使用方式" checked="{{false}}" />钢丝钳的使用方式钢丝钳的使用方式钢丝钳的使用方式钢丝钳的使用方式钢丝钳的使用方式
-                </label>
+                <repeat for="{{list}}" index="index" item="item">
+                    <label class="article-checkbox">
+                        <checkbox class="checkSqure" value="{{item.id}}" checked="{{item.checked}}" />{{item.title}}
+                    </label>
+                </repeat>
             </checkbox-group>
         </scroll-view>
     </view>
     <view class="article-group" hidden="{{!showGroup}}">
         <scroll-view scroll-y>
-            <view class="group">分组1</view>
-            <view class="group">分组1</view>
-            <view class="group">分组1</view>
-            <view class="group">分组1</view>
-            <view class="group">分组1</view>
-            <view class="group">分组1</view>
+            <repeat for="{{group}}" index="index" item="item">
+                <view class="group" @tap="selectGroup" data-name="{{item.name}}" data-id="{{item.id}}">{{item.name}}</view>    
+            </repeat>
         </scroll-view>
     </view>
 </template>
 <script>
 import wepy from 'wepy';
+import Mixin from './mixin';
+import { picSrcDomain } from '../../utils';
+
+const app = require('../../utils/globalData');
+const { get } = require('../../utils/ajax');
 
 export default class Article extends wepy.page {
   config = {
       navigationBarTitleText: '文章',
   };
+  mixins = [Mixin];
   data = {
-      list: [1],
+      list: {},
       showGroup: false,
+      group: {},
+      articleGroupName: '',
+      params: {
+          articleGroupId: '0',
+          articlePage: '1',
+          articleSize: '4',
+          articleIds: '0',
+      },
   };
   methods = {
       showGroup() {
           this.showGroup = !this.showGroup;
       },
+      async selectGroup(e) {
+          const { id, name } = e.currentTarget.dataset;
+          this.articleGroupName = name;
+          this.params.articleGroupId = id;
+          await this.loadArticleList();
+          this.showGroup = false;
+          this.$apply();
+      },
+      selectAll(e) {
+          console.log(e);
+          this.list.forEach(item => {
+              item.checked = e.detail.value.length !== 0;
+          });
+      },
+      checkboxChange(e) {
+          console.log(e.detail.value);
+          this.list.map(item => {
+              if (e.detail.value.indexOf(item.id) === -1) {
+                  item.checked = false;
+              } else {
+                  item.checked = true;
+              }
+              return item;
+          });
+      },
+      save() {
+          const selectArticles = this.list.filter(obj => obj.checked === true);
+          this.params.articleIds = selectArticles.map(art => art.id).join(',');
+          selectArticles.forEach((item, index) => {
+              if (this.pageData[0].props.data[index]) {
+                  this.pageData[0].props.data[index].title = item.title;
+                  this.pageData[0].props.data[index].cover = item.cover;
+                  this.pageData[0].props.data[index].intro = item.intro;
+              }
+          });
+          console.log(JSON.stringify(this.params));
+          this.pageModule.params = this.params;
+          app.globalData.pageData[this.pageIndex].props = this.pageData[0].props;
+          //   console.log(app.globalData.pageData[this.pageIndex]);
+          //   const modulesData = JSON.parse(JSON.stringify(app.globalData.pageData));
+          //   app.globalData.modules = modulesParse.parsePageData(modulesData);
+          app.globalData.modules[this.pageIndex] = this.pageModule;
+          wx.navigateBack({
+              delta: 1,
+          });
+      },
   };
+  async onLoad() {
+      await this.loadArticleGroup();
+      this.loadArticleList();
+      [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
+      console.log(this.pageModule);
+  }
+  async loadArticleList() {
+      const { data } = await get('/businessArticle/list', {
+          appid: this.extConfig.appId, group: this.params.articleGroupId, pageNum: this.params.pageNum, pageSize: this.params.pageSize,
+      });
+      console.log(data);
+      data.data.forEach(item => {
+          item.cover = picSrcDomain() + item.cover;
+      });
+      this.list = data.data;
+      this.list.forEach(item => {
+          item.checked = true;
+      });
+      this.params.articleIds = this.list.map(art => art.id).join(',');
+      this.$apply();
+  }
+  async loadArticleGroup() {
+      const { data } = await get('/businessArticle/groups', { appid: this.extConfig.appId });
+      this.group = data;
+      if (Object.keys(JSON.parse(this.pageData.params)).length !== 0) {
+          this.articleGroupName = this.group.find(obj => obj.id === JSON.parse(this.pageData.params).articleGroupId).name;
+          this.params.articleGroupId = this.group.find(obj => obj.id === JSON.parse(this.pageData.params).articleGroupId).id;
+      }
+      this.$apply();
+  }
 }
 </script>
 <style lang="scss">

@@ -1,54 +1,86 @@
 <template>
     <view class="title-container">
         <view class="title">
-            热销商品
+            {{pageData.title}}
         </view>
         <view class="desc">
-            打死U盾速度快老规矩士大夫开发公司对方考虑就是打发了空间哈卡的哈萨克哈萨克的华盛顿按时还是快递费哈萨克的哈萨克的哈萨克的哈哈地啊数据库的华盛顿华盛顿华盛顿撒旦撒旦华盛顿啥的幻色粉华容风格好的是的士大夫士大夫尽快和速度快放假红烧豆腐 是电话费
+            {{pageData.subtitle}}
         </view>
     </view>
     <view class="title-editLayer">
-        <view class="saveBar">保存</view>
+        <view class="saveBar" @tap="save">保存</view>
         <view class="edit-cell">
             <view class="edit-label">标题名称</view>
             <view class="edit-input">
-                <input data-name="name"  class="weui-input" name="name" placeholder="请输入名称" />
+                <input data-name="name" bindinput="bindTitleInput" value="{{pageData.title}}"  class="weui-input" name="name" placeholder="请输入名称" />
             </view>
         </view>
         <view class="edit-special">
             <view class="edit-label">副标题</view>
             <view class="textarea">
-                <textarea bindinput="textareaInput" maxlength="200" />
+                <textarea value="{{pageData.subtitle}}" bindinput="textareaInput" maxlength="200" />
                 <text class="textLimit">{{textLimit}}/200</text>
             </view>
         </view>
          <view class="edit-cell space">
             <view class="edit-label">连接名字</view>
             <view class="edit-input">
-                <input data-name="name" maxlength="16"  class="weui-input" name="name" auto-focus placeholder="16字以内" />
+                <input data-name="name" bindinput="bindLinkInput" value="{{pageData.textName}}"  maxlength="16"  class="weui-input" name="name" auto-focus placeholder="16字以内" />
             </view>
         </view>
          <view class="edit-cell">
             <view class="edit-label">跳转链接</view>
             <view class="edit-input">
-                <input data-name="name"  class="weui-input" name="name" auto-focus placeholder="请输入名称" />
+                <picker range-key="name" bindchange="bindPickerChange" value="{{pageData.linkName}}" range="{{pageList}}">
+                    <view wx:if="{{selectorIndex==-1 && !pageData.pageKey}}">请选择</view>
+                    <view wx:else  class="picker">
+                        {{pageData.pageKey || pageList[selectorIndex].name}}
+                    </view>
+                </picker>
             </view>
         </view>
     </view>
 </template>
 <script>
 import wepy from 'wepy';
+import Mixin from './mixin';
+import { toast } from '../../utils';
 
 export default class Title extends wepy.page {
     config = {
         navigationBarTitleText: '标题',
     }
+    mixins = [Mixin];
     data = {
         textLimit: 0,
+        title: '',
+        subtitle: '',
+        textName: '',
+        linkName: '',
+        pageKey: '',
     }
     methods = {
         textareaInput(e) {
             this.textLimit = e.detail.value.length;
+            this.pageData.subtitle = e.detail.value;
+        },
+        bindPickerChange(e) {
+            console.log(this.pageList);
+            this.selectorIndex = e.detail.value;
+            this.pageData.pageKey = this.pageList[e.detail.value].key;
+        },
+        bindTitleInput(e) {
+            this.pageData.title = e.detail.value;
+        },
+        bindLinkInput(e) {
+            this.pageData.textName = e.detail.value;
+        },
+        save() {
+            if (!this.pageData.title) {
+                toast('请输入文章标题');
+                return;
+            }
+            this.saveAvaliable = true;
         },
     }
 }

@@ -1,0 +1,357 @@
+<template>
+    <view class="mod-view mod-images {{pageData[0].props.cfg.showMore===false?'padding-bottom-30':''}}">
+        <view class="mod-head mod-head-images" wx:if="{{pageData[0].props.cfg.title && pageData[0].props.cfg.title.length>0}}">
+            {{pageData[0].props.cfg.title}}
+        </view>
+        <view class="mod-list-images">
+        <!-- 一左两右 -->
+        <block wx:if="{{pageData[0].props.cfg.styleName==='four'}}">
+            <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                <view wx:if="{{idx<pageData[0].props.cfg.maxNum}}" class="{{item.itemClass}}"  data-index="{{idx}}" data-current="{{index}}" data-pagekey="{{item.pageKey}}"
+                    bindtap="onImageClick">
+                    <image class="mod-li-image-four-{{item.itemIndex}}" mode="aspectFill" src="{{item.src}}"></image>
+                </view>
+            </block>
+        </block>
+        <!-- 一左两右with标题 -->
+        <block wx:elif="{{pageData[0].props.cfg.styleName==='fourplus'}}">
+            <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                <view wx:if="{{idx<pageData[0].props.cfg.maxNum}}" class="{{item.itemClass}}"  data-index="{{idx}}" data-current="{{index}}" data-pagekey="{{item.pageKey}}"
+                    bindtap="onImageClick">
+                    <image class="mod-li-image-fourplus-{{item.itemIndex}}" mode="aspectFill" src="{{item.src}}"></image>
+                    <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-fourplus-{{item.itemIndex}}">{{item.title}}</text>
+                </view>
+            </block>
+        </block>
+        <!-- 一上两下 -->
+        <block wx:elif="{{pageData[0].props.cfg.styleName==='five'}}">
+            <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                <view wx:if="{{idx<pageData[0].props.cfg.maxNum}}" class="{{item.itemClass}}"  data-index="{{idx}}" data-current="{{index}}" data-pagekey="{{item.pageKey}}"
+                    bindtap="onImageClick">
+                    <image class="mod-li-image-five-{{item.itemIndex}}" mode="aspectFill" src="{{item.src}}"></image>
+                    <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-five-{{item.itemIndex}}">{{item.title}}</text>
+                </view>
+            </block>
+        </block>
+        <!-- 一上三下 -->
+        <block wx:elif="{{pageData[0].props.cfg.styleName==='six'}}">
+            <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                <view wx:if="{{idx<pageData[0].props.cfg.maxNum}}" class="{{item.itemClass}}"  data-index="{{idx}}" data-current="{{index}}" data-pagekey="{{item.pageKey}}"
+                    bindtap="onImageClick">
+                    <image class="mod-li-image-six-{{item.itemIndex}}" mode="aspectFill" src="{{item.src}}"></image>
+                    <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-six-{{item.itemIndex}}">{{item.title}}</text>
+                </view>
+            </block>
+        </block>
+        <!-- 其他样式 -->
+        <block wx:else>
+            <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                <view wx:if="{{idx<pageData[0].props.cfg.maxNum}}" class="{{item.itemClass}}"  data-index="{{idx}}" data-current="{{index}}" data-pagekey="{{item.pageKey}}"
+                    bindtap="onImageClick">
+                    <image class="{{'mod-li-image-'+pageData[0].props.cfg.theme}}" mode="aspectFill" src="{{item.src}}"></image>
+                    <text wx:if="{{item.title && item.title.length>0}}" class="{{'mod-li-text-'+pageData[0].props.cfg.theme}}">{{item.title}}</text>
+                </view>
+            </block>
+        </block>
+        </view>
+        <view class="mod-more mod-more-images" wx:if="{{pageData[0].props.cfg.showMore}}" data-index="{{index}}" bindtap='loadMore'>查看更多</view>
+    </view>
+    <view class="shopPic-editLayer">
+        <view class="saveBar" @tap="save">保存</view>
+        <view class="edit-cell">
+            <view class="edit-label">标题名称</view>
+            <view class="edit-input">
+                <input data-name="name"  class="weui-input" name="name" placeholder="请输入名称" />
+            </view>
+        </view>
+        <scroll-view scroll-x class="scrollView">
+            <view class="addButton">
+
+            </view>
+            <view class="tobeAdded">
+                <view class="scroll-view-item addButton"  @tap="addBanner">
+                   <image src="../assets/plus.png"></image>
+                </view>
+                <repeat for="{{pageData[0].props.cfg.images}}" key="index" index="index" item="item">
+                    <view class="scroll-view-item {{thumbActive == index?'active':''}}" data-index="{{index}}"  @tap="thumbClick">
+                        <image src="{{item.src}}"></image>
+                        <view class="span active">{{index}}</view>
+                        <image class="del {{thumbActive == index?'active':''}}" src="../assets/del.png" @tap="del" data-index="{{index}}" />
+                    </view>
+                </repeat>
+            </view>
+        </scroll-view>
+        <view class="edit-cell space">
+            <view class="edit-label">图片名称</view>
+            <view class="edit-input">
+                <input data-name="name" value="{{pageData[0].props.cfg.images[thumbActive].title}}"  class="weui-input" name="name" bindinput="bindNameInput" auto-focus placeholder="请输入名称" />
+            </view>
+        </view>
+         <view class="edit-cell">
+            <view class="edit-label">跳转链接</view>
+            <view class="edit-input">
+                <input data-name="name"  value="{{pageData[0].props.cfg.images[thumbActive].linkName}}" class="weui-input" name="name" bindinput="bindLinkInput" auto-focus placeholder="请输入名称" />
+            </view>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+import Mixin from './mixin';
+import { uploader } from '../../utils/uploader';
+import { toast } from '../../utils';
+
+const app = require('../../utils/globalData');
+
+const { picSrcDomain } = require('../../utils/index');
+
+const { post } = require('../../utils/ajax');
+
+export default class ShopImages extends wepy.page {
+  config = {
+      navigationBarTitleText: '门店照片',
+  };
+    data = {
+        indicatorDots: true,
+        thumbActive: 0,
+        picName: '',
+        linkName: '',
+        src: '',
+        picDomain: picSrcDomain(),
+    };
+    onLoad() {
+        [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
+    }
+  methods = {
+      async addBanner() {
+          const { tempFilePaths } = await wepy.chooseImage();
+          uploader(tempFilePaths[0], (e, result) => {
+              if (e) {
+                  toast('上传失败，请重试。');
+                  return;
+              }
+              toast('上传成功。');
+              const src = result.content;
+              const name = this.picName;
+              this.pageData[0].props.cfg.images.push({
+                  src,
+                  title: name,
+                  linkName: this.linkName,
+                  pageKey: '',
+              });
+              this.pageModule.cfg.images.push({
+                  src: src,
+                  pageKey: '',
+                  title: name,
+                  linkName: this.linkName,
+              });
+              this.saveImage(src, name);
+              this.$apply();
+          });
+      },
+      del(e) {
+          const { index } = e.currentTarget.dataset;
+          this.pageData[0].props.cfg.images.splice(index, 1);
+          this.pageModule.cfg.images.splice(index, 1);
+      },
+      thumbClick(e) {
+          this.thumbActive = e.currentTarget.dataset.index;
+      },
+      bindNameInput(e) {
+          this.pageData[0].props.cfg.images[this.thumbActive].title = e.detail.value;
+          this.pageModule.cfg.images[this.thumbActive].title = e.detail.value;
+      },
+      bindLinkInput(e) {
+          this.pageData[0].props.cfg.images[this.thumbActive].linkName = e.detail.value;
+          this.pageModule.cfg.images[this.thumbActive].linkName = e.detail.value;
+      },
+      save() {
+          this.pageModule.cfg.showSize = this.pageData[0].props.cfg.showSize;
+          [app.globalData.pageData[this.pageIndex]] = this.pageData;
+          console.log(app.globalData.pageData[this.pageIndex]);
+          //   const modulesData = JSON.parse(JSON.stringify(app.globalData.pageData));
+          //   app.globalData.modules = modulesParse.parsePageData(modulesData);
+          app.globalData.modules[this.pageIndex] = this.pageModule;
+          console.log(app.globalData.modules);
+          wx.navigateBack({
+              delta: 1,
+          });
+      },
+  }
+  async saveImage(src, name) {
+      await post('/businessResource/insert', {
+          resourceType: 1,
+          resourceName: name,
+          resourceUrl: src,
+      });
+  }
+  mixins = [Mixin];
+}
+</script>
+<style lang="scss">
+.shopPic-editLayer {
+  width: 100%;
+  box-sizing: border-box;
+  height: 594rpx;
+  position: fixed;
+  bottom: 0;
+  background: rgb(91, 93, 95);
+  z-index: 10;
+  padding: 0 30rpx;
+  .saveBar {
+    height: 86rpx;
+    box-sizing: border-box;
+    margin: 0 -30rpx;
+    padding-right: 30rpx;
+    background: #46484a;
+    color: white;
+    line-height: 86rpx;
+    font-size: 32rpx;
+    text-align: right;
+  }
+  .scrollView {
+    height: 186rpx;
+    width: 110%;
+    margin-right: -30rpx;
+    margin-left: -30rpx;
+    padding-left: 30rpx;
+    white-space: nowrap;
+    overflow: scroll;
+    background: #545658;
+    line-height: 186rpx;
+
+    .scroll-view-item {
+      position: relative;
+      width: 180rpx;
+      height: 134rpx;
+      margin-right: 20rpx;
+      background: yellow;
+      vertical-align: middle;
+      display: inline-block;
+      image {
+        width: 100%;
+        height: 100%;
+      }
+      &.active {
+        border: 1rpx solid #4e88ff;
+      }
+      &.addButton {
+        background: #aaa;
+        image {
+          width: 64rpx;
+          height: 64rpx;
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+        }
+      }
+      .span {
+        width: 40rpx;
+        height: 36rpx;
+        background: rgb(170, 170, 170);
+        color: white;
+        text-align: center;
+        font-size: 26rpx;
+        line-height: 36rpx;
+        white-space: nowrap;
+        display: block;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        &.active {
+          background: rgb(78, 136, 255);
+        }
+      }
+      .del {
+        display: none;
+        position: absolute;
+        top: 5rpx;
+        right: 5rpx;
+        width: 32rpx;
+        height: 32rpx;
+        &.active {
+          display: block;
+        }
+      }
+      &:last-child {
+        margin-right: 50rpx;
+      }
+    }
+  }
+  .edit-cell {
+    height: 88rpx;
+    display: flex;
+    font-size: 30rpx;
+    background: #545658;
+    columns: #333333;
+    align-items: center;
+    margin: 0 -30rpx;
+    padding: 0 30rpx;
+    border-bottom: 1rpx solid #585d5f;
+    .edit-label {
+      width: 324rpx;
+      color: #999;
+    }
+    .edit-input {
+      width: 396rpx;
+      color: #d8d8d8;
+      text-align: right;
+    }
+  }
+}
+.space {
+  margin-top: 20rpx !important;
+}
+.shopPic-container {
+  margin-top: 25rpx;
+  width: 100%;
+  background: white;
+  .title {
+    text-align: center;
+    font-size: 34rpx;
+    color: #333;
+    padding: 30rpx 0 0;
+  }
+}
+.shopPic-container .list {
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  .item {
+    margin: 30rpx;
+    flex: 0 0 336rpx;
+    width: 336rpx;
+    display: block;
+    margin-bottom: 0;
+    position: relative;
+    .thumb {
+      width: 100%;
+      height: 251rpx;
+      image {
+        width: 100%;
+        overflow: hidden;
+        height: 100%;
+      }
+    }
+    .desc {
+      position: relative;
+      color: #333;
+      padding-top: 18rpx;
+      height: 40rpx;
+      display: block;
+      font-size: 28rpx;
+      text-align: center;
+    }
+    &:nth-child(even) {
+      margin-left: 10rpx;
+    }
+    &:nth-child(odd) {
+      margin-right: 10rpx;
+    }
+  }
+}
+</style>
+
+

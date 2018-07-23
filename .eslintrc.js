@@ -8,6 +8,7 @@ module.exports = {
     browser: true
   },
   globals: {
+    getSystemInfo:true,
     getApp:true,
     wx: true,
     Page: true,

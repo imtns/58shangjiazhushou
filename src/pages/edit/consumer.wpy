@@ -1,27 +1,27 @@
 <template>
     <view class="mod-me-container">
-        <view class="mod-me mod-me-line" hidden="{{!me.order}}">
+        <view class="mod-me mod-me-line" hidden="{{pageData[0].props.cfg.order}}">
             <view class="mod-me-list ">
                 <image class="mod-me-icon" src="../assets/me/order.png"></image>
                 <view class="mod-me-text">我的订单</view>
                 <view class="mod-arrow"></view>
             </view>
         </view>
-        <view class="mod-me" hidden="{{!me.coupon}}">
+        <view class="mod-me" hidden="{{pageData[0].props.cfg.coupon}}">
             <view class="mod-me-list">
                 <image class="mod-me-icon" src="../assets/me/coupon.png"></image>
                 <view class="mod-me-text">我的优惠券</view>
                 <view class="mod-arrow"></view>
             </view>
         </view>
-        <view class="mod-me mod-me-space mod-me-line"  hidden="{{!me.address}}">
+        <view class="mod-me mod-me-space mod-me-line"  hidden="{{pageData[0].props.cfg.address}}">
             <view class="mod-me-list">
                 <image class="mod-me-icon" src="../assets/me/address.png"></image>
                 <view class="mod-me-text">服务地址</view>
                 <view class="mod-arrow"></view>
             </view>
         </view>
-        <view class="mod-me" hidden="{{!me.tel}}">
+        <view class="mod-me" hidden="{{pageData[0].props.cfg.tel}}">
             <view class="mod-me-list">
                 <image class="mod-me-icon" src="../assets/me/hotline.png"></image>
                 <view class="mod-me-text">客服热线</view>
@@ -33,28 +33,28 @@
     <view class="me-editLayer">
         <view class="saveBar">
             <text class="label" hidden="{{!editMultiple}}">+添加文章</text>
-            <text class="save">保存</text>
+            <text class="save" @tap="save">保存</text>
         </view>
        <view class="me-scroll">
             <checkbox-group bindchange="checkboxChange">
                 <label class="me-checkbox">
-                    <checkbox class="checkSqure" value="order" checked="{{true}}" />我的订单
+                    <checkbox class="checkSqure" value="order" checked="{{!pageData[0].props.cfg.order}}" />我的订单
                 </label>
                 <label class="me-checkbox">
-                    <checkbox class="checkSqure" value="coupon" checked="{{true}}" />我的优惠券
+                    <checkbox class="checkSqure" value="coupon" checked="{{!pageData[0].props.cfg.coupon}}" />我的优惠券
                 </label>
                 <label class="me-checkbox">
-                    <checkbox class="checkSqure" value="address" checked="{{true}}" />服务地址
+                    <checkbox class="checkSqure" value="address" checked="{{!pageData[0].props.cfg.address}}" />服务地址
                 </label>
                 <label class="me-checkbox">
-                    <checkbox class="checkSqure" value="tel" checked="{{true}}" />客服热线
+                    <checkbox class="checkSqure" value="tel" checked="{{!pageData[0].props.cfg.tel}}" />客服热线
                 </label>
             </checkbox-group>
         </view>
          <view class="edit-cell space">
             <view class="edit-label">客服热线</view>
             <view class="edit-input">
-                <input data-name="name" maxlength="14" bindinput="telInput" class="weui-input" name="name" type="number" auto-focus placeholder="请输入" />
+                <input data-name="name" maxlength="14" value="{{telnum}}" bindinput="telInput" class="weui-input" name="name" type="number" auto-focus placeholder="请输入" />
             </view>
         </view>
         <scroll-view scroll-y class="edit-cell-tip">
@@ -68,28 +68,41 @@
 </template>
 <script>
 import wepy from 'wepy';
+import Mixin from './mixin';
+
+const app = require('../../utils/globalData');
 
 export default class Me extends wepy.page {
-  config = {
-      navigationBarTitleText: '个人中心',
-  };
+  mixins = [Mixin];
   data = {
-      me: {
-          order: true,
-          coupon: true,
-          address: true,
-          tel: true,
-      },
       telnum: '',
+  }
+  onLoad() {
+      [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
+      console.log(this.pageModule);
+      wx.setNavigationBarTitle({
+          title: this.pageData[0].props.cfg.title,
+      });
+      this.telnum = this.pageData[0].props.cfg.telnum || this.pageData[0].props.data;
   }
   methods = {
       checkboxChange(e) {
-          Object.keys(this.me).forEach(item => {
-              this.me[item] = e.detail.value.indexOf(item) > -1;
+          ['order', 'address', 'coupon', 'tel'].forEach(item => {
+              this.pageData[0].props.cfg[item] = e.detail.value.indexOf(item) === -1;
           });
       },
       telInput(e) {
           this.telnum = e.detail.value;
+      },
+      save() {
+          this.pageModule.cfg = this.pageData[0].props.cfg;
+          this.pageModule.cfg.telnum = this.telnum;
+          this.pageData[0].props.cfg.telnum = this.telnum;
+          [app.globalData.pageData[this.pageIndex]] = this.pageData;
+          app.globalData.modules[this.pageIndex] = this.pageModule;
+          wx.navigateBack({
+              delta: 1,
+          });
       },
   }
 }

@@ -48,7 +48,9 @@
 <script>
 import wepy from 'wepy';
 import { sleep, alert } from '../utils';
-import { post } from '../utils/ajax';
+import { post, get } from '../utils/ajax';
+
+const app = require('../utils/globalData');
 
 export default class Home extends wepy.page {
     config = {
@@ -266,6 +268,12 @@ export default class Home extends wepy.page {
                 console.log(err);
             },
         };
+    }
+    async loadExtJson() {
+        const url = '/mpBusinessRelease/getExtJson';
+        const { data } = await get(url, { sceneKey: wx.getStorageSync('mpId') });
+        app.globalData.extConfig = data;
+        console.log(data);
     }
     async loadData () {
         try {

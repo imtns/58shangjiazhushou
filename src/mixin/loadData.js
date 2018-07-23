@@ -1,3 +1,5 @@
+import modulesParse from '../utils/modulesParse';
+
 const getPage = require('../utils/getPage');
 const {
     get,
@@ -8,7 +10,8 @@ const {
 
 const app = require('../utils/globalData');
 
-let pageDataUrl = '/business/template/loadall?pageKey=index&releaseId=1015071474408558592&mpid=1001014495864229888&jjo23eum';
+let pageDataUrl = '/business/template/loadall';
+const pageListUrl = '/business/pageList/';
 const parseCfgAndData = ({
     modules,
 }) => modules.map(({
@@ -16,6 +19,7 @@ const parseCfgAndData = ({
     name,
     cfg,
     data,
+    params,
 }) => {
     try {
     /* eslint-disable no-param-reassign */
@@ -130,6 +134,7 @@ const parseCfgAndData = ({
             ...modData,
             cfg,
         },
+        params,
     };
 
     // props & cfg 修改
@@ -178,6 +183,7 @@ const parseCfgAndData = ({
 module.exports = {
     async loadData(cb) {
         const page = getPage(this.route, this.options) || 'index';
+        // const page = 'index';
         /* global getCurrentPages:true */
         const {
             route,
@@ -185,6 +191,8 @@ module.exports = {
         const pageType = route.split('ptype=')[1] || this.options.ptype || '';
         const postData = {
             pageKey: page,
+            releaseId: wx.getStorageSync('releaseId'),
+            mpid: wx.getStorageSync('mpId'),
         };
         if (page === 'detail') {
             postData.serviceDetailId = this.options.id;
@@ -195,8 +203,19 @@ module.exports = {
         if (page === 'custom' && pageType) {
             postData.pageKey = pageType;
         }
+        console.log(app.globalData.extConfig);
         try {
+            wx.setStorageSync('releaseId', '1016613019867746304');
+            wx.setStorageSync('mpId', '1001014495864229888');
             const response = await get(pageDataUrl, postData);
+            // const response = await get('/business/template/loadall', {
+            //     pageKey: 'index',
+            //     releaseId: wx.getStorageSync('releaseId'),
+            //     mpid: wx.getStorageSync('mpId', '1001014495864229888'),
+            //     appid: app.globalData.extConfig.appId,
+            // });
+            const modulesData = JSON.parse(JSON.stringify(response.data));
+            app.globalData.modules = modulesParse.show(modulesData);
             /* eslint-disable camelcase */
             let page_data = null;
             if (page === 'article') {
@@ -221,6 +240,17 @@ module.exports = {
             console.log(e);
         }
     },
+    refreshPage() {
+        this.setData({
+            page_data: app.globalData.pageData,
+        });
+    },
+    async loadPageList() {
+        console.log(wx.getStorageSync('releaseId'));
+        const { data } = await get(`${pageListUrl}/${wx.getStorageSync('releaseId')}`);
+        app.globalData.pageList = data;
+    },
+
     getAppTitle(callback) {
         get('/mpBusinessInfo/getTitle', (e, response) => {
             if (e || e === undefined) {

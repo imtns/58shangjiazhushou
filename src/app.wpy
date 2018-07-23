@@ -11,17 +11,24 @@ export default class extends wepy.app {
 
     config = {
         pages: [
+            'pages/home', // 登陆之后的主页
+            'pages/templateList',
             'pages/reserve/reserve',
-            'pages/edit/me',
+
+
+            'pages/edit/coupon',
+            'pages/edit/consumer',
             'pages/edit/text',
             'pages/edit/order',
             'pages/edit/imageSwiper',
             'pages/edit/video',
             'pages/edit/title',
             'pages/edit/article',
-            'pages/edit/shopPic',
-            'pages/templateList',
-            'pages/home', // 登陆之后的主页
+            'pages/edit/images',
+            'pages/contact/contact',
+            'pages/news/news',
+            'pages/product/product',
+
             'pages/intro', // 没有登陆的介绍页面
             'pages/myMp', // 我的小程序
             'pages/AppInfo', // 小程序信息
@@ -58,7 +65,7 @@ export default class extends wepy.app {
     }
     onLaunch () {
         console.log('onlaunch');
-        wepy.setStorageSync('ppu', 'UID=50181655951373&UN=zq16nv8iu&TT=429e5a35672fe8ecd01a335a73c9839b&PBODY=HKi-bGXLkujN9HvdoyIUZOfGl7pYKgBjaTDf8KyC5wqFPua9_R9YkOm560PqzzjsUyVnRv4V7NCQFjeMyhkGgHpgwkCQqeXn0xs3PuGKTcf0TsB0CReZBCAIv4sugIf04uuxZaWrsBHIMjAo902xjV30T608aiwPOgzByfBFWXw&VER=1');
+        wepy.setStorageSync('ppu', 'UID=48917864286479&UN=zf3e85&TT=d81202a65af05aa8cb1ea5f6d92254d1&PBODY=JhH_NY6a8n2PvW6ZgBv_B1CwuIJH84mNnuJt4PxcpEQDl5QPvba4IdoMpCpk_GxpEfRtc9RPAvrK6G4o9J3zhKHmVv33iBDKO8EVnmRq6yp2ETgstCBISr9016TKao2yDyUeZG32vv_2yuyG01uAnqTlUL1vaRpLJ3fRd9NqySA&VER=1');
     }
     onShow (options) {
         const { path } = options;
@@ -99,14 +106,14 @@ export default class extends wepy.app {
 
 <style lang="scss">
 @import './app.scss';
-@import "css/common.scss";   
+@import "css/common.scss";     
 @import "components/mod/information/information.wxss"; 
 @import "components/mod/imageSwiper/imageSwiper.wxss";
 @import "components/mod/images/images.wxss";
 @import "components/mod/me/me.wxss";
-@import "components/mod/text/text.wxss";  
-@import "components/mod/title/title.wxss";  
-@import "components/mod/video/video.wxss"; 
+@import "components/mod/text/text.wxss";   
+@import "components/mod/title/title.wxss";   
+@import "components/mod/video/video.wxss";   
 @import "components/mod/call/call.wxss";
 @import "components/mod/services/services.wxss"; 
 @import "components/mod/article/article.wxss";
@@ -115,5 +122,6 @@ export default class extends wepy.app {
 @import "components/mod/coupon/coupon.wxss";    
 @import "components/mod/pay/pay.wxss";   
 @import "components/mod/branch/branch.wxss";   
+@import "components/mod/tabBar/tabBar.wxss";
 </style>
       

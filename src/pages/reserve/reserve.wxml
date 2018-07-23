@@ -13,6 +13,7 @@
 <import src="../../components/mod/me/me.wxml" />
 <import src="../../components/mod/pay/pay.wxml" />
 <import src="../../components/mod/branch/branch.wxml" />
+<import src="../../components/mod/tabBar/tabBar.wxml" />
 <view class="container">
   <view class="btn-area"> 
       <view class="cancel" bindtap="cancelClick">取消</view>
@@ -38,3 +39,4 @@
     </view> 
   </view> -->
 </view>
+<template is="tabBar" data="{{tabBarItems, pageType, isIphoneX}}" wx:if="{{ env58 && tabBarItems.length > 1 }}"/>
