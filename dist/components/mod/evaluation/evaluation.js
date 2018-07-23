@@ -1,1 +1,0 @@
-"use strict";var _require=require("./../../../utils/index.js"),previewImage=_require.previewImage;module.exports={evaluationImgTap:function(e){var t=e.target,a=e.currentTarget,r=a.dataset,i=r.modIndex,u=r.evaIdx,d=t.dataset.index,s=this.data.page_data[i].props.data[u].imgs;previewImage(s.map(function(e){return(url.indexOf("https")>0?"":"https:")+url}),d)}};

@@ -1,1 +1,0 @@
-"use strict";module.exports={onShareAppMessage:function(t){"button"===t.from&&console.log(t.target);var e=t.target.dataset;return{title:e.title,path:e.path,success:function(){},fail:function(){}}}};

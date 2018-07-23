@@ -1,1 +1,0 @@
-"use strict";var app=require("./globalData.js");module.exports=function(a){var t="",p=app.globalData.tabBar&&app.globalData.tabBar.list||[],e=(app.globalData.env58,a.split("/").pop());t=p.some(function(a){return a.pagePath.includes(e)})?"/pages/"+e+"/"+e:"/pages/custom/custom?ptype="+e,wx.navigateTo({url:t})};
