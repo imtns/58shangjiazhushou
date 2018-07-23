@@ -11,6 +11,8 @@
 }
 
 .options {
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
   font-size: 34rpx;
   letter-spacing: 0.51px;
@@ -20,7 +22,9 @@
 }
 
 .options .button {
-  flex: 1;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
   border-radius: 0;
   color: #FFF;
   background-color: #4e88ff;
@@ -95,7 +99,9 @@ page {
 }
 
 .container .article-content {
-  flex: 1;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
   padding: 20rpx 0;
   line-height: 60rpx;
   letter-spacing: 0.3rpx;

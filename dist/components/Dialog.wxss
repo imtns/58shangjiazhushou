@@ -46,12 +46,16 @@
 }
 
 .pop .pop-options {
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
   border-top: 1rpx solid #E5E5E5;
 }
 
 .pop .pop-options .pop-btn {
-  flex: 1;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
   height: 100rpx;
   line-height: 100rpx;
   text-align: center;

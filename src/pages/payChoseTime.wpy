@@ -1,9 +1,9 @@
 <template>
     <view class="container">
         <view class="pay-header">
-            <view class="payrecord-type">类型选择</view>
-            <view class="select-icon {{choseMonth === '1' ? 'selected' : ''}}" @tap="choseType" data-type="1">按月选择</view>
-            <view class="select-icon {{choseMonth === '2' ? 'selected' : ''}}" @tap="choseType" data-type="2">按日选择</view>
+            <!-- <view class="payrecord-type">类型选择</view> -->
+            <!-- <view class="select-icon {{choseMonth === '1' ? 'selected' : ''}}" @tap="choseType" data-type="1">按月选择</view> -->
+            <view class="select-icon" @tap="choseType" data-type="2">按日选择</view>
         </view>
         <view class="pay-body" wx:if="{{choseMonth === '1'}}">
             <view class="pay-base"><text style="color: #FFA100;">*</text>请选择月份</view>
@@ -33,7 +33,7 @@ export default class PayChoseTime extends wepy.page {
         month: '请选择',
         startDate: '请选择',
         endDate: '请选择',
-        choseMonth: '1',
+        choseMonth: '2',
         currentDate: '',
     }
     async onLoad() {
@@ -131,16 +131,17 @@ view{
     }
     .select-icon{
         color:#666;
-        &:before{
-            display:inline-block;
-            float:left;
-            content:"";
-            width:40rpx;
-            height:40rpx;
-            background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png) no-repeat;
-            margin:24rpx 10rpx 0 0;
-            background-size:40rpx 40rpx;
-        }
+        text-align:center;
+        // &:before{
+        //     display:inline-block;
+        //     float:left;
+        //     content:"";
+        //     width:40rpx;
+        //     height:40rpx;
+        //     background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png) no-repeat;
+        //     margin:24rpx 10rpx 0 0;
+        //     background-size:40rpx 40rpx;
+        // }
     }
     .selected.select-icon{
         &::before{

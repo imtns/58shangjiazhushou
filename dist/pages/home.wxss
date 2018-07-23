@@ -23,7 +23,8 @@ scroll-view {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate3d(-50%, -50%, 0);
+  -webkit-transform: translate3d(-50%, -50%, 0);
+          transform: translate3d(-50%, -50%, 0);
   background: white;
   border-radius: 2rpx;
 }
@@ -58,8 +59,12 @@ scroll-view {
   font-size: 28rpx;
   color: #bdbdbd;
   line-height: 113rpx;
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
-  justify-content: space-between;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
 }
 
 .home .mpBox .otherBox {
@@ -95,6 +100,8 @@ scroll-view {
 }
 
 .home .mpBox .btnBox {
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
   height: 113rpx;
   width: 100%;
@@ -106,7 +113,9 @@ scroll-view {
 }
 
 .home .mpBox .btnBox view {
-  flex: 1;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
   background: white;
   text-align: center;
   border: 1rpx solid #f6f6f6;
@@ -272,9 +281,14 @@ scroll-view {
   margin: 30rpx 26rpx;
   background: #fff;
   border-radius: 16rpx;
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  -webkit-flex-wrap: wrap;
+          flex-wrap: wrap;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
 }
 
 .home .index-loaded-body .index-loaded-item {
@@ -318,10 +332,16 @@ scroll-view {
 
 .home .index-block-body {
   height: 193rpx;
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  align-items: center;
+  -webkit-flex-wrap: wrap;
+          flex-wrap: wrap;
+  -webkit-justify-content: space-around;
+          justify-content: space-around;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
 }
 
 .home .index-block-body .index-loaded-item {

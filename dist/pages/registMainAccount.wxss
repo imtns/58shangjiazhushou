@@ -22,6 +22,8 @@ view {
 
 .pro-item .pro-item-line {
   width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
   padding: 30rpx 0;
   border-bottom: 1rpx solid #eeeeee;
@@ -46,7 +48,9 @@ view {
 }
 
 .pro-item .pro-item-line .pro-name {
-  flex: 1;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
 }
 
 .pro-item .pro-item-line .pro-name .pro-name-text {
@@ -127,9 +131,14 @@ view {
   height: 97rpx;
   background: #EEF4FF;
   line-height: 97rpx;
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
-  justify-content: space-around;
-  align-items: center;
+  -webkit-justify-content: space-around;
+          justify-content: space-around;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
 }
 
 .regist-remind-bar .regist-remind-steps.current-step .regist-remind-step {
@@ -380,10 +389,17 @@ view {
 }
 
 .main-body .main-boy-line.main-body-flex {
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: start;
-  align-items: center;
+  -webkit-flex-wrap: wrap;
+          flex-wrap: wrap;
+  -webkit-box-pack: start;
+  -webkit-justify-content: start;
+          justify-content: start;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
 }
 
 .main-body .main-boy-line.main-body-flex .main-upload, .main-body .main-boy-line.main-body-flex .main-show-image {

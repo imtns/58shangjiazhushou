@@ -1,9 +1,9 @@
 
     <view class="container">
         <view class="pay-header">
-            <view class="payrecord-type">类型选择</view>
-            <view class="select-icon {{choseMonth === '1' ? 'selected' : ''}}" bindtap="choseType" data-type="1">按月选择</view>
-            <view class="select-icon {{choseMonth === '2' ? 'selected' : ''}}" bindtap="choseType" data-type="2">按日选择</view>
+            <!-- <view class="payrecord-type">类型选择</view> -->
+            <!-- <view class="select-icon {{choseMonth === '1' ? 'selected' : ''}}" bindtap="choseType" data-type="1">按月选择</view> -->
+            <view class="select-icon" bindtap="choseType" data-type="2">按日选择</view>
         </view>
         <view class="pay-body"  wx:if="{{choseMonth === '1'}}">
             <view class="pay-base"><text style="color: #FFA100;">*</text>请选择月份</view>

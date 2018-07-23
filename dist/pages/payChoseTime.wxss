@@ -7,9 +7,14 @@ view {
   height: 89rpx;
   line-height: 89rpx;
   background: #fff;
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
-  justify-content: space-around;
-  align-items: center;
+  -webkit-justify-content: space-around;
+          justify-content: space-around;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
   padding: 20rpx 30rpx;
 }
 
@@ -20,7 +25,9 @@ view {
 }
 
 .pay-header view {
-  flex: 1;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
   font-size: 28rpx;
 }
 
@@ -30,17 +37,7 @@ view {
 
 .pay-header .select-icon {
   color: #666;
-}
-
-.pay-header .select-icon:before {
-  display: inline-block;
-  float: left;
-  content: "";
-  width: 40rpx;
-  height: 40rpx;
-  background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png) no-repeat;
-  margin: 24rpx 10rpx 0 0;
-  background-size: 40rpx 40rpx;
+  text-align: center;
 }
 
 .pay-header .selected.select-icon::before {
@@ -53,7 +50,9 @@ view {
 }
 
 .pay-body .pay-base {
-  flex: 1;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
   font-family: PingFangSC-Regular;
   font-size: 30rpx;
   color: #999999;

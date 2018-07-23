@@ -55,6 +55,7 @@ export default class PaymentRecord extends wepy.page {
         });
         this.timeZone = startDate && endDate ? `${startDate.split(' ')[0]} ${endDate.split(' ')[0]}` : '总共';
         this.$apply();
+        if (!option) return;
         this.loadData();
     }
     choseTime() {

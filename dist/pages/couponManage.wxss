@@ -8,6 +8,8 @@ button::after {
 }
 
 .options {
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
   font-size: 34rpx;
   letter-spacing: 0.51px;

@@ -12,6 +12,8 @@
 }
 
 .options {
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
   font-size: 34rpx;
   letter-spacing: 0.51px;
@@ -21,7 +23,9 @@
 }
 
 .options .button {
-  flex: 1;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
   border-radius: 0;
   color: #FFF;
   background-color: #4e88ff;
@@ -73,9 +77,15 @@
   top: -50rpx;
   z-index: 1;
   text-align: center;
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+          justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
   line-height: 100rpx;
 }
 
@@ -164,9 +174,14 @@
   width: 670px;
   height: 90px;
   line-height: 30px;
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
   line-clamp: 3;
-  flex-direction: column;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+          flex-direction: column;
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: PingFangSC-Regular;
@@ -278,6 +293,8 @@
 }
 
 .coupon-component {
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
 }
 
@@ -288,6 +305,8 @@
   font-size: 70rpx;
   color: #FF552E;
   letter-spacing: 0;
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
 }
 
