@@ -167,7 +167,6 @@ export default class AppEdit extends wepy.page {
         async setLogo () {
             try {
                 const netStatus = await getNetStatus();
-                console.log(netStatus);
 
                 if (netStatus === 0) {
                     toastSync('无网络');

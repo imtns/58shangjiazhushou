@@ -222,38 +222,29 @@ export default class Uploader extends wepy.component {
         },
     }
     uploadImage (file) {
-        return getNetStatus().then(netStatus => {
-            // 无网络环境下不能上传图片
-            if (netStatus === 0) {
-                toast('无网络');
-                return;
-            }
-
-            return new Promise(resolve => {
-                wepy.uploadFile({
-                    url: host + this.uploadImageApi,
-                    filePath: file,
-                    name: 'content',
-                }).then((response) => {
-                    try {
-                        console.log(response);
-                        const res = JSON.parse(response.data);
-                        const { state, msg, data } = res;
-                        if (state === 100) {
-                            resolve([null, data]);
-                        } else {
-                            resolve([msg]);
-                        }
-                        console.log(res);
-                    } catch (e) {
-                        console.log(e);
-                        resolve([e]);
+        return new Promise(resolve => {
+            wepy.uploadFile({
+                url: host + this.uploadImageApi,
+                filePath: file,
+                name: 'content',
+            }).then((response) => {
+                try {
+                    console.log(response);
+                    const res = JSON.parse(response.data);
+                    const { state, msg, data } = res;
+                    if (state === 100) {
+                        return resolve([null, data]);
                     }
-                }).catch((e) => {
+                    console.log(res);
+                    return resolve([msg]);
+                } catch (e) {
                     console.log(e);
-                    const { errMsg } = e;
-                    resolve([errMsg]);
-                });
+                    return resolve([e]);
+                }
+            }).catch((e) => {
+                console.log(e);
+                const { errMsg } = e;
+                return resolve([errMsg]);
             });
         });
     }
@@ -261,8 +252,7 @@ export default class Uploader extends wepy.component {
         return getNetStatus().then(netStatus => {
             // 只有wifi环境下才能上传视频
             if (netStatus !== 1) {
-                toast('请切换到wifi环境下');
-                return;
+                return toast('请切换到wifi环境下上传视频');
             }
 
             return new Promise((resolve) => {
