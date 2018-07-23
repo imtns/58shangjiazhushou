@@ -1,0 +1,30 @@
+
+    <view class="container">
+        <view class="wrap">
+            <view class="top">
+                <view class="current-group {{showProduct ? 'show' : ''}}"  bindtap="showProduct">
+                    {{ currentGroup }}<view class="icon-triangle"/>
+                    <view class="group-list">
+                        <view class="item"  wx:for="{{ groups }}" wx:key="id" bindtap="chooseGroup" data-wpychoosegroup-a="{{ item.id }}" data-wpychoosegroup-b="{{ item.name }}">{{ item.name }}</view>
+                    </view>
+                </view>
+                <!-- <view class="add-product">+添加产品</view> -->
+            </view>
+            <view class="products"  wx:if="{{ services && services.length }}">
+                <view class="item" wx:for="{{ services }}" wx:key="id" bindtap="chooseService" data-wpychooseservice-a="{{ index }}">
+                    <view class="checkbox {{item.checked ? 'checked' : ''}}">
+                    </view>
+                    <image mode="aspectFill" src="{{ item.pics + '?w=60' }}"/>
+                    <view class="info">
+                        <view class="title">{{ item.serviceName }}</view>
+                        <view class="price">服务价格：<text class="bold">{{ item.price }}</text>元/次</view>
+                    </view>
+                </view>
+            </view>
+            <view wx:else style="margin:30rpx;text-align:center;color:#bdbdbd;">---啥也没有---</view>
+        </view>
+        <view class="options">
+            <button class="edit" bindtap="chooseAll">全选当前分组</button>
+            <button bindtap="confirm">确定</button>
+        </view>
+    </view>

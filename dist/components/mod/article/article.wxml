@@ -1,0 +1,15 @@
+<template name="article">
+  <view class="mod-view mod-view-article">
+    <navigator class="mod-view-row mod-view-row-article" wx:for="{{data}}" wx:key="id" url="/pages/article/article?id={{item.id}}">
+      <view class="mod-view-column mod-view-column-img-wrap">
+        <image class="mod-view-column-img" mode='aspectFill' src='{{item.cover}}'></image>
+      </view>
+      <view class="mod-view-column mod-view-column-article">
+        <view class="mod-article-title">{{item.title}}</view>
+        <view class="mod-article-source">{{item.intro}}</view>
+      </view>
+    </navigator>
+    <view class="mod-more" bindtap="loadMore" wx:if="{{total > data.length}}" data-index="{{index}}" data-article-page="{{pageNum+1}}"
+      data-type="article" data-article-size="{{pageSize}}" data-total="{{total}}">查看更多</view>
+  </view>
+</template>

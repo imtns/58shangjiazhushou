@@ -1,0 +1,30 @@
+
+    <view class="upload-container">
+        <view class="upload-title">文章编辑</view>
+        <view class="upload-body">
+            <view class="upload-body-line">
+                <view class="upload-left"><text style="color:#FFA100;">*</text>标题</view>
+                <input class="upload-right" bindinput="setTitle" placeholder="请输入20字以内" placeholder-style="font-size: 28rpx;color: #CCCCCC;" maxlength="20"/>
+            </view>
+        </view>
+        <view class="upload-body">
+            <view class="upload-body-line">
+                <view class="upload-left"><text style="color:rgba(0,0,0,0);">*</text>作者</view>
+                <input class="upload-right" bindinput="setAuthor" placeholder="请输入10字以内" placeholder-style="font-size: 28rpx;color: #CCCCCC;" maxlength="10"/>
+            </view>
+        </view>
+        <view class="upload-body">
+            <view class="upload-body-line">
+                <view class="upload-left"><text style="color:rgba(0,0,0,0);">*</text>来源</view>
+                <input class="upload-right" bindinput="setSource" placeholder="请输入10字以内" placeholder-style="font-size: 28rpx;color: #CCCCCC; " maxlength="10"/>
+            </view>
+        </view>
+        <view class="upload-body">
+            <view class="upload-body-line no-border-bottom">
+                <view class="upload-left"><text style="color:#FFA100;">*</text>文本内容上传</view>
+                <textarea class="upload-textarea" bindinput="setContent" placeholder="请输入内容" placeholder-style="font-size: 28rpx;color: #CCCCCC;" maxlength="5000"/>
+                <view class="upload-textarea-size">{{form.content.length||0}}/5000</view>
+            </view>
+        </view>
+        <view class="main-button {{form.enableSubmit?'main-button-ok':''}}" bindtap="submitSave">完成</view>
+    </view>

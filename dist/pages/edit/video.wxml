@@ -1,0 +1,39 @@
+
+    <view class="video-container">
+        <view class="title">
+            门店视频
+        </view>
+        <view class="list">
+            <block class="list" wx:for="{{videos}}" wx:for-index="index" wx:for-item="item" wx:key="key">
+                <view class="item">
+                    <video src="{{item.src}}" enable-danmu danmu-btn controls/>
+                </view>
+            </block>
+        </view>
+    </view>
+    <view class="video-editLayer">
+        <view class="saveBar">保存</view>
+        <view class="edit-cell">
+            <view class="edit-label">标题名称</view>
+            <view class="edit-input">
+                <input data-name="name" bindinput="bindInput" class="weui-input" name="name" placeholder="请输入名称"/>
+            </view>
+        </view>
+        <scroll-view scroll-x class="scrollView">
+            <view class="addButton">
+
+            </view>
+            <view class="tobeAdded">
+                <view class="scroll-view-item addButton" style="{{videos.length==3?'display:none':''}}" bindtap="addVideo">
+                   <image src="../assets/plus.png"/>
+                </view>
+                <block wx:for="{{videos}}" wx:for-index="index" wx:for-item="item" wx:key="index">
+                    <view class="scroll-view-item {{thumbActive == index?'active':''}}" data-index="{{index}}" bindtap="thumbClick">
+                        <image src="{{item.cover}}"/>
+                        <view class="span active">{{index}}</view>
+                        <image class="del {{thumbActive == index?'active':''}}" src="../assets/del.png" bindtap="del" data-index="{{index}}"/>
+                    </view>
+                </block>
+            </view>
+        </scroll-view>
+    </view>
