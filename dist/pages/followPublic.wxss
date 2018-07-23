@@ -1,0 +1,27 @@
+.container {
+  height: 100%;
+  background: url("https://static.58.com/lbg/shangjiaxcxht/zhushou/img/follow-public.png") no-repeat;
+  background-size: 750rpx auto;
+  background-position: 0 -128rpx;
+  background-color: #3A62F9;
+}
+
+.container.iphoneX {
+  background-position: 0 0;
+}
+
+button {
+  position: absolute;
+  left: 85rpx;
+  bottom: 140rpx;
+  background-image: linear-gradient(-33deg, #3AB5FF 0%, #B4EC51 100%, #B4EC51 100%);
+  border-radius: 8rpx;
+  font-size: 40rpx;
+  color: #FFF;
+  width: 580rpx;
+  height: 100rpx;
+}
+
+button::after {
+  border: none;
+}

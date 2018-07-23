@@ -1,0 +1,288 @@
+@import "./../components/EmptyPage.wxss";
+.button {
+  width: 100%;
+  height: 102rpx;
+  background: #4E88FF;
+  font-family: PingFangSC-Regular;
+  font-size: 34rpx;
+  color: #FFFFFF;
+  letter-spacing: 0;
+  text-align: center;
+  line-height: 102rpx;
+}
+
+.options {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  font-size: 34rpx;
+  letter-spacing: 0.51px;
+  position: fixed;
+  bottom: 1rpx;
+  width: 100%;
+}
+
+.options .button {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
+  border-radius: 0;
+  color: #FFF;
+  background-color: #4e88ff;
+  box-shadow: 0 -1px 17px -1px rgba(202, 202, 202, 0.5);
+}
+
+.options .button::after {
+  content: none;
+}
+
+.options .edit {
+  color: #4e88ff;
+  background-color: #FFF;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  background: #f6f6f6;
+  box-sizing: border-box;
+}
+
+.container .banner {
+  width: 100%;
+  height: 170rpx;
+  background: url("https://static.58.com/lbg/shangjiaxcxht/zhushou/img/article-banner.png");
+  background-size: 100% 100%;
+  position: relative;
+}
+
+.container .banner .banner-icon {
+  width: 49rpx;
+  height: 52rpx;
+  position: absolute;
+  left: 50%;
+  margin-left: -20rpx;
+  bottom: 45rpx;
+  z-index: 2;
+}
+
+.container .items-body .article-header {
+  margin: 0 20rpx;
+  width: 710rpx;
+  height: 100rpx;
+  background: #FFFFFF;
+  box-shadow: 2px 6px 6px 0 rgba(213, 219, 255, 0.5);
+  border-radius: 8rpx;
+  position: relative;
+  top: -50rpx;
+  z-index: 1;
+  text-align: center;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+          justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+  line-height: 100rpx;
+}
+
+.container .items-body .article-header .line {
+  width: 50rpx;
+  height: 4rpx;
+  background: #1F499E;
+}
+
+.container .items-body .article-header .article-header-text {
+  box-sizing: border-box;
+  max-width: 500rpx;
+  margin: 0 30rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: PingFangSC-Medium;
+  font-size: 36rpx;
+  color: #1F499E;
+  letter-spacing: 0.54rpx;
+  position: relative;
+}
+
+.container .items-body .article-list {
+  position: relative;
+  top: -30rpx;
+}
+
+.container .list-item {
+  margin: 0 20rpx 20rpx;
+  width: 710rpx;
+  background: #FFFFFF;
+  box-shadow: 2px 6px 6px 0 rgba(213, 219, 255, 0.3);
+  border-radius: 8rpx;
+  padding: 30rpx 20rpx;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.container .list-item .article-title {
+  font-family: PingFangSC-Medium;
+  font-size: 32rpx;
+  color: #333333;
+  letter-spacing: 0.48rpx;
+  width: 670rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.container .list-item .article-detail {
+  width: 100%;
+  border-bottom: 1rpx solid #f3f3f3;
+}
+
+.container .list-item .article-detail .article-detail-flex {
+  display: inline-block;
+  margin-right: 10rpx;
+  line-height: 50rpx;
+}
+
+.container .list-item .article-detail .article-detail-flex .article-base, .container .list-item .article-detail .article-detail-flex .base-text {
+  float: left;
+  font-family: PingFangSC-Regular;
+  font-size: 26rpx;
+  letter-spacing: 0;
+}
+
+.container .list-item .article-detail .article-detail-flex .article-base {
+  color: #666666;
+}
+
+.container .list-item .article-detail .article-detail-flex .base-text {
+  color: #3F3F3F;
+}
+
+.container .list-item .article-detail .article-detail-flex .base-over.base-text {
+  max-width: 156rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.container .list-item .article-preview-con {
+  max-width: 670rpx;
+  width: 670px;
+  height: 90px;
+  line-height: 30px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+          flex-direction: column;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: PingFangSC-Regular;
+  font-size: 30rpx;
+  color: #666666;
+  letter-spacing: 0;
+}
+
+.container .list-item .list-image {
+  width: 120rpx;
+  height: 120rpx;
+  background: pink;
+  position: absolute;
+  left: -20rpx;
+  top: 50%;
+  margin-top: -60rpx;
+  border-radius: 8rpx;
+}
+
+.container .list-item .list-detail {
+  padding: 0 130rpx 0 110rpx;
+}
+
+.container .list-item .list-detail .list-title {
+  font-family: PingFangSC-Medium;
+  font-size: 32rpx;
+  color: #333333;
+  letter-spacing: 0.48rpx;
+  max-width: 390rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 45rpx;
+  line-height: 45rpx;
+}
+
+.container .list-item .list-detail .list-intro {
+  font-family: PingFangSC-Regular;
+  font-size: 30rpx;
+  color: #666666;
+  letter-spacing: 0;
+  height: 42rpx;
+  line-height: 42rpx;
+}
+
+.container .list-item .list-detail .list-intro text {
+  font-family: PingFangSC-Medium;
+  font-size: 34rpx;
+  color: #FF937B;
+  letter-spacing: 0;
+}
+
+.container .list-item .border-btn {
+  border: 2rpx solid #83ABFF;
+  border-radius: 4rpx;
+  width: 110rpx;
+  height: 50rpx;
+  text-align: center;
+  line-height: 50rpx;
+  font-family: PingFangSC-Regular;
+  font-size: 30rpx;
+  color: #83ABFF;
+  letter-spacing: 0.45rpx;
+  position: absolute;
+  right: 20rpx;
+  top: 50%;
+  margin-top: -25rpx;
+}
+
+.container .list-item .xiajia.border-btn {
+  border: 2px solid #27BC28;
+  color: #27BC28;
+}
+
+.container .edit .list-item {
+  position: relative;
+  left: 100rpx;
+}
+
+.container .edit .list-item::before {
+  width: 40rpx;
+  height: 40rpx;
+  content: '';
+  position: absolute;
+  left: -100rpx;
+  top: 50%;
+  margin-top: -20rpx;
+  background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png) no-repeat;
+  background-size: 40rpx 40rpx;
+}
+
+.container .edit .selected.list-item::before {
+  background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/selected-icon.png) no-repeat;
+  background-size: 40rpx 40rpx;
+}
+
+.container .block {
+  width: 100%;
+  height: 102rpx;
+}
+
+page {
+  position: relative;
+}

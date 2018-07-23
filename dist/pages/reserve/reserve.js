@@ -1,0 +1,6 @@
+'use strict';
+
+var mixin = require('./../../mixin/mixin.js');
+
+Page(mixin());
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInJlc2VydmUuanMiXSwibmFtZXMiOlsibWl4aW4iLCJyZXF1aXJlIiwiUGFnZSJdLCJtYXBwaW5ncyI6Ijs7QUFBQSxJQUFNQSxRQUFRQyxRQUFRLG1CQUFSLENBQWQ7O0FBRUFDLEtBQUtGLE9BQUwiLCJmaWxlIjoicmVzZXJ2ZS5qcyIsInNvdXJjZXNDb250ZW50IjpbImNvbnN0IG1peGluID0gcmVxdWlyZSgnLi4vLi4vbWl4aW4vbWl4aW4nKTtcclxuXHJcblBhZ2UobWl4aW4oKSk7XHJcblxyXG4iXX0=

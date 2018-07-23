@@ -1,0 +1,25 @@
+
+<view class="tabContainer">
+    <view class="tabs">
+        <view class="tab {{tabSelect == 1?'active':''}}" bindtap="tabClick" data-distance="160" data-id="1">我的模板</view>
+        <view class="tab {{tabSelect == 2?'active':''}}" bindtap="tabClick" data-distance="532" data-id="2">基础模板</view>
+    </view>
+    <view style="left:{{left}}rpx" class="tabs-underline"/>
+</view>
+<view class="list"  wx:if="{{list.length}}">
+    <block wx:for="{{list}}" wx:for-index="index" wx:for-item="item" wx:key="key">
+        <view class="item" bindtap="goEdit" data-releaseId="{{item.releaseId}}" data-id="{{item.id}}">
+            <view wx:if="my" bindtap="closeLayer" class="mySetting {{delLayer?'delLayer':''}}">   
+                <view class="delBtn" data-id="1" catchtap="del" hidden="{{!delLayer}}">删除</view>     
+            </view>
+            <view class="tip" hidden="{{!my}}">{{status[item.status]}}</view>
+            <view class="delTip" hidden="{{!my}}" bindtap="showDelLayer">...</view>
+            <view class="thumb"><image mode="aspectFill" src="{{item.image}}"/></view>
+            <view class="desc">{{item.userDesc}}</view>
+        </view>
+    </block>
+</view>
+<view  wx:else class="emptyLayer">
+    <view class="icon"><image mode="aspectFill" src="assets/empty.png"/></view>
+    <text class="noTemplateText">您还没有制作模板哦</text>
+</view>

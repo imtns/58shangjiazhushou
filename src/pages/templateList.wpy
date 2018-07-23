@@ -8,7 +8,7 @@
 </view>
 <view class="list" wx:if="{{list.length}}">
     <repeat for="{{list}}" item="item" index="index">
-        <view class="item" @tap="goEdit" data-id="{{item.id}}">
+        <view class="item" @tap="goEdit" data-releaseId="{{item.releaseId}}" data-id="{{item.id}}">
             <view wx:if="my" @tap="closeLayer" class="mySetting {{delLayer?'delLayer':''}}">   
                 <view class="delBtn" data-id="1" @tap.stop="del" hidden="{{!delLayer}}">删除</view>     
             </view>
@@ -32,6 +32,8 @@ import { get } from '../utils/ajax';
 const basicTemplateUrl = '/business/templateList';
 const myTemplateUrl = `/business/myTemplateList/${wx.getStorageSync('mpId')}`;
 const getTemplateIdUrl = '/business/init/struct';
+const app = require('../utils/globalData');
+
 export default class Index extends wepy.page {
   config = {
       navigationBarTitleText: '店铺装修',
@@ -78,7 +80,8 @@ export default class Index extends wepy.page {
       },
       async goEdit(e) {
           if (this.my) {
-              console.log('my');
+              const { releaseid } = e.currentTarget.dataset;
+              wx.setStorageSync('releaseId', releaseid);
           } else {
               const { id } = e.currentTarget.dataset;
               const { data } = await get(getTemplateIdUrl, {
@@ -89,8 +92,10 @@ export default class Index extends wepy.page {
               wx.navigateTo({
                   url: 'reserve/reserve',
               });
-              console.log(data);
           }
+          wx.navigateTo({
+              url: 'reserve/reserve',
+          });
       },
   };
   async loadBasicTemplate() {
@@ -104,11 +109,12 @@ export default class Index extends wepy.page {
       this.$apply();
   }
   async loadMyTemplate() {
+      console.log(app.globalData.extConfig);
       const { data } = await get(myTemplateUrl, {
           pageNum: 1,
           pageSize: 20,
           v: 2,
-          appid: 'yxuEvbSU3M0zGwxuw',
+          appid: app.globalData.extConfig.appId,
       });
       this.list = data;
       this.$apply();

@@ -12,7 +12,7 @@ const config = {
             outputStyle: 'expanded',
         },
         babel: {
-            sourceMap: true,
+            sourceMap: false,
             presets: [
                 'stage-2',
                 'env',

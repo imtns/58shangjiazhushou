@@ -14,7 +14,7 @@
     </view>
     <view class="article-editLayer">
         <view class="saveBar">
-            <text class="label">+添加文章</text>
+            <text class="label" @tap="addArticle">+添加文章</text>
             <text class="save" @tap="save">保存</text>
         </view>
         <view class="edit-cell">
@@ -74,6 +74,11 @@ export default class Article extends wepy.page {
       },
   };
   methods = {
+      addArticle() {
+          wepy.navigateTo({
+              url: '../articleComponentAdd',
+          });
+      },
       showGroup() {
           this.showGroup = !this.showGroup;
       },

@@ -1,0 +1,43 @@
+
+    <view class="container">
+        <!-- <block wx:if="{{groupList.length > 0}}">
+            <GroupComponent list="{{groupList}}"></GroupComponent>
+        </block> -->
+        <view class="group-list article-group-list {{isEditing ? 'edit' : ''}}"  wx:if="{{groupList.length > 0}}">
+            <view class="group-item article-group-item" catchtap="editChose" wx:for="{{groupList}}" wx:key="index" data-item="{{item}}" data-wpyeditchose-a="{{ item.id }}" data-wpyeditchose-b="{{ index }}" data-wpyeditchose-c="{{item.name}}">
+                <view class="group-line article-group-line {{item.choseStatu ? 'selected' : ''}}" >
+                    <view class="group-name article-group-name">{{item.name}}</view>
+                    <view class="group-size article-group-size"> ({{item.count}})</view>
+                    <view class="group-angel article-group-angel" wx:if="{{!isEditing}}"/>
+                    <view class="rename-btn article-rename-btn" wx:if="{{isEditing}}" catchtap="showDialog" data-wpyshowdialog-a="{{item.id}}" data-wpyshowdialog-b="{{item.name}}">重命名</view>
+                </view>
+            </view>
+            <view class="block"/>
+        </view>
+        
+    <view class="empty-box" wx:if="{{groupList.length === 0}}">
+        <image class="empty-icon" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/emptyIcon.png"/>
+        <view class="empty-text">{{$EmptyPage$title}}</view>
+    </view>
+
+    </view>
+    <view class="options">
+        <button class="button edit" bindtap="edit"  wx:if="{{groupList.length > 0 || works.length > 0}}">{{ isEditing ? '取消' : '编辑' }}</button>
+        <button class="button"  wx:if="{{ isEditing }}" bindtap="deleteItem">删除</button>
+        <button wx:else bindtap="showDialog" class="button">添加分组</button>
+    </view>
+    
+    <view class="mask"  wx:if="{{showPop}}" catchtouchmove="$Pop$stopPro">
+        <view class="pop">
+            <view class="pop-title">
+                {{$Pop$title}}
+            </view>
+            <view class="pop-body">
+                <input placeholder="请输入分组名称" cursor-spacing="80" bindinput="$Pop$input" value="{{$Pop$content}}"/>
+            </view>
+            <view class="pop-options">
+                <view class="pop-btn" bindtap="$Pop$close">取消</view>
+                <view class="pop-btn enter" bindtap="$Pop$add">{{$Pop$surebtnText}}</view>
+            </view>
+        </view>
+    </view>

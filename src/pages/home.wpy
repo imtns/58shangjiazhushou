@@ -140,10 +140,6 @@ export default class Home extends wepy.page {
                     },
                 ],
             },
-            {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-advice.png',
-                text: '店铺装修',
-            },
         ],
     }
     methods = {
@@ -160,12 +156,12 @@ export default class Home extends wepy.page {
             console.log(text);
             if (text === '意见反馈') {
                 wepy.navigateTo({
-                    url: 'purchase',
+                    url: 'feedback',
                 });
             } else if (text === '购买小程序') {
                 // 购买小程序页面
                 wepy.navigateTo({
-                    // url: 'feedback',
+                    url: 'purchase',
                 });
             } else {
                 this.checkBeforeJump(text);
@@ -296,6 +292,7 @@ export default class Home extends wepy.page {
     async onLoad () {
         await sleep();
         console.log('onLoad');
+        this.loadExtJson();
     }
     async onShow () {
         await this.loadData();
@@ -459,7 +456,7 @@ export default class Home extends wepy.page {
                 break;
             case '店铺装修':
                 wepy.navigateTo({
-                    // url: 'OpenPay',店铺装修的页面url找黄鑫
+                    url: 'templateList',
                 });
                 break;
             case '发布服务':
@@ -479,7 +476,7 @@ export default class Home extends wepy.page {
                 break;
             case '购买小程序':
                 wepy.navigateTo({
-                    // url: 'resourceManage',购买小程序url找黄鑫
+                    url: 'purchase',
                 });
                 break;
             case '注册小程序':

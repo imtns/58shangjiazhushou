@@ -48,13 +48,13 @@ const mixinConfig = {
             this.setData({ supportVersion: false });
             return;
         }
-        await this.loadExtJson();
+        await this.loadTabbar();
         await this.loadData();
         await this.loadPageList();
 
         const { extConfig = {}, isIphoneX } = app.globalData;
-        const { tabBar = {}, mpSource = '', extraInfo = null } = extConfig.extJson;
-        const { list = [] } = tabBar;
+        // const { tabBar = {}, mpSource = '', extraInfo = null } = extConfig.extJson;
+        const { list = [] } = app.globalData.tabBar;
         console.log(extConfig.extJson);
         // app.globalData.tabMode = extConfig.extJson.tabMode;
         const tabBarItems = list.map(item => Object.assign(item, { pageKey: getPage(item.pagePath) }));
@@ -62,9 +62,13 @@ const mixinConfig = {
             isIphoneX,
             tabBarItems,
             env58: true,
-            mpSource,
-            extraInfo,
+            // mpSource,
+            // extraInfo,
         });
+    },
+    onUnload() {
+        console.log('unload');
+        app.globalData.pageData = {};
     },
     // onShow() {
     //     this.setData({

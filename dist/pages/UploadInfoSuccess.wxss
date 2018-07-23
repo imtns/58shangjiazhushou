@@ -1,0 +1,53 @@
+.mod-uploadInfoSuccess {
+  font-family: PingFangSC-Regular;
+  height: 100vh;
+  background: #f6f6f6;
+}
+
+.uploadInfoSuccess-container {
+  padding: 80rpx 100rpx;
+  background: #fff;
+}
+
+.uploadInfoSuccess-icon {
+  display: block;
+  width: 144rpx;
+  height: 144rpx;
+  margin: 0 auto;
+}
+
+.uploadInfoSuccess-title {
+  margin-top: 45rpx;
+  text-align: center;
+  font-family: PingFangSC-Regular;
+  font-size: 32rpx;
+  color: #333333;
+}
+
+.uploadInfoSuccess-content {
+  margin-top: 10rpx;
+  width: 548rpx;
+  margin: 0 auto;
+  font-family: PingFangSC-Regular;
+  font-size: 28rpx;
+  color: #999999;
+  text-align: center;
+}
+
+.uploadInfoSuccess-desc {
+  margin: 20rpx 30rpx 0;
+  font-family: PingFangSC-Regular;
+  font-size: 26rpx;
+  color: #999999;
+}
+
+.uploadInfoSuccess-home {
+  margin: 60rpx 30rpx 0;
+  background: #4e88ff;
+  border-radius: 4rpx;
+  line-height: 94rpx;
+  font-family: PingFangSC-Regular;
+  font-size: 32rpx;
+  color: #ffffff;
+  text-align: center;
+}
