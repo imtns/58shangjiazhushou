@@ -1,10 +1,11 @@
 <template>
     <view class='video-view'>
-        <video id="myVideo" bindfullscreenchange="fullscreenchange" class='video-view-video' src="{{videoPath}}"></video>
+        <video id="myVideo" @play="play" class='video-view-video' src="{{videoPath}}"></video>
     </view>
 </template>
 <script>
 import wepy from 'wepy';
+import { getNetStatus, alertP } from '../utils';
 
 export default class VideoPlay extends wepy.page {
     config = {
@@ -16,6 +17,27 @@ export default class VideoPlay extends wepy.page {
         navigationBarTitleText: '视频播放',
     }
     data = {
+        videoPath: '',
+    }
+    methods = {
+        async play() {
+            const netStatus = await getNetStatus();
+
+            if (netStatus === 0) {
+                this.stopPlay();
+                return;
+            }
+
+            if (netStatus === 2) {
+                const { cancel } = await alertP('确认在移动网络下播放？', '提示');
+                if (cancel) {
+                    this.stopPlay();
+                }
+            }
+        },
+    }
+    stopPlay() {
+        this.videoContext.pause();
     }
     onLoad (options) {
         const { url } = options;
@@ -25,6 +47,7 @@ export default class VideoPlay extends wepy.page {
     }
     onShow () {
         const videoContext = wepy.createVideoContext('myVideo');
+        this.videoContext = videoContext;
         videoContext.play();
     }
 }

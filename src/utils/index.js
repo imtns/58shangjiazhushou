@@ -3,6 +3,34 @@ import globalService from './globalService';
 
 module.exports.globalService = globalService;
 
+export const getNetStatus = () => {
+    return new Promise((resolve, reject) => {
+        wx.getNetworkType({
+            success({ networkType }) {
+                /**
+                 * 0 网络不可用
+                 * 1 wifi条件下，可以直接播放、上传
+                 * 2 移动网络环境
+                 */
+                let status = 0;
+
+                if (~['unknown', 'none'].indexOf(networkType)) {
+                    status = 0;
+                } else if (~['wifi'].indexOf(networkType)) {
+                    status = 1;
+                } else if (~['2g', '3g', '4g'].indexOf(networkType)) {
+                    status = 2;
+                }
+
+                resolve(status);
+            },
+            fail(err) {
+                reject(err);
+            },
+        });
+    });
+};
+
 export const isEmpty =  v => {
     if (v === '' || v === null || v === undefined) {
         return true;
