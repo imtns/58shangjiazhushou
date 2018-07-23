@@ -4,7 +4,7 @@
             
     <view class="coupons {{$couponList$size === \'small\' ? 'small' : ''}}" >
         <block wx:for="{{ $couponList$coupons }}" wx:for-index="$couponList$index" wx:for-item="$couponList$item" wx:key="$couponList$id">
-            <navigator class="coupon-list-item {{$couponList$item.unable ? 'unable' : ''}} {{$couponList$isEditing ? 'editing' : ''}}" url="{{ '/pages/couponEdit?id=' + $couponList$item.id }}">
+            <navigator class="coupon-list-item {{!$couponList$item.usable ? 'unable' : ''}} {{$couponList$isEditing ? 'editing' : ''}}" url="{{ '/pages/couponEdit?id=' + $couponList$item.id }}">
                 <view class="coupon-list-left">
                     <!-- 打折 -->
                     <view class="discount"  wx:if="{{ $couponList$item.couponType === 2 }}">
@@ -28,7 +28,7 @@
                             领取后{{ $couponList$item.validAfterDays ? ($couponList$item.validAfterDays + '天') : '立即' }}生效
                         </view>
                     </view>
-                    <view class="disable" wx:if="{{ $couponList$item.unable }}">
+                    <view class="disable" wx:if="{{ !$couponList$item.usable }}">
                         已失效
                     </view>
                 </view>

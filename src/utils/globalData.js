@@ -13,7 +13,7 @@ export const globalData = {
   pageList:{},
   modules:{},
   isIphoneX:false,
-  tabMode:1,
+  tabMode:0,
   tabBar:{},
 }
 

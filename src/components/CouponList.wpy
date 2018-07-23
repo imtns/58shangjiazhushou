@@ -1,7 +1,7 @@
 <template lang="wxml">
     <view class="coupons" :class="{ small: size === 'small' }">
         <repeat for="{{ coupons }}" key="id" index="index" item="item">
-            <navigator class="coupon-list-item" :class="{ unable: item.unable, editing: isEditing }"
+            <navigator class="coupon-list-item" :class="{ unable: !item.usable, editing: isEditing }"
             url="{{ '/pages/couponEdit?id=' + item.id }}">
                 <view class="coupon-list-left">
                     <!-- 打折 -->
@@ -26,7 +26,7 @@
                             领取后{{ item.validAfterDays ? (item.validAfterDays + '天') : '立即' }}生效
                         </view>
                     </view>
-                    <view class="disable" wx:if="{{ item.unable }}">
+                    <view class="disable" wx:if="{{ !item.usable }}">
                         已失效
                     </view>
                 </view>
@@ -97,7 +97,7 @@ $radius: 4rpx;
         box-shadow: 0 1rpx 10rpx 0 rgba(0,0,0,0.05);
         border-radius: $radius;
         position: relative;
-        transition: margin .5s;
+        // transition: margin .5s;
 
         &.editing {
             margin-left: 123rpx;

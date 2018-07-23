@@ -3,17 +3,17 @@
         <view class="section">
             <view class="item required border-bottom">
                 <text>优惠券标题</text>
-                <input type="text" placeholder="最多可输入10个字" placeholder-class="placeholder" value="{{ form.title }}" bindchange="setFormData" data-wpysetformdata-a="title"/>
+                <input type="text" placeholder="最多可输入10个字" placeholder-class="placeholder" value="{{ form.title }}" bindinput="setFormData" data-wpysetformdata-a="title"/>
             </view>
             <view class="item required">
                 <text>优惠券副标题</text>
-                <input type="text" placeholder="可用优惠券亮点吸引用户" placeholder-class="placeholder" value="{{ form.subTitle }}" bindchange="setFormData" data-wpysetformdata-a="subTitle"/>
+                <input type="text" placeholder="可用优惠券亮点吸引用户" placeholder-class="placeholder" value="{{ form.subTitle }}" bindinput="setFormData" data-wpysetformdata-a="subTitle"/>
             </view>
         </view>
         <view class="section">
             <view class="item required">
                 <text>优惠券类型</text>
-                <navigator  url="/pages/couponType" class="{{form.couponType === \'\' ? 'placeholder' : ''}}">
+                <navigator  url="/pages/couponType" class="{{form.couponType === undefined ? 'placeholder' : ''}}">
                     {{ form.couponType && (form.couponType === 1 ? '代金券' : '折扣券') || '去选择' }}
                     <view class="icon more"/>
                 </navigator>
@@ -22,7 +22,7 @@
         <view class="section">
             <view class="item required">
                 <text>生效时间</text>
-                <navigator url="/pages/couponValidTime" class="{{form.validType === \'\' ? 'placeholder' : ''}}">
+                <navigator url="/pages/couponValidTime" class="{{form.validType === undefined ? 'placeholder' : ''}}">
                     {{ form.validType && (form.validType === 1 ? '固定时间' : '领取后生效') || '去选择' }}<view class="icon more"/>
                 </navigator>
             </view>
@@ -30,17 +30,17 @@
         <view class="section">
             <view class="item required border-bottom">
                 <text>库存</text>
-                <input type="number" placeholder="请输入库存数量" placeholder-class="placeholder" value="{{ form.totalCount }}" bindchange="setFormData" data-wpysetformdata-a="totalCount"/>
+                <input type="number" placeholder="请输入库存数量" placeholder-class="placeholder" value="{{ form.totalCount }}" bindinput="setFormData" data-wpysetformdata-a="totalCount"/>
             </view>
             <view class="item">
                 <text>每人限领</text>
-                <input type="number" placeholder="若不填默认为1" placeholder-class="placeholder" value="{{ form.limitCount || '' }}" bindchange="setFormData" data-wpysetformdata-a="limitCount"/>
+                <input type="number" placeholder="若不填默认为1" placeholder-class="placeholder" value="{{ form.limitCount }}" bindinput="setFormData" data-wpysetformdata-a="limitCount"/>
             </view>
         </view>
         <view class="section">
             <view class="item required">
                 <text>优惠券使用产品</text>
-                <navigator url="/pages/couponService" class="{{form.applyType === \'\' ? 'placeholder' : ''}}">
+                <navigator url="/pages/couponService" class="{{form.applyType === undefined ? 'placeholder' : ''}}">
                     {{ form.applyType && (form.applyType === 1 ? '全部产品' : '指定产品') || '去选择' }}<view class="icon more"/>
                 </navigator>
             </view>

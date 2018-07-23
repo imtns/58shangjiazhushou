@@ -62,7 +62,7 @@
 
 <script>
 import wepy from 'wepy';
-import { sleep, alert } from '../utils';
+import { alert } from '../utils';
 import { post, get } from '../utils/ajax';
 
 const app = require('../utils/globalData');
@@ -289,9 +289,7 @@ export default class Home extends wepy.page {
         });
         this.$apply();
     }
-    async onLoad () {
-        await sleep();
-        console.log('onLoad');
+    onLoad () {
         this.loadExtJson();
     }
     async onShow () {
