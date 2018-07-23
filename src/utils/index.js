@@ -3,35 +3,33 @@ import globalService from './globalService';
 
 module.exports.globalService = globalService;
 
-export const getNetStatus = () => {
-    return new Promise((resolve, reject) => {
-        wx.getNetworkType({
-            success({ networkType }) {
-                /**
+export const getNetStatus = () => new Promise((resolve, reject) => {
+    wx.getNetworkType({
+        success({ networkType }) {
+            /**
                  * 0 网络不可用
                  * 1 wifi条件下，可以直接播放、上传
                  * 2 移动网络环境
                  */
-                let status = 0;
+            let status = 0;
 
-                if (~['unknown', 'none'].indexOf(networkType)) {
-                    status = 0;
-                } else if (~['wifi'].indexOf(networkType)) {
-                    status = 1;
-                } else if (~['2g', '3g', '4g'].indexOf(networkType)) {
-                    status = 2;
-                }
+            if (~['unknown', 'none'].indexOf(networkType)) {
+                status = 0;
+            } else if (~['wifi'].indexOf(networkType)) {
+                status = 1;
+            } else if (~['2g', '3g', '4g'].indexOf(networkType)) {
+                status = 2;
+            }
 
-                resolve(status);
-            },
-            fail(err) {
-                reject(err);
-            },
-        });
+            resolve(status);
+        },
+        fail(err) {
+            reject(err);
+        },
     });
-};
+});
 
-export const isEmpty =  v => {
+export const isEmpty = v => {
     if (v === '' || v === null || v === undefined) {
         return true;
     }
@@ -76,7 +74,7 @@ export const alertP = (...props) => {
             },
         });
     });
-}
+};
 
 // toast
 export const toast = (title, duration = 1500) => {
@@ -107,7 +105,13 @@ export const picSrcDomain = () => {
     const n = parseInt(Math.random() * 8) + 1;
     return `https://pic${n}.58cdn.com.cn`;
 };
-
+export const previewImage = (imgs, index) => {
+    const urls = imgs.map(img => {
+        const url = img.split('?')[0];
+        return `${url}?w=750&h=1000`;
+    });
+    wx.previewImage({ current: urls[index], urls });
+};
 // 过滤微信表情
 export const filteremoji = (content) => {
     const ranges = [

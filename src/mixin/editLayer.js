@@ -36,6 +36,7 @@ module.exports = {
         this.setData({
             isEditing: !this.data.isEditing,
         });
+
         if (this.data.isEditing) {
             console.log('编辑');
             console.log(this.data.page_data);
@@ -43,6 +44,7 @@ module.exports = {
             if (this.data.page_data.length > 0) {
                 this.setData({
                     [`editLayer.${name}`]: true,
+                    layer: true,
                 });
             }
         } else {

@@ -212,6 +212,13 @@ button::after {
     overflow: auto;
     top:0;
 }
+.layer{
+    position: absolute;
+    width:100%;
+    height: calc(100% - (20rpx));
+    overflow: auto;
+    top:0;
+}
 .preview-container .mod-view{
     position: relative;
 }
