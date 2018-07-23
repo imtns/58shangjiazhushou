@@ -63,7 +63,9 @@
 <script>
 import wepy from 'wepy';
 import { sleep, alert } from '../utils';
-import { post } from '../utils/ajax';
+import { post, get } from '../utils/ajax';
+
+const app = require('../utils/globalData');
 
 export default class Home extends wepy.page {
     config = {
@@ -138,6 +140,10 @@ export default class Home extends wepy.page {
                     },
                 ],
             },
+            {
+                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-advice.png',
+                text: '店铺装修',
+            },
         ],
     }
     methods = {
@@ -154,7 +160,7 @@ export default class Home extends wepy.page {
             console.log(text);
             if (text === '意见反馈') {
                 wepy.navigateTo({
-                    url: 'feedback',
+                    url: 'purchase',
                 });
             } else if (text === '购买小程序') {
                 // 购买小程序页面
@@ -321,6 +327,12 @@ export default class Home extends wepy.page {
                 console.log(err);
             },
         };
+    }
+    async loadExtJson() {
+        const url = '/mpBusinessRelease/getExtJson';
+        const { data } = await get(url, { sceneKey: wx.getStorageSync('mpId') });
+        app.globalData.extConfig = data;
+        console.log(data);
     }
     async loadData () {
         try {
@@ -494,6 +506,11 @@ export default class Home extends wepy.page {
             case '意见反馈':
                 wepy.navigateTo({
                     url: 'feedback',
+                });
+                break;
+            case 6:
+                wepy.navigateTo({
+                    url: 'templateList',
                 });
                 break;
             default:

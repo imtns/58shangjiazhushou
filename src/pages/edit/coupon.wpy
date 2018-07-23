@@ -1,0 +1,162 @@
+<template>
+    <view class="container">
+        <scroll-view class="preview-scroll" scroll-y>
+            <view class="previewer"
+            :class="{ row: type == 'row' }">
+                <couponView
+                :coupons.sync="previewList"
+                :viewType.sync="previewType"></couponView>
+            </view>
+        </scroll-view>
+        <scroll-view class="select-scroll" scroll-y>
+            <view class="options">
+                <navigator url="/pages/couponEdit">+添加优惠券</navigator>
+                <view class="save" @tap="save">保存</view>
+            </view>
+            <couponList
+            :coupons.sync="coupons"
+            :isEditing="isEditing"
+            size="small"
+            :chooseCoupon="chooseCoupon"></couponList>
+        </scroll-view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import Mixin from './mixin';
+import couponList from '../../components/CouponList';
+import couponView from '../../components/Coupon';
+import CouponMixin from '../../mixin/coupon';
+
+const app = require('../../utils/globalData');
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '优惠券',
+    }
+    data = {
+        coupons: [],
+        isEditing: true,
+        previewList: [],
+        previewType: '', // 实际展现形式
+        type: 'row', // 需要展现的形式
+    }
+
+    mixins = [CouponMixin, Mixin]
+
+    components = {
+        couponList,
+        couponView,
+    }
+
+    computed = {
+        previewType() {
+            if (this.type === 'column' || this.previewList.length < 2) {
+                return 'column';
+            }
+
+            return 'row';
+        },
+    }
+
+    async onLoad() {
+        [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
+        console.log(this.pageModule);
+        this.previewList = this.pageData[0].props.data;
+
+        this.type = this.pageData[0].props.cfg.theme === 1 ? 'column' : 'row';
+        try {
+            const mpId = wepy.getStorageSync('current_mpid');
+            const coupons = await this.getCoupons({
+                pageNum: 1,
+                pageSize: 10,
+                mpId,
+            });
+
+            // 去除掉无库存和过期的
+            this.coupons = coupons.filter(item => !item.unable && item.totalCount > 0);
+            this.previewList.forEach((item) => {
+                const { id } = item;
+                const target = this.coupons.find((c) => {
+                    if (c.id === id) {
+                        item.checked = true;
+                        return true;
+                    }
+                    return false;
+                });
+                if (target) {
+                    target.checked = true;
+                }
+            });
+            this.$apply();
+        } catch (e) {
+            this.errorHandler(e);
+        }
+    }
+    methods = {
+        save() {
+            const selectCoupons = this.previewList.filter(obj => obj.checked === true);
+            this.pageModule.params.couponIds = selectCoupons.map(c => c.id).join(',');
+            app.globalData.pageData[this.pageIndex].props = this.pageData[0].props;
+            app.globalData.modules[this.pageIndex] = this.pageModule;
+            wx.navigateBack({
+                delta: 1,
+            });
+        },
+    }
+    chooseCoupon(coupon) {
+        const that = this.$parent;
+        const { id } = coupon;
+        if (coupon.checked) {
+            that.previewList && that.previewList.unshift(coupon);
+        } else {
+            // 从列表中删除
+            that.previewList.splice(that.previewList.findIndex(item => item.id === id), 1);
+        }
+        that.$apply();
+    }
+}
+</script>
+
+<style lang="scss">
+$radius: 3.2rpx;
+
+.preview-scroll {
+    height: 492rpx;
+    width: 750rpx;
+
+    .previewer {
+        background-color: #fff;
+        margin-top: 30rpx;
+        padding: 0 20rpx;
+        overflow: hidden;
+
+        &.row {
+            background-color: inherit;
+            margin-top: 150rpx;
+        }
+    }
+}
+
+.options {
+    width: 100%;
+    height: 86rpx;
+    color: #fff;
+    font-size: 32rpx;
+    line-height: 86rpx;
+    display: flex;
+    justify-content: space-between;
+    background-color: #46484A;
+    padding: 0 30rpx;
+    position: fixed;
+    bottom: 628rpx;
+}
+
+.select-scroll {
+    height: 628rpx;
+    background-color: #5b5d5f;
+    position: fixed;
+    bottom: 0;
+}
+</style>

@@ -1,3 +1,4 @@
+/*eslint-disable */
 import wepy from 'wepy';
 import { LOAD_COUPON_LIST } from '../utils/url';
 import { get } from '../utils/ajax';
@@ -88,4 +89,8 @@ export default class CouponMixin extends wepy.mixin {
 
         return result;
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> huangxin

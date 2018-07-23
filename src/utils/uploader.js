@@ -1,7 +1,9 @@
-const uploadUrl = 'https://yaofa.58.com/fileUpload';
+/*eslint-disable */
+let uploadUrl = 'https://yaofa.58.com/fileUpload';
 
 module.exports.uploader = (tempFilePath, ...props) => {
     let [params, callback, noLoading] = props;
+    if(params && params.isVideo) uploadUrl = 'https://yaofa.58.com/wosMeidaUpload'
     if (typeof params === 'function') {
         noLoading = callback;
         callback = params;

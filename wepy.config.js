@@ -1,3 +1,4 @@
+/*eslint-disable */
 const merge = require('merge');
 
 const prod = process.env.NODE_ENV === 'production';
@@ -11,7 +12,7 @@ const config = {
             outputStyle: 'expanded',
         },
         babel: {
-            sourceMap: false,
+            sourceMap: true,
             presets: [
                 'stage-2',
                 'env',
@@ -28,7 +29,7 @@ const config = {
             filter: /\.(wxss|scss)$/,
             base64Config: {
                 maxSize: 200,
-                basePath: `${__dirname }/bgimages`,
+                basePath: `${__dirname}/bgimages`,
             },
             autoprefixerConfig: {
                 browsers: ['last 11 iOS versions'],

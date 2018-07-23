@@ -16,9 +16,27 @@ export default class extends wepy.app {
         super();
         this.use('promisify');
     }
+
     config = {
         pages: [
             'pages/home', // 登陆之后的主页
+            'pages/templateList',
+            'pages/reserve/reserve',
+
+
+            'pages/edit/coupon',
+            'pages/edit/consumer',
+            'pages/edit/text',
+            'pages/edit/order',
+            'pages/edit/imageSwiper',
+            'pages/edit/video',
+            'pages/edit/title',
+            'pages/edit/article',
+            'pages/edit/images',
+            'pages/contact/contact',
+            'pages/news/news',
+            'pages/product/product',
+
             'pages/intro', // 没有登陆的介绍页面
             'pages/myMp', // 我的小程序
             'pages/AppInfo', // 小程序信息
@@ -44,6 +62,7 @@ export default class extends wepy.app {
             'pages/accountNoticeList', // 入账提醒页面
             'pages/OrderList', // 订单列表
             'pages/OrderDetail', // 订单详情
+<<<<<<< HEAD
             'pages/articleComponentCreate', // 文章添加(不选分组)
             'pages/articleComponentAdd', // 文章添加(选分组)
             'pages/articleComponentlist', // 文章列表
@@ -65,6 +84,10 @@ export default class extends wepy.app {
             'pages/CateSelector', // 类目选择
             'pages/multiSelector', // 多级选择页面
             'pages/followPublic', // 关注公众号页
+=======
+            'pages/purchase',
+
+>>>>>>> huangxin
         ],
         window: {
             backgroundTextStyle: 'light',
@@ -75,6 +98,10 @@ export default class extends wepy.app {
     }
     onLaunch () {
         console.log('onlaunch');
+<<<<<<< HEAD
+=======
+        wepy.setStorageSync('ppu', 'UID=48917864286479&UN=zf3e85&TT=d81202a65af05aa8cb1ea5f6d92254d1&PBODY=JhH_NY6a8n2PvW6ZgBv_B1CwuIJH84mNnuJt4PxcpEQDl5QPvba4IdoMpCpk_GxpEfRtc9RPAvrK6G4o9J3zhKHmVv33iBDKO8EVnmRq6yp2ETgstCBISr9016TKao2yDyUeZG32vv_2yuyG01uAnqTlUL1vaRpLJ3fRd9NqySA&VER=1');
+>>>>>>> huangxin
     }
     onShow (options) {
         // const { path } = options;
@@ -82,6 +109,7 @@ export default class extends wepy.app {
         // const pages = getCurrentPages();
         // const currPage = pages[pages.length - 1];
         // console.log('currPage', currPage.route);
+<<<<<<< HEAD
         // if (options.scene === 1038 && path === 'pages/intro') {
         //     if (!options.referrerInfo) {
         //         console.log('options.referrerInfo为空');
@@ -118,6 +146,34 @@ export default class extends wepy.app {
         // 条件1：scene：1038从另一个小程序返回
         if (scene === 1038 && path === 'pages/intro' && fromAppId === 'wx2a9c6eeb1c44a284') {
             action = 'Login';
+=======
+        if (options.scene === 1038 && path === 'pages/intro') {
+            if (!options.referrerInfo) {
+                console.log('options.referrerInfo为空');
+            }
+            if (!options.referrerInfo.extraData) {
+                console.log('options.referrerInfo.extraData为空');
+            }
+            let { extraData } = options.referrerInfo;
+            if (typeof extraData !== 'object') {
+                extraData = JSON.parse(extraData);
+            }
+
+            if (extraData.ppu !== undefined) { // 如果获取ppu成功
+                console.log(`获取PPU成功！ ${extraData.ppu}`);
+                wepy.setStorageSync('ppu', extraData.ppu);
+                wx.setClipboardData({
+                    data: extraData.ppu,
+                    success() {
+                    },
+                });
+                setTimeout(() => {
+                    wepy.reLaunch({
+                        url: '/pages/home',
+                    });
+                }, 1000);
+            }
+>>>>>>> huangxin
         }
         // 从小程序返回场景处理
         action && DoMiniProgramBack[`Do${action}`].call(this, referrerInfo.extraData);
@@ -127,4 +183,22 @@ export default class extends wepy.app {
 
 <style lang="scss">
 @import './app.scss';
+@import "css/common.scss";     
+@import "components/mod/information/information.wxss"; 
+@import "components/mod/imageSwiper/imageSwiper.wxss";
+@import "components/mod/images/images.wxss";
+@import "components/mod/me/me.wxss";
+@import "components/mod/text/text.wxss";   
+@import "components/mod/title/title.wxss";   
+@import "components/mod/video/video.wxss";   
+@import "components/mod/call/call.wxss";
+@import "components/mod/services/services.wxss"; 
+@import "components/mod/article/article.wxss";
+@import "components/mod/evaluation/evaluation.wxss"; 
+@import "components/mod/reserve/reserve.wxss";  
+@import "components/mod/coupon/coupon.wxss";    
+@import "components/mod/pay/pay.wxss";   
+@import "components/mod/branch/branch.wxss";   
+@import "components/mod/tabBar/tabBar.wxss";
 </style>
+      

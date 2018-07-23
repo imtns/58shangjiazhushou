@@ -1,0 +1,220 @@
+<template>
+    <view class="title-container">
+        <view class="title">
+            {{pageData.title}}
+        </view>
+        <view class="desc">
+            {{pageData.subtitle}}
+        </view>
+    </view>
+    <view class="title-editLayer">
+        <view class="saveBar" @tap="save">保存</view>
+        <view class="edit-cell">
+            <view class="edit-label">标题名称</view>
+            <view class="edit-input">
+                <input data-name="name" bindinput="bindTitleInput" value="{{pageData.title}}"  class="weui-input" name="name" placeholder="请输入名称" />
+            </view>
+        </view>
+        <view class="edit-special">
+            <view class="edit-label">副标题</view>
+            <view class="textarea">
+                <textarea value="{{pageData.subtitle}}" bindinput="textareaInput" maxlength="200" />
+                <text class="textLimit">{{textLimit}}/200</text>
+            </view>
+        </view>
+         <view class="edit-cell space">
+            <view class="edit-label">连接名字</view>
+            <view class="edit-input">
+                <input data-name="name" bindinput="bindLinkInput" value="{{pageData.textName}}"  maxlength="16"  class="weui-input" name="name" auto-focus placeholder="16字以内" />
+            </view>
+        </view>
+         <view class="edit-cell">
+            <view class="edit-label">跳转链接</view>
+            <view class="edit-input">
+                <picker range-key="name" bindchange="bindPickerChange" value="{{pageData.linkName}}" range="{{pageList}}">
+                    <view wx:if="{{selectorIndex==-1 && !pageData.pageKey}}">请选择</view>
+                    <view wx:else  class="picker">
+                        {{pageData.pageKey || pageList[selectorIndex].name}}
+                    </view>
+                </picker>
+            </view>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+import Mixin from './mixin';
+import { toast } from '../../utils';
+
+export default class Title extends wepy.page {
+    config = {
+        navigationBarTitleText: '标题',
+    }
+    mixins = [Mixin];
+    data = {
+        textLimit: 0,
+        title: '',
+        subtitle: '',
+        textName: '',
+        linkName: '',
+        pageKey: '',
+    }
+    methods = {
+        textareaInput(e) {
+            this.textLimit = e.detail.value.length;
+            this.pageData.subtitle = e.detail.value;
+        },
+        bindPickerChange(e) {
+            console.log(this.pageList);
+            this.selectorIndex = e.detail.value;
+            this.pageData.pageKey = this.pageList[e.detail.value].key;
+        },
+        bindTitleInput(e) {
+            this.pageData.title = e.detail.value;
+        },
+        bindLinkInput(e) {
+            this.pageData.textName = e.detail.value;
+        },
+        save() {
+            if (!this.pageData.title) {
+                toast('请输入文章标题');
+                return;
+            }
+            this.saveAvaliable = true;
+        },
+    }
+}
+</script>
+<style lang="scss">
+.title-editLayer{
+    width:100%;
+    box-sizing: border-box;
+    height:690rpx;
+    position:fixed;
+    bottom:0;
+    background:rgb(91,93,95);
+    z-index: 10;
+    padding: 0 30rpx;
+    .saveBar{
+        height:86rpx;
+        box-sizing: border-box;
+        margin:0 -30rpx;
+        padding-right:30rpx;
+        background:#46484a;
+        color:white;
+        line-height: 86rpx;
+        font-size:32rpx;
+        text-align: right;
+    }
+    .scrollView{
+        height:186rpx;
+        width:110%;
+        margin-right:-30rpx;
+        margin-left:-30rpx;
+        padding-left:30rpx;
+        white-space: nowrap;
+        overflow: scroll;
+        background:#545658;
+        line-height: 186rpx;
+        .scroll-view-item{
+            position: relative;
+            width:180rpx;
+            height:134rpx;
+            margin-right:20rpx;
+            background:yellow;
+            vertical-align: middle;
+            display:inline-block;
+            .span{
+                width:40rpx;
+                height:36rpx;
+                background: rgb(170,170,170);
+                color:white;
+                text-align: center;
+                font-size:26rpx;
+                line-height: 36rpx;
+                white-space:nowrap;
+                display:block;
+                position: absolute;
+                left:0;
+                bottom:0;
+                &.active{
+                    background:rgb(78,136,255);
+                }
+            }
+            &:last-child{
+                margin-right:50rpx;
+            }
+        }
+    }
+    .edit-special{
+        display:block;
+        margin:0 -30rpx;
+        padding:0 30rpx;
+        font-size:30rpx;
+        background:#545658;
+        position: relative;
+        .edit-label{
+            color:#999;
+            height:80rpx;
+            line-height: 80rpx;
+        }
+        .textarea{
+            width:100%;
+            font-size:30rpx;
+            color:#dbdbdb;
+            height:212rpx;
+            textarea{
+                height:150rpx;
+                width:100%;
+            }
+        }
+        .textLimit{
+            font-size:24rpx;
+            color:#999;
+            position:absolute;
+            right:30rpx;
+            bottom:20rpx;
+        }
+    }
+    .edit-cell{
+        height: 88rpx;
+        display: flex;
+        font-size: 30rpx;
+        background:#545658;
+        align-items: center;
+        margin:0 -30rpx;
+        padding:0 30rpx;
+        border-bottom: 1rpx solid #585d5f;
+        .edit-label{
+            width:324rpx;
+            color:#999;
+        }
+        .edit-input{
+            width:396rpx;
+            color:#d8d8d8;
+            text-align: right;
+        }
+    }
+}
+.space{
+    margin-top:20rpx !important;
+}
+.title-container{
+    margin-top:96rpx;
+    width:100%;
+    background:white;
+    .title{
+        text-align: center;
+        font-size:34rpx;
+        color:#333;
+        padding:30rpx 0 0;
+    }
+    .desc{
+        padding:30rpx;
+        color:#999;
+        font-size:28rpx;
+    }
+}
+</style>
+
+
