@@ -1,6 +1,6 @@
 /* 悬浮电话 */
 .mod-call{
-    position:fixed;
+    position:fixed !important;
     right:30rpx;
     bottom:74rpx;
     z-index: 100;

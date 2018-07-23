@@ -327,7 +327,7 @@ export default class Home extends wepy.page {
     }
     async loadExtJson() {
         const url = '/mpBusinessRelease/getExtJson';
-        const { data } = await get(url, { sceneKey: wx.getStorageSync('mpId') });
+        const { data } = await get(url, { sceneKey: wx.getStorageSync('current_mpid') });
         app.globalData.extConfig = data;
         console.log(data);
     }

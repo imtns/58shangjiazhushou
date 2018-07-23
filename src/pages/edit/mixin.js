@@ -16,6 +16,7 @@ export default class Mixin extends wepy.mixin {
         extConfig: {},
         modules: {},
         tempModules: {},
+        noEdit: false,
     }
     onLoad(options) {
         console.log(options);

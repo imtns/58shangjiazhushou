@@ -76,7 +76,7 @@ export default class Article extends wepy.page {
   methods = {
       addArticle() {
           wepy.navigateTo({
-              url: '../articleComponentAdd',
+              url: `../articleComponentAdd?id=${this.pageId}`,
           });
       },
       showGroup() {

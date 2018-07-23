@@ -1,10 +1,10 @@
 <template>
     <view class="title-container">
         <view class="title">
-            {{pageData.title}}
+            {{pageData[0].props.cfg.title}}
         </view>
         <view class="desc">
-            {{pageData.subtitle}}
+            {{pageData[0].props.cfg.subtitle}}
         </view>
     </view>
     <view class="title-editLayer">
@@ -12,29 +12,29 @@
         <view class="edit-cell">
             <view class="edit-label">标题名称</view>
             <view class="edit-input">
-                <input data-name="name" bindinput="bindTitleInput" value="{{pageData.title}}"  class="weui-input" name="name" placeholder="请输入名称" />
+                <input data-name="name" bindinput="bindTitleInput" value="{{pageData[0].props.cfg.title}}"  class="weui-input" name="name" placeholder="请输入名称" />
             </view>
         </view>
         <view class="edit-special">
             <view class="edit-label">副标题</view>
             <view class="textarea">
-                <textarea value="{{pageData.subtitle}}" bindinput="textareaInput" maxlength="200" />
+                <textarea value="{{pageData[0].props.cfg.subtitle}}" bindinput="textareaInput" maxlength="200" />
                 <text class="textLimit">{{textLimit}}/200</text>
             </view>
         </view>
          <view class="edit-cell space">
             <view class="edit-label">连接名字</view>
             <view class="edit-input">
-                <input data-name="name" bindinput="bindLinkInput" value="{{pageData.textName}}"  maxlength="16"  class="weui-input" name="name" auto-focus placeholder="16字以内" />
+                <input data-name="name" bindinput="bindLinkInput" value="{{pageData[0].props.cfg.textName}}"  maxlength="16"  class="weui-input" name="name" auto-focus placeholder="16字以内" />
             </view>
         </view>
          <view class="edit-cell">
             <view class="edit-label">跳转链接</view>
             <view class="edit-input">
-                <picker range-key="name" bindchange="bindPickerChange" value="{{pageData.linkName}}" range="{{pageList}}">
-                    <view wx:if="{{selectorIndex==-1 && !pageData.pageKey}}">请选择</view>
+                <picker range-key="name" bindchange="bindPickerChange" value="{{pageData[0].props.cfg.pageKey}}" range="{{pageList}}">
+                    <view wx:if="{{selectorIndex==-1 && !pageData[0].props.cfg.pageKey}}">请选择</view>
                     <view wx:else  class="picker">
-                        {{pageData.pageKey || pageList[selectorIndex].name}}
+                        {{pageData[0].props.cfg.linkName || pageList[selectorIndex].name}}
                     </view>
                 </picker>
             </view>
@@ -45,6 +45,8 @@
 import wepy from 'wepy';
 import Mixin from './mixin';
 import { toast } from '../../utils';
+
+const app = require('../../utils/globalData');
 
 export default class Title extends wepy.page {
     config = {
@@ -59,28 +61,38 @@ export default class Title extends wepy.page {
         linkName: '',
         pageKey: '',
     }
+    onLoad() {
+        [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
+        console.log(this.pageModule);
+    }
     methods = {
         textareaInput(e) {
             this.textLimit = e.detail.value.length;
-            this.pageData.subtitle = e.detail.value;
+            this.pageData[0].props.cfg.subtitle = e.detail.value;
         },
         bindPickerChange(e) {
             console.log(this.pageList);
             this.selectorIndex = e.detail.value;
-            this.pageData.pageKey = this.pageList[e.detail.value].key;
+            this.pageData[0].props.cfg.pageKey = this.pageList[e.detail.value].key;
+            this.pageData[0].props.cfg.linkName = this.pageList[e.detail.value].name;
         },
         bindTitleInput(e) {
-            this.pageData.title = e.detail.value;
+            this.pageData[0].props.cfg.title = e.detail.value;
         },
         bindLinkInput(e) {
-            this.pageData.textName = e.detail.value;
+            this.pageData[0].props.cfg.textName = e.detail.value;
         },
         save() {
-            if (!this.pageData.title) {
+            if (!this.pageData[0].props.cfg.title) {
                 toast('请输入文章标题');
                 return;
             }
-            this.saveAvaliable = true;
+            this.pageModule.cfg = this.pageData[0].props.cfg;
+            [app.globalData.pageData[this.pageIndex]] = this.pageData;
+            app.globalData.modules[this.pageIndex] = this.pageModule;
+            wx.navigateBack({
+                delta: 1,
+            });
         },
     }
 }
