@@ -89,8 +89,4 @@ export default class CouponMixin extends wepy.mixin {
 
         return result;
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> huangxin

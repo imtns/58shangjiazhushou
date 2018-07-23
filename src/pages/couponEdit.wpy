@@ -403,7 +403,7 @@ button.save {
     &.more {
         width: 25rpx;
         height: 25rpx;
-        background: url('/coupon-more.png') no-repeat;
+        background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/coupon-more.png') no-repeat;
         background-size: auto 25rpx;
         background-position: right;
     }

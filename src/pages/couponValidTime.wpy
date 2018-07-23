@@ -207,12 +207,12 @@ view {
                     width: 40rpx;
                     height: 40rpx;
                     margin-right: 14rpx;
-                    background-image: url('/resource-unchecked.png');
+                    background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-unchecked.png');
                     background-size: 40rpx 40rpx;
                 }
 
                 &.checked .icon-radio {
-                    background-image: url('/resource-checked.png');
+                    background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-checked.png');
                 }
             }
 
@@ -236,7 +236,7 @@ view {
     &.more {
         width: 25rpx;
         height: 25rpx;
-        background: url('/coupon-more.png') no-repeat;
+        background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/coupon-more.png') no-repeat;
         background-size: auto 25rpx;
         background-position: right;
     }

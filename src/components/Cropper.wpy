@@ -824,7 +824,7 @@ $cropper-border: 2rpx solid rgba(255, 255, 255, 0.5);
             top: 9rpx;
             width: 30rpx;
             height: 30rpx;
-            background-image: url('/crop-restore.png');
+            background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/crop-restore.png');
             background-size: 30rpx 30rpx;
         }
     }
@@ -838,7 +838,7 @@ $cropper-border: 2rpx solid rgba(255, 255, 255, 0.5);
             top: 9rpx;
             width: 30rpx;
             height: 30rpx;
-            background-image: url('/crop-rotate.png');
+            background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/crop-rotate.png');
             background-size: 30rpx 30rpx;
         }
     }

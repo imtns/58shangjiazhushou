@@ -546,7 +546,7 @@ $workHeight: 200rpx;
                 &::after {
                     content: ' ';
                     display: block;
-                    background: url('/resource-unchecked.png');
+                    background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-unchecked.png');
                     background-size: 39rpx 39rpx;
                     width: 39rpx;
                     height: 39rpx;
@@ -556,7 +556,7 @@ $workHeight: 200rpx;
                 }
 
                 &.checked::after {
-                    background-image: url('/resource-checked.png');
+                    background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-checked.png');
                 }
             }
         }
@@ -569,7 +569,7 @@ $workHeight: 200rpx;
             &.video::after {
                 content: ' ';
                 display: block;
-                background: url('/resource-video-play.png');
+                background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-video-play.png');
                 background-size: 60rpx 60rpx;
                 width: 60rpx;
                 height: 60rpx;
