@@ -23,8 +23,12 @@
   color: #fff;
   font-size: 32rpx;
   line-height: 86rpx;
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
-  justify-content: space-between;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
   background-color: #46484A;
   padding: 0 30rpx;
   position: fixed;

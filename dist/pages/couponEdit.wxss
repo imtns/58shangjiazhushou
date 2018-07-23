@@ -13,8 +13,12 @@ view {
 }
 
 .section .item {
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
-  justify-content: space-between;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
   padding: 23rpx 0;
   margin: 0 30rpx;
   position: relative;
@@ -79,7 +83,7 @@ button.save::after {
 .icon.more {
   width: 25rpx;
   height: 25rpx;
-  background: url("/coupon-more.png") no-repeat;
+  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAnCAMAAAAihXiyAAAATlBMVEUAAADIyM3Kys/IyM3Kys7Jyc7IyM3Jyc7Kys7Hx83Hx83Jyc7Jyc7Jyc7Jyc3IyM3Jyc3IyM3MzNHMzM/Y2NjIyM7Jyc3Hx87IyMzHx8yZ1dFMAAAAGXRSTlMA8i/iOWrqRSf47mNdV06/eHIgHAqIgXy1UQqY6QAAAH9JREFUKM+d0jkWgCAMRVGcRyZFkf1v1GjLJwdI+W6XRNC4pxdonA4NlCmEhOy8tEg2krVQBpKxRmYklqQrFMPLgcQn5eblRHJViCbR7G7wNvFl8q8swV9wXTF9mcBHLukeVNz7hukyv7df30FfqW+gj9SHuLvu7/gyVsDxJm4veucOXrlHVQ4AAAAASUVORK5CYII=") no-repeat;
   background-size: auto 25rpx;
   background-position: right;
 }

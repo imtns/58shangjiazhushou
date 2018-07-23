@@ -10,9 +10,9 @@ var _wepy = require('./../npm/wepy/lib/wepy.js');
 
 var _wepy2 = _interopRequireDefault(_wepy);
 
-var _mixins = require('./../mixins/index.js');
+var _mixin = require('./../mixin/index.js');
 
-var _mixins2 = _interopRequireDefault(_mixins);
+var _mixin2 = _interopRequireDefault(_mixin);
 
 var _ajax = require('./../utils/ajax.js');
 
@@ -114,7 +114,7 @@ var Index = function (_wepy$page) {
 
                 return result;
             }
-        }, _this.mixins = [_mixins2.default], _this.methods = {
+        }, _this.mixins = [_mixin2.default], _this.methods = {
             save: function () {
                 var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
                     var form, postData;
@@ -206,7 +206,7 @@ var Index = function (_wepy$page) {
         key: 'onLoad',
         value: function () {
             var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(options) {
-                var id;
+                var id, mpId;
                 return regeneratorRuntime.wrap(function _callee2$(_context2) {
                     while (1) {
                         switch (_context2.prev = _context2.next) {
@@ -225,6 +225,12 @@ var Index = function (_wepy$page) {
                                 this.updateData();
 
                             case 5:
+                                mpId = _wepy2.default.getStorageSync('current_mpid');
+
+                                this.form.mpId = mpId;
+                                this.$apply();
+
+                            case 8:
                             case 'end':
                                 return _context2.stop();
                         }
@@ -274,7 +280,7 @@ var Index = function (_wepy$page) {
         key: 'loadData',
         value: function () {
             var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(id) {
-                var _ref5, coupon, couponCondition, mpId, title, subTitle, couponType, totalCount, limitCount, limitAmount, couponDiscard, reliefAmount, validType, validDays, validAfterDays, validStarttime, validEndtime, applyType, services, serviceIds;
+                var _ref5, coupon, couponCondition, title, subTitle, couponType, totalCount, limitCount, limitAmount, couponDiscard, reliefAmount, validType, validDays, validAfterDays, validStarttime, validEndtime, applyType, services, serviceIds;
 
                 return regeneratorRuntime.wrap(function _callee3$(_context3) {
                     while (1) {
@@ -288,7 +294,6 @@ var Index = function (_wepy$page) {
                                 _ref5 = _context3.sent;
                                 coupon = _ref5.data;
                                 couponCondition = coupon.couponCondition;
-                                mpId = _wepy2.default.getStorageSync('current_mpid');
 
 
                                 if (couponCondition) {
@@ -312,7 +317,6 @@ var Index = function (_wepy$page) {
 
                                 Object.assign(this.form, {
                                     id: id,
-                                    mpId: mpId,
                                     title: title,
                                     subTitle: subTitle,
                                     couponType: couponType,
@@ -331,21 +335,21 @@ var Index = function (_wepy$page) {
                                 });
 
                                 this.$apply();
-                                _context3.next = 18;
+                                _context3.next = 17;
                                 break;
 
-                            case 15:
-                                _context3.prev = 15;
+                            case 14:
+                                _context3.prev = 14;
                                 _context3.t0 = _context3['catch'](0);
 
                                 this.errorHandler(_context3.t0);
 
-                            case 18:
+                            case 17:
                             case 'end':
                                 return _context3.stop();
                         }
                     }
-                }, _callee3, this, [[0, 15]]);
+                }, _callee3, this, [[0, 14]]);
             }));
 
             function loadData(_x2) {

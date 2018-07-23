@@ -134,6 +134,8 @@
 .appinfo-container .appinfo-codelist {
   margin-top: 20rpx;
   padding: 30rpx;
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
   background: #ffffff;
 }

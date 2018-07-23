@@ -212,6 +212,10 @@ export default class Index extends wepy.page {
             await this.loadData(id);
             this.updateData();
         }
+
+        const mpId = wepy.getStorageSync('current_mpid');
+        this.form.mpId = mpId;
+        this.$apply();
     }
 
     onShow() {
@@ -255,7 +259,6 @@ export default class Index extends wepy.page {
         try {
             const { data: coupon } = await get(LOAD_COUPON + id);
             let { couponCondition } = coupon;
-            const mpId = wepy.getStorageSync('current_mpid');
 
             if (couponCondition) {
                 try {
@@ -291,7 +294,6 @@ export default class Index extends wepy.page {
 
             Object.assign(this.form, {
                 id,
-                mpId,
                 title,
                 subTitle,
                 couponType,

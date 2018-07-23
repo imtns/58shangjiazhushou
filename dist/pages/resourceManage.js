@@ -10,9 +10,9 @@ var _wepy = require('./../npm/wepy/lib/wepy.js');
 
 var _wepy2 = _interopRequireDefault(_wepy);
 
-var _mixins = require('./../mixins/index.js');
+var _mixin = require('./../mixin/index.js');
 
-var _mixins2 = _interopRequireDefault(_mixins);
+var _mixin2 = _interopRequireDefault(_mixin);
 
 var _url = require('./../utils/url.js');
 
@@ -66,7 +66,7 @@ var Index = function (_wepy$page) {
         }, _this.$repeat = {}, _this.$props = { "EmptyPage": {}, "Pop": { "xmlns:v-on": "" } }, _this.$events = { "Pop": { "v-on:close": "close", "v-on:addGroup": "addGroup" } }, _this.components = {
             EmptyPage: _EmptyPage2.default,
             Pop: _Dialog2.default
-        }, _this.mixins = [_mixins2.default], _this.data = {
+        }, _this.mixins = [_mixin2.default], _this.data = {
             curTab: 'image',
             tabbarItems: [{
                 label: '图片',

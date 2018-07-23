@@ -1,4 +1,6 @@
 .container {
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
   height: 100%;
 }

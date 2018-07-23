@@ -7,9 +7,14 @@ view {
   height: 89rpx;
   line-height: 89rpx;
   background: #fff;
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
-  justify-content: space-around;
-  align-items: center;
+  -webkit-justify-content: space-around;
+          justify-content: space-around;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
   padding: 20rpx 30rpx;
 }
 
@@ -20,7 +25,9 @@ view {
 }
 
 .pay-header view {
-  flex: 1;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
   font-size: 28rpx;
 }
 
@@ -53,7 +60,9 @@ view {
 }
 
 .pay-body .pay-base {
-  flex: 1;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
   font-family: PingFangSC-Regular;
   font-size: 30rpx;
   color: #999999;

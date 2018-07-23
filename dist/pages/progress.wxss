@@ -20,8 +20,12 @@
 .progress .mp .nameBox {
   line-height: 120rpx;
   height: 100rpx;
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
-  justify-content: space-between;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
   font-size: 34rpx;
   color: #333333;
 }
@@ -34,6 +38,8 @@
 }
 
 .progress .mp .nameBox .type {
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
   padding: 35rpx 35rpx 0 0;
 }
@@ -55,6 +61,8 @@
 }
 
 .progress .progressDetail .box .tips {
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
   margin: 50rpx 0;
   position: relative;
@@ -65,7 +73,8 @@
   height: 44rpx;
   position: absolute;
   left: 300rpx;
-  transform: translate3d(-50%, 0, 0);
+  -webkit-transform: translate3d(-50%, 0, 0);
+          transform: translate3d(-50%, 0, 0);
   bottom: -45rpx;
 }
 
@@ -116,7 +125,9 @@
 }
 
 .progress .progressDetail .box .tips .time {
-  flex: 1;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
   font-size: 30rpx;
   color: #666666;
   padding-left: 70rpx;

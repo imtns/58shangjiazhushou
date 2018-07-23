@@ -37,7 +37,7 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": -1,
+			"current": 5,
 			"list": [
 				{
 					"id": -1,
@@ -58,49 +58,87 @@
 					"query": ""
 				},
 				{
-					"id": 3,
+					"id": -1,
 					"name": "开通支付",
 					"pathName": "pages/OpenPay",
 					"query": ""
 				},
 				{
 					"id": 4,
-					"name": "跳转进首页",
-					"pathName": "pages/home",
-					"query": "",
-					"scene": "1037",
-					"referrerInfo": {
-						"appId": "wxee214e01d07c9db0",
-						"extraData": "{\"ppu\":\"UID=48917864286479&UN=zf3e85&TT=d81202a65af05aa8cb1ea5f6d92254d1&PBODY=JhH_NY6a8n2PvW6ZgBv_B1CwuIJH84mNnuJt4PxcpEQDl5QPvba4IdoMpCpk_GxpEfRtc9RPAvrK6G4o9J3zhKHmVv33iBDKO8EVnmRq6yp2ETgstCBISr9016TKao2yDyUeZG32vv_2yuyG01uAnqTlUL1vaRpLJ3fRd9NqySA&VER=1\"}"
-					}
+					"name": "素材你管理",
+					"pathName": "pages/resourceManage",
+					"query": ""
+				},
+				{
+					"id": 5,
+					"name": "优惠券管理",
+					"pathName": "pages/couponManage",
+					"query": ""
+				},
+				{
+					"id": 6,
+					"name": "优惠券编辑",
+					"pathName": "pages/couponEdit",
+					"query": "id=1016220339862048768"
+				},
+				{
+					"id": -1,
+					"name": "优惠券类型",
+					"pathName": "pages/couponType",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "优惠券有效时间",
+					"pathName": "pages/couponValidTime",
+					"query": ""
+				},
+				{
+					"id": 9,
+					"name": "优惠券适用产品",
+					"pathName": "pages/couponService",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "优惠券预览",
+					"pathName": "pages/couponPreview",
+					"query": ""
+				},
+				{
+					"id": 11,
+					"name": "预约组件编辑",
+					"pathName": "pages/orderComponentEdit",
+					"query": "id=1016220801168379904"
 				},
 				{
 					"id": -1,
 					"name": "我的小程序",
 					"pathName": "pages/myMp",
-					"query": "",
-					"scene": "1038",
-					"referrerInfo": {
-						"appId": "wxf03e52adc4b13448",
-						"extraData": "{\"ppu\":\"UID=48917864286479&UN=zf3e85&TT=d81202a65af05aa8cb1ea5f6d92254d1&PBODY=JhH_NY6a8n2PvW6ZgBv_B1CwuIJH84mNnuJt4PxcpEQDl5QPvba4IdoMpCpk_GxpEfRtc9RPAvrK6G4o9J3zhKHmVv33iBDKO8EVnmRq6yp2ETgstCBISr9016TKao2yDyUeZG32vv_2yuyG01uAnqTlUL1vaRpLJ3fRd9NqySA&VER=1\"}"
-					}
-				},
-				{
-					"id": -1,
-					"name": "类目选择",
-					"pathName": "pages/CateSelector",
-					"query": ""
-				},
-				{
-					"id": 7,
-					"name": "预约预览",
-					"pathName": "pages/orderComponentDetail",
 					"query": ""
 				},
 				{
 					"id": -1,
-					"name": "消息通知",
-					"pathName": "pages/registManage",
+					"name": "多级选择器",
+					"pathName": "pages/multiSelector",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "通知页",
+					"pathName": "pages/noticeList",
+					"query": ""
+				},
+				{
+					"id": 15,
+					"name": "关注公众号",
+					"pathName": "pages/followPublic",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "test",
+					"pathName": "pages/test",
 					"query": ""
 				}
 			]

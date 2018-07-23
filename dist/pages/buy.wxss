@@ -51,7 +51,8 @@ page .buy-container .buy-list .buy-list-item .buy-app-title::before {
   width: 17rpx;
   height: 17rpx;
   margin-right: 10rpx;
-  transform: rotate(-315deg);
+  -webkit-transform: rotate(-315deg);
+          transform: rotate(-315deg);
   background: #ffffff;
 }
 
@@ -64,7 +65,8 @@ page .buy-container .buy-list .buy-list-item .buy-app-bg {
   position: absolute;
   left: 50%;
   top: 27rpx;
-  transform: translateX(-50%);
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
   z-index: 1;
 }
 
@@ -154,9 +156,11 @@ page .buy-container .buy-list .buy-list-item .buy-app-feature-list .buy-app-feat
 page .buy-container .buy-list .buy-list-item .buy-app-pay {
   position: relative;
   left: 50%;
-  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
   width: 360rpx;
   line-height: 88rpx;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#ffd700), to(#ff9b00));
   background-image: linear-gradient(-180deg, #ffd700 0%, #ff9b00 100%);
   box-shadow: 0 0 9rpx 0 rgba(116, 127, 152, 0.5), inset 0 -15rpx 20rpx 0 #fbb100;
   border-radius: 100rpx;

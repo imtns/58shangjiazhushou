@@ -1,5 +1,7 @@
 .cateselector-container {
   border-top: 2rpx solid #f3f3f3;
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
   box-shadow: 0 0 40rpx 1024rpx;
 }
@@ -52,7 +54,9 @@
 }
 
 .cateselector-container .cateselector.three {
-  flex: 1;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
 }
 
 .cateselector-container .cateselector.selected {

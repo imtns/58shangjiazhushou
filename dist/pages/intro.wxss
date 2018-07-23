@@ -50,14 +50,25 @@
 
 .intro .intro-content .part1 {
   padding: 0 20rpx;
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
 }
 
 .intro .intro-content .part1 .textbox {
-  flex: 1;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
   text-align: center;
   font-size: 26rpx;
   padding: 20rpx 0;
@@ -72,6 +83,8 @@
 }
 
 .intro .intro-content .part2 .disbox {
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
   height: 90rpx;
   padding-left: 62rpx;

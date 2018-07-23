@@ -43,6 +43,8 @@ page {
 }
 
 .container .feedback-li-flex {
+  display: -webkit-box;
+  display: -webkit-flex;
   display: flex;
 }
 
@@ -55,7 +57,9 @@ page {
 }
 
 .container .feedback-li-flex .feedback-right {
-  flex: 1;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
   line-height: 45rpx;
   font-size: 26rpx;
   color: #666666;

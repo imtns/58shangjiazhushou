@@ -18,7 +18,7 @@ var _Coupon = require('./../components/Coupon.js');
 
 var _Coupon2 = _interopRequireDefault(_Coupon);
 
-var _coupon = require('./../mixins/coupon.js');
+var _coupon = require('./../mixin/coupon.js');
 
 var _coupon2 = _interopRequireDefault(_coupon);
 
