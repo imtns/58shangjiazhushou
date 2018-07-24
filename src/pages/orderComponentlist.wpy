@@ -16,13 +16,14 @@
                 wx:if="{{listData.length > 0}}">
                 <view
                     class="list-item order-component-list"
-                    @tap.stop="editChose({{item.id}}, {{index}})"
+                    @tap.stop="editChose({{item.id}}, {{index}}, {{item.status}})"
+                    :class="{ selected: item.choseStatu}"
                     wx:for="{{listData}}"
                     wx:key="{{index}}"
                     data-item="{{item}}">
                     <image class="list-image" src="https://pic1.58cdn.com.cn{{item.pics}}"></image>
                     <view class="list-detail">
-                        <view class="list-title">{{item.name}}</view>
+                        <view class="list-title">{{item.serviceName}}</view>
                         <view class="list-intro">服务价格：<text>{{item.price}}</text>元/次
                         </view>
                     </view>
@@ -60,7 +61,7 @@ export default class ArticleComponentList extends wepy.page {
     }
     data = {
         height: '',
-        editStatus: false,
+        isEditing: false,
         listData: [],
         delList: [],
         id: '',
@@ -71,7 +72,6 @@ export default class ArticleComponentList extends wepy.page {
         name: '',
         title: '没有预约服务~',
         isLoading: true,
-        isEditing: false,
     }
     onLoad(option) {
         try {
@@ -100,7 +100,7 @@ export default class ArticleComponentList extends wepy.page {
         this.loadList();
     }
     methods = {
-        editChose(id, index) {
+        editChose(id, index, status) {
             if (this.isEditing) {
                 const item = this.listData[index];
                 const itemIndex = this.delList.length === 0 ? -2 : this.delList.indexOf(id);
@@ -118,7 +118,10 @@ export default class ArticleComponentList extends wepy.page {
                 return;
             }
             // 点击跳转详情页面
-            console.log(id, index);
+            if (status === 2) {
+                alert('服务未上架！');
+                return;
+            }
             wepy.navigateTo({
                 url: `orderComponentDetail?id=${id}&resourceGroup=${this.resourceGroup}`,
             });
@@ -174,7 +177,7 @@ export default class ArticleComponentList extends wepy.page {
             console.log(e);
             alert('该服务在模板中被应用，不能被删除');
         }
-        this.editStatus = false;
+        this.isEditing = false;
         this.$apply();
     }
     cancle() {
@@ -184,7 +187,7 @@ export default class ArticleComponentList extends wepy.page {
                 choseStatu: false,
             });
         });
-        this.editStatus = false;
+        this.isEditing = false;
         this.listData = dataList;
         this.$apply();
     }
