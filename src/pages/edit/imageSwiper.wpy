@@ -12,7 +12,7 @@
             </view>
         </view>
     </view>
-    <view class="hasSaved">已保存</view>
+    <!-- <view class="hasSaved">已保存</view> -->
     <view class="banner-editLayer">
         <view class="saveBar" @tap="save">保存</view>
         <scroll-view scroll-x class="scrollView">
@@ -121,15 +121,16 @@ export default class ImageSwiper extends wepy.page {
           this.pageModule.cfg.images[this.thumbActive].linkName = e.detail.value;
       },
       save() {
+          toast('已保存');
           [app.globalData.pageData[this.pageIndex]] = this.pageData;
           console.log(app.globalData.pageData[this.pageIndex]);
-          //   const modulesData = JSON.parse(JSON.stringify(app.globalData.pageData));
-          //   app.globalData.modules = modulesParse.parsePageData(modulesData);
           app.globalData.modules[this.pageIndex] = this.pageModule;
-          console.log(app.globalData.modules);
-          wx.navigateBack({
-              delta: 1,
-          });
+          //   console.log(app.globalData.modules);
+          setTimeout(() => {
+              wx.navigateBack({
+                  delta: 1,
+              });
+          }, 1000);
       },
   };
   async saveImage(src, name) {
