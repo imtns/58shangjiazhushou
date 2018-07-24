@@ -1,9 +1,7 @@
 <template>
     <view class="container">
         <view wx:if="{{ coupons && coupons.length }}">
-            <couponList
-            :coupons.sync="coupons"
-            :isEditing.sync="isEditing"></couponList>
+            <couponList :coupons.sync="coupons" :isEditing.sync="isEditing"></couponList>
         </view>
         <view wx:else>
             <view class="coupons-empty">
