@@ -259,6 +259,7 @@ export default class Home extends wepy.page {
             // console.log('点击', this.business);
             this.$apply();
         },
+        // 切换小程序操作
         confirmAction () {
             if (this.business.selected.id) {
                 this.setGlobalMpId(this.business.chosedId);
@@ -275,9 +276,11 @@ export default class Home extends wepy.page {
         });
         this.$apply();
     }
-    onLoad () {
-        this.loadExtJson();
+    async onLoad () {
+        // 因为app.globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
+        await this.loadData();
         this.setGlobalMpId(this.business.selected.id);
+        this.loadExtJson();
     }
     async onShow () {
         await this.loadData();
@@ -309,6 +312,7 @@ export default class Home extends wepy.page {
             },
         };
     }
+    // 获取当前小程序的extjson
     async loadExtJson() {
         const url = '/mpBusinessRelease/getExtJson';
         const { data } = await get(url, { sceneKey: wx.getStorageSync('current_mpid') });
