@@ -31,7 +31,7 @@ import { get } from '../utils/ajax';
 import { toast } from '../utils/index';
 
 const basicTemplateUrl = '/business/templateList';
-const myTemplateUrl = `/business/myTemplateList/${wx.getStorageSync('current_mpid')}`;
+const myTemplateUrl = '/business/myTemplateList/';
 const getTemplateIdUrl = '/business/init/struct';
 const delTemplateUrl = '/business/myTemplate/del';
 const app = require('../utils/globalData');
@@ -120,7 +120,7 @@ export default class Index extends wepy.page {
   }
   async loadMyTemplate() {
       console.log(app.globalData.extConfig);
-      const { data } = await get(myTemplateUrl, {
+      const { data } = await get(myTemplateUrl + wx.getStorageSync('current_mpid'), {
           pageNum: 1,
           pageSize: 20,
           v: 2,
