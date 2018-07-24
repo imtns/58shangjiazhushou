@@ -89,6 +89,10 @@ export default class Index extends wepy.page {
         },
 
         chooseAll() {
+            if (!this.services.length) {
+                return;
+            }
+
             this.services = this.services.map(item => {
                 const service = Object.assign({}, item);
                 service.checked = true;

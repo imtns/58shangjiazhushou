@@ -44,8 +44,7 @@
                         </view>
                     </view>
                 </view>
-                <view class="checkbox" :class="{ checked: item.checked }">
-                </view>
+                <view class="checkbox" :class="{ checked: item.checked }"></view>
                 <!-- <view class="mask" @tap.stop="choose({{ index }})" wx:if="{{ isEditing }}"></view> -->
             </view>
         </repeat>

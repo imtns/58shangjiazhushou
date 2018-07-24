@@ -172,7 +172,7 @@ export default class Index extends wepy.page {
                 wepy.navigateBack();
             } catch (e) {
                 if (typeof e === 'object') {
-                    alert(e.msg);
+                    alert(e.message);
                 } else {
                     alert(e);
                 }
