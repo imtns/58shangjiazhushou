@@ -153,7 +153,8 @@ export default class ArticleComponentList extends wepy.page {
         // console.log(this.listData);
     }
     edit() {
-        this.editStatus = true;
+        this.isEditing = !this.isEditing;
+        this.delList = [];
         this.$apply();
     }
     async toDelete() {
@@ -202,9 +203,9 @@ export default class ArticleComponentList extends wepy.page {
                 status: status === 2 ? 0 : 2,
             });
             if (status === 0) {
-                msg = '上架成功';
-            } else if (status === 2) {
                 msg = '下架成功';
+            } else if (status === 2) {
+                msg = '上架成功';
             }
             alert(msg);
             this.pageNum = 1;

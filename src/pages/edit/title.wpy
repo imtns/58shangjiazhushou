@@ -12,7 +12,7 @@
         <view class="edit-cell">
             <view class="edit-label">标题名称</view>
             <view class="edit-input">
-                <input data-name="name" bindinput="bindTitleInput" value="{{pageData[0].props.cfg.title}}"  class="weui-input" name="name" placeholder="请输入名称" />
+                <input data-name="name" bindinput="bindTitleInput" maxlength="16" value="{{pageData[0].props.cfg.title}}"  class="weui-input" name="name" placeholder="16字以内" />
             </view>
         </view>
         <view class="edit-special">

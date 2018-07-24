@@ -20,7 +20,7 @@
 
             </view>
             <view class="tobeAdded">
-                <view class="scroll-view-item addButton" style="{{pageData[0].props.cfg.images.length==3?'display:none':''}}" @tap="addBanner">
+                <view class="scroll-view-item addButton" style="{{pageData[0].props.cfg.images.length==3?'display:none':''}}" @tap="actionSheepTap">
                    <image src="../assets/plus.png"></image>
                 </view>
                 <repeat for="{{pageData[0].props.cfg.images}}" key="index" index="index" item="item">
@@ -40,14 +40,14 @@
         </view>
          <view class="edit-cell">
             <view class="edit-label">跳转链接</view>
-             <view class="edit-input">
+             <!-- <view class="edit-input">
                 <picker range-key="name" bindchange="bindPickerChange" value="{{pageData[0].props.cfg.pageKey}}" range="{{pageList}}">
                     <view wx:if="{{selectorIndex==-1 && !pageData[0].props.cfg.pageKey}}">请选择</view>
                     <view wx:else  class="picker">
                         {{pageData[0].props.cfg.images[thumbActive]linkName || pageList[selectorIndex].name}}
                     </view>
                 </picker>
-            </view>
+            </view> -->
         </view>
     </view>
 </template>

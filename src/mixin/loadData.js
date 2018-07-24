@@ -56,6 +56,32 @@ const parseCfgAndData = ({
                     });
                 }
             });
+        } else {
+            const coupon = {
+                applyType: 2,
+                collectType: '',
+                couponCondition: '{"limitAmount":0,"reliefAmount":0}',
+                couponType: 2,
+                createTime: '2018-00-00 00:00:00',
+                id: '',
+                couponDiscard: 0,
+                limitCount: 1,
+                mpId: '1001014495864229888',
+                remark: '',
+                status: 0,
+                subTitle: '满--可用',
+                title: '请输入与使用条件 ',
+                totalCount: 0,
+                updateTime: null,
+                userid: '48917864286479',
+                validAfterDays: 0,
+                validDays: 0,
+                validEndtime: '2018-00-00 00:00:00',
+                validStarttime: '2018-00-00 00:00:00',
+                validType: 1,
+            };
+            modData.data = [];
+            modData.data.push(coupon);
         }
     }
     if (name === 'order') {

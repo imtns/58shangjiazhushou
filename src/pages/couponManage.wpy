@@ -121,7 +121,7 @@ export default class Index extends wepy.page {
                 pageNum,
                 pageSize,
                 mpId,
-            });;
+            });
 
             if (data && data.length) {
                 this.coupons.push(...data);
