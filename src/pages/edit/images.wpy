@@ -119,7 +119,7 @@
                 </view>
                 <repeat for="{{pageData[0].props.cfg.images}}" key="index" index="index" item="item">
                     <view class="scroll-view-item {{thumbActive == index?'active':''}}" data-index="{{index}}"  @tap="thumbClick">
-                        <image src="{{item.src}}"></image>
+                        <image src="{{item.src}}?w=90"></image>
                         <view class="span active">{{index}}</view>
                         <image class="del {{thumbActive == index?'active':''}}" src="../assets/del.png" @tap="del" data-index="{{index}}" />
                     </view>
@@ -135,7 +135,12 @@
          <view class="edit-cell">
             <view class="edit-label">跳转链接</view>
             <view class="edit-input">
-                <input data-name="name"  value="{{pageData[0].props.cfg.images[thumbActive].linkName}}" class="weui-input" name="name" bindinput="bindLinkInput" placeholder="请输入名称" />
+                <picker range-key="name" bindchange="bindPickerChange" value="{{pageData[0].props.cfg.pageKey}}" range="{{pageList}}">
+                    <view wx:if="{{selectorIndex==-1 && !pageData[0].props.cfg.images[thumbActive].pageKey}}">请选择</view>
+                    <view wx:else  class="picker">
+                        {{pageData[0].props.cfg.images[thumbActive].linkName || pageList[selectorIndex].name}}
+                    </view>
+                </picker>
             </view>
         </view>
     </view>
@@ -210,6 +215,14 @@ export default class ShopImages extends wepy.page {
           this.pageData[0].props.cfg.images[this.thumbActive].linkName = e.detail.value;
           this.pageModule.cfg.images[this.thumbActive].linkName = e.detail.value;
       },
+      bindPickerChange(e) {
+          console.log(this.pageList);
+          this.selectorIndex = e.detail.value;
+          this.pageData[0].props.cfg.images[this.thumbActive].pageKey = this.pageList[e.detail.value].key;
+          this.pageData[0].props.cfg.images[this.thumbActive].linkName = this.pageList[e.detail.value].name;
+          this.pageModule.cfg.images[this.thumbActive].pageKey = this.pageList[e.detail.value].key;
+          this.pageModule.cfg.images[this.thumbActive].linkName = this.pageList[e.detail.value].name;
+      },
       save() {
           this.pageModule.cfg.showSize = this.pageData[0].props.cfg.showSize;
           [app.globalData.pageData[this.pageIndex]] = this.pageData;
@@ -270,7 +283,6 @@ export default class ShopImages extends wepy.page {
       width: 180rpx;
       height: 134rpx;
       margin-right: 20rpx;
-      background: yellow;
       vertical-align: middle;
       display: inline-block;
       image {

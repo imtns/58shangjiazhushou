@@ -9,11 +9,11 @@
 <view class="list" wx:if="{{list.length}}">
     <repeat for="{{list}}" item="item" index="index">
         <view class="item" @tap="goEdit" data-releaseId="{{item.releaseId}}" data-status="{{item.status}}" data-index="{{index}}" data-id="{{item.id}}">
-            <view wx:if="my" @tap.stop="closeLayer" class="mySetting {{delLayer?'delLayer':''}}">   
-                <view class="delBtn" data-releaseId="{{item.releaseId}}" data-index="{{index}}" @tap.stop="del" hidden="{{!delLayer}}">删除</view>     
+            <view wx:if="my" @tap.stop="closeLayer" data-index="{{index}}"  class="mySetting {{delLayer[index]?'delLayer':''}}">   
+                <view class="delBtn" data-releaseId="{{item.releaseId}}" data-index="{{index}}" @tap.stop="del" hidden="{{!delLayer[index]}}">删除</view>     
             </view>
-            <view class="tip" hidden="{{!my || item.status==6}}">{{status[item.status]}}</view>
-            <view class="delTip" hidden="{{!my}}" @tap.stop="showDelLayer">...</view>
+            <view class="tip" hidden="{{!my || wx.getStorageSync('hideTag_'+item.releaseId+'') }}">{{status[item.status]}}</view>
+            <view class="delTip" hidden="{{!my}}" data-index="{{index}}" @tap.stop="showDelLayer">...</view>
             <view class="thumb"><image mode="aspectFill" src="{{item.image}}"></image></view>
             <view class="desc">{{item.userDesc}}</view>
         </view>
@@ -44,7 +44,7 @@ export default class Index extends wepy.page {
       left: 160,
       tabSelect: 1,
       my: true,
-      delLayer: false,
+      delLayer: {},
       list: {},
       status: {
           '-2': '删除',
@@ -56,6 +56,9 @@ export default class Index extends wepy.page {
           4: '已上线',
           5: '新',
           6: '',
+      },
+      hideTag: {
+
       },
   };
   async onLoad() {
@@ -71,8 +74,10 @@ export default class Index extends wepy.page {
           this.my = id === '1';
           if (this.my) { this.loadMyTemplate(); } else { this.loadBasicTemplate(); }
       },
-      showDelLayer() {
-          this.delLayer = true;
+      showDelLayer(e) {
+          this.delLayer = {};
+          const { index } = e.currentTarget.dataset;
+          this.delLayer[index] = true;
       },
       async del(e) {
           const { releaseid, index } = e.currentTarget.dataset;
@@ -85,14 +90,15 @@ export default class Index extends wepy.page {
               toast(ee);
           }
       },
-      closeLayer() {
-          this.delLayer = false;
+      closeLayer(e) {
+          const { index } = e.currentTarget.dataset;
+          this.delLayer[index] = false;
       },
       async goEdit(e) {
           if (this.my) {
-              const { releaseid, index, status } = e.currentTarget.dataset;
+              const { releaseid, status } = e.currentTarget.dataset;
               if (status === 5) {
-                  this.list[index].status = 6;
+                  wx.setStorageSync(`hideTag_${releaseid}`, true);
               }
               wx.setStorageSync('releaseId', releaseid);
           } else {
