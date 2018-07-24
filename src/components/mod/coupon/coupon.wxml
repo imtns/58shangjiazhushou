@@ -8,10 +8,11 @@
                             <text class="coupon-discount">￥</text>{{item.reliefAmount}}
                         </view>
                         <view wx:else class="cell one-text coupon-left">
-                            {{item.couponDiscard/10}}
+                            {{item.couponDiscard?item.couponDiscard/10:'0.0'}}
                             <text class="coupon-discount">折</text>
                         </view>
-                        <view class="cell coupon-right">
+                        <block>
+                        <view class="cell coupon-right" wx:if="{{item.id}}">
                             <view class="first-row one-text">满{{item.limitAmount}}可用</view>
                             <view class="second-row one-text">{{item.subTitle}}</view>
                             <view class="last-row" wx:if="{{item.validType===1}}">{{item.validStartDate}}-{{item.validEndDate}}</view>
@@ -19,6 +20,15 @@
                             <view class="last-row one-text" wx:else>领取后立即生效</view>
                             <view class="receive-button">点击领取</view>
                         </view>
+                        <!-- <view class="cell coupon-right" wx:else>
+                            <view class="first-row one-text">满--可用</view>
+                            <view class="second-row one-text">请输入与使用条件</view>
+                            <view class="last-row">2018.00.00-2018.00.00</view>
+                            <view class="last-row one-text" wx:elif="{{item.validAfterDays>0}}">领取后{{item.validAfterDays}}天可用</view>
+                            <view class="last-row one-text" wx:else>领取后立即生效</view>
+                            <view class="receive-button">点击领取</view>
+                        </view> -->
+                        </block>
                     </view>
                 </consumer-button>
             </view>

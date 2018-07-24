@@ -42,6 +42,18 @@ export default class Mixin extends wepy.mixin {
         console.log(result);
     }
     methods = {
+        actionSheepTap() {
+            const that = this;
+            wx.showActionSheet({
+                itemList: ['拍摄', '添加本地照片', '去图片库选择'],
+                success (e) {
+                    if (e.tapIndex === 0) {
+                        that.methods.addBanner();
+                        console.log(e.tapIndex);
+                    }
+                },
+            });
+        },
         // async save() {
         //     const pageId = app.globalData.pageList.filter(obj => obj.pageKey === 'index')[0].id;
         //     let modData = this.modules.map(({
