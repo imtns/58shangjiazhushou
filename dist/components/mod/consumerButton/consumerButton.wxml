@@ -1,9 +1,0 @@
-<!--pages/mod/consumerButton/consumerButton.wxml-->
-<view class="my-class" bindtap='doCallback' wx:if="{{userInfo}}">
-    <slot/>
-</view>
-<view class="my-class" wx:else>
-    <button class="reset-button" open-type='getUserInfo' bindgetuserinfo='bindGetUserInfo'>
-        <slot/>
-    </button>
-</view>
