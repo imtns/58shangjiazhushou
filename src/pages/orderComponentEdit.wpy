@@ -95,7 +95,6 @@
             <view class="item border-bottom">
                 <text>服务人姓名</text>
                 <input
-                type="number"
                 placeholder="请输入服务人姓名"
                 placeholder-class="placeholder"
                 value="{{ form.serviceUserName }}"

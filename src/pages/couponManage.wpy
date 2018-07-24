@@ -75,8 +75,7 @@ export default class Index extends wepy.page {
                 const ids = this.coupons.filter(item => item.checked).map(item => item.id);
                 await Promise.all(ids.map(id => post(DELETE_COUPON + id)));
                 this.isEditing = false;
-                this.init();
-                this.loadData();
+                this.reloadData();
                 this.$apply();
             } catch (e) {
                 if (typeof e === 'string') {
@@ -90,18 +89,22 @@ export default class Index extends wepy.page {
 
     onLoad() {
         this.mpId = wepy.getStorageSync('current_mpid');
-        this.loadData();
+        this.reloadData();
     }
 
     onShow() {
         if (globalService.get('refresh')) {
             globalService.set('refresh', false);
             // 重新加载数据
-            this.init();
-            this.loadData();
+            this.reloadData();
         }
         // 清空优惠券编辑页数据
         globalService.set('couponManage', {});
+    }
+
+    reloadData() {
+        this.init();
+        this.loadData();
     }
 
     init() {
@@ -121,7 +124,7 @@ export default class Index extends wepy.page {
                 pageNum,
                 pageSize,
                 mpId,
-            });;
+            });
 
             if (data && data.length) {
                 this.coupons.push(...data);
