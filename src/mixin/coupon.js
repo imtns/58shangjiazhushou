@@ -29,9 +29,7 @@ export default class CouponMixin extends wepy.mixin {
      * @param {Object} coupon 优惠券对象
      * @return {Boolean} 可用返回true，不可用返回false
      */
-    checkUsable(coupon) {
-        const { validEndtime, totalCount, useCount } = coupon;
-
+    checkUsable({ validEndtime, totalCount, useCount }) {
         // 时间过期
         if (validEndtime && 
             // 还需要加上有效期当天的那一整天24小时的时间
