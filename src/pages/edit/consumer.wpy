@@ -54,7 +54,7 @@
          <view class="edit-cell space">
             <view class="edit-label">客服热线</view>
             <view class="edit-input">
-                <input data-name="name" maxlength="14" value="{{telnum}}" bindinput="telInput" class="weui-input" name="name" type="number" auto-focus placeholder="请输入" />
+                <input data-name="name" maxlength="14" value="{{telnum}}" bindinput="telInput" class="weui-input" name="name" type="number"  placeholder="请输入" />
             </view>
         </view>
         <scroll-view scroll-y class="edit-cell-tip">
