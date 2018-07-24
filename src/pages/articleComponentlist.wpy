@@ -87,14 +87,16 @@ export default class ArticleComponentList extends wepy.page {
             const { group = '', name = '' } = option;
             this.group = group;
             this.name = name;
-            this.$apply();
             const { windowHeight } = wepy.getSystemInfoSync();
             const height = windowHeight;
             this.height = `${(height * 2) - (88 * 2) - (40 * 2) - 96}rpx`;
-            this.loadList();
+            this.$apply();
         } catch (e) {
             console.log(e);
         }
+    }
+    onShow() {
+        this.loadList();
     }
     onReachBottom() {
         if (!this.isloading) return;
@@ -193,10 +195,8 @@ export default class ArticleComponentList extends wepy.page {
         this.$apply();
     }
     addArticle() {
-        const ppu = wepy.getStorageSync('ppu');
-        console.log('list', this.name);
         wepy.navigateTo({
-            url: `articleComponentCreate?ppu=${ppu}&group=${this.group}&name=${this.name}`,
+            url: `articleComponentCreate?group=${this.group}&name=${this.name}`,
         });
     }
 }

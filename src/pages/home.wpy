@@ -263,6 +263,7 @@ export default class Home extends wepy.page {
             if (this.business.selected.id) {
                 this.setGlobalMpId(this.business.chosedId);
                 this.loadData();
+                this.loadExtJson();
                 this.hideMask();
             }
         },

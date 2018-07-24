@@ -55,7 +55,17 @@ var Page = {
             selectImage: function (cb) {
                 //商品详情内容编辑
                 $(".icon-tupian-btn").on("change", function () {
-                    var self = this,
+                    // 上传中
+                    var NONE = 'none',
+                        $ele = $('div.mask,div.win2'),
+                        $tips2 = $('div.tips2'),
+                        $uploading = $('.tips-submiting');
+                        $('.tips-submiting p').text('上传中');
+
+                        $tips2.addClass(NONE);
+                        $ele.removeClass(NONE);
+                        $uploading.removeClass(NONE);
+                        self = this,
                         formData = new FormData();
                     formData.append('source',$(self).get(0).files[0]);
                     document.domain = '58.com';
@@ -67,6 +77,8 @@ var Page = {
                         processData: false,
                         success: function(data) {
                             var data = JSON.parse(data);
+                            $ele.addClass(NONE);
+                            $uploading.addClass(NONE);
                             if (data.state == 100) {
                                 var url = '//pic1.58cdn.com.cn' + data.data.source;
                                     cb(url + '?w=750');
@@ -74,6 +86,12 @@ var Page = {
                             } else {
                                 Page.toast($errorPop, data.msg);
                             }
+                        },
+                        error: function(e) {
+                            $ele.addClass(NONE);
+                            $uploading.addClass(NONE);
+
+                            Page.toast($errorPop, e);
                         }
                     });
                 });
@@ -82,7 +100,18 @@ var Page = {
         // 上传头图
         $('#item-file-btn').on('change', function() {
             var self = this,
-            formData = new FormData();
+                formData = new FormData(),
+                // 上传中
+                NONE = 'none',
+                $ele = $('div.mask,div.win2'),
+                $tips2 = $('div.tips2'),
+                $uploading = $('.tips-submiting');
+                $('.tips-submiting p').text('上传中');
+
+                $tips2.addClass(NONE);
+                $ele.removeClass(NONE);
+                $uploading.removeClass(NONE);
+
             formData.append('sources', $(self).get(0).files[0]);
             $.ajax({
                 url: '/fileUpload',
@@ -93,6 +122,8 @@ var Page = {
                 success: function(res) {
                     var res = JSON.parse(res);
                     var src= res.data.sources;
+                    $ele.addClass(NONE);
+                    $uploading.addClass(NONE);
                     if (src) {
                         $('#cover').attr('src', "https://pic1.58cdn.com.cn" + src);
                         $('.item-upload-img').removeClass('none');
@@ -100,7 +131,12 @@ var Page = {
                     } else {
                         Page.toast($errorPop, res.msg);
                     }
-                    
+                },
+                error: function(e) {
+                    $ele.addClass(NONE);
+                    $uploading.addClass(NONE);
+
+                    Page.toast($errorPop, e);
                 }
             });
         });
@@ -112,7 +148,7 @@ var Page = {
         $('.save-btn').on('click', function() {
             var group = Page.group,
                 title = $('._title').val(),
-                intro = $('.zeditor-content').find('p:first-child').text().substring(0, 20),
+                intro = $('.zeditor-content').find('p:first-child').text().substring(0, 43),
                 source = $('._source').val(),
                 author = $('._author').val(),
                 temp = $('.zeditor-content' ).find('p'),
@@ -171,7 +207,7 @@ var Page = {
                     if (res.state == 100) {
                         Page.toast($('div.tips-success'));
                         setTimeout(function() {
-                            wx.miniProgram.navigateTo({
+                            wx.miniProgram.redirectTo({
                                 url: '/pages/edit/article?id=' + Page.id
                             });
                         },2000);

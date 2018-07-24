@@ -28,7 +28,8 @@
                 <EmptyPage></EmptyPage>
             </block>
         </view>
-        <view class="group-list article-group-list {{isEditing ? 'edit' : ''}}" wx:if="{{groupList.length > 0}}">
+        <view
+            class="group-list article-group-list {{isEditing ? 'edit' : ''}}" wx:if="{{ curTab === 'article' && groupList.length > 0}}">
             <view
                 class="group-item article-group-item"
                 @tap.stop="editChose({{ item.id }}, {{ index }}, {{item.name}})"

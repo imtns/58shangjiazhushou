@@ -35,13 +35,13 @@
         <view class="edit-cell space">
             <view class="edit-label">图片名称</view>
             <view class="edit-input">
-                <input data-name="name" value="{{pageData[0].props.cfg.images[thumbActive].title}}"  class="weui-input" name="name" bindinput="bindNameInput" auto-focus placeholder="请输入名称" />
+                <input data-name="name" value="{{pageData[0].props.cfg.images[thumbActive].title}}"  class="weui-input" name="name" bindinput="bindNameInput" placeholder="请输入名称" />
             </view>
         </view>
          <view class="edit-cell">
             <view class="edit-label">跳转链接</view>
             <view class="edit-input">
-                <input data-name="name"  value="{{pageData[0].props.cfg.images[thumbActive].linkName}}" class="weui-input" name="name" bindinput="bindLinkInput" auto-focus placeholder="请输入名称" />
+                <input data-name="name"  value="{{pageData[0].props.cfg.images[thumbActive].linkName}}" class="weui-input" name="name" bindinput="bindLinkInput" placeholder="请输入名称" />
             </view>
         </view>
     </view>
