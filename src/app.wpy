@@ -149,7 +149,7 @@ export default class extends wepy.app {
 </script>
 
 <style lang="scss">   
-@import "css/common.scss";     
+@import "css/common.scss"; 
 @import "components/mod/information/information.wxss"; 
 @import "components/mod/imageSwiper/imageSwiper.wxss";
 @import "components/mod/images/images.wxss";
