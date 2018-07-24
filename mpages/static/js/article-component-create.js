@@ -202,7 +202,7 @@ var Page = {
                     if (res.state == 100) {
                         Page.toast($('div.tips-success'));
                         setTimeout(function() {
-                            wx.miniProgram.redirectTo({
+                            wx.miniProgram.navigateBack({
                                 url: '/pages/articleComponentlist?group=' + Page.group + '&name=' + Page.name
                             });
                         },2000);

@@ -1,5 +1,5 @@
 <template>
-    <view class="container">
+    <view class="containe">
         <view class="tabs-wrap">
             <view wx:for="{{ tabbarItems }}"
             wx:key="name"
@@ -498,7 +498,7 @@ export default class Index extends wepy.page {
 @import '../css/btn.scss';
 $workWidth: 200rpx;
 $workHeight: 200rpx;
-.container{
+.containe{
     margin-top: 110rpx;
     width:100%;
     height:100%;

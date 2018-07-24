@@ -1,5 +1,5 @@
 <template>
-    <view class="container">
+    <view class="containe">
         <!-- <block wx:if="{{groupList.length > 0}}">
             <GroupComponent list="{{groupList}}"></GroupComponent>
         </block> -->
@@ -69,6 +69,11 @@ export default class OrderComponentGroup extends wepy.page {
     }
     methods = {
         showDialog(id = '', name = '') {
+            const { groupList } = this;
+            if (groupList && groupList.length >= 10) {
+                toast(' 分组数量达到最大（10个），无法创建更多。');
+                return;
+            }
             this.name = name;
             this.id = id;
             this.$broadcast('postData', name);
@@ -159,7 +164,7 @@ export default class OrderComponentGroup extends wepy.page {
                 console.log(this.delList);
                 return;
             }
-            // 点击跳转文章详情页面
+            // 点击跳转详情页面
             wepy.navigateTo({
                 url: `orderComponentlist?id=${id}&name=${name}`,
             });
@@ -176,6 +181,16 @@ export default class OrderComponentGroup extends wepy.page {
             });
         });
         this.groupList = data;
+        this.$apply();
+    }
+    showDialog() {
+        const { groupList } = this;
+        if (groupList && groupList.length >= 10) {
+            toast(' 分组数量达到最大（10个），无法创建更多。');
+            return;
+        }
+        this.$broadcast('postData', '');
+        this.showPop = true;
         this.$apply();
     }
 }

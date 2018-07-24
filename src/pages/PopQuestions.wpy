@@ -1,5 +1,5 @@
 <template>
-    <view class="container">
+    <view class="containe">
         <view class="feedback-title">用户不能登录小程序的原因有以下几种可能：</view>
         <view class="feedback-li lo-circle">登录时输入的"用户名或邮件"、"密码"有错误</view>
         <view class="feedback-text pop-text">这种情况请检查用户名和密码，也可以“找回密码”，重试登录</view>
