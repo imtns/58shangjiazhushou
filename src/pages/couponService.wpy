@@ -1,5 +1,5 @@
 <template>
-    <view class="container">
+    <view class="containe">
         <view class="wrap">
             <view class="top">
                 <view class="current-group"
@@ -229,7 +229,7 @@ view {
     box-sizing: border-box;
 }
 
-.container {
+.containe {
     .wrap {
         padding: 30rpx;
     }

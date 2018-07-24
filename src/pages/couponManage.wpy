@@ -1,5 +1,5 @@
 <template>
-    <view class="container">
+    <view class="containe">
         <view wx:if="{{ coupons && coupons.length }}">
             <couponList
             :coupons.sync="coupons"
@@ -152,7 +152,7 @@ export default class Index extends wepy.page {
 </script>
 
 <style lang="scss">
-.container {
+.containe {
     padding-bottom: 130rpx;
 }
 view {

@@ -1,5 +1,5 @@
 <template>
-    <view class="container" :class="{ iphoneX: isIphoneX }">
+    <view class="containe" :class="{ iphoneX: isIphoneX }">
         <!-- <image src="/pages/assets/follow-public.png"/> -->
         <button open-type="contact">点击输入888关注</button>
     </view>
@@ -25,7 +25,7 @@ export default class Index extends wepy.page {
 </script>
 
 <style lang="scss">
-.container {
+.containe {
     height: 100%;
     background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/follow-public.png') no-repeat;
     background-size: 750rpx auto;
