@@ -135,7 +135,7 @@ export default class Index extends wepy.page {
                 }
             }
             .article-detail-flex.middle{
-                margin:0 60rpx 0 40rpx;
+                margin:0 130rpx 0 40rpx;
             }
         }
         .article-content{
