@@ -1,8 +1,8 @@
 <template lang="wxml">
     <view class="coupons" :class="{ small: size === 'small' }">
         <repeat for="{{ coupons }}" key="id" index="index" item="item">
-            <navigator class="coupon-list-item" :class="{ unable: !item.usable, editing: isEditing }"
-            url="{{ '/pages/couponEdit?id=' + item.id }}">
+            <view class="coupon-list-item" :class="{ unable: !item.usable, editing: isEditing }"
+            @tap="choose({{ index }}, {{ '/pages/couponEdit?id=' + item.id }})">
                 <view class="coupon-list-left">
                     <!-- 打折 -->
                     <view class="discount" wx:if="{{ item.couponType === 2 }}">
@@ -46,8 +46,8 @@
                 </view>
                 <view class="checkbox" :class="{ checked: item.checked }">
                 </view>
-                <view class="mask" @tap.stop="chooseCoupon({{ index }})" wx:if="{{ isEditing }}"></view>
-            </navigator>
+                <!-- <view class="mask" @tap.stop="choose({{ index }})" wx:if="{{ isEditing }}"></view> -->
+            </view>
         </repeat>
     </view>
 </template>
@@ -72,11 +72,15 @@ export default class Index extends wepy.component {
     }
 
     methods = {
-        chooseCoupon(index) {
-            const coupon = this.coupons[index];
-            coupon.checked = !coupon.checked;
+        choose(index, url) {
+            if (this.isEditing) {
+                const coupon = this.coupons[index];
+                coupon.checked = !coupon.checked;
 
-            this.chooseCoupon && this.chooseCoupon(coupon);
+                this.chooseCoupon && this.chooseCoupon(coupon);
+            } else {
+                wepy.navigateTo({ url });
+            }
         },
     }
 }

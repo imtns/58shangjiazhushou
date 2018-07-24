@@ -171,7 +171,11 @@ export default class Index extends wepy.page {
                 globalService.set('refresh', true);
                 wepy.navigateBack();
             } catch (e) {
-                alert(e);
+                if (typeof e === 'object') {
+                    alert(e.msg);
+                } else {
+                    alert(e);
+                }
                 this.errorHandler(e);
             }
         },
@@ -194,8 +198,17 @@ export default class Index extends wepy.page {
 
     formatData(data) {
         const postData = Object.assign({}, data);
-        const { limitCount } = postData;
+        const {
+            limitCount, reliefAmount, limitAmount, couponDiscard,
+        } = postData;
         const formatData = {};
+
+        // 字符串转数字
+        Object.keys({
+            limitCount, reliefAmount, limitAmount, couponDiscard,
+        }).forEach(key => {
+            postData[key] = +postData[key];
+        });
 
         if (limitCount === '') {
             postData.limitCount = 1;
