@@ -11,7 +11,7 @@ module.exports = {
     getSystemInfo:true,
     getApp:true,
     wx: true,
-    Page: true,
+    Page: true, 
     Component:true,
   },
   extends: 'airbnb-base',
