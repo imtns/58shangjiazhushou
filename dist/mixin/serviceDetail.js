@@ -1,1 +1,0 @@
-"use strict";module.exports={detailShowTap:function(a){var t=a.currentTarget.dataset.index,e=this.data.page_data,s=e[t];s.props.cfg.detailShow=!s.props.cfg.detailShow,this.setData({page_data:e})},onShareAppMessage:function(){}};

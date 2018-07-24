@@ -1,4 +1,0 @@
-
-    <view class="video-view">
-        <video id="myVideo" class="video-view-video" src="{{videoPath}}"/>
-    </view>

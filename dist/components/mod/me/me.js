@@ -1,1 +1,0 @@
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default={makePhoneCall:function(e){var t=e.currentTarget.dataset.number;wx.makePhoneCall({phoneNumber:t})}};
