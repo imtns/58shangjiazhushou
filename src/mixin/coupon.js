@@ -30,12 +30,6 @@ export default class CouponMixin extends wepy.mixin {
      * @return {Boolean} 可用返回true，不可用返回false
      */
     checkUsable({ validEndtime, totalCount, useCount }) {
-        // console.log(new Date(validEndtime));
-
-        // console.log('validEndtime =======');
-        // console.log((new Date(validEndtime)).getTime() + 24 * 60 * 60 * 1000);
-        // console.log('Date.now() =======');
-        // console.log(Date.now());
         // 时间过期
         if (validEndtime && 
             // 还需要加上有效期当天的那一整天24小时的时间
@@ -66,7 +60,6 @@ export default class CouponMixin extends wepy.mixin {
                 const coupon = Object.assign({}, item);
                 let { couponCondition } = coupon;
                 const { validStarttime, validEndtime, validType } = coupon;
-                console.log(coupon);
 
                 coupon.usable = this.checkUsable(coupon);
 

@@ -79,6 +79,10 @@ export default class Index extends wepy.page {
                 this.loadData();
                 this.$apply();
             } catch (e) {
+                if (typeof e === 'string') {
+                    alertP(e);
+                }
+
                 this.errorHandler(e);
             }
         },
@@ -117,9 +121,7 @@ export default class Index extends wepy.page {
                 pageNum,
                 pageSize,
                 mpId,
-            });
-            console.log('===================>>>>>>>>>>>>>>>>');
-            console.log(data);
+            });;
 
             if (data && data.length) {
                 this.coupons.push(...data);
