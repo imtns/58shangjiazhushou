@@ -98,7 +98,7 @@ export default class ArticleComponentList extends wepy.page {
         });
         if (this.pageNum === 1 && (data.length === 0 || !data)) {
             this.isLoading = false;
-            toast('没有数据');
+            // toast('没有数据');
             return;
         }
         if (this.pageNum > 1 && data.length < this.pageSzie) {
@@ -111,7 +111,7 @@ export default class ArticleComponentList extends wepy.page {
                 choseStatu: false,
             });
         });
-        this.groupList = this.groupList.concat(data);
+        this.groupList = this.pageNum === 1 ? data : this.groupList.concat(data);
         this.$apply();
     }
     editChose(id, index) {

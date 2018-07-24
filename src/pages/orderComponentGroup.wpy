@@ -18,10 +18,10 @@
                     <view class="rename-btn article-rename-btn" wx:if="{{isEditing}}" @tap.catch.stop="showDialog({{item.id}}, {{item.name}})">重命名</view>
                 </view>
             </view>
-            <view class="block"></view>
         </view>
         <EmptyPage wx:if="{{groupList.length === 0}}"></EmptyPage>
     </view>
+    <view class="block"></view>
     <view class="options">
         <button class="button edit" @tap="edit" wx:if="{{groupList.length > 0 || works.length > 0}}" data-status="{{isEditing}}">{{ isEditing ? '取消' : '编辑' }}</button>
         <button class="button" wx:if="{{ isEditing }}" @tap="deleteItem">删除</button>
@@ -69,11 +69,9 @@ export default class OrderComponentGroup extends wepy.page {
     }
     methods = {
         showDialog(id = '', name = '') {
-            if (name) {
-                this.name = name;
-                this.id = id;
-                this.$broadcast('postData', name);
-            }
+            this.name = name;
+            this.id = id;
+            this.$broadcast('postData', name);
             this.showPop = true;
             this.$apply();
         },
@@ -90,13 +88,17 @@ export default class OrderComponentGroup extends wepy.page {
                     mpid: this.mpId,
                 });
                 this.showPop = false;
-                this.$apply();
+                this.isEditing = false;
+                this.name = '';
+                this.id = '';
                 toast('添加成功！');
-                this.page = 1;
                 this.loadData();
             } catch (e) {
-                console.log(e);
+                toast(e);
+                this.showPop = false;
+                this.isEditing = false;
             }
+            this.$apply();
         },
         close() {
             this.showPop = false;
@@ -131,9 +133,12 @@ export default class OrderComponentGroup extends wepy.page {
                     ids,
                 });
                 this.delList = [];
+                this.isEditing = false;
                 this.$apply();
                 this.loadData();
             } catch (e) {
+                this.delList = [];
+                this.isEditing = false;
                 toast(e);
             }
         },

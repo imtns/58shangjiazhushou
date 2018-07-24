@@ -244,7 +244,7 @@ view {
                 width: 14rpx;
                 height: 10rpx;
                 margin: 0 0 7rpx 10rpx;
-                background-image: url('/coupon-triangle.png');
+                background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/coupon-triangle.png');
                 background-size: 14rpx 10rpx;
                 transform: rotate(180deg);
                 transition: transform .3s;
@@ -302,12 +302,12 @@ view {
             .checkbox {
                 width: 40rpx;
                 height: 40rpx;
-                background-image: url('/resource-unchecked.png');
+                background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-unchecked.png');
                 background-size: 40rpx 40rpx;
                 margin-left: -100rpx;
 
                 &.checked {
-                    background-image: url('/resource-checked.png');
+                    background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-checked.png');
                 }
             }
 

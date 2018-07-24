@@ -23,7 +23,7 @@
                     @tap.stop="selectItem({{ item.id }}, {{ index }})"></view>
                 </view>
             </view>
-            <!-- <view wx:else style="margin:30rpx;text-align:center;color:#bdbdbd;">---啥也没有---</view> -->
+            <!-- <view wx:else style="margin:30rpx;text-align:center;color:#bdbdbd;">啥也没有</view> -->
             <block wx:else>
                 <EmptyPage></EmptyPage>
             </block>
@@ -43,8 +43,8 @@
                     <view class="rename-btn article-rename-btn" wx:if="{{isEditing}}" @tap.catch.stop="showDialog({{item.id}}, {{item.name}})">重命名</view>
                 </view>
             </view>
-            <view class="block"></view>
         </view>
+        <view class="block"></view>
         <view class="options">
             <button class="button edit" @tap="edit" wx:if="{{groupList.length > 0 || works.length > 0}}" data-status="{{isEditing}}">{{ isEditing ? '取消' : '编辑' }}</button>
             <button class="button" wx:if="{{ isEditing }}" @tap="deleteItem">删除</button>
@@ -272,6 +272,7 @@ export default class Index extends wepy.page {
         async addGroup(content) {
             try {
                 let url = '';
+                console.log(this.name);
                 if (this.name) {
                     url = `/businessArticle/updategroup/${this.id}`;
                 } else {
@@ -281,14 +282,17 @@ export default class Index extends wepy.page {
                     name: content,
                 });
                 this.showPop = false;
-                this.$apply();
+                this.isEditing = false;
+                this.name = '';
+                this.id = '';
                 toast('操作成功！');
                 this.loadData(this.curTab);
             } catch (e) {
-                this.errorHandler(e);
                 this.showPop = false;
+                this.isEditing = false;
                 toast(e);
             }
+            this.$apply();
         },
         close() {
             this.showPop = false;
@@ -315,11 +319,14 @@ export default class Index extends wepy.page {
             });
         },
         showDialog(id = '', name = '') {
-            if (name) {
-                this.name = name;
-                this.id = id;
-                this.$broadcast('postData', name);
+            const { groupList } = this;
+            if (!name && groupList && groupList.length >= 10) {
+                toast(' 分组数量达到最大（10个），无法创建更多。');
+                return;
             }
+            this.name = name;
+            this.id = id;
+            this.$broadcast('postData', name);
             this.showPop = true;
             this.$apply();
         },
@@ -471,6 +478,7 @@ export default class Index extends wepy.page {
             toast(' 分组数量达到最大（10个），无法创建更多。');
             return;
         }
+        this.$broadcast('postData', '');
         this.showPop = true;
         this.$apply();
     }
@@ -546,7 +554,7 @@ $workHeight: 200rpx;
                 &::after {
                     content: ' ';
                     display: block;
-                    background: url('/resource-unchecked.png');
+                    background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-unchecked.png');
                     background-size: 39rpx 39rpx;
                     width: 39rpx;
                     height: 39rpx;
@@ -556,7 +564,7 @@ $workHeight: 200rpx;
                 }
 
                 &.checked::after {
-                    background-image: url('/resource-checked.png');
+                    background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-checked.png');
                 }
             }
         }
@@ -569,7 +577,7 @@ $workHeight: 200rpx;
             &.video::after {
                 content: ' ';
                 display: block;
-                background: url('/resource-video-play.png');
+                background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-video-play.png');
                 background-size: 60rpx 60rpx;
                 width: 60rpx;
                 height: 60rpx;
@@ -582,5 +590,9 @@ $workHeight: 200rpx;
             }
         }
     }
+}
+.block{
+    width:100%;
+    height:102rpx;
 }
 </style>

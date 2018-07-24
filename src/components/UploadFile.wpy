@@ -314,7 +314,7 @@ export default class Uploader extends wepy.component {
 
     &.show-add {
         border: 1px solid #CCCCCC;
-        background: url('/order-edit-add.png') no-repeat;
+        background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/order-edit-add.png') no-repeat;
         background-size: 60rpx 60rpx;
         background-position: 30rpx 14rpx;
     }

@@ -8,7 +8,7 @@
                 placeholder="最多可输入10个字"
                 placeholder-class="placeholder"
                 value="{{ form.title }}"
-                @change="setFormData('title')"/>
+                @input="setFormData('title')"/>
             </view>
             <view class="item required">
                 <text>优惠券副标题</text>
@@ -17,14 +17,14 @@
                 placeholder="可用优惠券亮点吸引用户"
                 placeholder-class="placeholder"
                 value="{{ form.subTitle }}"
-                @change="setFormData('subTitle')"/>
+                @input="setFormData('subTitle')"/>
             </view>
         </view>
         <view class="section">
             <view class="item required">
                 <text>优惠券类型</text>
                 <navigator
-                :class="{ placeholder: form.couponType === '' }"
+                :class="{ placeholder: form.couponType === undefined }"
                 url="/pages/couponType">
                     {{ form.couponType && (form.couponType === 1 ? '代金券' : '折扣券') || '去选择' }}
                     <view class="icon more"></view>
@@ -35,7 +35,7 @@
             <view class="item required">
                 <text>生效时间</text>
                 <navigator
-                :class="{ placeholder: form.validType === '' }"
+                :class="{ placeholder: form.validType === undefined }"
                 url="/pages/couponValidTime">
                     {{ form.validType && (form.validType === 1 ? '固定时间' : '领取后生效') || '去选择' }}<view class="icon more"></view>
                 </navigator>
@@ -49,7 +49,7 @@
                 placeholder="请输入库存数量"
                 placeholder-class="placeholder"
                 value="{{ form.totalCount }}"
-                @change="setFormData('totalCount')"/>
+                @input="setFormData('totalCount')"/>
             </view>
             <view class="item">
                 <text>每人限领</text>
@@ -57,14 +57,14 @@
                 type="number"
                 placeholder="若不填默认为1"
                 placeholder-class="placeholder"
-                value="{{ form.limitCount || '' }}"
-                @change="setFormData('limitCount')"/>
+                value="{{ form.limitCount }}"
+                @input="setFormData('limitCount')"/>
             </view>
         </view>
         <view class="section">
             <view class="item required">
                 <text>优惠券使用产品</text>
-                <navigator  :class="{ placeholder: form.applyType === '' }"
+                <navigator :class="{ placeholder: form.applyType === undefined }"
                 url="/pages/couponService">
                     {{ form.applyType && (form.applyType === 1 ? '全部产品' : '指定产品') || '去选择' }}<view class="icon more"></view>
                 </navigator>
@@ -80,7 +80,7 @@ import wepy from 'wepy';
 import Mixin from '../mixin';
 import { get, post } from '../utils/ajax';
 import { LOAD_COUPON, SAVE_COUPON } from '../utils/url';
-import { alert, isEmpty } from '../utils';
+import { alert, isEmpty, toast } from '../utils';
 
 import globalService from '../utils/globalService';
 
@@ -96,8 +96,8 @@ export default class Index extends wepy.page {
             title: '',
             subTitle: '',
             couponType: '',
-            totalCount: 0, // 库存
-            limitCount: 0, // 每人限领
+            totalCount: '', // 库存
+            limitCount: '', // 每人限领
             validType: '', // 1 固定时间，2 领取后生效
             validDays: null,
             validAfterDays: null,
@@ -105,9 +105,9 @@ export default class Index extends wepy.page {
             validEndtime: '',
             applyType: '',
             serviceIds: '',
-            limitAmount: 0, // 满多少使用
-            reliefAmount: 0, // 满减
-            couponDiscard: 0, // 打几折，需要，50表示5折
+            limitAmount: '', // 满多少使用
+            reliefAmount: '', // 满减
+            couponDiscard: '', // 打几折，需要，50表示5折
         },
         canSubmit: false,
     }
@@ -163,12 +163,7 @@ export default class Index extends wepy.page {
             try {
                 // 数据过滤，过滤未提交的数据
                 const { form } = this;
-                const postData = {};
-                Object.keys(form).forEach(key => {
-                    if (form[key]) {
-                        postData[key] = form[key];
-                    }
-                });
+                const postData = this.formatData(form);
 
                 this.validator(postData);
 
@@ -176,14 +171,57 @@ export default class Index extends wepy.page {
                 globalService.set('refresh', true);
                 wepy.navigateBack();
             } catch (e) {
-                alert(e);
+                if (typeof e === 'object') {
+                    alert(e.msg);
+                } else {
+                    alert(e);
+                }
                 this.errorHandler(e);
             }
         },
 
         setFormData(prop, e) {
-            this.form[prop] = e.detail.value;
+            const { value } = e.detail;
+
+            // 不超过十个字
+            if (~['title', 'subTitle'].indexOf(prop)) {
+                if (value.length > 10) {
+                    toast('只能输入10个字');
+                    return value.slice(0, value.length - 1);
+                }
+            }
+
+            this.form[prop] = value;
+            return value;
         },
+    }
+
+    formatData(data) {
+        const postData = Object.assign({}, data);
+        const {
+            limitCount, reliefAmount, limitAmount, couponDiscard,
+        } = postData;
+        const formatData = {};
+
+        // 字符串转数字
+        Object.keys({
+            limitCount, reliefAmount, limitAmount, couponDiscard,
+        }).forEach(key => {
+            postData[key] = +postData[key];
+        });
+
+        if (limitCount === '') {
+            postData.limitCount = 1;
+        }
+
+        // 清除掉为空的数据
+        Object.keys(postData).forEach(key => {
+            if (postData[key]) {
+                formatData[key] = postData[key];
+            }
+        });
+
+        return formatData;
     }
 
     validator(data) {
@@ -403,7 +441,7 @@ button.save {
     &.more {
         width: 25rpx;
         height: 25rpx;
-        background: url('/coupon-more.png') no-repeat;
+        background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/coupon-more.png') no-repeat;
         background-size: auto 25rpx;
         background-position: right;
     }

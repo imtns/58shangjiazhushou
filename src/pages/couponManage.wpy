@@ -31,6 +31,10 @@ import { DELETE_COUPON } from '../utils/url';
 import { alertP } from '../utils';
 import globalService from '../utils/globalService';
 
+const pageSize = 10;
+let pageNum = 1;
+let noMore = false;
+
 export default class Index extends wepy.page {
     config = {
         navigationBarTitleText: '优惠券管理',
@@ -71,6 +75,7 @@ export default class Index extends wepy.page {
                 const ids = this.coupons.filter(item => item.checked).map(item => item.id);
                 await Promise.all(ids.map(id => post(DELETE_COUPON + id)));
                 this.isEditing = false;
+                this.init();
                 this.loadData();
                 this.$apply();
             } catch (e) {
@@ -80,33 +85,69 @@ export default class Index extends wepy.page {
     }
 
     onLoad() {
+        this.mpId = wepy.getStorageSync('current_mpid');
         this.loadData();
     }
 
     onShow() {
         if (globalService.get('refresh')) {
             globalService.set('refresh', false);
+            // 重新加载数据
+            this.init();
             this.loadData();
         }
+        // 清空优惠券编辑页数据
+        globalService.set('couponManage', {});
+    }
+
+    init() {
+        noMore = false;
+        pageNum = 1;
+        this.coupons = [];
+    }
+
+    updated() {
+        pageNum += 1;
     }
 
     async loadData() {
         try {
-            const mpId = wepy.getStorageSync('current_mpid');
-            this.coupons = await this.getCoupons({
-                pageNum: 1,
-                pageSize: 10,
+            const { mpId } = this;
+            const data = await this.getCoupons({
+                pageNum,
+                pageSize,
                 mpId,
             });
+
+            if (data && data.length) {
+                this.coupons.push(...data);
+            }
+
+            if (data && (data.length < pageSize)) {
+                noMore = true;
+            }
+
             this.$apply();
         } catch (e) {
             this.errorHandler(e);
         }
     }
+
+    onReachBottom() {
+        if (noMore) {
+            return;
+        }
+
+        this.updated();
+        this.loadData();
+    }
 }
 </script>
 
 <style lang="scss">
+.container {
+    padding-bottom: 130rpx;
+}
 view {
     box-sizing: border-box;
 }

@@ -11,7 +11,12 @@ const foos = {
 
 module.exports = {
     get(key) {
-        return data[key] || {};
+
+        if (data[key] === undefined) {
+            return {};
+        }
+
+        return data[key];
     },
 
     set(key, v) {

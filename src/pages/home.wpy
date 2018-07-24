@@ -22,12 +22,6 @@
                 </view>
             </view>
         </view>
-        <!-- <view class="index-loaded-body">
-            <view bindtap="link({{index}})" class="index-loaded-item" wx:for="{{items}}" wx:key="index">
-                <image src="{{item.iconPath}}" class="item-img"></image>
-                <view class="item-text">{{item.text}}</view>
-            </view>
-        </view> -->
         <view class="index-block"  wx:for="{{nItems}}" wx:for-item="nItem"  wx:key="{{nItem.title}}">
             <view class="index-block-title">{{nItem.title}}</view>
             <view class="index-block-body">
@@ -62,7 +56,7 @@
 
 <script>
 import wepy from 'wepy';
-import { sleep, alert } from '../utils';
+import { alert } from '../utils';
 import { post, get } from '../utils/ajax';
 
 const app = require('../utils/globalData');
@@ -143,17 +137,8 @@ export default class Home extends wepy.page {
         ],
     }
     methods = {
-        // link (index) {
-        //     if (index !== 6) { //   意见反馈不做判断
-        //         this.checkBeforeJump(index);
-        //     } else {
-        //         wepy.navigateTo({
-        //             url: 'feedback',
-        //         });
-        //     }
-        // },
         link(text) {
-            console.log(text);
+            // console.log(text);意见反馈不做判断
             if (text === '意见反馈') {
                 wepy.navigateTo({
                     url: 'feedback',
@@ -257,7 +242,7 @@ export default class Home extends wepy.page {
                 // });
             }
             this.$apply();
-            console.log('this.business.mps', this.business.mps);
+            // console.log('this.business.mps', this.business.mps);
         },
         bindHideMask () {
             this.business = Object.assign({}, this.business, {
@@ -271,7 +256,7 @@ export default class Home extends wepy.page {
                 chosedId: item.id,
                 canConfirm: true,
             });
-            console.log('点击', this.business);
+            // console.log('点击', this.business);
             this.$apply();
         },
         confirmAction () {
@@ -289,9 +274,7 @@ export default class Home extends wepy.page {
         });
         this.$apply();
     }
-    async onLoad () {
-        await sleep();
-        console.log('onLoad');
+    onLoad () {
         this.loadExtJson();
     }
     async onShow () {
@@ -354,12 +337,7 @@ export default class Home extends wepy.page {
                 selected: formatedMpinfo,
             });
             nexttask && this.setNextTask(nexttask);
-            // data.username && (this.business.name = data.username);
-            // data.mpinfo && (this.business.miniProgramName = data.mpinfo.nickName);
-            // data.unread && (this.business.unread = data.unread);
-            // data.count && (this.business.mpCount = data.count);
-            // data.mpinfo && (this.business.selected.id = data.mpinfo.id)
-            console.log('this.business', this.business);
+            // console.log('this.business', this.business);
             this.$apply();
         } catch (e) {
             console.log('e', e);
@@ -370,65 +348,8 @@ export default class Home extends wepy.page {
             wepy.setStorageSync('current_mpid', id);
         }
     }
-    // checkBeforeJump (index) {
-    //     console.log('this.business.selected.', this.business.selected);
-    //     if (!this.business.mpCount) {
-    //         alert('您还未购买小程序，请登录e.58.com进行购买', '提示');
-    //         return;
-    //     }
-    //     switch (index) {
-    //         case 0:
-    //             wepy.navigateTo({
-    //                 url: 'myMp',
-    //             });
-    //             break;
-    //         case 1:
-    //             wepy.navigateTo({
-    //                 url: 'UploadInfo',
-    //             });
-    //             break;
-    //         case 2:
-    //             wepy.navigateTo({
-    //                 url: 'OrderList',
-    //             });
-    //             break;
-    //         case 3:
-    //             wepy.navigateTo({
-    //                 url: 'progress',
-    //             });
-    //             break;
-    //         case 4:
-    //             if (this.business.selected.app_type === 1) {
-    //                 alert('当前小程序为优享小程序，不用提交注册信息', '提示');
-    //                 return;
-    //             }
-    //             if (this.business.selected.sign === 1) {
-    //                 wepy.navigateTo({
-    //                     url: 'registed',
-    //                 });
-    //             } else {
-    //                 wepy.setStorageSync('registMappid', this.business.selected.id);
-    //                 wepy.navigateTo({
-    //                     url: 'registMainAccount',
-    //                 });
-    //             }
-    //             break;
-    //         case 5:
-    //             wepy.navigateTo({
-    //                 url: 'OpenPay',
-    //             });
-    //             break;
-    //         case 6:
-    //             wepy.navigateTo({
-    //                 url: 'feedback',
-    //             });
-    //             break;
-    //         default:
-    //             break;
-    //     }
-    // }
     checkBeforeJump (text) {
-        console.log('this.business.selected.', this.business.selected);
+        // console.log('this.business.selected.', this.business.selected);
         if (!this.business.mpCount) {
             alert('您还未购买小程序，请登录e.58.com进行购买', '提示');
             return;
