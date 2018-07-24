@@ -73,9 +73,8 @@ export default class Index extends wepy.page {
         this.$apply();
     }
     toEdit() {
-        const ppu = wepy.getStorageSync('ppu');
         wepy.navigateTo({
-            url: `articleComponentCreate?ppu=${ppu}&group=${this.group}&id=${this.id}&name=${this.name}`,
+            url: `articleComponentCreate?group=${this.group}&id=${this.id}&name=${this.name}`,
         });
     }
 }
