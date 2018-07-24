@@ -118,6 +118,8 @@ export default class Index extends wepy.page {
                 pageSize,
                 mpId,
             });
+            console.log('===================>>>>>>>>>>>>>>>>');
+            console.log(data);
 
             if (data && data.length) {
                 this.coupons.push(...data);
