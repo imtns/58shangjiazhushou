@@ -1,5 +1,5 @@
 <template>
-    <view class="container">
+    <view class="containe">
         <!-- 提示步骤start -->
         <RemindBar :currentstep="currentstep"></RemindBar>
         <!-- 提示步骤end -->

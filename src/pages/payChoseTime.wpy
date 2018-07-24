@@ -1,5 +1,5 @@
 <template>
-    <view class="container">
+    <view class="containe">
         <view class="pay-header">
             <!-- <view class="payrecord-type">类型选择</view> -->
             <!-- <view class="select-icon {{choseMonth === '1' ? 'selected' : ''}}" @tap="choseType" data-type="1">按月选择</view> -->

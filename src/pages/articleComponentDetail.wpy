@@ -49,6 +49,8 @@ export default class Index extends wepy.page {
         this.id = id;
         this.name = name;
         this.$apply();
+    }
+    onShow() {
         this.loadData();
     }
     async loadData() {

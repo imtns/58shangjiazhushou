@@ -1,5 +1,5 @@
 <template>
-    <view class="container">
+    <view class="containe">
         <view class="section">
             <view class="item required border-bottom">
                 <text>服务名称</text>
@@ -399,7 +399,7 @@ export default class Index extends wepy.page {
 view {
     box-sizing: border-box;
 }
-.container {
+.containe {
     font-size: 28rpx;
     margin-bottom: 122rpx;
 }

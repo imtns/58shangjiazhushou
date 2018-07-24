@@ -127,7 +127,7 @@
         .list-image{
             width:120rpx;
             height:120rpx;
-            background:pink;
+            // background:pink;
             position:absolute;
             left:-20rpx;
             top:50%;
@@ -179,7 +179,7 @@
             margin-top:-25rpx;
         }
         .xiajia.border-btn{
-            border: 2px solid #27BC28;
+            border-color:#27BC28;
             color: #27BC28;
         }
     }

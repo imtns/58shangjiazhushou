@@ -1,5 +1,5 @@
 <template>
-    <view class="container">
+    <view class="containe">
         <view class="regist-title" wx:if="{{currentApp.length>0}}">当前小程序</view>
         <view class="pro-item" wx:if="{{currentApp.length>0}}">
             <view class="pro-item-line" wx:for="{{currentApp}}" wx:key="{{index}}">
