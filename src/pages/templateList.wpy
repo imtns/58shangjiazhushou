@@ -8,12 +8,12 @@
 </view>
 <view class="list" wx:if="{{list.length}}">
     <repeat for="{{list}}" item="item" index="index">
-        <view class="item" @tap="goEdit" data-releaseId="{{item.releaseId}}" data-id="{{item.id}}">
-            <view wx:if="my" @tap="closeLayer" class="mySetting {{delLayer?'delLayer':''}}">   
-                <view class="delBtn" data-id="1" @tap.stop="del" hidden="{{!delLayer}}">删除</view>     
+        <view class="item" @tap="goEdit" data-releaseId="{{item.releaseId}}" data-status="{{item.status}}" data-index="{{index}}" data-id="{{item.id}}">
+            <view wx:if="my" @tap.stop="closeLayer" class="mySetting {{delLayer?'delLayer':''}}">   
+                <view class="delBtn" data-releaseId="{{item.releaseId}}" data-index="{{index}}" @tap.stop="del" hidden="{{!delLayer}}">删除</view>     
             </view>
-            <view class="tip" hidden="{{!my}}">{{status[item.status]}}</view>
-            <view class="delTip" hidden="{{!my}}" @tap="showDelLayer">...</view>
+            <view class="tip" hidden="{{!my || item.status==6}}">{{status[item.status]}}</view>
+            <view class="delTip" hidden="{{!my}}" @tap.stop="showDelLayer">...</view>
             <view class="thumb"><image mode="aspectFill" src="{{item.image}}"></image></view>
             <view class="desc">{{item.userDesc}}</view>
         </view>
@@ -28,10 +28,12 @@
 <script>
 import wepy from 'wepy';
 import { get } from '../utils/ajax';
+import { toast } from '../utils/index';
 
 const basicTemplateUrl = '/business/templateList';
 const myTemplateUrl = `/business/myTemplateList/${wx.getStorageSync('current_mpid')}`;
 const getTemplateIdUrl = '/business/init/struct';
+const delTemplateUrl = '/business/myTemplate/del';
 const app = require('../utils/globalData');
 
 export default class Index extends wepy.page {
@@ -52,7 +54,8 @@ export default class Index extends wepy.page {
           2: '审核成功',
           3: '审核失败',
           4: '已上线',
-          5: '保存',
+          5: '新',
+          6: '',
       },
   };
   async onLoad() {
@@ -71,16 +74,26 @@ export default class Index extends wepy.page {
       showDelLayer() {
           this.delLayer = true;
       },
-      del(e) {
-          const { id } = e.target.dataset;
-          console.log(id);
+      async del(e) {
+          const { releaseid, index } = e.currentTarget.dataset;
+          try {
+              await get(delTemplateUrl, { releaseId: releaseid });
+              this.list.splice(index, 1);
+              this.$apply();
+              toast('删除成功');
+          } catch (ee) {
+              toast(ee);
+          }
       },
       closeLayer() {
           this.delLayer = false;
       },
       async goEdit(e) {
           if (this.my) {
-              const { releaseid } = e.currentTarget.dataset;
+              const { releaseid, index, status } = e.currentTarget.dataset;
+              if (status === 5) {
+                  this.list[index].status = 6;
+              }
               wx.setStorageSync('releaseId', releaseid);
           } else {
               const { id } = e.currentTarget.dataset;

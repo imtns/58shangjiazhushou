@@ -20,7 +20,7 @@
                     class="list-item article-item"
                     :class="{ selected: item.choseStatu}"
                     data-item="{{item}}"
-                    @tap.stop="editChose({{ item.id }}, {{ index }}, {{item.name}})">
+                    @tap.stop="editChose({{ item.id }}, {{ index }})">
                     <view class="article-title">{{item.title}}</view>
                     <view class="article-detail">
                         <view class="article-detail-flex">
