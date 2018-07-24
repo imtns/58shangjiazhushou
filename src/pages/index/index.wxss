@@ -1,0 +1,79 @@
+
+/**index.wxss**/
+.container{
+  padding-top:110rpx !important;
+  padding-bottom:80rpx;
+}
+
+.wrapper{
+  width:150rpx;
+  margin:0 auto;
+  background-color:aqua;
+}
+.row-1{
+  display:flex;
+}
+.row-1 .column-1-1{
+  width:50rpx;
+  height:50rpx;
+  background-color:blue;
+}
+.row-1 .column-1-2{
+  width:50rpx;
+  height:50rpx;
+  background-color:bisque;
+}
+.row-1 .column-1-3{
+  width:50rpx;
+  height:50rpx;
+  background-color:pink;
+}
+/* 微信授权 */
+.userinfo-authorize-mask{
+  width:100vw;
+  height:100vh;
+  position:absolute;
+  top:0;
+  left:0;
+  z-index: 99;
+  background:rgba(0,0,0,.5)
+}
+.userinfo-authorize-container{
+  font-family: PingFangSC-Regular;
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:#fff;
+  z-index: 100;
+  border-radius: 8rpx;
+}
+.userinfo-authorize-title{
+  line-height: 88rpx;
+  font-size:36rpx;
+  text-align: center;
+  color:#333;
+  border-bottom:2rpx solid #f3f3f3;
+}
+.userinfo-authorize-content{
+  font-size:28rpx;
+  padding:20rpx 30rpx;
+  white-space: nowrap;
+  border-bottom:2rpx solid #f3f3f3;
+}
+.userinfo-authorize-content-text{
+  font-size:24rpx;
+}
+.userinfo-authorize-footer{
+  display:flex;
+}
+.userinfo-authorize-footer-allow{
+  background:#fff;
+  margin:0;
+  padding:0;
+  flex:1;
+  text-align: center;
+}
+.userinfo-authorize-footer-allow::after{
+  display:none;
+}
