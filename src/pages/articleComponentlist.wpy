@@ -195,8 +195,6 @@ export default class ArticleComponentList extends wepy.page {
         this.$apply();
     }
     addArticle() {
-        const ppu = wepy.getStorageSync('ppu');
-        console.log('list', this.name);
         wepy.navigateTo({
             url: `articleComponentCreate?group=${this.group}&name=${this.name}`,
         });
