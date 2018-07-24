@@ -277,10 +277,10 @@ export default class Home extends wepy.page {
     }
     onLoad () {
         this.loadExtJson();
+        this.setGlobalMpId(this.business.selected.id);
     }
     async onShow () {
         await this.loadData();
-        this.setGlobalMpId(this.business.selected.id);
     }
     formatedMp (item) {
         const mp = item;
