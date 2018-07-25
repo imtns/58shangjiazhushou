@@ -6,25 +6,25 @@
         <view class="item-flex">
             <view class="item-flex-line height-100">
                 <view class="item-base">{{serviceName}}</view>
-                <view class="item-base align-right"><image src="./assets/phone-icon.png"></image></view>
+                <view class="item-text align-right"><image src="./assets/phone-icon.png"></image></view>
             </view>
         </view>
         <view class="item-flex margin-top-20">
             <view class="item-flex-line">
                 <view class="item-base">服务时长</view>
-                <view class="item-base align-right">{{duration}} {{durationUnit === 1 ? '分钟' : '小时'}}</view>
+                <view class="item-text align-right">{{duration}} {{durationUnit === 1 ? '分钟' : '小时'}}</view>
             </view>
         </view>
         <view class="item-flex">
             <view class="item-flex-line">
                 <view class="item-base">可预约时间段</view>
-                <view class="item-base align-right">{{serviceStartTime - serviceEndTime}}</view>
+                <view class="item-text align-right">{{timeZone}}</view>
             </view>
         </view>
         <view class="item-flex">
-            <view class="item-flex-line">
+            <view class="item-flex-line multiLine">
                 <view class="item-base">商家地址</view>
-                <view class="item-base align-right right-angel padding-right-20">{{address}}</view>
+                <view class="align-right right-angel padding-right-20 address">{{address}}</view>
             </view>
         </view>
         <!-- <view class="item-flex">
@@ -61,8 +61,7 @@ export default class OrderComponentDetail extends wepy.page {
         pics: '',
         serviceName: '',
         serviceDuaring: '',
-        serviceStartTime: '',
-        serviceEndTime: '',
+        timeZone: '',
         address: '',
         serviceDetailInfo: '',
         duration: '',
@@ -87,8 +86,8 @@ export default class OrderComponentDetail extends wepy.page {
                 pics,
                 serviceName,
                 serviceDuaring,
-                serviceStartTime,
-                serviceEndTime,
+                serviceStarttime,
+                serviceEndtime,
                 address,
                 serviceDetailInfo,
                 duration,
@@ -98,8 +97,7 @@ export default class OrderComponentDetail extends wepy.page {
             this.pics = pics;
             this.serviceName = serviceName;
             this.serviceDuaring = serviceDuaring;
-            this.serviceStartTime = serviceStartTime;
-            this.serviceEndTime = serviceEndTime;
+            this.timeZone = `${serviceStarttime} - ${serviceEndtime}`;
             this.address = address;
             this.serviceDetailInfo = serviceDetailInfo;
             this.duration = duration;
@@ -113,7 +111,7 @@ export default class OrderComponentDetail extends wepy.page {
     async manageProduct() {
         try {
             const { id, status } = this;
-            const msg = status === 2 ? '下架成功!' : '上架成功!';
+            const msg = status === 2 ? '上架成功!' : '下架成功!';
             await get('/businessService/update', {
                 id,
                 status: status === 2 ? 0 : 2,
@@ -148,50 +146,68 @@ export default class OrderComponentDetail extends wepy.page {
     }
     .item-flex{
         background:#fff;
-        padding:0 30rpx;
+        .height-100.item-flex-line{
+            height:100rpx;
+            line-height:100rpx;
+            padding: 0;
+        }
         .item-flex-line{
             border-bottom:1rpx solid #f6f6f6;
-            height:88rpx;
-            line-height:88rpx;
+            // height:88rpx;
+            padding:30rpx 0;
+            margin:0 30rpx;
             display:flex;
-            &.height-100{
-                height:100rpx;
-                line-height:100rpx;
-            }
             .item-base{
+                width:180rpx;
+            }
+            .item-base,.item-text{
+                font-family: PingFangSC-Regular;
+                font-size: 28rpx;
+                color: #333333;
+                letter-spacing: 0;
+            }
+            .item-text{
+                flex:1;
+                position:relative;
+                image{
+                    width:44rpx;
+                    height:44rpx;
+                    position:absolute;
+                    right:0;
+                    top:50%;
+                    margin-top:-22rpx;
+                }
+            }
+            .align-right{
+                text-align:right;
+            }
+            .right-angel{
+                &::before{
+                    position:absolute;
+                    right:0;
+                    top:50%;
+                    margin-top:-13rpx;
+                    content:'';
+                    width:15rpx;
+                    height:26rpx;
+                    background:url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png') no-repeat center;
+                    background-size: 15rpx 26rpx;
+                }
+            }
+            .padding-right-20{
+                padding-right:20rpx;
+            }
+            .address{
                 font-family: PingFangSC-Regular;
                 font-size: 28rpx;
                 color: #333333;
                 letter-spacing: 0;
                 flex:1;
                 position:relative;
-                &.align-right{
-                    text-align:right;
-                }
-                image{
-                    width:44rpx;
-                    height:44rpx;
-                    position:absolute;
-                    right:0;
-                    top:38rpx;
-                }
-                &.right-angel{
-                    &::before{
-                        position:absolute;
-                        right:0;
-                        top:50%;
-                        margin-top:-13rpx;
-                        content:'';
-                        width:15rpx;
-                        height:26rpx;
-                        background:url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png') no-repeat center;
-                        background-size: 15rpx 26rpx;
-                    }
-                }
-                &.padding-right-20{
-                    padding-right:20rpx;
-                }
             }
+        }
+        .multiLine.item-flex-line{
+            min-height:88rpx;
         }
         &.margin-top-20{
             margin-top:20rpx;
@@ -199,7 +215,7 @@ export default class OrderComponentDetail extends wepy.page {
         .item-flex-text{
             background:#fff;
             font-size: 28rpx;
-            padding:20rpx 10rpx;
+            padding:20rpx 30rpx;
             line-height:40rpx;
             letter-spacing: 0.3rpx;
         }
