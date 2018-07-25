@@ -28,6 +28,11 @@ export default class CouponMixin extends wepy.mixin {
         return result;
     }
 
+    getCurrentDate() {
+        const today = new Date();
+        return `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate}`;
+    }
+
     /**
      * @desc 检查优惠券是否可以使用
      * @param {Object} coupon 优惠券对象
