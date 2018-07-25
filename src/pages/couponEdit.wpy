@@ -299,9 +299,6 @@ export default class Index extends wepy.page {
             applyType,
             serviceIds,
         });
-
-        console.log('======> this.form');
-        console.log(this.form);
     }
 
     async loadData(id) {
