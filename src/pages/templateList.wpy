@@ -174,7 +174,7 @@ export default class Index extends wepy.page {
       } else {
           wx.setStorageSync('verify', false);
       }
-      if (this.list.length >= 3) {
+      if (this.list.length >= 10) {
           this.myTemplateFull = true;
       }
       this.$apply();
