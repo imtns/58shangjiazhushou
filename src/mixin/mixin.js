@@ -29,6 +29,7 @@ const mixinConfig = {
         isEditing: false,
         pageModule: {},
         tabBarItems: [],
+        pageKey: 'index',
     },
     async onLoad() {
         const { model = '' } = wx.getSystemInfoSync();
