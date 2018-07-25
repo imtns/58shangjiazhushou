@@ -29,6 +29,10 @@ import couponView from '../components/Coupon';
 
 import CouponMixin from '../mixin/coupon';
 
+const pageSize = 10;
+let pageNum = 1;
+let noMore = false;
+
 export default class Index extends wepy.page {
     config = {
         navigationBarTitleText: '优惠券',
@@ -69,11 +73,58 @@ export default class Index extends wepy.page {
             });
 
             // 筛选出有库存的，并且可用的
-            this.coupons = coupons.filter(item => item.usable && item.totalCount > 0);
+            this.coupons = coupons.filter(item => item.usable && +item.totalCount > 0);
             this.$apply();
         } catch (e) {
             this.errorHandler(e);
         }
+    }
+
+    reloadData() {
+        this.init();
+        this.loadData();
+    }
+
+    init() {
+        noMore = false;
+        pageNum = 1;
+        this.coupons = [];
+    }
+
+    updated() {
+        pageNum += 1;
+    }
+
+    async loadData() {
+        try {
+            const { mpId } = this;
+            const data = await this.getCoupons({
+                pageNum,
+                pageSize,
+                mpId,
+            });
+
+            if (data && data.length) {
+                this.coupons.push(...data);
+            }
+
+            if (data && (data.length < pageSize)) {
+                noMore = true;
+            }
+
+            this.$apply();
+        } catch (e) {
+            this.errorHandler(e);
+        }
+    }
+
+    onReachBottom() {
+        if (noMore) {
+            return;
+        }
+
+        this.updated();
+        this.loadData();
     }
 
     chooseCoupon(coupon) {

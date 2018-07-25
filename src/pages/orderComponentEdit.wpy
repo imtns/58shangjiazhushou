@@ -276,13 +276,14 @@ export default class Index extends wepy.page {
 
     async onLoad({ id, resourceGroup }) {
         const mpid = wepy.getStorageSync('current_mpid');
+        this.mpid = mpid;
+        this.$apply();
 
         if (id) {
             await this.loadData(id);
             this.updateData();
         }
 
-        this.mpid = mpid;
         Object.assign(this.form, {
             resourceGroup,
             mpid,
@@ -340,8 +341,10 @@ export default class Index extends wepy.page {
                 durationUnit,
                 duration,
                 serviceDetailInfo,
-                serviceUserName,
-                serviceTelphone,
+                // serviceUserName,
+                // serviceTelphone,
+                linker,
+                mobile,
                 serviceStarttime,
                 serviceEndtime,
                 provinceStr,
@@ -365,8 +368,8 @@ export default class Index extends wepy.page {
                 durationUnit,
                 duration,
                 serviceDetailInfo,
-                serviceUserName,
-                serviceTelphone,
+                serviceUserName: linker,
+                serviceTelphone: mobile,
                 serviceStarttime,
                 serviceEndtime,
                 provinceStr,
