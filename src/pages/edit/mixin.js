@@ -43,12 +43,29 @@ export default class Mixin extends wepy.mixin {
         }));
         console.log(result);
     }
+    onShow() {
+        const result = app.globalData.pageData.filter(obj => obj.id === this.pageId);
+        this.pageIndex = app.globalData.pageData.findIndex(obj => obj.id === this.pageId);
+        this.pageData = JSON.parse(JSON.stringify(result));
+    }
     async addBanner(type) {
         const that = this;
         wx.chooseImage({
             sourceType: [type],
+            count: 1,
             success(res) {
-                const { tempFilePaths } = res;
+                const { tempFilePaths, tempFiles } = res;
+                wx.getImageInfo({
+                    src: tempFilePaths[0],
+                    success(ress) {
+                        if (ress.width < 200 && ress.height < 200) {
+                            console.log((ress));
+                        }
+                    },
+                });
+                if (tempFiles.size > 4000 * 1024 || tempFiles.size) {
+                    toast('超出照片限制最大4M, 请重新上传');
+                }
                 uploader(tempFilePaths[0], (e, result) => {
                     if (e) {
                         toast('上传失败，请重试。');
@@ -84,12 +101,13 @@ export default class Mixin extends wepy.mixin {
         //   console.log(tempFilePaths);
     }
     methods = {
-        actionSheepTap() {
+        actionSheepTap(e) {
             const that = this;
+            const { type = 'image' } = e.currentTarget.dataset;
             wx.showActionSheet({
-                itemList: ['拍摄', '添加本地照片', '去图片库选择'],
-                success (e) {
-                    if (e.tapIndex === 0) {
+                itemList: ['拍摄', '添加本地照片', type === 'video' ? '去视频库选择' : '去图片库选择'],
+                success (tap) {
+                    if (tap.tapIndex === 0) {
                         that.addBanner('camera');
                     } else if (e.tapIndex === 1) {
                         that.addBanner('album');

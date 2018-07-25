@@ -252,9 +252,9 @@ module.exports = {
                 current: 0,
                 page_data: page_data,
             };
-            if (page === 'index') {
-                app.globalData.pageData = page_data;
-            }
+            // if (page === 'index') {
+            app.globalData.pageData = page_data;
+            // }
             this.setData(newPageData);
             cb && cb();
         } catch (e) {

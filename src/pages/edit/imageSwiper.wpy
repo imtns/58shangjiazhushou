@@ -3,11 +3,11 @@
         <view class="list">
             <view class="item">
                 <swiper indicator-dots="{{indicatorDots}}">
-                <block wx:for="{{pageData[0].props.cfg.images}}">
-                    <swiper-item>
-                        <image src="{{item.src}}" class="slide-image" mode="aspectFill"/>
-                    </swiper-item>
-                </block>
+                    <repeat for="{{pageData[0].props.cfg.images}}" index="index" item="item">
+                        <swiper-item>
+                            <image src="{{item.src}}" class="slide-image" mode="aspectFill" data-index="{{index}}" @tap="onImageClick"/>
+                        </swiper-item>
+                    </repeat>
                 </swiper>
             </view>
         </view>
@@ -54,7 +54,7 @@
 <script>
 import wepy from 'wepy';
 import Mixin from './mixin';
-import { toast } from '../../utils';
+import { toast, previewImage } from '../../utils';
 // import modulesParse from '../../utils/modulesParse';
 
 const app = require('../../utils/globalData');
@@ -66,6 +66,7 @@ const { post } = require('../../utils/ajax');
 export default class ImageSwiper extends wepy.page {
   config = {
       navigationBarTitleText: '轮播广告',
+      disableScroll: true,
   };
   mixins = [Mixin];
 
@@ -82,6 +83,11 @@ export default class ImageSwiper extends wepy.page {
       console.log(this.pageModule);
   }
   methods = {
+      onImageClick(e) {
+          const { index } = e.currentTarget.dataset;
+          const images = this.pageData[0].props.cfg.images.map(img => img.src);
+          previewImage(images, index);
+      },
       del(e) {
           const { index } = e.currentTarget.dataset;
           this.pageData[0].props.cfg.images.splice(index, 1);

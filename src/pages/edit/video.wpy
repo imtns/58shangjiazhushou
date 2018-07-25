@@ -3,16 +3,14 @@
         <view class="title">
             门店视频
         </view>
-        <view class="list">
-            <repeat for="{{videos}}" class="list">
-                <view class="item">
-                    <video  src="{{item.src}}" enable-danmu danmu-btn controls></video>
-                </view>
-            </repeat>
-        </view>
+        <scroll-view scroll-y class="list">
+            <view class="item">
+                <video  src="{{video.src}}" enable-danmu danmu-btn controls></video>
+            </view>
+        </scroll-view>
     </view>
     <view class="video-editLayer">
-        <view class="saveBar">保存</view>
+        <view class="saveBar" @tap="save">保存</view>
         <view class="edit-cell">
             <view class="edit-label">标题名称</view>
             <view class="edit-input">
@@ -24,13 +22,13 @@
 
             </view>
             <view class="tobeAdded">
-                <view class="scroll-view-item addButton" style="{{videos.length==3?'display:none':''}}" @tap="addVideo">
+                <view class="scroll-view-item addButton" style="{{videos.length==1?'display:none':''}}" @tap="actionSheepTap" data-type="video">
                    <image src="../assets/plus.png"></image>
                 </view>
                 <repeat for="{{videos}}" key="index" index="index" item="item">
                     <view class="scroll-view-item {{thumbActive == index?'active':''}}" data-index="{{index}}"  @tap="thumbClick">
                         <image src="{{item.cover}}"></image>
-                        <view class="span active">{{index}}</view>
+                        <view class="span active">{{index + 1}}</view>
                         <image class="del {{thumbActive == index?'active':''}}" src="../assets/del.png" @tap="del" data-index="{{index}}"></image>
                     </view>
                 </repeat>
@@ -44,17 +42,19 @@ import Mixin from './mixin';
 import { uploader } from '../../utils/uploader';
 import { toast } from '../../utils';
 
+const app = require('../../utils/globalData');
 const { post } = require('../../utils/ajax');
 
 const loadVideo = '/businessResource/getlist?jjqwiaud';
 export default class Video extends wepy.page {
   config = {
-      navigationBarTitleText: '门店照片',
+      navigationBarTitleText: '门店视频',
   };
   data = {
       videos: [],
       thumbActive: false,
       name: '',
+      video: {},
   };
   mixins = [Mixin];
   async onLoad() {
@@ -64,12 +64,16 @@ export default class Video extends wepy.page {
           pageSize: 99,
           appid: 'yxuEvbSU3M0zGwxuw',
       });
-      this.videos = data.map(({ resourceName, resourceUrl, extend }) => ({
+      this.videos = data.map(({
+          resourceName, resourceUrl, extend, id,
+      }) => ({
           src: resourceUrl,
           name: resourceName,
           selected: resourceUrl === this.selectedVideo,
           cover: extend ? JSON.parse(extend).sourceCoverUrl : '',
+          id,
       }));
+      [this.video] = this.videos;
       [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
       this.$apply();
       console.log(this.videos);
@@ -100,8 +104,17 @@ export default class Video extends wepy.page {
               this.$apply();
           });
       },
+      save() {
+          this.pageModule.params.videoId = this.video.id;
+          [app.globalData.pageData[this.pageIndex]] = this.pageData;
+          app.globalData.modules[this.pageIndex] = this.pageModule;
+          wx.navigateBack({
+              delta: 1,
+          });
+      },
       thumbClick(e) {
           this.thumbActive = e.currentTarget.dataset.index;
+          this.video = this.videos[this.thumbActive];
       },
   };
   async saveVideo(src) {
@@ -231,6 +244,7 @@ export default class Video extends wepy.page {
 }
 .video-container {
   margin-top: 25rpx;
+  padding-bottom:500rpx;
   width: 100%;
   background: white;
   .title {
@@ -243,6 +257,7 @@ export default class Video extends wepy.page {
 .video-container .list {
   width: 100%;
   margin: 0 auto;
+  height:610rpx;
   display: flex;
   flex-wrap: wrap;
   .item {

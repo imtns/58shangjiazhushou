@@ -29,10 +29,10 @@
         </block>
         <block wx:if="{{!cfg.tel}}">
             <view class="mod-me">
-                <view class="mod-me-list" bindtap="makePhoneCall" data-number="{{cfg.telnum || data}}">
+                <view class="mod-me-list" >
                     <image class="mod-me-icon" src="../assets/me/hotline.png"></image>
                     <view class="mod-me-text">客服热线</view>
-                    <view class="mod-me-text mod-me-text-number">{{cfg.telnum || data}}</view>
+                    <view class="mod-me-text mod-me-text-number">请输入</view>
                     <view class="mod-arrow"></view>
                 </view>
             </view>

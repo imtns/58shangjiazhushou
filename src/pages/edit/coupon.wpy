@@ -34,6 +34,7 @@ const app = require('../../utils/globalData');
 export default class Index extends wepy.page {
     config = {
         navigationBarTitleText: '优惠券',
+        disableScroll: true,
     }
     data = {
         coupons: [],

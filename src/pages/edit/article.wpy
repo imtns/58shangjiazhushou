@@ -51,7 +51,7 @@
 <script>
 import wepy from 'wepy';
 import Mixin from './mixin';
-import { picSrcDomain } from '../../utils';
+import { picSrcDomain, toast } from '../../utils';
 
 const app = require('../../utils/globalData');
 const { get } = require('../../utils/ajax');
@@ -59,6 +59,7 @@ const { get } = require('../../utils/ajax');
 export default class Article extends wepy.page {
   config = {
       navigationBarTitleText: '文章',
+      disableScroll: true,
   };
   mixins = [Mixin];
   data = {
@@ -109,13 +110,14 @@ export default class Article extends wepy.page {
       },
       save() {
           const selectArticles = this.list.filter(obj => obj.checked === true);
+          if (selectArticles.length === 0) {
+              toast('至少选择一篇文章');
+              return;
+          }
           this.params.articleIds = selectArticles.map(art => art.id).join(',');
+          this.pageData[0].props.data = {};
           selectArticles.forEach((item, index) => {
-              if (this.pageData[0].props.data[index]) {
-                  this.pageData[0].props.data[index].title = item.title;
-                  this.pageData[0].props.data[index].cover = item.cover;
-                  this.pageData[0].props.data[index].intro = item.intro;
-              }
+              this.pageData[0].props.data[index] = item;
           });
           console.log(JSON.stringify(this.params));
           this.pageModule.params = this.params;
@@ -153,7 +155,7 @@ export default class Article extends wepy.page {
   async loadArticleGroup() {
       const { data } = await get('/businessArticle/groups', { appid: this.extConfig.appId });
       this.group = data;
-      if (Object.keys(JSON.parse(this.pageData.params)).length !== 0) {
+      if (this.pageData.params && Object.keys(JSON.parse(this.pageData.params)).length !== 0) {
           this.articleGroupName = this.group.find(obj => obj.id === JSON.parse(this.pageData.params).articleGroupId).name;
           this.params.articleGroupId = this.group.find(obj => obj.id === JSON.parse(this.pageData.params).articleGroupId).id;
       }
@@ -295,6 +297,8 @@ checkbox .wx-checkbox-input {
   margin-top: 20rpx !important;
 }
 .article-container {
+  height: 100%;
+  overflow: hidden;
   background: white;
   margin-top: 20rpx;
   .list {
