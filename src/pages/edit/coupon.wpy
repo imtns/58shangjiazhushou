@@ -75,7 +75,7 @@ export default class Index extends wepy.page {
             });
 
             // 去除掉无库存和过期的
-            this.coupons = coupons.filter(item => !item.unable && item.totalCount > 0);
+            this.coupons = coupons.filter(item => item.usable && item.totalCount > 0);
             this.previewList.forEach((item) => {
                 const { id } = item;
                 const target = this.coupons.find((c) => {
