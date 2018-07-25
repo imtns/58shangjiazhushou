@@ -16,7 +16,7 @@
                 wx:if="{{listData.length > 0}}">
                 <view
                     class="list-item order-component-list"
-                    @tap.stop="editChose({{item.id}}, {{index}}, {{item.status}})"
+                    @tap.stop="editChose({{item.id}}, {{index}})"
                     :class="{ selected: item.choseStatu}"
                     wx:for="{{listData}}"
                     wx:key="{{index}}"
@@ -100,7 +100,7 @@ export default class ArticleComponentList extends wepy.page {
         this.loadList();
     }
     methods = {
-        editChose(id, index, status) {
+        editChose(id, index) {
             if (this.isEditing) {
                 const item = this.listData[index];
                 const itemIndex = this.delList.length === 0 ? -2 : this.delList.indexOf(id);
@@ -115,11 +115,6 @@ export default class ArticleComponentList extends wepy.page {
                 }
                 this.$apply();
                 console.log(this.delList);
-                return;
-            }
-            // 点击跳转详情页面
-            if (status === 2) {
-                alert('服务未上架！');
                 return;
             }
             wepy.navigateTo({
