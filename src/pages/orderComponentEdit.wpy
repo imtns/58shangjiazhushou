@@ -89,7 +89,7 @@
             placeholder="详细描述下您的服务内容吧~"
             placeholder-class="placeholder"
             value="{{ form.serviceDetailInfo }}"
-            @blur="setFormData('serviceDetailInfo')"></textarea>
+            @input="setFormData('serviceDetailInfo')"></textarea>
         </view>
         <view class="section">
             <view class="item border-bottom">
