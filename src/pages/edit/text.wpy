@@ -124,8 +124,11 @@ export default class EditText extends wepy.page {
               return;
           }
           if (this.editMultiple) {
-              const empty = this.pageData[0].props.cfg.text.every((element) => element.value);
-              if ((empty)) toast('请至少输入一行文本');
+              //   const empty = this.pageData[0].props.cfg.texts.every((element) => element.text);
+              if ((this.pageData[0].props.cfg.texts.filter(item => item.text !== '').length === 0)) {
+                  toast('请至少输入一行文本');
+                  return;
+              }
           }
           this.pageData[0].props.cfg.theme = this.editMultiple ? '2' : '1';
           this.pageModule.cfg = this.pageData[0].props.cfg;

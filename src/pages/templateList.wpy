@@ -9,11 +9,11 @@
 <view class="list" wx:if="{{list.length}}">
     <repeat for="{{list}}" item="item" index="index">
         <view class="item" @tap="goEdit" data-releaseId="{{item.releaseId}}" data-status="{{item.status}}" data-index="{{index}}" data-id="{{item.id}}">
-            <view wx:if="my" @tap.stop="closeLayer" class="mySetting {{delLayer?'delLayer':''}}">   
-                <view class="delBtn" data-releaseId="{{item.releaseId}}" data-index="{{index}}" @tap.stop="del" hidden="{{!delLayer}}">删除</view>     
+            <view wx:if="my" @tap.stop="closeLayer" data-index="{{index}}"  class="mySetting {{delLayer[index]?'delLayer':''}}">   
+                <view class="delBtn" data-releaseId="{{item.releaseId}}" data-index="{{index}}" @tap.stop="del" hidden="{{!delLayer[index]}}">删除</view>     
             </view>
-            <view class="tip" hidden="{{!my || item.status==6}}">{{status[item.status]}}</view>
-            <view class="delTip" hidden="{{!my}}" @tap.stop="showDelLayer">...</view>
+            <view class="tip" hidden="{{!my || hideTag[item.releaseId]}}">{{status[item.status]}}</view>
+            <view class="delTip" hidden="{{!my}}" data-index="{{index}}" @tap.stop="showDelLayer">...</view>
             <view class="thumb"><image mode="aspectFill" src="{{item.image}}"></image></view>
             <view class="desc">{{item.userDesc}}</view>
         </view>
@@ -43,9 +43,10 @@ export default class Index extends wepy.page {
   data = {
       left: 160,
       tabSelect: 1,
+      pageNum: 1,
       my: true,
-      delLayer: false,
-      list: {},
+      delLayer: {},
+      list: [],
       status: {
           '-2': '删除',
           '-1': '初始化',
@@ -57,22 +58,29 @@ export default class Index extends wepy.page {
           5: '新',
           6: '',
       },
+      noMore: false,
+      hideTag: {
+
+      },
   };
   async onLoad() {
       this.loadMyTemplate();
   }
   methods = {
       tabClick(e) {
-          this.list = null;
+          this.list = [];
           const { distance, id } = e.target.dataset;
           this.left = distance;
           console.log(id);
           this.tabSelect = id;
           this.my = id === '1';
+          this.pageNum = 1;
           if (this.my) { this.loadMyTemplate(); } else { this.loadBasicTemplate(); }
       },
-      showDelLayer() {
-          this.delLayer = true;
+      showDelLayer(e) {
+          this.delLayer = {};
+          const { index } = e.currentTarget.dataset;
+          this.delLayer[index] = true;
       },
       async del(e) {
           const { releaseid, index } = e.currentTarget.dataset;
@@ -85,18 +93,22 @@ export default class Index extends wepy.page {
               toast(ee);
           }
       },
-      closeLayer() {
-          this.delLayer = false;
+      closeLayer(e) {
+          const { index } = e.currentTarget.dataset;
+          this.delLayer[index] = false;
       },
       async goEdit(e) {
+          const {
+              releaseid, status, id,
+          } = e.currentTarget.dataset;
+          this.delLayer = {};
           if (this.my) {
-              const { releaseid, index, status } = e.currentTarget.dataset;
               if (status === 5) {
-                  this.list[index].status = 6;
+                  wx.setStorageSync(`hideTag_${releaseid}`, true);
+                  this.hideTag[releaseid] = true;
               }
               wx.setStorageSync('releaseId', releaseid);
           } else {
-              const { id } = e.currentTarget.dataset;
               const { data } = await get(getTemplateIdUrl, {
                   templeteid: id,
                   mpId: wx.getStorageSync('current_mpid'),
@@ -108,25 +120,44 @@ export default class Index extends wepy.page {
           });
       },
   };
+  onReachBottom() {
+      if (this.noMore) return;
+      this.pageNum = this.pageNum + 1;
+      if (this.my) {
+          this.loadMyTemplate();
+      } else {
+          this.loadBasicTemplate();
+      }
+  }
   async loadBasicTemplate() {
       const { data } = await get(basicTemplateUrl, {
-          pageNum: 1,
-          pageSize: 20,
+          pageNum: this.pageNum,
+          pageSize: 10,
           mpId: wx.getStorageSync('current_mpid'),
           cate: -1,
       });
-      this.list = data;
+      if (data.length === 0) {
+          this.noMore = true;
+          return;
+      }
+      this.list.push(...data);
       this.$apply();
   }
   async loadMyTemplate() {
       console.log(app.globalData.extConfig);
       const { data } = await get(myTemplateUrl + wx.getStorageSync('current_mpid'), {
           pageNum: 1,
-          pageSize: 20,
+          pageSize: 10,
           v: 2,
           appid: app.globalData.extConfig.appId,
       });
       this.list = data;
+      this.list.forEach((item) => {
+          const hideTag = wx.getStorageSync(`hideTag_${item.releaseId}`);
+          if (hideTag) {
+              this.hideTag[item.releaseId] = true;
+          }
+      });
       this.$apply();
   }
 }
@@ -158,6 +189,7 @@ export default class Index extends wepy.page {
   width: 100%;
   margin: 0 auto;
   padding-left:18rpx;
+  margin-top:88rpx;
   .item {
     margin: 20rpx;
     width: 320rpx;
@@ -245,7 +277,7 @@ export default class Index extends wepy.page {
 .tabContainer {
   border-top: 1rpx solid #f3f3f3;
   border-bottom: 1rpx solid #f3f3f3;
-  position: relative;
+  position: fixed;
   width: 100%;
   height: 88rpx;
   top: 0;

@@ -16,7 +16,7 @@
 <import src="../../components/mod/tabBar/tabBar.wxml" />
 <view class="container">
   <view class="btn-area"> 
-      <view class="cancel" bindtap="cancelClick">取消</view>
+      <view class="cancel" bindtap="cancelClick" >{{isEditing?'取消':'发布'}}</view>
       <view class="save" bindtap="editClick">{{isEditing?'保存':'编辑'}}</view> 
   </view>
   <block wx:for="{{page_data}}" wx:for-item="component"  wx:key="{{component.name}}">

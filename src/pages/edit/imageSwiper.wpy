@@ -26,7 +26,7 @@
                 <repeat for="{{pageData[0].props.cfg.images}}" key="index" index="index" item="item">
                     <view class="scroll-view-item {{thumbActive == index?'active':''}}" data-index="{{index}}"  @tap="thumbClick">
                         <image src="{{item.src}}" mode="aspectFill"></image>
-                        <view class="span active">{{index}}</view>
+                        <view class="span active">{{index+1}}</view>
                         <image class="del {{thumbActive == index?'active':''}}" src="../assets/del.png" @tap="del" data-index="{{index}}" />
                     </view>
                 </repeat>
@@ -40,21 +40,20 @@
         </view>
          <view class="edit-cell">
             <view class="edit-label">跳转链接</view>
-             <!-- <view class="edit-input">
+             <view class="edit-input">
                 <picker range-key="name" bindchange="bindPickerChange" value="{{pageData[0].props.cfg.pageKey}}" range="{{pageList}}">
-                    <view wx:if="{{selectorIndex==-1 && !pageData[0].props.cfg.pageKey}}">请选择</view>
+                    <view wx:if="{{selectorIndex==-1 && !pageData[0].props.cfg.images[thumbActive].pageKey}}">请选择</view>
                     <view wx:else  class="picker">
-                        {{pageData[0].props.cfg.images[thumbActive]linkName || pageList[selectorIndex].name}}
+                        {{pageData[0].props.cfg.images[thumbActive].linkName || pageList[selectorIndex].name}}
                     </view>
                 </picker>
-            </view> -->
+            </view>
         </view>
     </view>
 </template>
 <script>
 import wepy from 'wepy';
 import Mixin from './mixin';
-import { uploader } from '../../utils/uploader';
 import { toast } from '../../utils';
 // import modulesParse from '../../utils/modulesParse';
 
@@ -83,32 +82,6 @@ export default class ImageSwiper extends wepy.page {
       console.log(this.pageModule);
   }
   methods = {
-      async addBanner() {
-          const { tempFilePaths } = await wepy.chooseImage();
-          uploader(tempFilePaths[0], (e, result) => {
-              if (e) {
-                  toast('上传失败，请重试。');
-                  return;
-              }
-              toast('上传成功。');
-              const src = result.content;
-              const name = this.picName;
-              this.pageModule.cfg.images.push({
-                  src: src,
-                  pageKey: '',
-                  title: name,
-                  linkName: this.linkName,
-              });
-              this.pageData[0].props.cfg.images.push({
-                  src: this.picDomain + src,
-                  title: name,
-                  linkName: this.linkName,
-                  pageKey: '',
-              });
-              this.saveImage(src, name);
-              this.$apply();
-          });
-      },
       del(e) {
           const { index } = e.currentTarget.dataset;
           this.pageData[0].props.cfg.images.splice(index, 1);
@@ -130,6 +103,8 @@ export default class ImageSwiper extends wepy.page {
           this.selectorIndex = e.detail.value;
           this.pageData[0].props.cfg.images[this.thumbActive].pageKey = this.pageList[e.detail.value].key;
           this.pageData[0].props.cfg.images[this.thumbActive].linkName = this.pageList[e.detail.value].name;
+          this.pageModule.cfg.images[this.thumbActive].pageKey = this.pageList[e.detail.value].key;
+          this.pageModule.cfg.images[this.thumbActive].linkName = this.pageList[e.detail.value].name;
       },
       save() {
           toast('已保存');
@@ -144,6 +119,7 @@ export default class ImageSwiper extends wepy.page {
           }, 1000);
       },
   };
+
   async saveImage(src, name) {
       await post('/businessResource/insert', {
           resourceType: 1,

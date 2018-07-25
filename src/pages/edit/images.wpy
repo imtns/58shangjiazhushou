@@ -114,13 +114,13 @@
 
             </view>
             <view class="tobeAdded">
-                <view class="scroll-view-item addButton"  @tap="addBanner">
+                <view class="scroll-view-item addButton"  @tap="actionSheepTap">
                    <image src="../assets/plus.png"></image>
                 </view>
                 <repeat for="{{pageData[0].props.cfg.images}}" key="index" index="index" item="item">
                     <view class="scroll-view-item {{thumbActive == index?'active':''}}" data-index="{{index}}"  @tap="thumbClick">
-                        <image src="{{item.src}}"></image>
-                        <view class="span active">{{index}}</view>
+                        <image src="{{item.src}}?w=90"></image>
+                        <view class="span active">{{index+1}}</view>
                         <image class="del {{thumbActive == index?'active':''}}" src="../assets/del.png" @tap="del" data-index="{{index}}" />
                     </view>
                 </repeat>
@@ -135,7 +135,12 @@
          <view class="edit-cell">
             <view class="edit-label">跳转链接</view>
             <view class="edit-input">
-                <input data-name="name"  value="{{pageData[0].props.cfg.images[thumbActive].linkName}}" class="weui-input" name="name" bindinput="bindLinkInput" placeholder="请输入名称" />
+                <picker range-key="name" bindchange="bindPickerChange" value="{{pageData[0].props.cfg.pageKey}}" range="{{pageList}}">
+                    <view wx:if="{{selectorIndex==-1 && !pageData[0].props.cfg.images[thumbActive].pageKey}}">请选择</view>
+                    <view wx:else  class="picker">
+                        {{pageData[0].props.cfg.images[thumbActive].linkName || pageList[selectorIndex].name}}
+                    </view>
+                </picker>
             </view>
         </view>
     </view>
@@ -143,8 +148,6 @@
 <script>
 import wepy from 'wepy';
 import Mixin from './mixin';
-import { uploader } from '../../utils/uploader';
-import { toast } from '../../utils';
 
 const app = require('../../utils/globalData');
 
@@ -167,33 +170,8 @@ export default class ShopImages extends wepy.page {
     onLoad() {
         [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
     }
+
   methods = {
-      async addBanner() {
-          const { tempFilePaths } = await wepy.chooseImage();
-          uploader(tempFilePaths[0], (e, result) => {
-              if (e) {
-                  toast('上传失败，请重试。');
-                  return;
-              }
-              toast('上传成功。');
-              const src = result.content;
-              const name = this.picName;
-              this.pageData[0].props.cfg.images.push({
-                  src,
-                  title: name,
-                  linkName: this.linkName,
-                  pageKey: '',
-              });
-              this.pageModule.cfg.images.push({
-                  src: src,
-                  pageKey: '',
-                  title: name,
-                  linkName: this.linkName,
-              });
-              this.saveImage(src, name);
-              this.$apply();
-          });
-      },
       del(e) {
           const { index } = e.currentTarget.dataset;
           this.pageData[0].props.cfg.images.splice(index, 1);
@@ -210,6 +188,14 @@ export default class ShopImages extends wepy.page {
           this.pageData[0].props.cfg.images[this.thumbActive].linkName = e.detail.value;
           this.pageModule.cfg.images[this.thumbActive].linkName = e.detail.value;
       },
+      bindPickerChange(e) {
+          console.log(this.pageList);
+          this.selectorIndex = e.detail.value;
+          this.pageData[0].props.cfg.images[this.thumbActive].pageKey = this.pageList[e.detail.value].key;
+          this.pageData[0].props.cfg.images[this.thumbActive].linkName = this.pageList[e.detail.value].name;
+          this.pageModule.cfg.images[this.thumbActive].pageKey = this.pageList[e.detail.value].key;
+          this.pageModule.cfg.images[this.thumbActive].linkName = this.pageList[e.detail.value].name;
+      },
       save() {
           this.pageModule.cfg.showSize = this.pageData[0].props.cfg.showSize;
           [app.globalData.pageData[this.pageIndex]] = this.pageData;
@@ -223,6 +209,7 @@ export default class ShopImages extends wepy.page {
           });
       },
   }
+
   async saveImage(src, name) {
       await post('/businessResource/insert', {
           resourceType: 1,
@@ -270,7 +257,6 @@ export default class ShopImages extends wepy.page {
       width: 180rpx;
       height: 134rpx;
       margin-right: 20rpx;
-      background: yellow;
       vertical-align: middle;
       display: inline-block;
       image {

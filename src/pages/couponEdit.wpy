@@ -24,10 +24,9 @@
             <view class="item required">
                 <text>优惠券类型</text>
                 <navigator
-                :class="{ placeholder: form.couponType === undefined }"
+                :class="{ placeholder: couponType === '' }"
                 url="/pages/couponType">
-                    {{ form.couponType && (form.couponType === 1 ? '代金券' : '折扣券') || '去选择' }}
-                    <view class="icon more"></view>
+                    {{ couponType && (couponType === 1 ? '代金券' : '折扣券') || '去选择' }}<view class="icon more"></view>
                 </navigator>
             </view>
         </view>
@@ -35,9 +34,9 @@
             <view class="item required">
                 <text>生效时间</text>
                 <navigator
-                :class="{ placeholder: form.validType === undefined }"
+                :class="{ placeholder: validType === '' }"
                 url="/pages/couponValidTime">
-                    {{ form.validType && (form.validType === 1 ? '固定时间' : '领取后生效') || '去选择' }}<view class="icon more"></view>
+                    {{ validType && (validType === 1 ? '固定时间' : '领取后生效') || '去选择' }}<view class="icon more"></view>
                 </navigator>
             </view>
         </view>
@@ -64,9 +63,9 @@
         <view class="section">
             <view class="item required">
                 <text>优惠券使用产品</text>
-                <navigator :class="{ placeholder: form.applyType === undefined }"
+                <navigator :class="{ placeholder: applyType === '' }"
                 url="/pages/couponService">
-                    {{ form.applyType && (form.applyType === 1 ? '全部产品' : '指定产品') || '去选择' }}<view class="icon more"></view>
+                    {{ applyType && (applyType === 1 ? '全部产品' : '指定产品') || '去选择' }}<view class="icon more"></view>
                 </navigator>
             </view>
         </view>
@@ -90,6 +89,9 @@ export default class Index extends wepy.page {
     }
 
     data = {
+        couponType: '',
+        validType: '',
+        applyType: '',
         form: {
             id: '',
             mpId: '',
@@ -187,7 +189,7 @@ export default class Index extends wepy.page {
             if (~['title', 'subTitle'].indexOf(prop)) {
                 if (value.length > 10) {
                     toast('只能输入10个字');
-                    return value.slice(0, value.length - 1);
+                    return value.slice(0, 10);
                 }
             }
 
@@ -278,6 +280,12 @@ export default class Index extends wepy.page {
             serviceIds,
         } = globalService.get('couponManage');
 
+        Object.assign(this, {
+            couponType,
+            validType,
+            applyType,
+        });
+
         Object.assign(this.form, {
             couponType,
             limitAmount,
@@ -291,6 +299,9 @@ export default class Index extends wepy.page {
             applyType,
             serviceIds,
         });
+
+        console.log('======> this.form');
+        console.log(this.form);
     }
 
     async loadData(id) {
@@ -347,6 +358,12 @@ export default class Index extends wepy.page {
                 validEndtime,
                 applyType,
                 serviceIds,
+            });
+
+            Object.assign(this, {
+                couponType,
+                validType,
+                applyType,
             });
 
             this.$apply();
