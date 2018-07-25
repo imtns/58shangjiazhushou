@@ -248,11 +248,13 @@ export default class Index extends wepy.page {
                 switch (type) {
                     case 'image':
                         await this.uploadImage();
+                        // 延迟2秒
+                        await sleep(2000);
                         break;
 
                     case 'video':
                         await this.uploadVideo();
-                        // 上传图片延迟2秒刷新，配合toast的2秒延迟
+                        // 上传视频延迟3秒刷新，配合toast的3秒延迟
                         await sleep(3000);
                         break;
 
@@ -435,12 +437,40 @@ export default class Index extends wepy.page {
 
     async uploadImage() {
         try {
-            const { tempFilePaths } = await wepy.chooseImage({
-                count: 1,
-            });
-            await this.uploadResource(tempFilePaths[0], 'image');
-            toast('上传成功');
+            const { tempFiles } = await wepy.chooseImage();
+            let msg = '';
+
+            // 过滤大于4M的
+            let filesToUpload = tempFiles.filter(v => v.size < 4000 * 4096);
+            if (filesToUpload.length < tempFiles.length) {
+                msg = '部分图片上传失败，大小需小于4M';
+            }
+
+            // 过滤像素小于200 * 200的
+            filesToUpload =
+                // 获取图片信息
+                (await Promise.all(filesToUpload.map(v => wepy.getImageInfo({ src: v.path }))))
+                    // 筛选
+                    .filter(v => v.width > 200 && v.height > 200)
+                    // 获取路径
+                    .map(v => v.path);
+            if (filesToUpload.length < tempFiles.length) {
+                msg = '部分图片上传失败，像素需大于200*200';
+            }
+
+            // if (msg) {
+            //     alert(msg);
+            // }
+
+            // 上传图片
+            await Promise.all(filesToUpload.map(path => this.uploadResource(path, 'image')));
+            if (msg) {
+                toast(msg, 2000);
+            } else {
+                toast('上传成功');
+            }
         } catch (e) {
+            console.log(e);
             this.errorHandler('上传失败', e);
             toast('上传失败');
         }

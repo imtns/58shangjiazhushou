@@ -167,7 +167,7 @@ export default class Index extends wepy.page {
     async loadData() {
         const mpId = wepy.getStorageSync('current_mpid');
         const coupons = await this.getCoupons({
-            pageNum: 1,
+            pageNum,
             pageSize,
             mpId,
         });
