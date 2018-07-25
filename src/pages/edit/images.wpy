@@ -114,13 +114,13 @@
 
             </view>
             <view class="tobeAdded">
-                <view class="scroll-view-item addButton"  @tap="addBanner">
+                <view class="scroll-view-item addButton"  @tap="actionSheepTap">
                    <image src="../assets/plus.png"></image>
                 </view>
                 <repeat for="{{pageData[0].props.cfg.images}}" key="index" index="index" item="item">
                     <view class="scroll-view-item {{thumbActive == index?'active':''}}" data-index="{{index}}"  @tap="thumbClick">
                         <image src="{{item.src}}?w=90"></image>
-                        <view class="span active">{{index}}</view>
+                        <view class="span active">{{index+1}}</view>
                         <image class="del {{thumbActive == index?'active':''}}" src="../assets/del.png" @tap="del" data-index="{{index}}" />
                     </view>
                 </repeat>
@@ -148,8 +148,6 @@
 <script>
 import wepy from 'wepy';
 import Mixin from './mixin';
-import { uploader } from '../../utils/uploader';
-import { toast } from '../../utils';
 
 const app = require('../../utils/globalData');
 
@@ -172,33 +170,8 @@ export default class ShopImages extends wepy.page {
     onLoad() {
         [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
     }
+
   methods = {
-      async addBanner() {
-          const { tempFilePaths } = await wepy.chooseImage();
-          uploader(tempFilePaths[0], (e, result) => {
-              if (e) {
-                  toast('上传失败，请重试。');
-                  return;
-              }
-              toast('上传成功。');
-              const src = result.content;
-              const name = this.picName;
-              this.pageData[0].props.cfg.images.push({
-                  src,
-                  title: name,
-                  linkName: this.linkName,
-                  pageKey: '',
-              });
-              this.pageModule.cfg.images.push({
-                  src: src,
-                  pageKey: '',
-                  title: name,
-                  linkName: this.linkName,
-              });
-              this.saveImage(src, name);
-              this.$apply();
-          });
-      },
       del(e) {
           const { index } = e.currentTarget.dataset;
           this.pageData[0].props.cfg.images.splice(index, 1);
@@ -236,6 +209,7 @@ export default class ShopImages extends wepy.page {
           });
       },
   }
+
   async saveImage(src, name) {
       await post('/businessResource/insert', {
           resourceType: 1,

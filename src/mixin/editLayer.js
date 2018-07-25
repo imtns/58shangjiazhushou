@@ -30,8 +30,8 @@ module.exports = {
         if (!this.data.isEditing) {
             try {
                 await post('/business/templete/releasemp', {
-                    id: app.globalData.extConfig.extJson.ext.releaseId,
-                    mpId: app.globalData.extConfig.extJson.ext.mpId,
+                    id: wx.getStorageSync('releaseId'),
+                    mpId: wx.getStorageSync('current_mpid'),
                 });
                 toast('发布成功');
             } catch (e) {
@@ -91,8 +91,8 @@ module.exports = {
         await post('/business/templete/savemodules', {
             businessPageId: pageId,
             modulesJson: JSON.stringify(modulesParse.save(modData)),
-            releaseId: app.globalData.extConfig.extJson.ext.releaseId,
-            mpId: app.globalData.extConfig.extJson.ext.mpId,
+            releaseId: wx.getStorageSync('releaseId'),
+            mpId: wx.getStorageSync('current_mpid'),
         });
         toast('保存成功');
     // wx.navigateBack({
