@@ -441,7 +441,7 @@ export default class Index extends wepy.page {
             let msg = '';
 
             // 过滤大于4M的
-            let filesToUpload = tempFiles.filter(v => v.size < 4000 * 4096);
+            let filesToUpload = tempFiles.filter(v => v.size < 4000 * 1024);
             if (filesToUpload.length < tempFiles.length) {
                 msg = '部分图片上传失败，大小需小于4M';
             }
