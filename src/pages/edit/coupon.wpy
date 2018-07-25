@@ -143,6 +143,7 @@ const pageNum = 1;
 export default class Index extends wepy.page {
     config = {
         navigationBarTitleText: '优惠券',
+        disableScroll: true,
     }
     data = {
         coupons: [],
