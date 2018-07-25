@@ -26,7 +26,7 @@
                 <repeat for="{{pageData[0].props.cfg.images}}" key="index" index="index" item="item">
                     <view class="scroll-view-item {{thumbActive == index?'active':''}}" data-index="{{index}}"  @tap="thumbClick">
                         <image src="{{item.src}}" mode="aspectFill"></image>
-                        <view class="span active">{{index}}</view>
+                        <view class="span active">{{index+1}}</view>
                         <image class="del {{thumbActive == index?'active':''}}" src="../assets/del.png" @tap="del" data-index="{{index}}" />
                     </view>
                 </repeat>
@@ -54,7 +54,6 @@
 <script>
 import wepy from 'wepy';
 import Mixin from './mixin';
-import { uploader } from '../../utils/uploader';
 import { toast } from '../../utils';
 // import modulesParse from '../../utils/modulesParse';
 
@@ -120,46 +119,7 @@ export default class ImageSwiper extends wepy.page {
           }, 1000);
       },
   };
-  async addBanner(type) {
-      const that = this;
-      wx.chooseImage({
-          sourceType: [type],
-          success(res) {
-              const { tempFilePaths } = res;
-              uploader(tempFilePaths[0], (e, result) => {
-                  if (e) {
-                      toast('上传失败，请重试。');
-                      return;
-                  }
-                  toast('上传成功。');
-                  const src = result.content;
-                  const name = that.picName;
-                  that.pageModule.cfg.images.push({
-                      src: src,
-                      pageKey: '',
-                      title: name,
-                      linkName: that.linkName,
-                  });
-                  that.pageData[0].props.cfg.images.push({
-                      src: that.picDomain + src,
-                      title: name,
-                      linkName: that.linkName,
-                      pageKey: '',
-                  });
-                  that.saveImage(src, name);
-                  that.$apply();
-              });
-          },
-          fail(e) {
-              toast('上传失败，请从相册选择。', '提示', () => {
-                  // self.shoot();
-              });
-              console.log(e);
-          },
-      });
-      //   const tempFilePaths = await wx.chooseImage({ sourceType: [type] });
-      //   console.log(tempFilePaths);
-  }
+
   async saveImage(src, name) {
       await post('/businessResource/insert', {
           resourceType: 1,

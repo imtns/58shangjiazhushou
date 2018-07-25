@@ -1,9 +1,11 @@
 import wepy from 'wepy';
+// const { post } = require('../../utils/ajax');
+import { toast } from '../../utils';
+import { uploader } from '../../utils/uploader';
 // import modulesParse from '../../utils/modulesParse';
 // import { toast } from '../../utils';
 
 const app = require('../../utils/globalData');
-// const { post } = require('../../utils/ajax');
 
 export default class Mixin extends wepy.mixin {
     data = {
@@ -40,6 +42,46 @@ export default class Mixin extends wepy.mixin {
             name: item.pageName,
         }));
         console.log(result);
+    }
+    async addBanner(type) {
+        const that = this;
+        wx.chooseImage({
+            sourceType: [type],
+            success(res) {
+                const { tempFilePaths } = res;
+                uploader(tempFilePaths[0], (e, result) => {
+                    if (e) {
+                        toast('上传失败，请重试。');
+                        return;
+                    }
+                    toast('上传成功。');
+                    const src = result.content;
+                    const name = that.picName;
+                    that.pageModule.cfg.images.push({
+                        src: src,
+                        pageKey: '',
+                        title: name,
+                        linkName: that.linkName,
+                    });
+                    that.pageData[0].props.cfg.images.push({
+                        src: that.picDomain + src,
+                        title: name,
+                        linkName: that.linkName,
+                        pageKey: '',
+                    });
+                    that.saveImage(src, name);
+                    that.$apply();
+                });
+            },
+            fail(e) {
+                toast('上传失败，请从相册选择。', '提示', () => {
+                    // self.shoot();
+                });
+                console.log(e);
+            },
+        });
+        //   const tempFilePaths = await wx.chooseImage({ sourceType: [type] });
+        //   console.log(tempFilePaths);
     }
     methods = {
         actionSheepTap() {
