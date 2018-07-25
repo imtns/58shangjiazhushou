@@ -207,6 +207,7 @@ export default class Index extends wepy.page {
             pageNum,
             pageSize,
             resourceGroup,
+            status: 0, // 只展示上架的， 0 商家 1 下架
         });
 
         return services.map(item => {

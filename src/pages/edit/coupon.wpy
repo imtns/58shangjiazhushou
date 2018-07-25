@@ -132,8 +132,11 @@
 import wepy from 'wepy';
 import Mixin from './mixin';
 import CouponMixin from '../../mixin/coupon';
+import { alert } from '../../utils';
 
 const app = require('../../utils/globalData');
+
+const limitCouponCount = 5; // 限制选择张数
 
 export default class Index extends wepy.page {
     config = {
@@ -224,6 +227,14 @@ export default class Index extends wepy.page {
         choose(index, url) {
             if (this.isEditing) {
                 const coupon = this.coupons[index];
+
+                // 勾选时判断是否超出容量
+                if (!coupon.checked) {
+                    if (this.previewList.length >= limitCouponCount) {
+                        alert(`最多只能选择${limitCouponCount}张优惠券`);
+                        return;
+                    }
+                }
                 coupon.checked = !coupon.checked;
 
                 this.chooseCoupon && this.chooseCoupon(coupon);
@@ -235,7 +246,7 @@ export default class Index extends wepy.page {
     chooseCoupon(coupon) {
         const { id } = coupon;
         if (coupon.checked) {
-            this.previewList && this.previewList.unshift(coupon);
+            this.previewList.unshift(coupon);
         } else {
             // 从列表中删除
             this.previewList.splice(this.previewList.findIndex(item => item.id === id), 1);
