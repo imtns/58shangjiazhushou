@@ -16,7 +16,7 @@
         <view class="edit-cell">
             <view class="edit-label">标题名称</view>
             <view class="edit-input">
-                <input data-name="name" bindinput="bindInput"  class="weui-input" name="name" placeholder="请输入名称" />
+                <input data-name="name" bindinput="bindInput" maxlength="16" class="weui-input" name="name" placeholder="16字以内" />
             </view>
         </view>
         <scroll-view scroll-x class="scrollView">

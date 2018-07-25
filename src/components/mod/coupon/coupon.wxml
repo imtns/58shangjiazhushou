@@ -1,15 +1,15 @@
 <template name="coupon">
     <block wx:if="{{cfg.theme==1}}">
-        <view class="mod-view view-coupon">
-            <view class="coupon-shadow" wx:for="{{data}}" wx:key="{{data.id}}">
+        <view class="mod-view view-coupon" >
+            <view class="coupon-shadow" style="{{!item.id?'background:rgb(248,249,251);    box-shadow: 0 1px 10px 0 rgba(0,0,0,.05);':''}}" wx:for="{{data}}" wx:key="{{data.id}}">
                 <consumer-button bindconsumersubmit="receiveCoupon" data-couponid="{{item.id}}">
                     <view class="coupon-box table">
                         <view wx:if="{{item.couponType=='1'}}" class="cell one-text coupon-left">
                             <text class="coupon-discount">￥</text>{{item.reliefAmount}}
                         </view>
-                        <view wx:else class="cell one-text coupon-left">
+                        <view wx:else class="cell one-text coupon-left" style="{{!item.id?'color:#ccc;background:rgb(246,246,246);':''}}">
                             {{item.couponDiscard?item.couponDiscard/10:'0.0'}}
-                            <text class="coupon-discount">折</text>
+                            <text class="coupon-discount" style="{{!item.id?'color:#ccc;':''}}">折</text>
                         </view>
                         <view wx:if="{{item.id}}" class="cell coupon-right" >
                             <view class="first-row one-text">满{{item.limitAmount}}可用</view>
@@ -20,10 +20,10 @@
                             <view class="receive-button">点击领取</view>
                         </view>
                         <view wx:else class="cell coupon-right" >
-                            <view class="first-row one-text">满--可用</view>
-                            <view class="second-row one-text">请输入与使用条件</view>
-                            <view class="last-row">2018.00.00-2018.00.00</view>
-                            <view class="receive-button">立即使用</view>
+                            <view class="first-row one-text" style="color:#ccc;">满--可用</view>
+                            <view class="second-row one-text" style="color:#ccc;">请输入与使用条件</view>
+                            <view class="last-row" style="color:#ccc;">2018.00.00-2018.00.00</view>
+                            <view class="receive-button" style="background:#e7e7e7;color:white;">立即使用</view>
                         </view>
                     </view>
                 </consumer-button>

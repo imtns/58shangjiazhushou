@@ -48,8 +48,11 @@ export default class Mixin extends wepy.mixin {
                 itemList: ['拍摄', '添加本地照片', '去图片库选择'],
                 success (e) {
                     if (e.tapIndex === 0) {
-                        that.methods.addBanner();
-                        console.log(e.tapIndex);
+                        that.addBanner('camera');
+                    } else if (e.tapIndex === 1) {
+                        that.addBanner('album');
+                    } else {
+                        console.log('去图库');
                     }
                 },
             });

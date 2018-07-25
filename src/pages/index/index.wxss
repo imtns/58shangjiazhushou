@@ -1,6 +1,7 @@
 
 /**index.wxss**/
 .container{
+  padding-top:110rpx !important;
   padding-bottom:80rpx;
 }
 

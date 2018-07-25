@@ -1,5 +1,5 @@
 <template>
-    <view class="container">
+    <view class="containe">
         <view class="main-title">常见问题</view>
         <view class="main-body" wx:for="{{list}}" wx:key="index">
             <view class="main-boy-line">

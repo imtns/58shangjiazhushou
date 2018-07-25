@@ -1,5 +1,5 @@
 <template>
-    <view class="container">
+    <view class="containe">
         <scroll-view class="preview-scroll" scroll-y>
             <view class="previewer"
             :class="{ row: type === 'row' }">

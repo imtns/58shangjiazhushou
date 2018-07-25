@@ -1,5 +1,5 @@
 <template>
-    <view class="container">
+    <view class="containe">
         <view class="banner">
             <image class="banner-icon" src="./assets/banner-icon.png"></image>
         </view>

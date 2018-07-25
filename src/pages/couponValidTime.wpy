@@ -1,5 +1,5 @@
 <template>
-    <view class="container">
+    <view class="containe">
         <view class="section border-top">
             <view class="item select-type">
                 <text>类型选择</text>
@@ -154,7 +154,7 @@ export default class Index extends wepy.page {
 view {
     box-sizing: border-box;
 }
-.container {
+.containe {
     font-size: 30rpx;
 
     .section {

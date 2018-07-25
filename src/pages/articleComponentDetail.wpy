@@ -1,5 +1,5 @@
 <template>
-    <view class="container">
+    <view class="containe">
         <view class="article-title">{{title}}</view>
         <view class="article-intro">
             <view class="article-detail-flex">
@@ -91,7 +91,7 @@ export default class Index extends wepy.page {
         // flex-direction:column;
         position:relative;
     }
-    .container{
+    .containe{
         background:#fff;
         // flex:1;
         // display:flex;

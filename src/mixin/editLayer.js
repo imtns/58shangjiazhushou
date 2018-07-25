@@ -26,7 +26,19 @@ module.exports = {
             [`editLayer.${name}`]: !this.data.editLayer[name],
         });
     },
-    cancelClick() {
+    async cancelClick() {
+        if (!this.data.isEditing) {
+            try {
+                await post('/business/templete/releasemp', {
+                    id: app.globalData.extConfig.extJson.ext.releaseId,
+                    mpId: app.globalData.extConfig.extJson.ext.mpId,
+                });
+                toast('发布成功');
+            } catch (e) {
+                toast('发布失败');
+            }
+            return;
+        }
         this.setData({
             editLayer: {},
             isEditing: false,
