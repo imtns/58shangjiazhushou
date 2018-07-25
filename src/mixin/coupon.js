@@ -4,7 +4,7 @@ import { LOAD_COUPON_LIST } from '../utils/url';
 import { get } from '../utils/ajax';
 
 export default class CouponMixin extends wepy.mixin {
-    formatTime(v = '', type = 'YYYY-DD-MM') {
+    formatTime(v = '', type = 'YYYY-MM-DD') {
         const regRes = v.match(/([\d]{4})-([\d]{2})-([\d]{2})/);
         if (!regRes) {
             return v;
@@ -13,11 +13,11 @@ export default class CouponMixin extends wepy.mixin {
         let result = '';
         const [time, year, month, day] = regRes;
 
-        if (type === 'YYYY.DD.MM') {
+        if (type === 'YYYY.MM.DD') {
             result = [year, month, day].join('.');
         }
 
-        if (type === 'YYYY-DD-MM') {
+        if (type === 'YYYY-MM-DD') {
             result = time;
         }
 
@@ -74,8 +74,8 @@ export default class CouponMixin extends wepy.mixin {
 
                 if (validType === 1 && validStarttime && validEndtime) {
                     Object.assign(coupon, {
-                        validStarttime: this.formatTime(validStarttime, 'YYYY.DD.MM'),
-                        validEndtime: this.formatTime(validEndtime, 'YYYY.DD.MM'),
+                        validStarttime: this.formatTime(validStarttime, 'YYYY.MM.DD'),
+                        validEndtime: this.formatTime(validEndtime, 'YYYY.MM.DD'),
                     });
                 }
 

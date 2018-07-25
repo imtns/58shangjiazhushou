@@ -62,11 +62,21 @@ export default class Index extends wepy.page {
 
     async onLoad() {
         [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
-        console.log(this.pageModule);
-        if (this.pageData[0].props.data[0].id) {
-            this.previewList = this.pageData[0].props.data;
+        const { data } = this.pageData[0].props; // 当前已添加的优惠券
+
+        // 过滤预制优惠券
+        if (data && data[0] && data[0].id) {
+            this.previewList = data.map(coupon => {
+                const { validStarttime, validEndtime } = coupon;
+                return Object.assign({}, coupon, {
+                    validStarttime: this.formatTime(validStarttime, 'YYYY.MM.DD'),
+                    validEndtime: this.formatTime(validEndtime, 'YYYY.MM.DD'),
+                });
+            });
         }
+        // 优惠券展示样式
         this.type = this.pageData[0].props.cfg.theme === 1 ? 'column' : 'row';
+
         try {
             const mpId = wepy.getStorageSync('current_mpid');
             const coupons = await this.getCoupons({
