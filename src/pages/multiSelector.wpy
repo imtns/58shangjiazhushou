@@ -1,5 +1,5 @@
 <template>
-    <view class="container">
+    <view class="containe">
 
         <scroll-view class="column" wx:for="{{ contentList }}" scroll-y
         wx:key="index" wx:for-index="colIndex" wx:for-item="column"
@@ -266,7 +266,10 @@ export default class Index extends wepy.page {
 </script>
 
 <style lang="scss">
-.container {
+page {
+    height: 100%;
+}
+.containe {
     display: flex;
     height: 100%;
 }
