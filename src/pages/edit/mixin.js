@@ -7,6 +7,7 @@ import { globalData } from '../../utils/globalData';
 // import modulesParse from '../../utils/modulesParse';
 // import { toast } from '../../utils';
 import { uploader } from '../../utils/uploader';
+import globalService from '../../utils/globalService';
 
 export default class Mixin extends wepy.mixin {
     data = {
@@ -18,7 +19,6 @@ export default class Mixin extends wepy.mixin {
         saveAvaliable: false,
         extConfig: {},
         modules: {},
-        imageLimit: 0,
         tempModules: {},
         noEdit: false,
     }
@@ -50,11 +50,57 @@ export default class Mixin extends wepy.mixin {
     //     this.pageIndex = globalData.pageData.findIndex(obj => obj.id === this.pageId);
     //     this.pageData = JSON.parse(JSON.stringify(result));
     // }
+    async onShow() {
+        console.log(globalData);
+        if (globalData.selectedResource && Object.keys(globalData.selectedResource).length) {
+            const { confirm } = await alertP('是否裁剪图片？');
+            if (confirm) {
+                console.log('跳转');
+                wepy.navigateTo({
+                    url: `/pages/cropper?url=${picSrcDomain() + globalData.selectedResource[0].resourceUrl}&ratio=4,3`,
+                });
+                globalData.selectedResource = {};
+                return;
+            }
+            this.setImageData(globalData.selectedResource);
+            this.$apply();
+        }
+        if (globalService.get('afterCrop')) {
+            globalService.set('afterCrop', false);
+            const url = globalService.get('cropperUrl');
+            this.setImageData(url, true);
+        }
+        globalData.selectedResource = {};
+    }
+    setImageData(data, isCroped) {
+        if (isCroped) {
+            console.log(data);
+            this.pushImages(data);
+        } else {
+            data.forEach(item => {
+                this.pushImages(typeof item === 'object' ? item.resourceUrl : item);
+            });
+        }
+    }
+    pushImages(src) {
+        this.pageModule.cfg.images.push({
+            src,
+            pageKey: '',
+            title: this.picName,
+            linkName: this.linkName,
+        });
+        this.pageData[0].props.cfg.images.push({
+            src: picSrcDomain() + src,
+            title: this.picName,
+            linkName: this.linkName,
+            pageKey: '',
+        });
+    }
     async addBanner(sourceType, type = 'image') {
         if (type === 'image') {
             const { result, msg } = await uploadImages({
                 sourceType,
-                count: type === 'image' ? this.imageLimit : 1,
+                count: 1,
             });
             if (msg) {
                 // 错误操作
@@ -72,22 +118,7 @@ export default class Mixin extends wepy.mixin {
             }
 
             console.log(result);
-            result.forEach(item => {
-                const src = item;
-                const name = this.picName;
-                this.pageModule.cfg.images.push({
-                    src: picSrcDomain() + src,
-                    pageKey: '',
-                    title: name,
-                    linkName: this.linkName,
-                });
-                this.pageData[0].props.cfg.images.push({
-                    src: picSrcDomain() + src,
-                    title: name,
-                    linkName: this.linkName,
-                    pageKey: '',
-                });
-            });
+            this.setImageData(result);
             this.$apply();
         } else {
             const { tempFilePath, thumbTempFilePath } = await wepy.chooseVideo();
@@ -116,7 +147,7 @@ export default class Mixin extends wepy.mixin {
                         that.addBanner('album', type);
                     } else {
                         wepy.navigateTo({
-                            url: `../resourceManage?limit=${that.imageLimit}&type=${type}`,
+                            url: `../resourceManage?limit=1&type=${type}`,
                         });
                     }
                 },
