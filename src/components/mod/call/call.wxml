@@ -2,19 +2,19 @@
     <view class="mod-view mod-call" data-index="{{index}}">
         <view class="menu-list">
             <view class="menu-list-item {{cfg.showCallMenu?'menu-list-item-show1':'menu-list-item-hide1'}}">
-                <button class="call-button call-icon-share" open-type="share" bindtap="sendLog"></button>
+                <button class="call-button call-icon-share"></button>
                 <text class="call-text">微信好友</text>
             </view>
             <view class="menu-list-item {{cfg.showCallMenu?'menu-list-item-show2':'menu-list-item-hide2'}}">
-                <button class="call-button call-icon-app" bindtap="tabQrcode"></button>
+                <button class="call-button call-icon-app"></button>
                 <text class="call-text">小程序码</text>
             </view>
             <view class="menu-list-item {{cfg.showCallMenu?'menu-list-item-show3':'menu-list-item-hide3'}}">
-                <button class="call-button call-icon-tel" bindtap="callTap"></button>
+                <button class="call-button call-icon-tel" ></button>
                 <text class="call-text">电话咨询</text>
             </view>
             <view class="menu-list-item last-list-item">
-                <button class="call-button call-icon-open {{cfg.showCallMenu===undefined?'':cfg.showCallMenu?'call-icon-back':''}}" bindtap="onMenuFixed" data-index="{{index}}"></button>
+                <button class="call-button call-icon-open {{cfg.showCallMenu===undefined?'':cfg.showCallMenu?'call-icon-back':''}}"  data-index="{{index}}"></button>
             </view>
         </view>
     </view>
