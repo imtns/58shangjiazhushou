@@ -44,7 +44,7 @@ import { LOAD_SERVICE_GROUPS, LOAD_SERVICE_LIST } from '../utils/url';
 import { get } from '../utils/ajax';
 import globalService from '../utils/globalService';
 
-const pageSize = 20;
+const pageSize = 50;
 const pageNum = 1;
 
 export default class Index extends wepy.page {
