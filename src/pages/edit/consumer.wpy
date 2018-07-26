@@ -73,6 +73,9 @@ import Mixin from './mixin';
 const app = require('../../utils/globalData');
 
 export default class Me extends wepy.page {
+  config = {
+      disableScroll: true,
+  }
   mixins = [Mixin];
   data = {
       telnum: '',

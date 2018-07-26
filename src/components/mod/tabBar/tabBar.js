@@ -12,7 +12,10 @@ export default {
         }
 
         this.route = route;
-
+        this.setData({
+            isEditing: false,
+            pageKey,
+        });
         if (app.globalData.tabMode === 1) {
             /**
              * 重定向版本的tabbar

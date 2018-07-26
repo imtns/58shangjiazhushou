@@ -5,6 +5,10 @@ import { get } from '../utils/ajax';
 
 export default class CouponMixin extends wepy.mixin {
     formatTime(v = '', type = 'YYYY-MM-DD') {
+        if (!v) {
+            return v;
+        }
+
         const regRes = v.match(/([\d]{4})-([\d]{2})-([\d]{2})/);
         if (!regRes) {
             return v;
@@ -22,6 +26,11 @@ export default class CouponMixin extends wepy.mixin {
         }
 
         return result;
+    }
+
+    getCurrentDate() {
+        const today = new Date();
+        return `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate}`;
     }
 
     /**

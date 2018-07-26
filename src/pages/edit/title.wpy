@@ -51,6 +51,7 @@ const app = require('../../utils/globalData');
 export default class Title extends wepy.page {
     config = {
         navigationBarTitleText: '标题',
+        disableScroll: true,
     }
     mixins = [Mixin];
     data = {

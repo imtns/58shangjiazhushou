@@ -148,6 +148,7 @@
 <script>
 import wepy from 'wepy';
 import Mixin from './mixin';
+import { previewImage } from '../../utils/index';
 
 const app = require('../../utils/globalData');
 
@@ -158,6 +159,7 @@ const { post } = require('../../utils/ajax');
 export default class ShopImages extends wepy.page {
   config = {
       navigationBarTitleText: '门店照片',
+      disableScroll: true,
   };
     data = {
         indicatorDots: true,
@@ -176,6 +178,11 @@ export default class ShopImages extends wepy.page {
           const { index } = e.currentTarget.dataset;
           this.pageData[0].props.cfg.images.splice(index, 1);
           this.pageModule.cfg.images.splice(index, 1);
+      },
+      onImageClick(e) {
+          const { index } = e.currentTarget.dataset;
+          const images = this.pageData[0].props.cfg.images.map(img => img.src);
+          previewImage(images, index);
       },
       thumbClick(e) {
           this.thumbActive = e.currentTarget.dataset.index;

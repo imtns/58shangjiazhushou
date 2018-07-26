@@ -99,9 +99,13 @@ export default class Index extends wepy.page {
                 return service;
             });
 
-            this.applyType = 1;
-            this.serviceIds = '';
-            this.selectedServices = this.allServices.concat();
+            if (this.currentGroup === '所有产品') {
+                this.applyType = 1;
+                this.selectedServices = this.allServices.concat();
+            } else {
+                this.applyType = 2;
+                this.selectedServices = this.services.map(v => v.id);
+            }
         },
 
         confirm() {
@@ -207,6 +211,7 @@ export default class Index extends wepy.page {
             pageNum,
             pageSize,
             resourceGroup,
+            status: 0, // 只展示上架的， 0 商家 1 下架
         });
 
         return services.map(item => {

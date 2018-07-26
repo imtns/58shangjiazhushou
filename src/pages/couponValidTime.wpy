@@ -42,14 +42,14 @@
                     <input type="number" placeholder="领券以后"
                     placeholder-class="placeholder"
                     value="{{ validAfterDays }}"
-                    @blur="dataAction('validAfterDays')"/>
+                    @input="dataAction('validAfterDays')"/>
                 </view>
                 <view class="item required">
                     <text>有效天数</text>
                     <input type="number" placeholder="有效天数"
                     placeholder-class="placeholder"
                     value="{{ validDays }}"
-                    @blur="dataAction('validDays')"/>
+                    @input="dataAction('validDays')"/>
                 </view>
             </block>
         </view>

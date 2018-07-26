@@ -29,6 +29,10 @@ module.exports = {
     async cancelClick() {
         if (!this.data.isEditing) {
             try {
+                if (wx.getStorageSync('verify')) {
+                    toast('有模板正在审核,不可发布');
+                    return;
+                }
                 await post('/business/templete/releasemp', {
                     id: wx.getStorageSync('releaseId'),
                     mpId: wx.getStorageSync('current_mpid'),
@@ -52,10 +56,19 @@ module.exports = {
         if (this.data.isEditing) {
             console.log('编辑');
             console.log(this.data.page_data);
-            const name = this.data.page_data[0].id;
+            const { name, id } = this.data.page_data[0];
+            if (name === 'evaluation' || name === 'information') {
+                this.setData({
+                    noEdit: true,
+                });
+            } else {
+                this.setData({
+                    noEdit: false,
+                });
+            }
             if (this.data.page_data.length > 0) {
                 this.setData({
-                    [`editLayer.${name}`]: true,
+                    [`editLayer.${id}`]: true,
                     layer: true,
                 });
             }
@@ -68,7 +81,7 @@ module.exports = {
         }
     },
     async goSave() {
-        const pageId = app.globalData.pageList.filter(obj => obj.pageKey === 'index')[0].id;
+        const pageId = app.globalData.pageList.filter(obj => obj.pageKey === this.data.pageKey)[0].id;
         let modData = app.globalData.modules.map(({
             id, name, cfg, params,
         }) => {
@@ -100,7 +113,7 @@ module.exports = {
     // });
     },
     goEdit(e) {
-        if (this.noEdit) return;
+        if (this.data.noEdit) return;
         const {
             id,
             name,

@@ -42,6 +42,7 @@ export default class Index extends wepy.page {
   };
   data = {
       left: 160,
+      isVerify: {},
       tabSelect: 1,
       pageNum: 1,
       my: true,
@@ -58,6 +59,7 @@ export default class Index extends wepy.page {
           5: '新',
           6: '',
       },
+      myTemplateFull: false,
       noMore: false,
       hideTag: {
 
@@ -69,6 +71,7 @@ export default class Index extends wepy.page {
   methods = {
       tabClick(e) {
           this.list = [];
+          this.delLayer = {};
           const { distance, id } = e.target.dataset;
           this.left = distance;
           console.log(id);
@@ -103,12 +106,17 @@ export default class Index extends wepy.page {
           } = e.currentTarget.dataset;
           this.delLayer = {};
           if (this.my) {
+              if (this.isVerify[releaseid]) {
+                  toast('此模板正在审核, 不可编辑');
+                  return;
+              }
               if (status === 5) {
                   wx.setStorageSync(`hideTag_${releaseid}`, true);
                   this.hideTag[releaseid] = true;
               }
               wx.setStorageSync('releaseId', releaseid);
           } else {
+              if (this.myTemplateFull) { toast('您保存的模板不能超过10个,请删除部分模板后添加'); return; }
               const { data } = await get(getTemplateIdUrl, {
                   templeteid: id,
                   mpId: wx.getStorageSync('current_mpid'),
@@ -158,6 +166,17 @@ export default class Index extends wepy.page {
               this.hideTag[item.releaseId] = true;
           }
       });
+      // 判断是否有正在审核的模板，如果有审核的模板，则审核的模板不能编辑，并且其他模板不能发布
+      const filter = this.list.filter(x => x.status === 1);
+      if (filter.length > 0) {
+          this.isVerify[filter[0].releaseId] = true;
+          wx.setStorageSync('verify', true);
+      } else {
+          wx.setStorageSync('verify', false);
+      }
+      if (this.list.length >= 10) {
+          this.myTemplateFull = true;
+      }
       this.$apply();
   }
 }

@@ -29,20 +29,20 @@
                     <text>享受折扣</text>
                     <input type="digit" placeholder="请输入享受折扣"
                     placeholder-class="placeholder" value="{{ formatCouponDiscard || '' }}"
-                    @blur="dataAction('couponDiscard')"/>
+                    @input="dataAction('couponDiscard')"/>
                 </block>
                 <block wx:else>
                     <text>减免金额</text>
                     <input type="digit" placeholder="请输入减免金额"
                     placeholder-class="placeholder" value="{{ reliefAmount || '' }}"
-                    @blur="dataAction('reliefAmount')"/>
+                    @input="dataAction('reliefAmount')"/>
                 </block>
             </view>
             <view class="item">
                 <text>消费需要满</text>
                 <input type="digit" placeholder="请输入消费金额"
                 placeholder-class="placeholder" value="{{ limitAmount || '' }}"
-                @blur="dataAction('limitAmount')"/>
+                @input="dataAction('limitAmount')"/>
             </view>
         </view>
     </view>
