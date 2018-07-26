@@ -156,7 +156,7 @@ export default class Index extends wepy.page {
     methods = {
         chooseModalConfirm() {
             globalData.selectedResource = selectedIds.map(id => this.works.find(v => v.id === id));
-            console.log(globalData.selectedResource);
+            wepy.navigateBack();
         },
 
         selectTab(name) {
@@ -172,12 +172,18 @@ export default class Index extends wepy.page {
          * index用于找到作品，标记check
          */
         selectItem(id, index) {
+            const { chooseModal, limit, works } = this;
+
+            if (chooseModal && selectedIds.length >= limit) {
+                alert(`只能选择${limit}张照片`);
+                return;
+            }
+
             if (selectedIds.length >= 10) {
                 alert('一次只能删除10条素材！');
                 return;
             }
 
-            const { works } = this;
             const work = works[index];
 
             if (!work) {
