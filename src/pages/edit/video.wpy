@@ -22,16 +22,14 @@
 
             </view>
             <view class="tobeAdded">
-                <view class="scroll-view-item addButton" style="{{videos.length==1?'display:none':''}}" @tap="actionSheepTap" data-type="video">
+                <view class="scroll-view-item addButton" wx:if="{{!video || !video.src}}"  @tap="actionSheepTap" data-type="video">
                    <image src="../assets/plus.png"></image>
                 </view>
-                <repeat for="{{videos}}" key="index" index="index" item="item">
-                    <view class="scroll-view-item {{thumbActive == index?'active':''}}" data-index="{{index}}"  @tap="thumbClick">
-                        <image src="{{item.cover}}"></image>
-                        <view class="span active">{{index + 1}}</view>
-                        <image class="del {{thumbActive == index?'active':''}}" src="../assets/del.png" @tap="del" data-index="{{index}}"></image>
-                    </view>
-                </repeat>
+                <view class="scroll-view-item active" wx:else >
+                    <image src="{{video.cover}}"></image>
+                    <view class="span active">1</view>
+                    <image class="del active" src="../assets/del.png" @tap="del" ></image>
+                </view>
             </view>
         </scroll-view>
     </view>
@@ -39,82 +37,48 @@
 <script>
 import wepy from 'wepy';
 import Mixin from './mixin';
-import { uploader } from '../../utils/uploader';
-import { toast } from '../../utils';
 
-const app = require('../../utils/globalData');
+import { globalData } from '../../utils/globalData';
+
 const { post } = require('../../utils/ajax');
 
-const loadVideo = '/businessResource/getlist?jjqwiaud';
+// const loadVideo = '/businessResource/getlist?jjqwiaud';
 export default class Video extends wepy.page {
   config = {
       navigationBarTitleText: '门店视频',
   };
   data = {
-      videos: [],
       thumbActive: false,
       name: '',
       video: {},
+      imageLimit: 1,
   };
   mixins = [Mixin];
-  async onLoad() {
-      const { data } = await post(loadVideo, {
-          resourceType: 2,
-          pageNum: 1,
-          pageSize: 99,
-          appid: 'yxuEvbSU3M0zGwxuw',
-      });
-      this.videos = data.map(({
-          resourceName, resourceUrl, extend, id,
-      }) => ({
-          src: resourceUrl,
-          name: resourceName,
-          selected: resourceUrl === this.selectedVideo,
-          cover: extend ? JSON.parse(extend).sourceCoverUrl : '',
-          id,
-      }));
-      [this.video] = this.videos;
+  onLoad() {
       [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
-      this.$apply();
-      console.log(this.videos);
+  }
+  onShow() {
+      if (globalData.selectedResource) {
+          Object.assign(this.video, { src: globalData.selectedResource[0].resourceUrl, id: globalData.selectedResource[0].id, cover: globalData.selectedResource[0].imageUrl });
+          globalData.selectedResource = {};
+          this.$apply();
+      }
   }
   methods = {
       bindInput(e) {
           this.name = e.detail.value;
       },
-      del(e) {
-          const { index } = e.currentTarget.dataset;
-          this.videos.splice(index, 1);
+      del() {
+          this.video = {};
       },
-      async addVideo() {
-          const { tempFilePath, thumbTempFilePath } = await wepy.chooseVideo();
-          console.log(tempFilePath);
-          uploader(tempFilePath, { isVideo: true }, (e, result) => {
-              if (e) {
-                  toast('上传失败，请重试。');
-                  return;
-              }
-              console.log(result);
-              toast('上传成功。');
-              this.videos.push({
-                  src: result.content,
-                  cover: thumbTempFilePath,
-              });
-              this.saveVideo(result.content);
-              this.$apply();
-          });
-      },
+
       save() {
           this.pageModule.params.videoId = this.video.id;
-          [app.globalData.pageData[this.pageIndex]] = this.pageData;
-          app.globalData.modules[this.pageIndex] = this.pageModule;
+          [globalData.pageData[this.pageIndex]] = this.pageData;
+          globalData.modules[this.pageIndex] = this.pageModule;
           wx.navigateBack({
               delta: 1,
           });
-      },
-      thumbClick(e) {
-          this.thumbActive = e.currentTarget.dataset.index;
-          this.video = this.videos[this.thumbActive];
       },
   };
   async saveVideo(src) {

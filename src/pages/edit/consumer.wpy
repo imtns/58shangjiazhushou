@@ -69,8 +69,8 @@
 <script>
 import wepy from 'wepy';
 import Mixin from './mixin';
+import { globalData } from '../../utils/globalData';
 
-const app = require('../../utils/globalData');
 
 export default class Me extends wepy.page {
   config = {
@@ -101,8 +101,8 @@ export default class Me extends wepy.page {
           this.pageModule.cfg = this.pageData[0].props.cfg;
           this.pageModule.cfg.telnum = this.telnum;
           this.pageData[0].props.cfg.telnum = this.telnum;
-          [app.globalData.pageData[this.pageIndex]] = this.pageData;
-          app.globalData.modules[this.pageIndex] = this.pageModule;
+          [globalData.pageData[this.pageIndex]] = this.pageData;
+          globalData.modules[this.pageIndex] = this.pageModule;
           wx.navigateBack({
               delta: 1,
           });

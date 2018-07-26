@@ -1,8 +1,11 @@
 /*eslint-disable */
+import { globalData } from '../utils/globalData';
+
 const { notSupportTips } = require('../utils/index');
 
 let host = 'https://yaofa.58.com';
-const app =  require('../utils/globalData');
+
+
 const http = (method, ...props) => {
 
     let [url, data, callback,noLoading] = props;
@@ -11,7 +14,7 @@ const http = (method, ...props) => {
         data = {};
     }
 
-    let { appId, releaseId,test } = app.globalData.extConfig;
+    let { appId, releaseId,test } = globalData.extConfig;
 
     if (!appId) {
         notSupportTips();

@@ -120,7 +120,7 @@
         <view class="edit-cell">
             <view class="edit-label">标题名称</view>
             <view class="edit-input">
-                <input data-name="name"  @input="bindKeyInput" class="weui-input" name="name" maxlength='16' placeholder="16字以内" />
+                <input data-name="name" value="{{reserveTitle}}"  @input="bindKeyInput" class="weui-input" name="name" maxlength='16' placeholder="16字以内" />
             </view>
         </view>
     </view>
@@ -129,8 +129,7 @@
 <script>
 import wepy from 'wepy';
 import Mixin from './mixin';
-
-const app = require('../../utils/globalData');
+import { globalData } from '../../utils/globalData';
 
 export default class Order extends wepy.page {
   config = {
@@ -150,8 +149,8 @@ export default class Order extends wepy.page {
           console.log(e);
           this.pageModule.cfg.title = this.reserveTitle;
           this.pageData[0].props.cfg.title = this.reserveTitle;
-          [app.globalData.pageData[this.pageIndex]] = this.pageData;
-          app.globalData.modules[this.pageIndex] = this.pageModule;
+          [globalData.pageData[this.pageIndex]] = this.pageData;
+          globalData.modules[this.pageIndex] = this.pageModule;
           wx.navigateBack({
               delta: 1,
           });

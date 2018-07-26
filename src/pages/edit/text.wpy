@@ -39,15 +39,14 @@
         </view>
     </view>
     <view class="text-edit-content" wx:else>
-        <view class="edit" @tap="editText">编辑文本</view>
+        <view class="edit" @tap="editText">+去添加多条文本</view>
     </view>
 </template>
 <script>
 import wepy from 'wepy';
 import Mixin from './mixin';
 import { toast } from '../../utils';
-
-const app = require('../../utils/globalData');
+import { globalData } from '../../utils/globalData';
 
 export default class EditText extends wepy.page {
   config = {
@@ -58,7 +57,6 @@ export default class EditText extends wepy.page {
   data = {
       list: [1],
       editMultiple: true,
-      textLength: 3,
       textLimit: {},
       theme: '',
       autoplay: false,
@@ -72,8 +70,11 @@ export default class EditText extends wepy.page {
           this.textLimit.single = this.pageData[0].props.cfg.texts[0].text.length;
       }
   }
+
   onShow() {
       [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
+      const result = globalData.pageData.filter(obj => obj.id === this.pageId);
+      this.pageData = JSON.parse(JSON.stringify(result));
   }
   methods = {
       radioBoxChange(e) {
@@ -102,8 +103,8 @@ export default class EditText extends wepy.page {
           }
           this.pageData[0].props.cfg.theme = this.editMultiple ? '2' : '1';
           this.pageModule.cfg = this.pageData[0].props.cfg;
-          [app.globalData.pageData[this.pageIndex]] = this.pageData;
-          app.globalData.modules[this.pageIndex] = this.pageModule;
+          [globalData.pageData[this.pageIndex]] = this.pageData;
+          globalData.modules[this.pageIndex] = this.pageModule;
           wx.navigateBack({
               delta: 1,
           });
@@ -125,6 +126,7 @@ export default class EditText extends wepy.page {
         left:50%;
         top:50%;
         transform: translate(-50%,-50%);
+        font-size:32rpx;
       }
     .edit-text-section {
       margin-top: 20rpx;

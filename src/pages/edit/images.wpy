@@ -149,8 +149,7 @@
 import wepy from 'wepy';
 import Mixin from './mixin';
 import { previewImage } from '../../utils/index';
-
-const app = require('../../utils/globalData');
+import { globalData } from '../../utils/globalData';
 
 const { picSrcDomain } = require('../../utils/index');
 
@@ -173,7 +172,34 @@ export default class ShopImages extends wepy.page {
         [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
         this.imageLimit = 9 - this.pageData[0].props.cfg.images.length;
     }
-
+  computed = {
+      imageLimit() {
+          if (this.pageData && this.pageData[0]) {
+              return 9 - this.pageData[0].props.cfg.images.length;
+          }
+          return 9;
+      },
+  }
+  onShow() {
+      console.log(globalData);
+      if (globalData.selectedResource) {
+          globalData.selectedResource.forEach(item => {
+              this.pageModule.cfg.images.push({
+                  src: item.resourceUrl,
+                  pageKey: '',
+                  title: this.picName,
+                  linkName: this.linkName,
+              });
+              this.pageData[0].props.cfg.images.push({
+                  src: picSrcDomain() + item.resourceUrl,
+                  title: this.picName,
+                  linkName: this.linkName,
+                  pageKey: '',
+              });
+          });
+      }
+      globalData.selectedResource = {};
+  }
   methods = {
       del(e) {
           const { index } = e.currentTarget.dataset;
@@ -206,12 +232,10 @@ export default class ShopImages extends wepy.page {
       },
       save() {
           this.pageModule.cfg.showSize = this.pageData[0].props.cfg.showSize;
-          [app.globalData.pageData[this.pageIndex]] = this.pageData;
-          console.log(app.globalData.pageData[this.pageIndex]);
-          //   const modulesData = JSON.parse(JSON.stringify(app.globalData.pageData));
-          //   app.globalData.modules = modulesParse.parsePageData(modulesData);
-          app.globalData.modules[this.pageIndex] = this.pageModule;
-          console.log(app.globalData.modules);
+          [globalData.pageData[this.pageIndex]] = this.pageData;
+          console.log(globalData.pageData[this.pageIndex]);
+          globalData.modules[this.pageIndex] = this.pageModule;
+          console.log(globalData.modules);
           wx.navigateBack({
               delta: 1,
           });

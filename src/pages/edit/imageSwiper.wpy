@@ -20,12 +20,12 @@
 
             </view>
             <view class="tobeAdded">
-                <view class="scroll-view-item addButton" style="{{pageData[0].props.cfg.images.length==3?'display:none':''}}" data-type="image" @tap="actionSheepTap">
+                <view class="scroll-view-item addButton" style="{{pageData[0].props.cfg.images.length==3?'display:none':''}}" @tap="actionSheepTap">
                    <image src="../assets/plus.png"></image>
                 </view>
                 <repeat for="{{pageData[0].props.cfg.images}}" key="index" index="index" item="item">
                     <view class="scroll-view-item {{thumbActive == index?'active':''}}" data-index="{{index}}"  @tap="thumbClick">
-                        <image src="{{item.src}}" mode="aspectFill"></image>
+                        <image src="{{item.src}}?w=200" mode="aspectFill"></image>
                         <view class="span active">{{index+1}}</view>
                         <image class="del {{thumbActive == index?'active':''}}" src="../assets/del.png" @tap="del" data-index="{{index}}" />
                     </view>
@@ -56,8 +56,7 @@ import wepy from 'wepy';
 import Mixin from './mixin';
 import { toast, previewImage } from '../../utils';
 // import modulesParse from '../../utils/modulesParse';
-
-const app = require('../../utils/globalData');
+import { globalData } from '../../utils/globalData';
 
 const { picSrcDomain } = require('../../utils/index');
 
@@ -81,7 +80,34 @@ export default class ImageSwiper extends wepy.page {
   onLoad() {
       [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
       console.log(this.pageModule);
-      this.imageLimit = 3 - this.pageData[0].props.cfg.images.length;
+  }
+  computed = {
+      imageLimit() {
+          if (this.pageData && this.pageData[0]) {
+              return 3 - this.pageData[0].props.cfg.images.length;
+          }
+          return 3;
+      },
+  }
+  onShow() {
+      console.log(globalData);
+      if (globalData.selectedResource) {
+          globalData.selectedResource.forEach(item => {
+              this.pageModule.cfg.images.push({
+                  src: item.resourceUrl,
+                  pageKey: '',
+                  title: this.picName,
+                  linkName: this.linkName,
+              });
+              this.pageData[0].props.cfg.images.push({
+                  src: picSrcDomain() + item.resourceUrl,
+                  title: this.picName,
+                  linkName: this.linkName,
+                  pageKey: '',
+              });
+          });
+      }
+      globalData.selectedResource = {};
   }
   methods = {
       onImageClick(e) {
@@ -115,10 +141,8 @@ export default class ImageSwiper extends wepy.page {
       },
       save() {
           toast('已保存');
-          [app.globalData.pageData[this.pageIndex]] = this.pageData;
-          console.log(app.globalData.pageData[this.pageIndex]);
-          app.globalData.modules[this.pageIndex] = this.pageModule;
-          //   console.log(app.globalData.modules);
+          [globalData.pageData[this.pageIndex]] = this.pageData;
+          globalData.modules[this.pageIndex] = this.pageModule;
           setTimeout(() => {
               wx.navigateBack({
                   delta: 1,

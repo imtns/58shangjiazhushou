@@ -6,7 +6,7 @@
                 <!-- 中图/小图/双图 -->
                 <block wx:if="{{cfg.theme==='2' || cfg.theme==='3'}}">
                     <navigator  class="mod-goods-item-{{~idx%cfg.theme===0?cfg.themes[cfg.theme-1].styleName+' last-child':cfg.themes[cfg.theme-1].styleName}}">
-                        <image class="mod-goods-image-{{cfg.themes[cfg.theme-1].styleName}}" src="{{item.img}}?=690" mode="aspectFill" />
+                        <image class="mod-goods-image-{{cfg.themes[cfg.theme-1].styleName}}" src="{{item.img || 'http://pic1.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png'}}?=690" mode="aspectFill" />
                         <view class="mod-goods-title-{{cfg.themes[cfg.theme-1].styleName}}">{{item.title}}</view>
                         <view class="mod-goods-price-{{cfg.themes[cfg.theme-1].styleName}}">￥
                             <view class="price-content">{{item.price}}</view>
@@ -15,7 +15,7 @@
                 </block>
                 <block wx:elif="{{cfg.theme==='6'}}">
                     <navigator  class="mod-goods-item-{{~idx%2===0?cfg.themes[cfg.theme-1].styleName+' last-child':cfg.themes[cfg.theme-1].styleName}}">
-                        <image class="mod-goods-image-{{cfg.themes[cfg.theme-1].styleName}}" src="{{item.img}}?=690" mode="aspectFill" />
+                        <image class="mod-goods-image-{{cfg.themes[cfg.theme-1].styleName}}" src="{{item.img || 'http://pic1.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png'}}?=690" mode="aspectFill" />
                         <view class="mod-goods-title-{{cfg.themes[cfg.theme-1].styleName}}">{{item.title}}</view>
                         <view class="mod-goods-price-{{cfg.themes[cfg.theme-1].styleName}}">￥
                             <view class="price-content">{{item.price}}</view>
@@ -25,7 +25,7 @@
                 <!-- 横向列表 -->
                 <block wx:elif="{{cfg.theme==='5'}}">
                     <navigator class="mod-goods-item-{{ cfg.themes[cfg.theme-1].styleName}}">
-                        <image class="mod-goods-image-{{cfg.themes[cfg.theme-1].styleName}}" src="{{item.img}}?=690" mode="aspectFill" />
+                        <image class="mod-goods-image-{{cfg.themes[cfg.theme-1].styleName}}" src="{{item.img || 'http://pic1.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png'}}?=690" mode="aspectFill" />
                         <view class="mod-goods-title-{{cfg.themes[cfg.theme-1].styleName}}">{{item.title}}</view>
                         <view class="mod-goods-price-{{cfg.themes[cfg.theme-1].styleName}}">￥
                             <view class="price-content">{{item.price}}</view>
@@ -35,7 +35,7 @@
                 <!-- 1大2中 -->
                 <block wx:elif="{{cfg.theme==='7'}}">
                     <navigator  class="mod-goods-item-{{ cfg.themes[cfg.theme-1].styleName+'-'+(idx%3+1)}}">
-                        <image class="mod-goods-image-{{ cfg.themes[cfg.theme-1].styleName+'-'+(idx%3+1)}}" src="{{item.img}}?=690" mode="aspectFill" />
+                        <image class="mod-goods-image-{{ cfg.themes[cfg.theme-1].styleName+'-'+(idx%3+1)}}" src="{{item.img || 'http://pic1.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png'}}?=690" mode="aspectFill" />
                         <view class="mod-goods-title-{{ cfg.themes[cfg.theme-1].styleName+'-'+(idx%3+1)}}">{{item.title}}</view>
                         <view class="mod-goods-price-{{ cfg.themes[cfg.theme-1].styleName+'-'+(idx%3+1)}}">￥
                             <view class="price-content">{{item.price}}</view>
@@ -45,7 +45,7 @@
                 <!-- 大图 -->
                 <block wx:else>
                     <navigator  class="mod-goods-item-one">
-                        <image class="mod-goods-image-one" src="{{item.img}}?=690" mode="aspectFill" />
+                        <image class="mod-goods-image-one" src="{{item.img || 'http://pic1.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png'}}?=690" mode="aspectFill" />
                         <view class="mod-goods-title-one">{{item.title}}</view>
                         <view class="mod-goods-price-one">￥
                             <view class="price-content">{{item.price}}</view></view>
@@ -59,7 +59,7 @@
             data-type="goods" data-good-size="{{goodSize}}" data-total="{{total}}">
                 <block wx:for="{{data}}" wx:key="{{item.id}}" wx:for-index="idx">
                     <view class="mod-goods-item-{{ cfg.themes[cfg.theme-1].styleName}}">
-                        <image class="mod-goods-image-{{cfg.themes[cfg.theme-1].styleName}}" src="{{item.img}}?=690" mode="aspectFill" />
+                        <image class="mod-goods-image-{{cfg.themes[cfg.theme-1].styleName}}" src="{{item.img || 'http://pic1.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png'}}?=690" mode="aspectFill" />
                         <view class="mod-goods-title-{{cfg.themes[cfg.theme-1].styleName}}">{{item.title}}</view>
                         <view class="mod-goods-price-{{cfg.themes[cfg.theme-1].styleName}}">
                             ￥<view class="price-content">{{item.price}}</view>

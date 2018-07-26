@@ -52,8 +52,8 @@
 import wepy from 'wepy';
 import Mixin from './mixin';
 import { picSrcDomain, toast } from '../../utils';
+import { globalData } from '../../utils/globalData';
 
-const app = require('../../utils/globalData');
 const { get } = require('../../utils/ajax');
 
 export default class Article extends wepy.page {
@@ -121,11 +121,8 @@ export default class Article extends wepy.page {
           });
           console.log(JSON.stringify(this.params));
           this.pageModule.params = this.params;
-          app.globalData.pageData[this.pageIndex].props = this.pageData[0].props;
-          //   console.log(app.globalData.pageData[this.pageIndex]);
-          //   const modulesData = JSON.parse(JSON.stringify(app.globalData.pageData));
-          //   app.globalData.modules = modulesParse.parsePageData(modulesData);
-          app.globalData.modules[this.pageIndex] = this.pageModule;
+          globalData.pageData[this.pageIndex].props = this.pageData[0].props;
+          globalData.modules[this.pageIndex] = this.pageModule;
           wx.navigateBack({
               delta: 1,
           });
