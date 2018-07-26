@@ -128,7 +128,7 @@ export default class Cropper extends wepy.page {
             globalService.set('afterCrop', true);
             wepy.navigateBack();
         },
-        'crop-loadImage'(imageSrc, ratio = '', first = false) {
+        'crop-loadImage'(imageSrc, ratio = '1,1', first = false) {
             const that = this;
             const { qualityWidth } = that;
             let { innerAspectRadio } = that;
