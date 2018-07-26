@@ -1,5 +1,6 @@
+import { globalData } from '../utils/globalData';
+
 const { toast } = require('../utils/index');
-const app = require('../utils/globalData');
 
 module.exports = {
     bindGetUserInfo(e) {
@@ -9,7 +10,7 @@ module.exports = {
             //     userInfo, rawData, signature, encryptedData, iv,
             // } = e.detail;
             wx.setStorageSync('getUserInfo', e.detail);
-            Object.assign(app.globalData, {
+            Object.assign(globalData, {
                 ...e.detail,
             });
             this.onPageReady();

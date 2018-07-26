@@ -29,12 +29,12 @@
 import wepy from 'wepy';
 import { get } from '../utils/ajax';
 import { toast } from '../utils/index';
+import { globalData } from '../utils/globalData';
 
 const basicTemplateUrl = '/business/templateList';
 const myTemplateUrl = '/business/myTemplateList/';
 const getTemplateIdUrl = '/business/init/struct';
 const delTemplateUrl = '/business/myTemplate/del';
-const app = require('../utils/globalData');
 
 export default class Index extends wepy.page {
   config = {
@@ -91,6 +91,7 @@ export default class Index extends wepy.page {
               await get(delTemplateUrl, { releaseId: releaseid });
               this.list.splice(index, 1);
               this.$apply();
+              this.delLayer = {};
               this.myTemplateFull = false;
               toast('删除成功');
           } catch (ee) {
@@ -156,12 +157,12 @@ export default class Index extends wepy.page {
       if (this.my) { this.loadMyTemplate(); }
   }
   async loadMyTemplate() {
-      console.log(app.globalData.extConfig);
+      console.log(globalData.extConfig);
       const { data } = await get(myTemplateUrl + wx.getStorageSync('current_mpid'), {
           pageNum: 1,
           pageSize: 10,
           v: 2,
-          appid: app.globalData.extConfig.appId,
+          appid: globalData.extConfig.appId,
       });
       this.list = data;
       this.list.forEach((item) => {

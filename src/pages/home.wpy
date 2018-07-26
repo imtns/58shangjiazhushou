@@ -58,8 +58,7 @@
 import wepy from 'wepy';
 import { alert } from '../utils';
 import { post, get } from '../utils/ajax';
-
-const app = require('../utils/globalData');
+import { globalData } from '../utils/globalData';
 
 export default class Home extends wepy.page {
     config = {
@@ -277,7 +276,7 @@ export default class Home extends wepy.page {
         this.$apply();
     }
     async onLoad () {
-        // 因为app.globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
+        // globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
         await this.loadData();
         this.setGlobalMpId(this.business.selected.id);
         this.loadExtJson();
@@ -316,7 +315,7 @@ export default class Home extends wepy.page {
     async loadExtJson() {
         const url = '/mpBusinessRelease/getExtJson';
         const { data } = await get(url, { sceneKey: wx.getStorageSync('current_mpid') });
-        app.globalData.extConfig = data;
+        globalData.extConfig = data;
         console.log(data);
     }
     async loadData () {
