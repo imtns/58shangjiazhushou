@@ -134,140 +134,144 @@ import Mixin from './mixin';
 import CouponMixin from '../../mixin/coupon';
 import { alert, globalService } from '../../utils';
 
-const app = require('../../utils/globalData');
+import { globalData } from '../../utils/globalData';
 
 const limitCouponCount = 5; // 限制选择张数
 const pageSize = 10;
 const pageNum = 1;
 
 export default class Index extends wepy.page {
-    config = {
-        navigationBarTitleText: '优惠券',
-        disableScroll: true,
-    }
-    data = {
-        coupons: [],
-        isEditing: true,
-        previewList: [],
-        previewType: '', // 实际展现形式
-        type: 'row', // 需要展现的形式
-    }
+  config = {
+      navigationBarTitleText: '优惠券',
+      disableScroll: true,
+  };
+  data = {
+      coupons: [],
+      isEditing: true,
+      previewList: [],
+      previewType: '', // 实际展现形式
+      type: 'row', // 需要展现的形式
+  };
 
-    mixins = [CouponMixin, Mixin]
+  mixins = [CouponMixin, Mixin];
 
-    computed = {
-        previewType() {
-            if (this.type === 'column' || this.previewList.length < 2) {
-                return 'column';
-            }
+  computed = {
+      previewType() {
+          if (this.type === 'column' || this.previewList.length < 2) {
+              return 'column';
+          }
 
-            return 'row';
-        },
-    }
+          return 'row';
+      },
+  };
 
-    async loadData() {
-        const mpId = wepy.getStorageSync('current_mpid');
-        const coupons = await this.getCoupons({
-            pageNum,
-            pageSize,
-            mpId,
-        });
+  async loadData() {
+      const mpId = wepy.getStorageSync('current_mpid');
+      const coupons = await this.getCoupons({
+          pageNum,
+          pageSize,
+          mpId,
+      });
 
-        // 去除掉无库存和过期的
-        this.coupons = coupons.filter(item => item.usable && item.totalCount > 0);
-        this.previewList.forEach((item) => {
-            const { id } = item;
-            const target = this.coupons.find((c) => {
-                if (c.id === id) {
-                    item.checked = true;
-                    return true;
-                }
-                return false;
-            });
-            if (target) {
-                target.checked = true;
-            }
-        });
-        this.$apply();
-    }
+      // 去除掉无库存和过期的
+      this.coupons = coupons.filter(item => item.usable && item.totalCount > 0);
+      this.previewList.forEach(item => {
+          const { id } = item;
+          const target = this.coupons.find(c => {
+              if (c.id === id) {
+                  item.checked = true;
+                  return true;
+              }
+              return false;
+          });
+          if (target) {
+              target.checked = true;
+          }
+      });
+      this.$apply();
+  }
 
-    onShow() {
-        if (globalService.get('refresh')) {
-            globalService.set('refresh', false);
-            // 重新加载数据
-            this.loadData();
-        }
-    }
+  onShow() {
+      if (globalService.get('refresh')) {
+          globalService.set('refresh', false);
+          // 重新加载数据
+          this.loadData();
+      }
+  }
 
-    async onLoad() {
-        [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
-        const { data } = this.pageData[0].props; // 当前已添加的优惠券
+  async onLoad() {
+      [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
+      const { data } = this.pageData[0].props; // 当前已添加的优惠券
 
-        // 过滤预制优惠券
-        if (data && data[0] && data[0].id) {
-            this.previewList = data.map(coupon => {
-                const { validStarttime, validEndtime } = coupon;
-                return Object.assign({}, coupon, {
-                    validStarttime: this.formatTime(validStarttime, 'YYYY.MM.DD'),
-                    validEndtime: this.formatTime(validEndtime, 'YYYY.MM.DD'),
-                });
-            });
-        }
-        // 优惠券展示样式
-        this.type = this.pageData[0].props.cfg.theme === 1 ? 'column' : 'row';
+      // 过滤预制优惠券
+      if (data && data[0] && data[0].id) {
+          this.previewList = data.map(coupon => {
+              const { validStarttime, validEndtime } = coupon;
+              return Object.assign({}, coupon, {
+                  validStarttime: this.formatTime(validStarttime, 'YYYY.MM.DD'),
+                  validEndtime: this.formatTime(validEndtime, 'YYYY.MM.DD'),
+              });
+          });
+      }
+      // 优惠券展示样式
+      this.type = this.pageData[0].props.cfg.theme === 1 ? 'column' : 'row';
 
-        try {
-            this.loadData();
-        } catch (e) {
-            this.errorHandler(e);
-        }
-    }
-    methods = {
-        save() {
-            const selectCoupons = this.coupons
-                .filter(obj => obj.checked === true)
-                .map(obj => Object.assign({}, obj, {
-                    validStartDate: obj.validStarttime,
-                    validEndDate: obj.validEndtime,
-                }));
-            console.log(selectCoupons);
-            this.pageModule.params.couponIds = selectCoupons.map(c => c.id).join(',');
-            this.pageData[0].props.data = selectCoupons;
-            app.globalData.pageData[this.pageIndex].props = this.pageData[0].props;
-            app.globalData.modules[this.pageIndex] = this.pageModule;
-            wx.navigateBack({
-                delta: 1,
-            });
-        },
-        choose(index, url) {
-            if (this.isEditing) {
-                const coupon = this.coupons[index];
+      try {
+          this.loadData();
+      } catch (e) {
+          this.errorHandler(e);
+      }
+  }
+  methods = {
+      save() {
+          const selectCoupons = this.coupons
+              .filter(obj => obj.checked === true)
+              .map(obj =>
+                  Object.assign({}, obj, {
+                      validStartDate: obj.validStarttime,
+                      validEndDate: obj.validEndtime,
+                  }));
+          console.log(selectCoupons);
+          this.pageModule.params.couponIds = selectCoupons.map(c => c.id).join(',');
+          this.pageData[0].props.data = selectCoupons;
+          globalData.pageData[this.pageIndex].props = this.pageData[0].props;
+          globalData.modules[this.pageIndex] = this.pageModule;
+          wx.navigateBack({
+              delta: 1,
+          });
+      },
+      choose(index, url) {
+          if (this.isEditing) {
+              const coupon = this.coupons[index];
 
-                // 勾选时判断是否超出容量
-                if (!coupon.checked) {
-                    if (this.previewList.length >= limitCouponCount) {
-                        alert(`最多只能选择${limitCouponCount}张优惠券`);
-                        return;
-                    }
-                }
-                coupon.checked = !coupon.checked;
+              // 勾选时判断是否超出容量
+              if (!coupon.checked) {
+                  if (this.previewList.length >= limitCouponCount) {
+                      alert(`最多只能选择${limitCouponCount}张优惠券`);
+                      return;
+                  }
+              }
+              coupon.checked = !coupon.checked;
 
-                this.chooseCoupon && this.chooseCoupon(coupon);
-            } else {
-                wepy.navigateTo({ url });
-            }
-        },
-    }
-    chooseCoupon(coupon) {
-        const { id } = coupon;
-        if (coupon.checked) {
-            this.previewList.unshift(coupon);
-        } else {
-            // 从列表中删除
-            this.previewList.splice(this.previewList.findIndex(item => item.id === id), 1);
-        }
-        this.$apply();
-    }
+              this.chooseCoupon && this.chooseCoupon(coupon);
+          } else {
+              wepy.navigateTo({ url });
+          }
+      },
+  };
+  chooseCoupon(coupon) {
+      const { id } = coupon;
+      if (coupon.checked) {
+          this.previewList.unshift(coupon);
+      } else {
+      // 从列表中删除
+          this.previewList.splice(
+              this.previewList.findIndex(item => item.id === id),
+              1,
+          );
+      }
+      this.$apply();
+  }
 }
 </script>
 
@@ -278,46 +282,46 @@ export default class Index extends wepy.page {
 $radius: 3.2rpx;
 
 .preview-scroll {
-    height: 492rpx;
-    width: 750rpx;
+  height: 492rpx;
+  width: 750rpx;
 
-    .previewer {
-        background-color: #fff;
-        margin-top: 30rpx;
-        padding: 0 20rpx;
-        overflow: hidden;
+  .previewer {
+    background-color: #fff;
+    margin-top: 30rpx;
+    padding: 0 20rpx;
+    overflow: hidden;
 
-        &.row {
-            background-color: inherit;
-            margin-top: 150rpx;
-        }
+    &.row {
+      background-color: inherit;
+      margin-top: 150rpx;
     }
+  }
 }
 
 .options {
-    width: 100%;
-    height: 86rpx;
-    color: #fff;
-    font-size: 32rpx;
-    line-height: 86rpx;
-    display: flex;
-    justify-content: space-between;
-    background-color: #46484A;
-    padding: 0 30rpx;
-    position: absolute;
-    top: 0;
+  width: 100%;
+  height: 86rpx;
+  color: #fff;
+  font-size: 32rpx;
+  line-height: 86rpx;
+  display: flex;
+  justify-content: space-between;
+  background-color: #46484a;
+  padding: 0 30rpx;
+  position: absolute;
+  top: 0;
 }
 
 .select-scroll {
-    width: 100%;
-    height: 714rpx;
-    background-color: #5b5d5f;
-    position: fixed;
-    bottom: 0;
+  width: 100%;
+  height: 714rpx;
+  background-color: #5b5d5f;
+  position: fixed;
+  bottom: 0;
 
-    .coupons {
-        height: 628rpx;
-        margin-top: 86rpx;
-    }
+  .coupons {
+    height: 628rpx;
+    margin-top: 86rpx;
+  }
 }
 </style>

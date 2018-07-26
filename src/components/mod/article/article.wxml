@@ -9,7 +9,7 @@
         <view class="mod-article-source">{{item.intro}}</view>
       </view>
     </view>
-    <view class="mod-more" bindtap="loadMore" wx:if="{{total > data.length}}" data-index="{{index}}" data-article-page="{{pageNum+1}}"
+    <view class="mod-more"  wx:if="{{total > data.length}}" data-index="{{index}}" data-article-page="{{pageNum+1}}"
       data-type="article" data-article-size="{{pageSize}}" data-total="{{total}}">查看更多</view>
   </view>
 </template>

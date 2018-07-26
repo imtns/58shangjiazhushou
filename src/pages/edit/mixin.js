@@ -3,9 +3,10 @@ import wepy from 'wepy';
 import { toast, picSrcDomain } from '../../utils';
 // import { uploader } from '../../utils/uploader';
 import uploadImages from '../../utils/upload';
+import { globalData } from '../../utils/globalData';
 // import modulesParse from '../../utils/modulesParse';
 // import { toast } from '../../utils';
-const app = require('../../utils/globalData');
+import { uploader } from '../../utils/uploader';
 
 export default class Mixin extends wepy.mixin {
     data = {
@@ -25,8 +26,8 @@ export default class Mixin extends wepy.mixin {
         console.log(options);
         this.saveAvaliable = false;
         this.pageId = options.id;
-        const result = app.globalData.pageData.filter(obj => obj.id === this.pageId);
-        this.pageIndex = app.globalData.pageData.findIndex(obj => obj.id === this.pageId);
+        const result = globalData.pageData.filter(obj => obj.id === this.pageId);
+        this.pageIndex = globalData.pageData.findIndex(obj => obj.id === this.pageId);
         // this.pageData = Object.assign({}, this.pageData, {
         //     cfg: result[0].props.cfg, data: result[0].props.data, pageNum: result[0].props.pageNum, pageSize: result[0].props.pageNum, total: result[0].props.total,
         // });
@@ -34,10 +35,10 @@ export default class Mixin extends wepy.mixin {
         if (result[0].name === 'article') {
             this.pageData = Object.assign({}, this.pageData, { params: result[0].params });
         }
-        this.modules = app.globalData.modules;
+        this.modules = globalData.modules;
         this.tempModules = JSON.parse(JSON.stringify(this.modules));
-        this.extConfig = app.globalData.extConfig;
-        this.pageList = app.globalData.pageList.map((item, index) => ({
+        this.extConfig = globalData.extConfig;
+        this.pageList = globalData.pageList.map((item, index) => ({
             id: index,
             key: item.pageKey,
             name: item.pageName,
@@ -45,14 +46,15 @@ export default class Mixin extends wepy.mixin {
         console.log(result);
     }
     // onShow() {
-    //     const result = app.globalData.pageData.filter(obj => obj.id === this.pageId);
-    //     this.pageIndex = app.globalData.pageData.findIndex(obj => obj.id === this.pageId);
+    //     const result = globalData.pageData.filter(obj => obj.id === this.pageId);
+    //     this.pageIndex = globalData.pageData.findIndex(obj => obj.id === this.pageId);
     //     this.pageData = JSON.parse(JSON.stringify(result));
     // }
     async addBanner(sourceType, type = 'image') {
         if (type === 'image') {
             const { result, msg } = await uploadImages({
                 sourceType,
+                count: type === 'image' ? this.imageLimit : 1,
             });
             if (msg) {
                 // 错误操作
@@ -76,6 +78,18 @@ export default class Mixin extends wepy.mixin {
                 });
             });
             this.$apply();
+        } else {
+            const { tempFilePath, thumbTempFilePath } = await wepy.chooseVideo();
+            uploader(tempFilePath, { isVideo: true }, (e, result) => {
+                if (e) {
+                    toast('上传失败，请重试。');
+                    return;
+                }
+                toast('上传成功。');
+                Object.assign(this.video, { src: result.content, cover: thumbTempFilePath });
+                this.saveVideo(result.content);
+                this.$apply();
+            });
         }
     }
     methods = {
@@ -83,12 +97,12 @@ export default class Mixin extends wepy.mixin {
             const that = this;
             const { type = 'image' } = e.currentTarget.dataset;
             wx.showActionSheet({
-                itemList: ['拍摄', '添加本地照片', type === 'video' ? '去视频库选择' : '去图片库选择'],
+                itemList: ['拍摄', type === 'video' ? '添加本地视频' : '添加本地照片', type === 'video' ? '去视频库选择' : '去图片库选择'],
                 success (tap) {
                     if (tap.tapIndex === 0) {
-                        that.addBanner('camera');
+                        that.addBanner('camera', type);
                     } else if (tap.tapIndex === 1) {
-                        that.addBanner('album');
+                        that.addBanner('album', type);
                     } else {
                         wepy.navigateTo({
                             url: `../resourceManage?limit=${that.imageLimit}&type=${type}`,

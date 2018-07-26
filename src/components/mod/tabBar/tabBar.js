@@ -1,4 +1,4 @@
-const app = require('../../../utils/globalData');
+import { globalData } from '../../../utils/globalData';
 
 export default {
     switchTab(e) {
@@ -16,7 +16,7 @@ export default {
             isEditing: false,
             pageKey,
         });
-        if (app.globalData.tabMode === 1) {
+        if (globalData.tabMode === 1) {
             /**
              * 重定向版本的tabbar
              */

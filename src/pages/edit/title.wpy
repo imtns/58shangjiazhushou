@@ -45,8 +45,7 @@
 import wepy from 'wepy';
 import Mixin from './mixin';
 import { toast } from '../../utils';
-
-const app = require('../../utils/globalData');
+import { globalData } from '../../utils/globalData';
 
 export default class Title extends wepy.page {
     config = {
@@ -89,8 +88,8 @@ export default class Title extends wepy.page {
                 return;
             }
             this.pageModule.cfg = this.pageData[0].props.cfg;
-            [app.globalData.pageData[this.pageIndex]] = this.pageData;
-            app.globalData.modules[this.pageIndex] = this.pageModule;
+            [globalData.pageData[this.pageIndex]] = this.pageData;
+            globalData.modules[this.pageIndex] = this.pageModule;
             wx.navigateBack({
                 delta: 1,
             });
