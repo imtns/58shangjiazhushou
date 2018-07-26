@@ -1,11 +1,10 @@
 import wepy from 'wepy';
 // const { post } = require('../../utils/ajax');
-import { toast } from '../../utils';
+import { toast, picSrcDomain } from '../../utils';
 // import { uploader } from '../../utils/uploader';
 import uploadImages from '../../utils/upload';
 // import modulesParse from '../../utils/modulesParse';
 // import { toast } from '../../utils';
-
 const app = require('../../utils/globalData');
 
 export default class Mixin extends wepy.mixin {
@@ -18,6 +17,7 @@ export default class Mixin extends wepy.mixin {
         saveAvaliable: false,
         extConfig: {},
         modules: {},
+        imageLimit: 0,
         tempModules: {},
         noEdit: false,
     }
@@ -44,50 +44,39 @@ export default class Mixin extends wepy.mixin {
         }));
         console.log(result);
     }
-    onShow() {
-        const result = app.globalData.pageData.filter(obj => obj.id === this.pageId);
-        this.pageIndex = app.globalData.pageData.findIndex(obj => obj.id === this.pageId);
-        this.pageData = JSON.parse(JSON.stringify(result));
-    }
+    // onShow() {
+    //     const result = app.globalData.pageData.filter(obj => obj.id === this.pageId);
+    //     this.pageIndex = app.globalData.pageData.findIndex(obj => obj.id === this.pageId);
+    //     this.pageData = JSON.parse(JSON.stringify(result));
+    // }
     async addBanner(sourceType, type = 'image') {
         if (type === 'image') {
             const { result, msg } = await uploadImages({
-                count: 8,
                 sourceType,
             });
             if (msg) {
                 // 错误操作
                 toast(msg);
-                return;
             }
             console.log(result);
-            // uploader(tempFilePaths[0], (e, result) => {
-            //     if (e) {
-            //         toast('上传失败，请重试。');
-            //         return;
-            //     }
-            //     toast('上传成功。');
-            //     const src = result.content;
-            //     const name = that.picName;
-            //     that.pageModule.cfg.images.push({
-            //         src: src,
-            //         pageKey: '',
-            //         title: name,
-            //         linkName: that.linkName,
-            //     });
-            //     that.pageData[0].props.cfg.images.push({
-            //         src: that.picDomain + src,
-            //         title: name,
-            //         linkName: that.linkName,
-            //         pageKey: '',
-            //     });
-            //     that.saveImage(src, name);
-            //     that.$apply();
-            // });
+            result.forEach(item => {
+                const src = item;
+                const name = this.picName;
+                this.pageModule.cfg.images.push({
+                    src: picSrcDomain() + src,
+                    pageKey: '',
+                    title: name,
+                    linkName: this.linkName,
+                });
+                this.pageData[0].props.cfg.images.push({
+                    src: picSrcDomain() + src,
+                    title: name,
+                    linkName: this.linkName,
+                    pageKey: '',
+                });
+            });
+            this.$apply();
         }
-
-        //   const tempFilePaths = await wx.chooseImage({ sourceType: [type] });
-        //   console.log(tempFilePaths);
     }
     methods = {
         actionSheepTap(e) {
@@ -101,7 +90,9 @@ export default class Mixin extends wepy.mixin {
                     } else if (tap.tapIndex === 1) {
                         that.addBanner('album');
                     } else {
-                        console.log('去图库');
+                        wepy.navigateTo({
+                            url: `../resourceManage?limit=${that.imageLimit}&type=${type}`,
+                        });
                     }
                 },
             });

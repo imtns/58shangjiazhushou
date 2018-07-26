@@ -20,7 +20,7 @@
 
             </view>
             <view class="tobeAdded">
-                <view class="scroll-view-item addButton" style="{{pageData[0].props.cfg.images.length==3?'display:none':''}}" @tap="actionSheepTap">
+                <view class="scroll-view-item addButton" style="{{pageData[0].props.cfg.images.length==3?'display:none':''}}" data-type="image" @tap="actionSheepTap">
                    <image src="../assets/plus.png"></image>
                 </view>
                 <repeat for="{{pageData[0].props.cfg.images}}" key="index" index="index" item="item">
@@ -81,6 +81,7 @@ export default class ImageSwiper extends wepy.page {
   onLoad() {
       [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
       console.log(this.pageModule);
+      this.imageLimit = 3 - this.pageData[0].props.cfg.images.length;
   }
   methods = {
       onImageClick(e) {

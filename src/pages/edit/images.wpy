@@ -114,7 +114,7 @@
 
             </view>
             <view class="tobeAdded">
-                <view class="scroll-view-item addButton"  @tap="actionSheepTap">
+                <view class="scroll-view-item addButton" style="{{pageData[0].props.cfg.images.length==9?'display:none':''}}"  data-type="image"  @tap="actionSheepTap">
                    <image src="../assets/plus.png"></image>
                 </view>
                 <repeat for="{{pageData[0].props.cfg.images}}" key="index" index="index" item="item">
@@ -154,7 +154,7 @@ const app = require('../../utils/globalData');
 
 const { picSrcDomain } = require('../../utils/index');
 
-const { post } = require('../../utils/ajax');
+// const { post } = require('../../utils/ajax');
 
 export default class ShopImages extends wepy.page {
   config = {
@@ -171,6 +171,7 @@ export default class ShopImages extends wepy.page {
     };
     onLoad() {
         [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
+        this.imageLimit = 9 - this.pageData[0].props.cfg.images.length;
     }
 
   methods = {
@@ -217,13 +218,6 @@ export default class ShopImages extends wepy.page {
       },
   }
 
-  async saveImage(src, name) {
-      await post('/businessResource/insert', {
-          resourceType: 1,
-          resourceName: name,
-          resourceUrl: src,
-      });
-  }
   mixins = [Mixin];
 }
 </script>
