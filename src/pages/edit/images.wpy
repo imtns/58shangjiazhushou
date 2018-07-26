@@ -119,7 +119,7 @@
                 </view>
                 <repeat for="{{pageData[0].props.cfg.images}}" key="index" index="index" item="item">
                     <view class="scroll-view-item {{thumbActive == index?'active':''}}" data-index="{{index}}"  @tap="thumbClick">
-                        <image src="{{item.src}}?w=90"></image>
+                        <image src="{{item.src}}?w=90" mode="aspectFill"></image>
                         <view class="span active">{{index+1}}</view>
                         <image class="del {{thumbActive == index?'active':''}}" src="../assets/del.png" @tap="del" data-index="{{index}}" />
                     </view>
@@ -170,36 +170,7 @@ export default class ShopImages extends wepy.page {
     };
     onLoad() {
         [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
-        this.imageLimit = 9 - this.pageData[0].props.cfg.images.length;
     }
-  computed = {
-      imageLimit() {
-          if (this.pageData && this.pageData[0]) {
-              return 9 - this.pageData[0].props.cfg.images.length;
-          }
-          return 9;
-      },
-  }
-  onShow() {
-      console.log(globalData);
-      if (globalData.selectedResource) {
-          globalData.selectedResource.forEach(item => {
-              this.pageModule.cfg.images.push({
-                  src: item.resourceUrl,
-                  pageKey: '',
-                  title: this.picName,
-                  linkName: this.linkName,
-              });
-              this.pageData[0].props.cfg.images.push({
-                  src: picSrcDomain() + item.resourceUrl,
-                  title: this.picName,
-                  linkName: this.linkName,
-                  pageKey: '',
-              });
-          });
-      }
-      globalData.selectedResource = {};
-  }
   methods = {
       del(e) {
           const { index } = e.currentTarget.dataset;
