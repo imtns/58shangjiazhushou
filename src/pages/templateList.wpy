@@ -162,7 +162,7 @@ export default class Index extends wepy.page {
       this.list = data;
       this.list.forEach((item) => {
           const hideTag = wx.getStorageSync(`hideTag_${item.releaseId}`);
-          if (hideTag) {
+          if (hideTag && item.status !== 4) {
               this.hideTag[item.releaseId] = true;
           }
       });
