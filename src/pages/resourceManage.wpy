@@ -150,6 +150,7 @@ export default class Index extends wepy.page {
         }
         this.$apply();
 
+        this.initData();
         await this.loadData(this.curTab);
     }
 
