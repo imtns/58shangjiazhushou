@@ -30,7 +30,7 @@ export default class CouponMixin extends wepy.mixin {
 
     getCurrentDate() {
         const today = new Date();
-        return `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate}`;
+        return `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
     }
 
     /**

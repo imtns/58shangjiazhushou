@@ -22,6 +22,7 @@
                 <view class="item required border-bottom">
                     <text>开始时间</text>
                     <picker mode="date" value="{{ formatValidStarttime }}"
+                    start="{{ limitStart }}"
                     :class="{ placeholder: validStarttime === null }"
                     @change="dataAction('validStarttime')">
                         {{ formatValidStarttime || '去选择' }}<view class="icon more"></view>
@@ -30,6 +31,7 @@
                 <view class="item required">
                     <text>结束时间</text>
                     <picker mode="date" value="{{ formatValidEndtime }}"
+                    start="{{ limitStart }}"
                     :class="{ placeholder: validEndtime === null }"
                     @change="dataAction('validEndtime')">
                         {{ formatValidEndtime || '去选择' }}<view class="icon more"></view>
@@ -71,6 +73,7 @@ export default class Index extends wepy.page {
     mixins = [CouponMixin]
 
     data = {
+        limitStart: '',
         validType: 1, // 1 固定时间，2 领取后生效
         validDays: null,
         validAfterDays: null,
@@ -115,6 +118,8 @@ export default class Index extends wepy.page {
         const couponManage = globalService.get('couponManage');
         Object.assign(this, couponManage);
         this.updateData();
+
+        this.limitStart = this.getCurrentDate();
     }
 
     validator(prop, v) {
