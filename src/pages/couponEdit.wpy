@@ -183,13 +183,13 @@ export default class Index extends wepy.page {
         },
 
         setFormData(prop, e) {
-            const { value } = e.detail;
+            let { value } = e.detail;
 
             // 不超过十个字
             if (~['title', 'subTitle'].indexOf(prop)) {
                 if (value.length > 10) {
                     toast('只能输入10个字');
-                    return value.slice(0, 10);
+                    value = value.slice(0, 10);
                 }
             }
 
