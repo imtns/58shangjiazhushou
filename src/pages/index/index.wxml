@@ -2,6 +2,7 @@
 <import src="../../components/mod/imageSwiper/imageSwiper.wxml" />
 <import src="../../components/mod/images/images.wxml" />
 <import src="../../components/mod/text/text.wxml" />
+<import src="../../components/mod/goods/goods.wxml" />
 <import src="../../components/mod/title/title.wxml" />
 <import src="../../components/mod/video/video.wxml" />
 <import src="../../components/mod/call/call.wxml" />

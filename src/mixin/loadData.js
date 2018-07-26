@@ -180,7 +180,11 @@ const parseCfgAndData = ({
             src: picSrcDomain() + img.src,
         }));
     }
-
+    if (name === 'goods') {
+        modData.data.forEach(img => {
+            img.img = img.img.substr(0, img.img.indexOf('?'));
+        });
+    }
     // images 模块图片路径
     if (name === 'images') {
     //  const { theme } = cfg;

@@ -111,7 +111,7 @@ export default class Index extends wepy.page {
                   return;
               }
               if (status === 5) {
-                  wx.setStorageSync(`hideTag_${releaseid}`, true);
+                  wx.setStorageSync(`hideTag_${releaseid}_${status}`, true);
                   this.hideTag[releaseid] = true;
               }
               wx.setStorageSync('releaseId', releaseid);
@@ -151,6 +151,9 @@ export default class Index extends wepy.page {
       this.list.push(...data);
       this.$apply();
   }
+  onShow() {
+      if (this.my) { this.loadMyTemplate(); }
+  }
   async loadMyTemplate() {
       console.log(app.globalData.extConfig);
       const { data } = await get(myTemplateUrl + wx.getStorageSync('current_mpid'), {
@@ -161,10 +164,8 @@ export default class Index extends wepy.page {
       });
       this.list = data;
       this.list.forEach((item) => {
-          const hideTag = wx.getStorageSync(`hideTag_${item.releaseId}`);
-          if (hideTag && item.status !== 4) {
-              this.hideTag[item.releaseId] = true;
-          }
+          const hideTag = wx.getStorageSync(`hideTag_${item.releaseId}_${item.status}`);
+          this.hideTag[item.releaseId] = !!hideTag;
       });
       // 判断是否有正在审核的模板，如果有审核的模板，则审核的模板不能编辑，并且其他模板不能发布
       const filter = this.list.filter(x => x.status === 1);
