@@ -75,8 +75,20 @@ export default class Index extends wepy.page {
         },
 
         async chooseGroup(resourceGroup, name) {
+            const { serviceIds } = this;
             const services = await this.getServices(resourceGroup);
-            this.services = services;
+            this.services = services.map(item => {
+                // 标记选中状态
+
+                const service = Object.assign({}, item);
+                // 因为默认选择所有产品，所以此时能够获取到所有产品
+
+                if (~serviceIds.indexOf(service.id)) {
+                    service.checked = true;
+                }
+                return service;
+            });
+
             this.currentGroup = name;
             this.$apply();
         },
@@ -115,15 +127,7 @@ export default class Index extends wepy.page {
 
     computed = {
         serviceIds() {
-            let result = '';
-
-            if (this.applyType === 1) {
-                result = '';
-            } else {
-                result = this.selectedServices.join(',');
-            }
-
-            return result;
+            return this.selectedServices.join(',');
         },
     }
 
@@ -141,7 +145,6 @@ export default class Index extends wepy.page {
         // 全部产品选择
         if (selectedServices.length === this.allServices.length) {
             this.applyType = 1;
-            this.serviceIds = '';
             this.$apply();
         }
     }
@@ -164,17 +167,17 @@ export default class Index extends wepy.page {
             const { serviceIds = '', applyType } = couponManage;
             const allServices = [];
 
-            // 指定产品
-            if (applyType === 2 && couponManage.serviceIds) {
+            // 产品选择
+            if (couponManage.serviceIds) {
                 this.selectedServices = serviceIds.split(',');
             }
 
+            // 标记选择状态
             services = services.map(item => {
                 const service = Object.assign({}, item);
                 // 因为默认选择所有产品，所以此时能够获取到所有产品
-                allServices.push(service.id);
 
-                if (~serviceIds.indexOf(service.id) && applyType === 2) {
+                if (~serviceIds.indexOf(service.id)) {
                     service.checked = true;
                 }
                 return service;
@@ -185,6 +188,7 @@ export default class Index extends wepy.page {
             this.services = services;
             this.groups = this.groups.concat(groups);
             this.$apply();
+            console.log(serviceIds);
         } catch (e) {
             this.errorHandler(e);
         }
@@ -192,10 +196,6 @@ export default class Index extends wepy.page {
 
     onUnload() {
         this.updateData();
-    }
-
-    loadData() {
-        
     }
 
     updateData() {
@@ -239,6 +239,8 @@ view {
 }
 
 .containe {
+    padding-bottom: 65rpx;
+
     .wrap {
         padding: 30rpx;
     }

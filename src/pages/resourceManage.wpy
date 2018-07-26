@@ -299,7 +299,7 @@ export default class Index extends wepy.page {
                     case 'image':
                         await this.uploadImage();
                         // 延迟2秒
-                        await sleep(2000);
+                        await sleep(3000);
                         break;
 
                     case 'video':
@@ -497,7 +497,7 @@ export default class Index extends wepy.page {
             })));
 
             if (msg) {
-                toast(msg, 2000);
+                toast(msg, 3000);
             } else {
                 toast('上传成功');
             }
@@ -510,7 +510,13 @@ export default class Index extends wepy.page {
 
     async uploadVideo() {
         try {
-            const { tempFilePath } = await wepy.chooseVideo();
+            const { tempFilePath, size } = await wepy.chooseVideo();
+
+            // 大于50M不让上传
+            if (size > 50 * 1000 * 1024) {
+                toast('视频大小需小于50M', 3000);
+                return;
+            }
             await this.uploadResource(tempFilePath, 'video');
             toast('上传成功', 3000);
         } catch (e) {
