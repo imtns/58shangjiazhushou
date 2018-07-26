@@ -48,3 +48,4 @@ const uploadImages = async ({ count = 9, sourceType = ['album', 'camera'] } = {}
 };
 
 export default uploadImages;
+module.exports.uploadResource = uploadResource;

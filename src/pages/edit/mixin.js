@@ -1,6 +1,6 @@
 import wepy from 'wepy';
 // const { post } = require('../../utils/ajax');
-import { toast, picSrcDomain } from '../../utils';
+import { toast, picSrcDomain, alertP } from '../../utils';
 // import { uploader } from '../../utils/uploader';
 import uploadImages from '../../utils/upload';
 import { globalData } from '../../utils/globalData';
@@ -60,6 +60,17 @@ export default class Mixin extends wepy.mixin {
                 // 错误操作
                 toast(msg);
             }
+
+            const { confirm } = await alertP('是否裁剪图片？');
+
+            if (confirm) {
+                console.log('跳转');
+                wepy.navigateTo({
+                    url: `/pages/cropper?url=${picSrcDomain() + result[0]}&ratio=4,3`,
+                });
+                return;
+            }
+
             console.log(result);
             result.forEach(item => {
                 const src = item;
