@@ -71,9 +71,10 @@
         </scroll-view>
         <view class="select-scroll">
             <scroll-view class="coupons small" scroll-y>
-                <block wx:for="{{ coupons }}" wx:key="id">
+                <block wx:if="{{ coupons.length }}">
                     <view class="coupon-list-item" :class="{ unable: !item.usable, editing: isEditing }"
-                    @tap="choose({{ index }}, {{ '/pages/couponEdit?id=' + item.id }})">
+                    @tap="choose({{ index }}, {{ '/pages/couponEdit?id=' + item.id }})"
+                    wx:for="{{ coupons }}" wx:key="id">
                         <view class="coupon-list-left">
                             <!-- 打折 -->
                             <view class="discount" wx:if="{{ item.couponType === 2 }}">
@@ -117,6 +118,11 @@
                         </view>
                         <view class="checkbox" :class="{ checked: item.checked }"></view>
                         <!-- <view class="mask" @tap.stop="choose({{ index }})" wx:if="{{ isEditing }}"></view> -->
+                    </view>
+                </block>
+                <block wx:else>
+                    <view class="noCoupons">
+                        您还没有优惠券哦, 赶快去添加吧~
                     </view>
                 </block>
             </scroll-view>
@@ -435,5 +441,14 @@ $radius: 3.2rpx;
             position: absolute;
         }
     }
+}
+
+.noCoupons {
+  width: 100%;
+  height: 393rpx;
+  text-align: center;
+  line-height: 393rpx;
+  color: #999;
+  font-size: 30rpx;
 }
 </style>
