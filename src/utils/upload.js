@@ -13,7 +13,7 @@ const uploadResource = async (path, type) => {
     });
 
     // 将资源插入到对应资源库
-    await get(SAVE_RESOURCE_URL, {
+    return await get(SAVE_RESOURCE_URL, {
         resourceUrl,
         resourceType: type === 'image' ? 1 : 2,
     });
