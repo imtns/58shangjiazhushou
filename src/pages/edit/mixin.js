@@ -1,8 +1,8 @@
 import wepy from 'wepy';
 // const { post } = require('../../utils/ajax');
 import { toast } from '../../utils';
-import { uploader } from '../../utils/uploader';
-// import imageUploader from '../../utils/upload';
+// import { uploader } from '../../utils/uploader';
+import uploadImages from '../../utils/upload';
 // import modulesParse from '../../utils/modulesParse';
 // import { toast } from '../../utils';
 
@@ -50,56 +50,42 @@ export default class Mixin extends wepy.mixin {
         this.pageData = JSON.parse(JSON.stringify(result));
     }
     async addBanner(sourceType, type = 'image') {
-        const that = this;
+        if (type === 'image') {
+            const { result, msg } = await uploadImages({
+                count: 8,
+                sourceType,
+            });
+            if (msg) {
+                // 错误操作
+                toast(msg);
+                return;
+            }
+            console.log(result);
+            // uploader(tempFilePaths[0], (e, result) => {
+            //     if (e) {
+            //         toast('上传失败，请重试。');
+            //         return;
+            //     }
+            //     toast('上传成功。');
+            //     const src = result.content;
+            //     const name = that.picName;
+            //     that.pageModule.cfg.images.push({
+            //         src: src,
+            //         pageKey: '',
+            //         title: name,
+            //         linkName: that.linkName,
+            //     });
+            //     that.pageData[0].props.cfg.images.push({
+            //         src: that.picDomain + src,
+            //         title: name,
+            //         linkName: that.linkName,
+            //         pageKey: '',
+            //     });
+            //     that.saveImage(src, name);
+            //     that.$apply();
+            // });
+        }
 
-
-        wx.chooseImage({
-            sourceType: [type],
-            count: 1,
-            success(res) {
-                const { tempFilePaths, tempFiles } = res;
-                wx.getImageInfo({
-                    src: tempFilePaths[0],
-                    success(ress) {
-                        if (ress.width < 200 && ress.height < 200) {
-                            console.log((ress));
-                        }
-                    },
-                });
-                if (tempFiles.size > 4000 * 1024 || tempFiles.size) {
-                    toast('超出照片限制最大4M, 请重新上传');
-                }
-                uploader(tempFilePaths[0], (e, result) => {
-                    if (e) {
-                        toast('上传失败，请重试。');
-                        return;
-                    }
-                    toast('上传成功。');
-                    const src = result.content;
-                    const name = that.picName;
-                    that.pageModule.cfg.images.push({
-                        src: src,
-                        pageKey: '',
-                        title: name,
-                        linkName: that.linkName,
-                    });
-                    that.pageData[0].props.cfg.images.push({
-                        src: that.picDomain + src,
-                        title: name,
-                        linkName: that.linkName,
-                        pageKey: '',
-                    });
-                    that.saveImage(src, name);
-                    that.$apply();
-                });
-            },
-            fail(e) {
-                toast('上传失败，请从相册选择。', '提示', () => {
-                    // self.shoot();
-                });
-                console.log(e);
-            },
-        });
         //   const tempFilePaths = await wx.chooseImage({ sourceType: [type] });
         //   console.log(tempFilePaths);
     }
@@ -112,7 +98,7 @@ export default class Mixin extends wepy.mixin {
                 success (tap) {
                     if (tap.tapIndex === 0) {
                         that.addBanner('camera');
-                    } else if (e.tapIndex === 1) {
+                    } else if (tap.tapIndex === 1) {
                         that.addBanner('album');
                     } else {
                         console.log('去图库');
