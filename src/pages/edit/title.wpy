@@ -65,9 +65,14 @@ export default class Title extends wepy.page {
         [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
         console.log(this.pageModule);
     }
+    computed = {
+        textLimit() {
+            if (this.pageData && this.pageData[0]) { return this.pageData[0].props.cfg.subtitle.length; }
+            return 0;
+        },
+    }
     methods = {
         textareaInput(e) {
-            this.textLimit = e.detail.value.length;
             this.pageData[0].props.cfg.subtitle = e.detail.value;
         },
         bindPickerChange(e) {
@@ -83,7 +88,7 @@ export default class Title extends wepy.page {
             this.pageData[0].props.cfg.textName = e.detail.value;
         },
         save() {
-            if (!this.pageData[0].props.cfg.title) {
+            if (!this.pageData[0].props.cfg.title.trim()) {
                 toast('请输入文章标题');
                 return;
             }
