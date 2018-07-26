@@ -2,6 +2,7 @@ import wepy from 'wepy';
 // const { post } = require('../../utils/ajax');
 import { toast } from '../../utils';
 import { uploader } from '../../utils/uploader';
+// import imageUploader from '../../utils/upload';
 // import modulesParse from '../../utils/modulesParse';
 // import { toast } from '../../utils';
 
@@ -48,8 +49,10 @@ export default class Mixin extends wepy.mixin {
         this.pageIndex = app.globalData.pageData.findIndex(obj => obj.id === this.pageId);
         this.pageData = JSON.parse(JSON.stringify(result));
     }
-    async addBanner(type) {
+    async addBanner(sourceType, type = 'image') {
         const that = this;
+
+
         wx.chooseImage({
             sourceType: [type],
             count: 1,
@@ -117,36 +120,5 @@ export default class Mixin extends wepy.mixin {
                 },
             });
         },
-        // async save() {
-        //     const pageId = app.globalData.pageList.filter(obj => obj.pageKey === 'index')[0].id;
-        //     let modData = this.modules.map(({
-        //         id, name, cfg, params,
-        //     }) => {
-        //         if (Array.isArray(params)) params = {};
-        //         return {
-        //             id, name, cfg, params, page_id: pageId,
-        //         };
-        //     });
-        //     modData = JSON.parse(JSON.stringify(modData));
-        //     const emptymodData = [];
-        //     modData.forEach((item) => {
-        //         if (item.name === 'coupon' && item.params && !item.params.couponIds) {
-        //             toast('请补全组件中的优惠券。');
-        //             emptymodData.push(item);
-        //         }
-        //     });
-        //     if (emptymodData.length && emptymodData.length > 0) {
-        //         return;
-        //     }
-        //     await post('/business/templete/savemodules', {
-        //         businessPageId: this.pageId,
-        //         modulesJson: JSON.stringify(modulesParse.save(modData)),
-        //         releaseId: app.globalData.extConfig.extJson.ext.releaseId,
-        //         mpId: app.globalData.extConfig.extJson.ext.mpId,
-        //     });
-        //     // wx.navigateBack({
-        //     //     delta: 1,
-        //     // });
-        // },
     }
 }

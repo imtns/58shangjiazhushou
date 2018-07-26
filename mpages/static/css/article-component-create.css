@@ -69,6 +69,7 @@ html, body{
 .wrap-items{
     width:100%;
     height:4.27rem;
+    min-height:5.16rem;
     margin-top:0.2rem;
 }
 
@@ -527,7 +528,7 @@ html, body{
 }
 .win2 .tips2 p {
     line-height:3;
-    font-size:0.32rem;
+    font-size:0.28rem;
     color:#cacaca;
     text-align:center
 }

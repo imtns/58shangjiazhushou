@@ -45,7 +45,7 @@ var Page = {
     },
     init() {
         Page.ppu = decodeURIComponent(Page.getKey('ppu'));
-        Page.id = page.getKey('id');
+        Page.id = Page.getKey('id');
         $('.item-file-div').removeClass('none');
         Page.loadGroupData();
     },
@@ -150,7 +150,7 @@ var Page = {
                 title = $('._title').val(),
                 intro = $('.zeditor-content').find('p:first-child').text().substring(0, 43),
                 source = $('._source').val(),
-                author = $('._author').val(),
+                author = $('.item-input._author').val(),
                 temp = $('.zeditor-content' ).find('p'),
                 content = $(".zeditor-content").html(),
                 cover = $('#cover').attr('src') ? $('#cover').attr('src').split(".cn")[1].replace(/([/])\1+/g, "$1") : '';
@@ -178,12 +178,7 @@ var Page = {
                 Page.toast($errorPop, '文章内容不得大于20000个字符');
                 return;
             };
-            var url;
-            if (Page.id) {
-                url = '/businessArticle/update/' + Page.id;
-            } else {
-                url = '/businessArticle/insert/';
-            }
+            var url = '/businessArticle/insert/';
             $.ajax({
                 url: url,
                 type: 'POST',
@@ -225,6 +220,11 @@ var Page = {
             $('.mask,.group-dialog').removeClass('none');
         })
         $('._create-btn').on('click', function() {
+            var num = $('.group-dialog-list').find('.group-dialog-item').length;
+            if (num >= 10) {
+                Page.toast($errorPop, '分组数量达到最大（10个），无法创建更多。');
+                return;
+            }
             $('.group-dialog').addClass('none');
             $('.dialog-create-group').removeClass('none');
         })
@@ -254,7 +254,8 @@ var Page = {
                     var res = JSON.parse(res);
                     if(res.state == 100){
                         $('.mask,.group-dialog').removeClass('none');
-                        location.reload();
+                        // location.reload();
+                        Page.loadGroupData();
                     }else{
                         Page.toast($errorPop, res.msg);
                     }
@@ -303,6 +304,7 @@ var Page = {
             },
             success: function(res) {
                 var res = JSON.parse(res);
+                $('.group-dialog-list').html('');
                 if (res.state == 100) {
                     var data = res.data,
                         html = '';

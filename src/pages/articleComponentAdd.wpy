@@ -11,9 +11,10 @@ export default class ArticleComponentAdd extends wepy.page {
     data = {
         url: '',
     }
-    onLoad() {
+    onLoad(option) {
+        const ppu = encodeURIComponent(wx.getStorageSync('ppu'));
         const v = (+new Date() * 1).toString(36);
-        this.url = `https://yaofa.58.com/uhtml/articleComponentAdd?v=${v}`;
+        this.url = `https://yaofa.58.com/uhtml/articleComponentAdd?v=${v}&&ppu=${ppu}&id=${option.id}`;
         this.$apply();
         console.log(this.url);
     }

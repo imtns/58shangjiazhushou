@@ -219,7 +219,7 @@
                     if ($p && $p.parent().dom) {
                         $p.after('<p><image src="' + url + '" class="rich-text-img"/></p>');
                     } else {
-                        $editor.append('<p><image src="' + url + '"/></p>');
+                        $editor.append('<p><image src="' + url + '" class="rich-text-img"/></p>');
                     }
                     //$p = $('.zeditor-content p:last-child');
                     //$p = $(lastNode);
