@@ -22,7 +22,7 @@
   </view>
   <block wx:for="{{page_data}}" wx:for-item="component"  wx:key="{{component.name}}">
      <view class="preview-container" catchtap="showEdit" data-title="{{component.name}}" data-name="{{component.id}}" >
-        <template is="{{component.name}}"  data="{{...component.props,index}}" />  
+        <template is="{{component.name}}"  data="{{...component.props, index, env58, tabBarItems, isIphoneX}}" />  
         <view class="layer" hidden="{{!layer}}"></view>
         <view class="edit-wrapper"  hidden="{{!editLayer[component.id]}}"  >
             <view class="edit-btn" capture-catch:tap="goEdit" data-name="{{component.name}}" data-id="{{component.id}}">{{noEdit?'暂时不能编辑':'去编辑'}}</view>

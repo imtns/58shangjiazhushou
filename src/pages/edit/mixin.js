@@ -99,12 +99,13 @@ export default class Mixin extends wepy.mixin {
     async addBanner(sourceType, type = 'image') {
         if (type === 'image') {
             const { result, msg } = await uploadImages({
-                sourceType,
+                sourceType: [sourceType],
                 count: 1,
             });
             if (msg) {
                 // 错误操作
                 toast(msg);
+                return;
             }
 
             const { confirm } = await alertP('是否裁剪图片？');
