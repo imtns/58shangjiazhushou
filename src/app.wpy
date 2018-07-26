@@ -157,6 +157,7 @@ export default class extends wepy.app {
 @import "components/mod/imageSwiper/imageSwiper.wxss";
 @import "components/mod/images/images.wxss";
 @import "components/mod/me/me.wxss";
+@import "components/mod/goods/goods.wxss";
 @import "components/mod/text/text.wxss";   
 @import "components/mod/title/title.wxss";   
 @import "components/mod/video/video.wxss";   
