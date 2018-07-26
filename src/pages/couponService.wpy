@@ -194,6 +194,10 @@ export default class Index extends wepy.page {
         this.updateData();
     }
 
+    loadData() {
+        
+    }
+
     updateData() {
         const couponManage = globalService.get('couponManage');
         globalService.set('couponManage', Object.assign(couponManage, {

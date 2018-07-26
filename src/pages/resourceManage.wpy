@@ -173,30 +173,31 @@ export default class Index extends wepy.page {
          */
         selectItem(id, index) {
             const { chooseModal, limit, works } = this;
-
-            if (chooseModal && selectedIds.length >= limit) {
-                alert(`只能选择${limit}张照片`);
-                return;
-            }
-
-            if (selectedIds.length >= 10) {
-                alert('一次只能删除10条素材！');
-                return;
-            }
-
             const work = works[index];
 
             if (!work) {
                 return;
             }
 
-            work.checked = !work.checked;
+            if (!work.checked) {
+                // 选中
+                if (chooseModal && selectedIds.length >= limit) {
+                    alert(`只能选择${limit}张照片`);
+                    return;
+                }
 
-            if (work.checked) {
+                if (selectedIds.length >= 10) {
+                    alert('一次只能删除10条素材！');
+                    return;
+                }
+
                 selectedIds.push(id);
             } else {
+                // 去除选项
                 selectedIds.splice(selectedIds.findIndex(v => (v === id)), 1);
             }
+
+            work.checked = !work.checked;
         },
 
         previewResource(url) {
