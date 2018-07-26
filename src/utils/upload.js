@@ -14,9 +14,11 @@ const uploadResource = async (path, type) => {
 };
 
 const uploadImages = async ({ count = 9, sourceType = ['album', 'camera'] } = {}) => {
+    console.log('--------------------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
     const { tempFiles } = await wepy.chooseImage({
         count, sourceType,
     });
+
     let msg = '';
 
     // 过滤大于4M的
