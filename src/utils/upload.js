@@ -12,11 +12,7 @@ const uploadResource = async (path, type) => {
         type,
     });
 
-    // 将资源插入到对应资源库
-    return await get(SAVE_RESOURCE_URL, {
-        resourceUrl,
-        resourceType: type === 'image' ? 1 : 2,
-    });
+    return resourceUrl;
 }
 
 const uploadImages = async ({ count = 9, sourceType = ['album', 'camera'] } = {}) => {
