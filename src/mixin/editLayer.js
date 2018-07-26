@@ -101,13 +101,18 @@ module.exports = {
         if (emptymodData.length && emptymodData.length > 0) {
             return;
         }
-        await post('/business/templete/savemodules', {
-            businessPageId: pageId,
-            modulesJson: JSON.stringify(modulesParse.save(modData)),
-            releaseId: wx.getStorageSync('releaseId'),
-            mpId: wx.getStorageSync('current_mpid'),
-        });
-        toast('保存成功');
+        try {
+            await post('/business/templete/savemodules', {
+                businessPageId: pageId,
+                modulesJson: JSON.stringify(modulesParse.save(modData)),
+                releaseId: wx.getStorageSync('releaseId'),
+                mpId: wx.getStorageSync('current_mpid'),
+            });
+            toast('保存成功');
+        } catch (err) {
+            toast(err);
+        }
+
     // wx.navigateBack({
     //     delta: 1,
     // });
