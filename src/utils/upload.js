@@ -1,10 +1,8 @@
 /**
  * @desc 上传图片
  */
-import { get } from './http';
-import { SAVE_RESOURCE_URL } from './url';
-import uploader from './uploaderP';
 import wepy from 'wepy';
+import uploader from './uploaderP';
 
 const uploadResource = async (path, type) => {
     // 上传资源
@@ -13,7 +11,7 @@ const uploadResource = async (path, type) => {
     });
 
     return resourceUrl;
-}
+};
 
 const uploadImages = async ({ count = 9, sourceType = ['album', 'camera'] } = {}) => {
     const { tempFiles } = await wepy.chooseImage({
@@ -47,6 +45,6 @@ const uploadImages = async ({ count = 9, sourceType = ['album', 'camera'] } = {}
     const result = await Promise.all(filesToUpload.map(path => uploadResource(path, 'image')));
 
     return { msg, result };
-}
+};
 
 export default uploadImages;
