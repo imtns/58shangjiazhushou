@@ -15,6 +15,10 @@ module.exports = function switchTab(url) {
     if (list.some(item => item.pagePath.includes(pageKey))) {
         path = `/pages/${pageKey}/${pageKey}`;
         globalData.pageData = {};
+        wx.redirectTo({
+            url: path,
+        })
+        return;
         // navigate = env58 ? wx.redirectTo : wx.switchTab;
     } else {
         path = `/pages/custom/custom?ptype=${pageKey}`;
