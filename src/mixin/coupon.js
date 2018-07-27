@@ -33,9 +33,9 @@ export default class CouponMixin extends wepy.mixin {
         return v.match(/([\d]{4})-([\d]{2})-([\d]{2})/);
     }
 
-    getCurrentDate() {
+    getCurrentDateValue() {
         const today = new Date();
-        return `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+        return today.getFullYear() * 1e4 + (today.getMonth() + 1) * 1e2 + today.getDate();
     }
 
     /**
@@ -43,14 +43,20 @@ export default class CouponMixin extends wepy.mixin {
      * @param {Object} coupon 优惠券对象
      * @return {Boolean} 可用返回true，不可用返回false
      */
-    checkUsable({ validEndtime, totalCount, useCount }) {
-        
-        // 时间过期
-        if (validEndtime && 
-            // 还需要加上有效期当天的那一整天24小时的时间
-            ((new Date(validEndtime)).getTime() + 24 * 60 * 60 * 1000) - Date.now() < 0
-        ) {
-            return false;
+    checkUsable({ validType, validEndtime, totalCount, useCount }) {
+        if (validEndtime && validType === 1) {
+            // 因为兼容性问题，需要正则拆分字符串比较时间
+            const regRes = this.getDateItem(validEndtime);
+            if (!regRes) {
+                return false;
+            }
+            const [, year, month, day] = regRes;
+            const validTime = (+year) * 1e4 + (+month) * 1e2 + (+day);;
+
+            // 时间过期
+            if (validTime - this.getCurrentDateValue() < 0) {
+                return false;
+            }
         }
 
         // 优惠券已使用数目和总数相等时
