@@ -148,7 +148,7 @@ export default class Mixin extends wepy.mixin {
                         that.addBanner('album', type);
                     } else {
                         wepy.navigateTo({
-                            url: `../resourceManage?limit=1&type=${type}`,
+                            url: `../resourceManage?limit=1&type=${type}&ratio=1,1`,
                         });
                     }
                 },

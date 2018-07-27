@@ -93,9 +93,12 @@ export default class Index extends wepy.page {
         },
         decorate(type) {
             if (type.target.dataset.address) {
-                const { id } = type.target.dataset;
+                // const { id } = type.target.dataset;
+                // wepy.navigateTo({
+                //     url: `UploadInfo?mpid=${id}`,
+                // });
                 wepy.navigateTo({
-                    url: `UploadInfo?mpid=${id}`,
+                    url: '/pages/templateList',
                 });
             }
         },
