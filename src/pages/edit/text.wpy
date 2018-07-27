@@ -66,7 +66,14 @@ export default class EditText extends wepy.page {
   onLoad() {
       [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
       this.editMultiple = this.pageData[0].props.cfg.theme === '2';
-      if (!this.editMultiple) {
+      if (Object.keys(this.pageData[0].props.cfg).length === 0) {
+          this.pageData[0].props.cfg = {};
+          this.pageData[0].props.cfg.texts = [];
+          this.pageData[0].props.cfg.texts.push({
+              text: '',
+          });
+      }
+      if (!this.editMultiple && Object.keys(this.pageData[0].props.cfg).length > 0) {
           this.textLimit.single = this.pageData[0].props.cfg.texts[0].text.length;
       }
   }
@@ -74,7 +81,7 @@ export default class EditText extends wepy.page {
   onShow() {
       [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
       const result = globalData.pageData.filter(obj => obj.id === this.pageId);
-      this.pageData = JSON.parse(JSON.stringify(result));
+      if (Object.keys(result[0].props.cfg).length > 0) { this.pageData = JSON.parse(JSON.stringify(result)); }
   }
   methods = {
       radioBoxChange(e) {
@@ -97,7 +104,7 @@ export default class EditText extends wepy.page {
       },
 
       save() {
-          if (!this.editMultiple && !this.pageData[0].props.cfg.texts[0].text) {
+          if (!this.editMultiple && !this.pageData[0].props.cfg.texts[0].text.trim()) {
               toast('内容不能为空');
               return;
           }
