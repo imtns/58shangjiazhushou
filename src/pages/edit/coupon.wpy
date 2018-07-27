@@ -138,8 +138,7 @@
 import wepy from 'wepy';
 import Mixin from './mixin';
 import CouponMixin from '../../mixin/coupon';
-import { alertP, globalService } from '../../utils';
-
+import { toast, alertP, globalService } from '../../utils';
 import { globalData } from '../../utils/globalData';
 
 const limitCouponCount = 5; // 限制选择张数
@@ -253,9 +252,12 @@ export default class Index extends wepy.page {
             this.pageData[0].props.data = selectCoupons;
             globalData.pageData[this.pageIndex].props = this.pageData[0].props;
             globalData.modules[this.pageIndex] = this.pageModule;
-            wx.navigateBack({
-                delta: 1,
-            });
+            toast('已保存');
+            setTimeout(() => {
+                wx.navigateBack({
+                    delta: 1,
+                });
+            }, 1000);
         },
         choose(index, url) {
             if (this.isEditing) {

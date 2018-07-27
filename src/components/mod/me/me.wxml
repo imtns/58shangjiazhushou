@@ -3,7 +3,7 @@
         <view wx:if="{{cfg.title}}" style="height:88rpx;line-height:88rpx;text-align:center;background:white;">{{cfg.title}}</view>
         <block wx:if="{{!cfg.order}}">
             <view class="mod-me {{cfg.title?'':'mod-me-line'}}" style="margin-top:1rpx;">
-                <view class="mod-me-list ">
+                <view class="mod-me-list  mod-me-space mod-me-line">
                     <image class="mod-me-icon" src="../assets/me/order.png"></image>
                     <view class="mod-me-text">我的订单</view>
                     <view class="mod-arrow"></view>

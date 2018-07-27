@@ -123,9 +123,12 @@ export default class Article extends wepy.page {
           this.pageModule.params = this.params;
           globalData.pageData[this.pageIndex].props = this.pageData[0].props;
           globalData.modules[this.pageIndex] = this.pageModule;
-          wx.navigateBack({
-              delta: 1,
-          });
+          toast('已保存');
+          setTimeout(() => {
+              wx.navigateBack({
+                  delta: 1,
+              });
+          }, 1000);
       },
   };
   async onLoad() {
