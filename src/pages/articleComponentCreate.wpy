@@ -19,7 +19,7 @@ export default class ArticleComponentCreate extends wepy.page {
             title: id ? '文章编辑' : '文章添加',
         });
         const v = (+new Date() * 1).toString(36);
-        this.url = `https://yaofa.58.com/uhtml/articleComponentCreate?v=${v}&ppu=${ppu}&group=${group}&id=${id}&name=${name}`;
+        this.url = `https://yaofa.58.com/uhtml/articleComponentCreate?v=${v}&ppu=${ppu}&group=${group}&id=${id}&name=${encodeURIComponent(name)}`;
         this.$apply();
         console.log(this.url);
     }

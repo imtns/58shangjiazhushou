@@ -38,9 +38,11 @@ export default class TextEdit extends wepy.page {
   };
   onLoad() {
       [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
-      this.pageData[0].props.cfg.texts.forEach((item, index) => {
-          this.textLimit[index] = item.text.length;
-      });
+      if (Object.keys(this.pageData[0].props.cfg).length > 0) {
+          this.pageData[0].props.cfg.texts.forEach((item, index) => {
+              this.textLimit[index] = item.text.length;
+          });
+      }
   }
   methods = {
       textAreaInput(e) {
@@ -64,7 +66,7 @@ export default class TextEdit extends wepy.page {
       },
       save() {
           //   const empty = this.pageData[0].props.cfg.texts.every((element) => element.text);
-          if ((this.pageData[0].props.cfg.texts.filter(item => item.text !== '').length === 0)) {
+          if ((this.pageData[0].props.cfg.texts.filter(item => item.text.trim() !== '').length === 0)) {
               toast('请至少输入一行文本');
               return;
           }

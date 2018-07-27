@@ -39,7 +39,7 @@ var Page = {
         Page.ppu = decodeURIComponent(Page.getKey('ppu'));
         Page.group = Page.getKey('group');
         Page.id = Page.getKey('id');
-        Page.name = Page.getKey('name');
+        Page.name = decodeURIComponent(Page.getKey('name'));
         if (Page.id) {
             // 编辑,数据回填
             Page.loadData();
