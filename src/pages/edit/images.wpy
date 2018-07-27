@@ -158,7 +158,6 @@ const { picSrcDomain } = require('../../utils/index');
 export default class ShopImages extends wepy.page {
   config = {
       navigationBarTitleText: '门店照片',
-      disableScroll: true,
   };
     data = {
         indicatorDots: true,

@@ -4,7 +4,7 @@
     <block wx:if="{{cfg.theme==1}}">
       <swiper wx:if="{{cfg.images.length>1}}" class="mod-image-swiper" indicator-dots="{{true}}" circular="{{true}}" autoplay="{{autoplay || true}}"
         interval="2000" data-index="{{index}}" data-current="{{current || 0}}">
-        <swiper-item wx:for="{{cfg.images}}" wx:key="{{index}}" data-title="{{index}}" data-pagekey='{{item.pageKey}}' bindtap="onNavigationTo">
+        <swiper-item wx:for="{{cfg.images}}" data-current="{{index}}" wx:key="{{index}}" data-title="{{index}}" data-images="{{cfg.images}}" data-pagekey='{{item.pageKey}}' bindtap="onBannerClick">
           <image src="{{item.src}}?w=750" class="slide-image mod-image-swiper-img" mode="aspectFill" />
         </swiper-item>
       </swiper>
@@ -18,7 +18,7 @@
     <block wx:else>
       <swiper wx:if="{{cfg.images.length>1}}" class="mod-image-swiper2" indicator-dots="{{true}}" circular="{{true}}" autoplay="{{autoplay || true}}"
         interval="2000" data-index="{{index}}" data-current="{{current || 0}}">
-        <swiper-item wx:for="{{cfg.images}}" wx:key="{{index}}" data-title="{{index}}" data-pagekey='{{item.pageKey}}' bindtap="onNavigationTo">
+        <swiper-item wx:for="{{cfg.images}}" data-current="{{index}}" wx:key="{{index}}" data-title="{{index}}" data-images="{{cfg.images}}" data-pagekey='{{item.pageKey}}' bindtap="onBannerClick">
           <image src="{{item.src}}?w=750" class="slide-image mod-image-swiper-img" mode="aspectFill" />
         </swiper-item>
       </swiper>
