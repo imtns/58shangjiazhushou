@@ -1,6 +1,6 @@
 <template name="images">
     <view class="mod-view mod-images {{pageData[0].props.cfg.showMore===false?'index'+index+' padding-bottom-30':'index'+index}}">
-        <view class="mod-head mod-head-images" wx:if="{{pageData[0].props.cfg.title && cfg.title.length>0}}">
+        <view class="mod-head mod-head-images" wx:if="{{pageData[0].props.cfg.title && pageData[0].props.cfg.title.length>0}}">
             {{pageData[0].props.cfg.title}}
         </view>
         <view class="mod-list-images">
@@ -106,7 +106,7 @@
         <view class="edit-cell">
             <view class="edit-label">标题名称</view>
             <view class="edit-input">
-                <input data-name="name"  class="weui-input" name="name" placeholder="请输入名称" />
+                <input data-name="name" value="{{pageData[0].props.cfg.title}}"  bindinput="bindTitle" class="weui-input" name="name" placeholder="请输入名称" />
             </view>
         </view>
         <scroll-view scroll-x class="scrollView">
@@ -148,7 +148,7 @@
 <script>
 import wepy from 'wepy';
 import Mixin from './mixin';
-import { previewImage } from '../../utils/index';
+import { toast, previewImage } from '../../utils/index';
 import { globalData } from '../../utils/globalData';
 
 const { picSrcDomain } = require('../../utils/index');
@@ -185,6 +185,10 @@ export default class ShopImages extends wepy.page {
       thumbClick(e) {
           this.thumbActive = e.currentTarget.dataset.index;
       },
+      bindTitle(e) {
+          this.pageData[0].props.cfg.title = e.detail.value;
+          this.pageModule.cfg.title = e.detail.value;
+      },
       bindNameInput(e) {
           this.pageData[0].props.cfg.images[this.thumbActive].title = e.detail.value;
           this.pageModule.cfg.images[this.thumbActive].title = e.detail.value;
@@ -207,9 +211,12 @@ export default class ShopImages extends wepy.page {
           console.log(globalData.pageData[this.pageIndex]);
           globalData.modules[this.pageIndex] = this.pageModule;
           console.log(globalData.modules);
-          wx.navigateBack({
-              delta: 1,
-          });
+          toast('已保存');
+          setTimeout(() => {
+              wx.navigateBack({
+                  delta: 1,
+              });
+          }, 1000);
       },
   }
 

@@ -1,8 +1,10 @@
+import { globalData } from '../utils/globalData';
+
 const route = require('./route.js');
 
 module.exports = {
     getRoute (pageKey) {
-        const tabBar = this.$parent.globalData.extConfig.tabBar.list;
+        const tabBar = globalData.extConfig.extJson.tabBar.list;
         const path = route[pageKey] || `${route.custom}?ptype=${pageKey}`;
         let pageType = 'custom';
 

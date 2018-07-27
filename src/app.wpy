@@ -38,7 +38,7 @@ export default class extends wepy.app {
             'pages/contact/contact',
             'pages/news/news',
             'pages/product/product',
-
+            'pages/custom/custom',
 
             'pages/article/article',
 
