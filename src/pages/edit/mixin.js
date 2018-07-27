@@ -51,7 +51,7 @@ export default class Mixin extends wepy.mixin {
     //     this.pageData = JSON.parse(JSON.stringify(result));
     // }
     async onShow() {
-        console.log(globalData);
+        if (this.pageData[0].name === 'video') return;
         if (globalData.selectedResource && Object.keys(globalData.selectedResource).length) {
             const { confirm } = await alertP('是否裁剪图片？');
             if (confirm) {
