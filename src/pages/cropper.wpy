@@ -58,21 +58,21 @@ import wepy from 'wepy';
 import { uploadResource } from '../utils/upload';
 import globalService from '../utils/globalService';
 
-// const downloadFile = ({ url }) => {
-//     const result = new Promise((resolve, reject) => {
-//         wx.downloadFile({
-//             url,
-//             success(res) {
-//                 resolve(res);
-//             },
-//             fail(err) {
-//                 reject(err);
-//             },
-//         });
-//     });
+const downloadFile = ({ url }) => {
+    const result = new Promise((resolve, reject) => {
+        wx.downloadFile({
+            url,
+            success(res) {
+                resolve(res);
+            },
+            fail(err) {
+                reject(err);
+            },
+        });
+    });
 
-//     return result;
-// };
+    return result;
+};
 
 // pages/wx-cropper/index.js
 // 手机的宽度
@@ -132,10 +132,9 @@ export default class Cropper extends wepy.page {
         innerAspectRadio: 1,
     }
 
-    onLoad({ url, ratio }) {
-        console.log('url============');
-        console.log(url);
+    onLoad({ url, ratio, onlineImage }) {
         ctx = wx.createCanvasContext('myCanvas');
+        this.onlineImage = onlineImage === 'true';
         this.$emit('crop-loadImage', url, ratio, true);
     }
 
@@ -146,7 +145,7 @@ export default class Cropper extends wepy.page {
             globalService.set('afterCrop', true);
             wepy.navigateBack();
         },
-        'crop-loadImage'(imageSrc, ratio = '1,1', first = false) {
+        async 'crop-loadImage'(imageSrc, ratio = '1,1', first = false) {
             const that = this;
             const { qualityWidth } = that;
             let { innerAspectRadio } = that;
@@ -156,6 +155,13 @@ export default class Cropper extends wepy.page {
                 title: '图片加载中...',
             });
 
+            // 在线图片，需要下载到本地
+            if (this.onlineImage) {
+                this.onlineImage = false;
+                const { tempFilePath } = await downloadFile({ url: imageSrc });
+                imageSrc = tempFilePath;
+            }
+
             // if (!/tmp/.test(imageSrc)) {
             //     // 网络图片，需要下载
             //     const { tempFilePath } = await downloadFile({ url: imageSrc });
@@ -163,8 +169,6 @@ export default class Cropper extends wepy.page {
             //     console.log(tempFilePath);
             //     imageSrc = tempFilePath;
             // }
-
-            console.log(imageSrc);
 
             that.imageSrc = imageSrc;
             that.ratio = ratio; // 通过ratio控制是否可以自由拉伸
@@ -263,6 +267,8 @@ export default class Cropper extends wepy.page {
                     wx.hideLoading();
                 },
             });
+
+            this.$apply();
         },
     }
 
@@ -491,7 +497,7 @@ export default class Cropper extends wepy.page {
             wx.showLoading({
                 title: '图片生成中...',
             });
-            ctx.draw(true, () => {
+            ctx.draw(false, () => {
                 // 获取画布要裁剪的位置和宽度   均为百分比 * 画布中图片的宽度    保证了在微信小程序中裁剪的图片模糊
                 // 位置不对的问题 canvasT = (that.cutT / that.cropperH) * (that.imageH / pixelRatio)
                 const canvasW = (that.cutW / that.cropperW) * qualityWidth;
@@ -520,10 +526,9 @@ export default class Cropper extends wepy.page {
                         // 成功获得地址的地方
                         that.$emit('after-crop', res.tempFilePath);
                         // that.closeCrop();
-                        // wx.previewImage({
-                        //     current: res.tempFilePath, // 当前显示图片的http链接
-                        //     urls: [res.tempFilePath], // 需要预览的图片http链接列表
-                        // });
+                        wx.previewImage({
+                            urls: [res.tempFilePath], // 需要预览的图片http链接列表
+                        });
                     },
                     fail(err) {
                         console.log(err);

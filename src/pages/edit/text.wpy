@@ -3,11 +3,12 @@
         <view class="list">
             <view class="desc">
                 <image src="../assets/radio.png" hidden="{{!editMultiple}}"></image>
-                <swiper class="swiper" style="{{editMultiple?'width:600rpx;':'width:700rpx;'}}" vertical="{{true}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}">
+                <swiper wx:if="{{editMultiple}}" class="swiper" style="width:600rpx" vertical="{{true}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}">
                     <repeat for="{{pageData[0].props.cfg.texts}}" item="item">
-                        <swiper-item class="{{!editMultiple?'single':''}}">{{item.text}}</swiper-item>
+                        <swiper-item>{{item.text}}</swiper-item>
                     </repeat>
                 </swiper>
+                <view wx:else style="width:700rpx;margin-left:40rpx;padding-top:0;" class="swiper">{{pageData[0].props.cfg.texts[0].text}}</view>
             </view>
         </view>
     </view>
@@ -81,7 +82,12 @@ export default class EditText extends wepy.page {
   onShow() {
       [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
       const result = globalData.pageData.filter(obj => obj.id === this.pageId);
-      if (Object.keys(result[0].props.cfg).length > 0) { this.pageData = JSON.parse(JSON.stringify(result)); }
+      if (Object.keys(result[0].props.cfg).length > 0) {
+          this.pageData = JSON.parse(JSON.stringify(result));
+          if (this.pageData[0].props.cfg.texts.length === 1) {
+              this.editMultiple = false;
+          }
+      }
   }
   methods = {
       radioBoxChange(e) {

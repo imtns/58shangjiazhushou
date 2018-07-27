@@ -62,7 +62,7 @@
                 <navigator
                 :class="{ placeholder: region === '' }"
                 url="/pages/multiSelector">
-                    {{ region  || '去选择' }}
+                    {{ region || '去选择' }}
                     <view class="icon more"></view>
                 </navigator>
             </view>

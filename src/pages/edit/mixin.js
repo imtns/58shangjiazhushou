@@ -57,7 +57,7 @@ export default class Mixin extends wepy.mixin {
             if (confirm) {
                 console.log('跳转');
                 wepy.navigateTo({
-                    url: `/pages/cropper?url=${picSrcDomain() + globalData.selectedResource[0].resourceUrl}&ratio=4,3`,
+                    url: `/pages/cropper?url=${picSrcDomain() + globalData.selectedResource[0].resourceUrl}&ratio=4,3&onlineImage=true`,
                 });
                 globalData.selectedResource = {};
                 return;

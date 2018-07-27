@@ -14,6 +14,7 @@ export const globalData = {
   modules:{},
   isIphoneX:false,
   tabMode:0,
+  consumerId: null,
   tabBar:{},
 }
 

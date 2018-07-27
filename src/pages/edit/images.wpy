@@ -70,8 +70,8 @@
             <block wx:elif="{{pageData[0].props.cfg.theme==7}}">
                 <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
                     <view  class="mod-li-box-7 {{~idx%4==0?'mod-li-box-last':''}}" data-index="{{idx}}"
-                        data-current="{{index}}" data-action="{{pageData[0].props.cfg.action}}" data-pagekey="{{item.pageKey}}" bindtap="onImageClick">
-                        <image class="{{'mod-li-image-'+cfg.theme}}" mode="aspectFill" src="{{item.src}}?w=160&h=160"></image>
+                        data-current="{{idx}}" data-action="{{pageData[0].props.cfg.action}}" data-pagekey="{{item.pageKey}}" bindtap="onImageClick">
+                        <image class="{{'mod-li-image-'+pageData[0].props.cfg.theme}}" mode="aspectFill" src="{{item.src}}?w=160&h=160"></image>
                         <text wx:if="{{item.title && item.title.length>0}}" class="{{'mod-li-text-'+cfg.theme}}">{{item.title}}</text>
                     </view>
                 </block>
@@ -136,9 +136,9 @@
             <view class="edit-label">跳转链接</view>
             <view class="edit-input">
                 <picker range-key="name" bindchange="bindPickerChange" value="{{pageData[0].props.cfg.pageKey}}" range="{{pageList}}">
-                    <view wx:if="{{selectorIndex==-1 && !pageData[0].props.cfg.images[thumbActive].pageKey}}">请选择</view>
+                    <view wx:if="{{!pageData[0].props.cfg.images[thumbActive].pageKey}}">请选择</view>
                     <view wx:else  class="picker">
-                        {{pageData[0].props.cfg.images[thumbActive].linkName || pageList[selectorIndex].name}}
+                        {{pageData[0].props.cfg.images[thumbActive].linkName}}
                     </view>
                 </picker>
             </view>
@@ -158,7 +158,6 @@ const { picSrcDomain } = require('../../utils/index');
 export default class ShopImages extends wepy.page {
   config = {
       navigationBarTitleText: '门店照片',
-      disableScroll: true,
   };
     data = {
         indicatorDots: true,
@@ -199,7 +198,6 @@ export default class ShopImages extends wepy.page {
       },
       bindPickerChange(e) {
           console.log(this.pageList);
-          this.selectorIndex = e.detail.value;
           this.pageData[0].props.cfg.images[this.thumbActive].pageKey = this.pageList[e.detail.value].key;
           this.pageData[0].props.cfg.images[this.thumbActive].linkName = this.pageList[e.detail.value].name;
           this.pageModule.cfg.images[this.thumbActive].pageKey = this.pageList[e.detail.value].key;
@@ -337,54 +335,8 @@ export default class ShopImages extends wepy.page {
 .space {
   margin-top: 20rpx !important;
 }
-.shopPic-container {
-  margin-top: 25rpx;
-  width: 100%;
-  background: white;
-  .title {
-    text-align: center;
-    font-size: 34rpx;
-    color: #333;
-    padding: 30rpx 0 0;
-  }
-}
-.shopPic-container .list {
-  width: 100%;
-  margin: 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  .item {
-    margin: 30rpx;
-    flex: 0 0 336rpx;
-    width: 336rpx;
-    display: block;
-    margin-bottom: 0;
-    position: relative;
-    .thumb {
-      width: 100%;
-      height: 251rpx;
-      image {
-        width: 100%;
-        overflow: hidden;
-        height: 100%;
-      }
-    }
-    .desc {
-      position: relative;
-      color: #333;
-      padding-top: 18rpx;
-      height: 40rpx;
-      display: block;
-      font-size: 28rpx;
-      text-align: center;
-    }
-    &:nth-child(even) {
-      margin-left: 10rpx;
-    }
-    &:nth-child(odd) {
-      margin-right: 10rpx;
-    }
-  }
+.mod-list-images{
+    padding-bottom:600rpx;
 }
 </style>
 

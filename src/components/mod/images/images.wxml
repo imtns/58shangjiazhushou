@@ -97,7 +97,7 @@
                 </block>
             </block>
         </view>
-        <view class="mod-more mod-more-images {{cfg.showAll?'mod-more-up':''}}" data-index="{{index}}" bindtap='loadMore' wx:if="{{cfg.images.length>cfg.showSize}}">
+        <view class="mod-more mod-more-images {{cfg.showAll?'mod-more-up':''}}" data-index="{{index}}" bindtap='loadMore' wx:if="{{cfg.images.length < cfg.maxNum}}">
             {{cfg.showAll ? '收起':'查看更多'}}
         </view>
     </view>

@@ -1,5 +1,6 @@
 <template>
     <view class="mod-me-container">
+         <view wx:if="{{pageData[0].props.cfg.title}}" style="height:88rpx;line-height:88rpx;text-align:center;background:white;">{{pageData[0].props.cfg.title}}</view>
         <view class="mod-me mod-me-line" hidden="{{pageData[0].props.cfg.order}}">
             <view class="mod-me-list ">
                 <image class="mod-me-icon" src="../assets/me/order.png"></image>
@@ -52,9 +53,15 @@
             </checkbox-group>
         </view>
          <view class="edit-cell space">
+            <view class="edit-label">标题</view>
+            <view class="edit-input">
+                <input data-name="name" maxlength="16"  value="{{pageData[0].props.cfg.title}}" bindinput="titleInput" class="weui-input" name="name" type="text" placeholder="16字以内" />
+            </view>
+        </view>
+         <view class="edit-cell space">
             <view class="edit-label">客服热线</view>
             <view class="edit-input">
-                <input data-name="name" maxlength="14" value="{{telnum}}" bindinput="telInput" class="weui-input" name="name" type="number"  placeholder="请输入" />
+                <input data-name="name" maxlength="14" value="{{telnum}}" bindinput="telInput" class="weui-input" name="name"  type="number"   placeholder="请输入" />
             </view>
         </view>
         <scroll-view scroll-y class="edit-cell-tip">
@@ -96,6 +103,9 @@ export default class Me extends wepy.page {
       },
       telInput(e) {
           this.telnum = e.detail.value;
+      },
+      titleInput(e) {
+          this.pageData[0].props.cfg.title = e.detail.value;
       },
       save() {
           this.pageModule.cfg = this.pageData[0].props.cfg;
