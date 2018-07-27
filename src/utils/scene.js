@@ -7,11 +7,6 @@ export default {
         if (extraDataJSON.ppu !== undefined) { // 如果获取ppu成功
             console.log(`获取PPU成功！ ${extraDataJSON.ppu}`);
             wepy.setStorageSync('ppu', extraDataJSON.ppu);
-            wx.setClipboardData({
-                data: extraDataJSON.ppu,
-                success() {
-                },
-            });
             setTimeout(() => {
                 wepy.reLaunch({
                     url: '/pages/home',

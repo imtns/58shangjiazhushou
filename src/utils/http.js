@@ -22,7 +22,7 @@ const http = (method, ...props) => {
     }
 
     console.log('发送请求：', method, props);
-    let mediaor = { appId, releaseId }
+    let mediaor = test ? { appid, releaseId, test } : { appId, releaseId }
     const sendData = Object.assign({}, data, mediaor);
 
     !noLoading&&wx.showLoading && wx.showLoading({title: '加载中', mask: true});
