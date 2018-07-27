@@ -90,9 +90,9 @@ export default class Index extends wepy.page {
           try {
               await get(delTemplateUrl, { releaseId: releaseid });
               this.list.splice(index, 1);
-              this.$apply();
               this.delLayer = {};
               this.myTemplateFull = false;
+              this.$apply();
               toast('删除成功');
           } catch (ee) {
               toast(ee);
