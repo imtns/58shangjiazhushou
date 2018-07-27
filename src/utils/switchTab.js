@@ -14,12 +14,14 @@ module.exports = function switchTab(url) {
     const pageKey = url.split('/').pop();
     if (list.some(item => item.pagePath.includes(pageKey))) {
         path = `/pages/${pageKey}/${pageKey}`;
-       // navigate = env58 ? wx.redirectTo : wx.switchTab;
+        globalData.pageData = {};
+        // navigate = env58 ? wx.redirectTo : wx.switchTab;
     } else {
         path = `/pages/custom/custom?ptype=${pageKey}`;
     }
-    globalData.pageData = {};
-    wx.redirectTo({
+
+    wx.navigateTo({
         url: path,
     })
+    return;
 };

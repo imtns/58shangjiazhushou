@@ -18,7 +18,7 @@
             <text class="save" @tap="save">保存</text>
         </view>
         <view class="edit-cell">
-            <view class="edit-label" @tap="showGroup">{{articleGroupName}}<view class="arrow"></view></view>
+            <view class="edit-label" @tap="showGroup">{{articleGroupName || '请选择分组'}}<view class="arrow"></view></view>
             <view class="edit-input">
                 <checkbox-group bindchange="selectAll">
                     <label class="checkbox">
@@ -139,7 +139,7 @@ export default class Article extends wepy.page {
   }
   async loadArticleList() {
       const { data } = await get('/businessArticle/list', {
-          appid: this.extConfig.appId, group: this.params.articleGroupId, pageNum: this.params.pageNum, pageSize: this.params.pageSize,
+          appid: this.extConfig.appId, group: this.params.articleGroupId, pageNum: 1, pageSize: 30,
       });
       console.log(data);
       data.data.forEach(item => {
