@@ -1,6 +1,6 @@
 <template>
-    <view class="containe">
-        <view class="tabs-wrap">
+    <view class="containe" :class="{ 'choose-modal': chooseModal }">
+        <view class="tabs-wrap" wx:if="{{ !chooseModal }}">
             <view wx:for="{{ tabbarItems }}"
             wx:key="name"
             class="tab-box"
@@ -15,7 +15,7 @@
                     class="item"
                     :class="{ 'video': curTab === 'video' }"
                     mode="aspectFill"
-                    src="{{ item.resourceUrl }}"
+                    src="{{ item.imageUrl }}"
                     @tap="previewResource({{ item.previewUrl }})"></image>
                     <view class="work-mask"
                     :class="{ checked: item.checked }"
@@ -47,20 +47,38 @@
         </view>
         <view class="block"></view>
         <view class="options">
-            <button class="button edit" @tap="edit" wx:if="{{groupList.length > 0 || works.length > 0}}" data-status="{{isEditing}}">{{ isEditing ? '取消' : '编辑' }}</button>
-            <button class="button" wx:if="{{ isEditing }}" @tap="deleteItem">删除</button>
-            <button class="button" wx:else @tap="uploadFile({{ curTab }})">{{ optionNames[curTab] }}</button>
+            <block wx:if="{{ chooseModal }}">
+                <button class="button" @tap="chooseModalConfirm">确认</button>
+            </block>
+            <block wx:else>
+                <button class="button edit" @tap="edit" wx:if="{{groupList.length > 0 || works.length > 0}}" data-status="{{isEditing}}">{{ isEditing ? '取消' : '编辑' }}</button>
+                <button class="button" wx:if="{{ isEditing }}" @tap="deleteItem">删除</button>
+                <button class="button" wx:else @tap="uploadFile({{ curTab }})">{{ optionNames[curTab] }}</button>
+            </block>
         </view>
         <Pop wx:if="{{showPop}}" @close.user="close" @addGroup.user="addGroup"></Pop>
     </view>
 </template>
 
 <script>
+
+/**
+ * 素材选择模式：
+ * 1. 选择图片，返回数组存入globalData.selectedResource中
+ * [{previewUrl: ...}, ...]
+ * previewUrl 图片地址
+ * 2. 选择视频，返回数组存入globalData.selectedResource中
+ * [{previewUrl: ..., imageUrl: ..., ...}]
+ * previewUrl 视频地址
+ * imageUrl 视频封面地址
+ */
+
 import wepy from 'wepy';
 import Mixin from '../mixin';
 import { LOAD_RESOURCE_URL, DELETE_RESOURCE, SAVE_RESOURCE_URL } from '../utils/url';
 import { get } from '../utils/ajax';
 import { toast, alert, alertP, picSrcDomain, sleep, getNetStatus } from '../utils';
+import { globalData } from '../utils/globalData';
 import uploadImages from '../utils/upload';
 import uploader from '../utils/uploaderP';
 import EmptyPage from '../components/EmptyPage';
@@ -114,18 +132,36 @@ export default class Index extends wepy.page {
         id: '',
         delList: [],
         mpId: '',
+
+        // 素材选择模式
+        chooseModal: false,
     }
 
-    async onLoad() {
-        await this.loadData(this.curTab);
+    async onLoad({ limit, type = 'image' }) {
         const mpId = wepy.getStorageSync('current_mpid');
         this.mpId = mpId;
+
+        // 开启素材选择模式
+        if (limit) {
+            this.limit = +limit;
+            this.curTab = type;
+            this.isEditing = true;
+            this.chooseModal = true;
+        }
         this.$apply();
+
+        this.initData();
+        await this.loadData(this.curTab);
     }
     async onShow() {
         await this.loadData(this.curTab);
     }
     methods = {
+        chooseModalConfirm() {
+            globalData.selectedResource = selectedIds.map(id => this.works.find(v => v.id === id));
+            wepy.navigateBack();
+        },
+
         selectTab(name) {
             this.initData();
 
@@ -139,18 +175,32 @@ export default class Index extends wepy.page {
          * index用于找到作品，标记check
          */
         selectItem(id, index) {
-            if (selectedIds.length >= 10) {
-                alert('一次只能删除10条素材！');
+            const { chooseModal, limit, works } = this;
+            const work = works[index];
+
+            if (!work) {
                 return;
             }
 
-            const { works } = this;
-            const work = works[index];
+            if (!work.checked) {
+                // 选中
+                if (chooseModal && selectedIds.length >= limit) {
+                    alert(`只能选择${limit}张照片`);
+                    return;
+                }
 
-            if (work) {
-                work.checked = !work.checked;
+                if (selectedIds.length >= 10) {
+                    alert('一次只能删除10条素材！');
+                    return;
+                }
+
                 selectedIds.push(id);
+            } else {
+                // 去除选项
+                selectedIds.splice(selectedIds.findIndex(v => (v === id)), 1);
             }
+
+            work.checked = !work.checked;
         },
 
         previewResource(url) {
@@ -252,7 +302,7 @@ export default class Index extends wepy.page {
                     case 'image':
                         await this.uploadImage();
                         // 延迟2秒
-                        await sleep(2000);
+                        await sleep(3000);
                         break;
 
                     case 'video':
@@ -392,25 +442,25 @@ export default class Index extends wepy.page {
                 // 加载图片，url加上宽度，加上前置域名
                 if (resourceType === 1) {
                     workItem.previewUrl = `${picSrcDomain()}${workItem.resourceUrl}?w=375`; // 预览图片
-                    workItem.resourceUrl = `${picSrcDomain()}${workItem.resourceUrl}?w=100`;
+                    workItem.imageUrl = `${picSrcDomain()}${workItem.resourceUrl}?w=100`;
                 }
 
                 // 加载视频
                 if (resourceType === 2) {
                     workItem.previewUrl = workItem.resourceUrl;
-                    let resourceUrl = '';
+                    let imageUrl = '';
 
                     // 在这里添加try catch是有必要的，若不添加，报错了会终止循环
                     try {
                         if (workItem.extend) {
                             const extend = JSON.parse(workItem.extend);
-                            resourceUrl = `${extend.sourceCoverUrl}?w=100`; // 封面图片
+                            imageUrl = `${extend.sourceCoverUrl}?w=100`; // 封面图片
                         }
                     } catch (e) {
                         this.errorHandler(e);
                     }
 
-                    workItem.resourceUrl = resourceUrl;
+                    workItem.imageUrl = imageUrl;
                 }
 
                 this.works.push(workItem);
@@ -440,10 +490,17 @@ export default class Index extends wepy.page {
 
     async uploadImage() {
         try {
-            const { msg } = await uploadImages();
+            // 得到上传后的图片地址
+            const { msg, result: resourceUrls } = await uploadImages();
+
+            // 将资源插入到对应资源库
+            await Promise.all(resourceUrls.map(resourceUrl => get(SAVE_RESOURCE_URL, {
+                resourceUrl,
+                resourceType: 1,
+            })));
 
             if (msg) {
-                toast(msg, 2000);
+                toast(msg, 3000);
             } else {
                 toast('上传成功');
             }
@@ -456,7 +513,13 @@ export default class Index extends wepy.page {
 
     async uploadVideo() {
         try {
-            const { tempFilePath } = await wepy.chooseVideo();
+            const { tempFilePath, size } = await wepy.chooseVideo();
+
+            // 大于50M不让上传
+            if (size > 50 * 1000 * 1024) {
+                toast('视频大小需小于50M', 3000);
+                return;
+            }
             await this.uploadResource(tempFilePath, 'video');
             toast('上传成功', 3000);
         } catch (e) {
@@ -510,6 +573,10 @@ $workHeight: 200rpx;
     margin-top: 110rpx;
     width:100%;
     height:100%;
+
+    &.choose-modal {
+        margin-top: 0;
+    }
 }
 .tabs-wrap {
     display: table;

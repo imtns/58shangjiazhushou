@@ -1,4 +1,5 @@
 import modulesParse from '../utils/modulesParse';
+import { globalData } from '../utils/globalData';
 
 const getPage = require('../utils/getPage');
 const {
@@ -7,8 +8,6 @@ const {
 const {
     picSrcDomain,
 } = require('../utils/index');
-
-const app = require('../utils/globalData');
 
 let pageDataUrl = '/business/template/loadall';
 const pageListUrl = '/business/pageList/';
@@ -36,11 +35,11 @@ const parseCfgAndData = ({
         modData.logo = modData.logo ?
             picSrcDomain() + modData.logo :
             'https://pic2.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png';
-        app.globalData.information = modData;
+        globalData.information = modData;
     }
 
     if (name === 'coupon') {
-        if (modData.data) {
+        if (modData.data && modData.length) {
             modData.data.forEach(coupon => {
                 const reg = /([0-9]{4})-([0-1]{0,1}[0-9]{1})-([0-3]{0,1}[0-9]{1}).+/;
                 const couponCondition = JSON.parse(coupon.couponCondition);
@@ -180,7 +179,11 @@ const parseCfgAndData = ({
             src: picSrcDomain() + img.src,
         }));
     }
-
+    if (name === 'goods') {
+        modData.data.forEach(img => {
+            img.img = img.img.substr(0, img.img.indexOf('?'));
+        });
+    }
     // images 模块图片路径
     if (name === 'images') {
     //  const { theme } = cfg;
@@ -230,11 +233,11 @@ module.exports = {
         if (page === 'custom' && pageType) {
             postData.pageKey = pageType;
         }
-        console.log(app.globalData.extConfig);
+        console.log(globalData.extConfig);
         try {
             const response = await get(pageDataUrl, postData);
             const modulesData = JSON.parse(JSON.stringify(response.data));
-            app.globalData.modules = modulesParse.show(modulesData);
+            globalData.modules = modulesParse.show(modulesData);
             /* eslint-disable camelcase */
             let page_data = null;
             if (page === 'article') {
@@ -252,9 +255,9 @@ module.exports = {
                 current: 0,
                 page_data: page_data,
             };
-            // if (page === 'index') {
-            app.globalData.pageData = page_data;
-            // }
+            if (!pageType) {
+                globalData.pageData = page_data;
+            }
             this.setData(newPageData);
             cb && cb();
         } catch (e) {
@@ -263,17 +266,17 @@ module.exports = {
     },
     refreshPage() {
         this.setData({
-            page_data: app.globalData.pageData,
+            page_data: globalData.pageData,
         });
     },
     async loadTabbar() {
         const { data } = await get(`${loadTabbarUrl}/${wx.getStorageSync('releaseId')}`);
-        app.globalData.tabBar = data.tabBar;
+        globalData.tabBar = data.tabBar;
     },
     async loadPageList() {
         console.log(wx.getStorageSync('releaseId'));
         const { data } = await get(`${pageListUrl}/${wx.getStorageSync('releaseId')}`);
-        app.globalData.pageList = data;
+        globalData.pageList = data;
     },
 
     getAppTitle(callback) {

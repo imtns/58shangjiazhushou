@@ -1,7 +1,7 @@
 <template>
     <view class="video-container">
         <view class="title">
-            门店视频
+            {{video.title}}
         </view>
         <scroll-view scroll-y class="list">
             <view class="item">
@@ -14,7 +14,7 @@
         <view class="edit-cell">
             <view class="edit-label">标题名称</view>
             <view class="edit-input">
-                <input data-name="name" bindinput="bindInput" maxlength="16" class="weui-input" name="name" placeholder="16字以内" />
+                <input data-name="name" bindinput="bindInput" value="{{video.title}}" maxlength="16" class="weui-input" name="name" placeholder="16字以内" />
             </view>
         </view>
         <scroll-view scroll-x class="scrollView">
@@ -22,16 +22,14 @@
 
             </view>
             <view class="tobeAdded">
-                <view class="scroll-view-item addButton" style="{{videos.length==1?'display:none':''}}" @tap="actionSheepTap" data-type="video">
+                <view class="scroll-view-item addButton" wx:if="{{!video || !video.src}}"  @tap="actionSheepTap" data-type="video">
                    <image src="../assets/plus.png"></image>
                 </view>
-                <repeat for="{{videos}}" key="index" index="index" item="item">
-                    <view class="scroll-view-item {{thumbActive == index?'active':''}}" data-index="{{index}}"  @tap="thumbClick">
-                        <image src="{{item.cover}}"></image>
-                        <view class="span active">{{index + 1}}</view>
-                        <image class="del {{thumbActive == index?'active':''}}" src="../assets/del.png" @tap="del" data-index="{{index}}"></image>
-                    </view>
-                </repeat>
+                <view class="scroll-view-item active" wx:else >
+                    <image src="{{video.cover || '../assets/black.png'}}" mode="aspectFill"></image>
+                    <view class="span active">1</view>
+                    <image class="del active" src="../assets/del.png" @tap="del" ></image>
+                </view>
             </view>
         </scroll-view>
     </view>
@@ -39,90 +37,70 @@
 <script>
 import wepy from 'wepy';
 import Mixin from './mixin';
-import { uploader } from '../../utils/uploader';
+
+import { globalData } from '../../utils/globalData';
 import { toast } from '../../utils';
 
-const app = require('../../utils/globalData');
 const { post } = require('../../utils/ajax');
 
-const loadVideo = '/businessResource/getlist?jjqwiaud';
+// const loadVideo = '/businessResource/getlist?jjqwiaud';
 export default class Video extends wepy.page {
   config = {
       navigationBarTitleText: '门店视频',
   };
   data = {
-      videos: [],
       thumbActive: false,
       name: '',
       video: {},
+      imageLimit: 1,
   };
   mixins = [Mixin];
-  async onLoad() {
-      const { data } = await post(loadVideo, {
-          resourceType: 2,
-          pageNum: 1,
-          pageSize: 99,
-          appid: 'yxuEvbSU3M0zGwxuw',
-      });
-      this.videos = data.map(({
-          resourceName, resourceUrl, extend, id,
-      }) => ({
-          src: resourceUrl,
-          name: resourceName,
-          selected: resourceUrl === this.selectedVideo,
-          cover: extend ? JSON.parse(extend).sourceCoverUrl : '',
-          id,
-      }));
-      [this.video] = this.videos;
+  onLoad() {
       [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
-      this.$apply();
-      console.log(this.videos);
+      console.log(this.pageModule);
+      const videoData = JSON.parse(this.pageModule.data);
+      Object.assign(this.video, {
+          cover: videoData.sourceCoverUrl, src: this.pageData[0].props.cfg.src, title: this.pageData[0].props.cfg.title,
+      });
+  }
+  onShow() {
+      if (globalData.selectedResource) {
+          Object.assign(this.video, { src: globalData.selectedResource[0].resourceUrl, id: globalData.selectedResource[0].id, cover: globalData.selectedResource[0].imageUrl });
+          globalData.selectedResource = {};
+          this.$apply();
+      }
   }
   methods = {
       bindInput(e) {
-          this.name = e.detail.value;
+          this.video.title = e.detail.value;
       },
-      del(e) {
-          const { index } = e.currentTarget.dataset;
-          this.videos.splice(index, 1);
+      del() {
+          this.video = {};
       },
-      async addVideo() {
-          const { tempFilePath, thumbTempFilePath } = await wepy.chooseVideo();
-          console.log(tempFilePath);
-          uploader(tempFilePath, { isVideo: true }, (e, result) => {
-              if (e) {
-                  toast('上传失败，请重试。');
-                  return;
-              }
-              console.log(result);
-              toast('上传成功。');
-              this.videos.push({
-                  src: result.content,
-                  cover: thumbTempFilePath,
-              });
-              this.saveVideo(result.content);
-              this.$apply();
-          });
-      },
+
       save() {
           this.pageModule.params.videoId = this.video.id;
-          [app.globalData.pageData[this.pageIndex]] = this.pageData;
-          app.globalData.modules[this.pageIndex] = this.pageModule;
-          wx.navigateBack({
-              delta: 1,
-          });
-      },
-      thumbClick(e) {
-          this.thumbActive = e.currentTarget.dataset.index;
-          this.video = this.videos[this.thumbActive];
+          this.pageModule.cfg.src = this.video.src;
+          this.pageModule.cfg.title = this.video.title;
+          this.pageData[0].props.cfg.src = this.video.src;
+          this.pageData[0].props.cfg.title = this.video.title;
+          [globalData.pageData[this.pageIndex]] = this.pageData;
+          globalData.modules[this.pageIndex] = this.pageModule;
+          toast('已保存');
+          setTimeout(() => {
+              wx.navigateBack({
+                  delta: 1,
+              });
+          }, 1000);
       },
   };
   async saveVideo(src) {
-      await post('/businessResource/insert', {
+      const data = await post('/businessResource/insert', {
           resourceType: 2,
           resourceName: this.name,
           resourceUrl: src,
       });
+      console.log(data);
   }
 }
 </script>

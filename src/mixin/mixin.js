@@ -16,9 +16,9 @@ import payMinx from '../components/mod/pay/pay';
 import branchMinx from '../components/mod/branch/branch';
 import userinfoAuthorize from './userinfoAuthorize';
 import tabBarComponent from '../components/mod/tabBar/tabBar';
+import { globalData } from '../utils/globalData';
 
 const getPage = require('../utils/getPage');
-const app = require('../utils/globalData');
 
 const mixinConfig = {
     data: {
@@ -34,11 +34,10 @@ const mixinConfig = {
     async onLoad() {
         const { model = '' } = wx.getSystemInfoSync();
         if (~model.toLowerCase().indexOf('iphone x')) {
-            app.globalData.isIphoneX = true;
+            globalData.isIphoneX = true;
         }
     },
     onReady() {
-        console.log(app);
         this.onPageReady();
     },
     onShow() {
@@ -53,11 +52,11 @@ const mixinConfig = {
         await this.loadData();
         await this.loadPageList();
 
-        const { extConfig = {}, isIphoneX } = app.globalData;
+        const { extConfig = {}, isIphoneX } = globalData;
         // const { tabBar = {}, mpSource = '', extraInfo = null } = extConfig.extJson;
-        const { list = [] } = app.globalData.tabBar;
+        const { list = [] } = globalData.tabBar;
         console.log(extConfig.extJson);
-        // app.globalData.tabMode = extConfig.extJson.tabMode;
+        // globalData.tabMode = extConfig.extJson.tabMode;
         const tabBarItems = list.map(item => Object.assign(item, { pageKey: getPage(item.pagePath) }));
         this.setData({
             isIphoneX,
@@ -67,15 +66,6 @@ const mixinConfig = {
             // extraInfo,
         });
     },
-    // onUnload() {
-    //     console.log('unload');
-    //     app.globalData.pageData = {};
-    // },
-    // onShow() {
-    //     this.setData({
-    //         page_data: app.globalData.pageData,
-    //     });
-    // },
     onPullDownRefresh() {
         this.loadData(() => {
             wx.stopPullDownRefresh();

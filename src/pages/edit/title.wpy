@@ -45,8 +45,7 @@
 import wepy from 'wepy';
 import Mixin from './mixin';
 import { toast } from '../../utils';
-
-const app = require('../../utils/globalData');
+import { globalData } from '../../utils/globalData';
 
 export default class Title extends wepy.page {
     config = {
@@ -66,9 +65,14 @@ export default class Title extends wepy.page {
         [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
         console.log(this.pageModule);
     }
+    computed = {
+        textLimit() {
+            if (this.pageData && this.pageData[0]) { return this.pageData[0].props.cfg.subtitle.length; }
+            return 0;
+        },
+    }
     methods = {
         textareaInput(e) {
-            this.textLimit = e.detail.value.length;
             this.pageData[0].props.cfg.subtitle = e.detail.value;
         },
         bindPickerChange(e) {
@@ -84,16 +88,19 @@ export default class Title extends wepy.page {
             this.pageData[0].props.cfg.textName = e.detail.value;
         },
         save() {
-            if (!this.pageData[0].props.cfg.title) {
+            if (!this.pageData[0].props.cfg.title.trim()) {
                 toast('请输入文章标题');
                 return;
             }
             this.pageModule.cfg = this.pageData[0].props.cfg;
-            [app.globalData.pageData[this.pageIndex]] = this.pageData;
-            app.globalData.modules[this.pageIndex] = this.pageModule;
-            wx.navigateBack({
-                delta: 1,
-            });
+            [globalData.pageData[this.pageIndex]] = this.pageData;
+            globalData.modules[this.pageIndex] = this.pageModule;
+            toast('已保存');
+            setTimeout(() => {
+                wx.navigateBack({
+                    delta: 1,
+                });
+            }, 1000);
         },
     }
 }

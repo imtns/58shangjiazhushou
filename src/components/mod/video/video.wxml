@@ -2,7 +2,7 @@
     <view class="mod-view mod-video">
         <view class="mod-head">{{cfg.title}}</view>
         <navigator wx:if="{{cfg.src}}" class="mod-video-content" url='/pages/videoPlay/videoPlay?src={{cfg.src}}'>
-            <image wx:if="{{cfg.cover}}" src='{{cfg.cover}}' class="mod-video-tag"></image>
+            <image wx:if="{{cfg.sourceCoverUrl}}" src='{{cfg.sourceCoverUrl}}' class="mod-video-tag"></image>
             <view class="mod-video-arrow"></view>
         </navigator>
         <view wx:else class="mod-video-content">

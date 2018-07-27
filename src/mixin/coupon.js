@@ -9,7 +9,7 @@ export default class CouponMixin extends wepy.mixin {
             return v;
         }
 
-        const regRes = v.match(/([\d]{4})-([\d]{2})-([\d]{2})/);
+        const regRes = this.getDateItem(v);
         if (!regRes) {
             return v;
         }
@@ -28,9 +28,14 @@ export default class CouponMixin extends wepy.mixin {
         return result;
     }
 
+    // 将时间拆分成 year month day
+    getDateItem(v) {
+        return v.match(/([\d]{4})-([\d]{2})-([\d]{2})/);
+    }
+
     getCurrentDate() {
         const today = new Date();
-        return `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate}`;
+        return `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
     }
 
     /**
@@ -39,6 +44,7 @@ export default class CouponMixin extends wepy.mixin {
      * @return {Boolean} 可用返回true，不可用返回false
      */
     checkUsable({ validEndtime, totalCount, useCount }) {
+        
         // 时间过期
         if (validEndtime && 
             // 还需要加上有效期当天的那一整天24小时的时间

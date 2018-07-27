@@ -1,4 +1,8 @@
 /* pages/news/news.wxss */
+.container{
+    padding-top:110rpx !important;
+    padding-bottom:80rpx;
+  }
 .wrapper {
     width: 150rpx;
     margin: 0 auto;

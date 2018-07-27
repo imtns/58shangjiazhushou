@@ -1,14 +1,14 @@
 
 import modulesParse from '../utils/modulesParse';
 import { toast } from '../utils';
+import { globalData } from '../utils/globalData';
 
-const app = require('../utils/globalData');
 const { post } = require('../utils/ajax');
 
 module.exports = {
     showEdit(e) {
         const { name, title } = e.currentTarget.dataset;
-        if (title === 'evaluation' || title === 'information') {
+        if (title === 'evaluation' || title === 'information' || title === 'goods') {
             this.setData({
                 noEdit: true,
             });
@@ -57,7 +57,7 @@ module.exports = {
             console.log('编辑');
             console.log(this.data.page_data);
             const { name, id } = this.data.page_data[0];
-            if (name === 'evaluation' || name === 'information') {
+            if (name === 'evaluation' || name === 'information' || name === 'goods') {
                 this.setData({
                     noEdit: true,
                 });
@@ -81,8 +81,8 @@ module.exports = {
         }
     },
     async goSave() {
-        const pageId = app.globalData.pageList.filter(obj => obj.pageKey === this.data.pageKey)[0].id;
-        let modData = app.globalData.modules.map(({
+        const pageId = globalData.pageList.filter(obj => obj.pageKey === this.data.pageKey)[0].id;
+        let modData = globalData.modules.map(({
             id, name, cfg, params,
         }) => {
             if (Array.isArray(params)) params = {};
@@ -101,13 +101,18 @@ module.exports = {
         if (emptymodData.length && emptymodData.length > 0) {
             return;
         }
-        await post('/business/templete/savemodules', {
-            businessPageId: pageId,
-            modulesJson: JSON.stringify(modulesParse.save(modData)),
-            releaseId: wx.getStorageSync('releaseId'),
-            mpId: wx.getStorageSync('current_mpid'),
-        });
-        toast('保存成功');
+        try {
+            await post('/business/templete/savemodules', {
+                businessPageId: pageId,
+                modulesJson: JSON.stringify(modulesParse.save(modData)),
+                releaseId: wx.getStorageSync('releaseId'),
+                mpId: wx.getStorageSync('current_mpid'),
+            });
+            toast('保存成功');
+        } catch (err) {
+            toast(err);
+        }
+
     // wx.navigateBack({
     //     delta: 1,
     // });

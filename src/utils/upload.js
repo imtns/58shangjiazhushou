@@ -1,10 +1,8 @@
 /**
  * @desc 上传图片
  */
-import { get } from './http';
-import { SAVE_RESOURCE_URL } from './url';
-import uploader from './uploaderP';
 import wepy from 'wepy';
+import uploader from './uploaderP';
 
 const uploadResource = async (path, type) => {
     // 上传资源
@@ -12,17 +10,14 @@ const uploadResource = async (path, type) => {
         type,
     });
 
-    // 将资源插入到对应资源库
-    await get(SAVE_RESOURCE_URL, {
-        resourceUrl,
-        resourceType: type === 'image' ? 1 : 2,
-    });
-}
+    return resourceUrl;
+};
 
 const uploadImages = async ({ count = 9, sourceType = ['album', 'camera'] } = {}) => {
     const { tempFiles } = await wepy.chooseImage({
         count, sourceType,
     });
+
     let msg = '';
 
     // 过滤大于4M的
@@ -50,7 +45,8 @@ const uploadImages = async ({ count = 9, sourceType = ['album', 'camera'] } = {}
     // 上传图片
     const result = await Promise.all(filesToUpload.map(path => uploadResource(path, 'image')));
 
-    return { msg, result };
-}
+    return { msg, result, tempFilePaths: filesToUpload };
+};
 
 export default uploadImages;
+module.exports.uploadResource = uploadResource;

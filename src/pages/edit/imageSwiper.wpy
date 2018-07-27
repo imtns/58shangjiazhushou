@@ -25,7 +25,7 @@
                 </view>
                 <repeat for="{{pageData[0].props.cfg.images}}" key="index" index="index" item="item">
                     <view class="scroll-view-item {{thumbActive == index?'active':''}}" data-index="{{index}}"  @tap="thumbClick">
-                        <image src="{{item.src}}" mode="aspectFill"></image>
+                        <image src="{{item.src}}?w=200" mode="aspectFill"></image>
                         <view class="span active">{{index+1}}</view>
                         <image class="del {{thumbActive == index?'active':''}}" src="../assets/del.png" @tap="del" data-index="{{index}}" />
                     </view>
@@ -42,9 +42,9 @@
             <view class="edit-label">跳转链接</view>
              <view class="edit-input">
                 <picker range-key="name" bindchange="bindPickerChange" value="{{pageData[0].props.cfg.pageKey}}" range="{{pageList}}">
-                    <view wx:if="{{selectorIndex==-1 && !pageData[0].props.cfg.images[thumbActive].pageKey}}">请选择</view>
+                    <view wx:if="{{!pageData[0].props.cfg.images[thumbActive].pageKey}}">请选择</view>
                     <view wx:else  class="picker">
-                        {{pageData[0].props.cfg.images[thumbActive].linkName || pageList[selectorIndex].name}}
+                        {{pageData[0].props.cfg.images[thumbActive].linkName}}
                     </view>
                 </picker>
             </view>
@@ -56,8 +56,7 @@ import wepy from 'wepy';
 import Mixin from './mixin';
 import { toast, previewImage } from '../../utils';
 // import modulesParse from '../../utils/modulesParse';
-
-const app = require('../../utils/globalData');
+import { globalData } from '../../utils/globalData';
 
 const { picSrcDomain } = require('../../utils/index');
 
@@ -82,6 +81,15 @@ export default class ImageSwiper extends wepy.page {
       [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
       console.log(this.pageModule);
   }
+  computed = {
+      imageLimit() {
+          if (this.pageData && this.pageData[0]) {
+              return 3 - this.pageData[0].props.cfg.images.length;
+          }
+          return 3;
+      },
+  }
+
   methods = {
       onImageClick(e) {
           const { index } = e.currentTarget.dataset;
@@ -106,7 +114,6 @@ export default class ImageSwiper extends wepy.page {
       },
       bindPickerChange(e) {
           console.log(this.pageList);
-          this.selectorIndex = e.detail.value;
           this.pageData[0].props.cfg.images[this.thumbActive].pageKey = this.pageList[e.detail.value].key;
           this.pageData[0].props.cfg.images[this.thumbActive].linkName = this.pageList[e.detail.value].name;
           this.pageModule.cfg.images[this.thumbActive].pageKey = this.pageList[e.detail.value].key;
@@ -114,10 +121,8 @@ export default class ImageSwiper extends wepy.page {
       },
       save() {
           toast('已保存');
-          [app.globalData.pageData[this.pageIndex]] = this.pageData;
-          console.log(app.globalData.pageData[this.pageIndex]);
-          app.globalData.modules[this.pageIndex] = this.pageModule;
-          //   console.log(app.globalData.modules);
+          [globalData.pageData[this.pageIndex]] = this.pageData;
+          globalData.modules[this.pageIndex] = this.pageModule;
           setTimeout(() => {
               wx.navigateBack({
                   delta: 1,

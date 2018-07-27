@@ -69,13 +69,11 @@
         </view>
         <view class="appedit-submit submit-enable" @tap="bindSave" wx:if="{{enableSave}}">保存</view>
         <view class="appedit-submit" @tap="bindSave" wx:else>保存</view>
-        <cropper></cropper>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
-import Cropper from '../components/Cropper';
 import { picSrcDomain, filteremoji, toastSync, globalService, alertP, getNetStatus } from '../utils';
 import { get } from '../utils/ajaxP';
 
@@ -90,9 +88,6 @@ export default class AppEdit extends wepy.page {
     config = {
         navigationBarTitleText: '小程序编辑',
     }
-    components = {
-        cropper: Cropper,
-    }
     data = {
         logoUrl: '',
         loading: true,
@@ -106,11 +101,6 @@ export default class AppEdit extends wepy.page {
         },
         tempLogo: '',
         cateEditable: true, // 所属行业是否可以编辑
-    }
-    events = {
-        'after-crop'(tempPath) {
-            this.uploadLogo(tempPath);
-        },
     }
     computed = {
         enableSave () {
@@ -180,7 +170,10 @@ export default class AppEdit extends wepy.page {
                 const { confirm } = await alertP('是否裁剪图片？', '提示');
 
                 if (confirm) {
-                    this.$broadcast('crop-loadImage', tempFilePaths[0], '1,1', true);
+                    // 去裁剪
+                    wepy.navigateTo({
+                        url: `/pages/cropper?url=${tempFilePaths[0]}&ratio=1,1`,
+                    });
                 } else {
                     this.uploadLogo(tempFilePaths[0]);
                 }
@@ -274,6 +267,12 @@ export default class AppEdit extends wepy.page {
         this.defaultSelCityIndex();
     }
     onShow () {
+        if (globalService.get('afterCrop')) {
+            globalService.set('afterCrop', false);
+            const url = globalService.get('cropperUrl');
+            this.logoUrl = picSrcDomain() + url;
+            this.form.headImg = url;
+        }
         this.updateCateChoice();
     }
     // 记录页面加载是所属行业类别编辑状态

@@ -29,12 +29,12 @@
 import wepy from 'wepy';
 import { get } from '../utils/ajax';
 import { toast } from '../utils/index';
+import { globalData } from '../utils/globalData';
 
 const basicTemplateUrl = '/business/templateList';
 const myTemplateUrl = '/business/myTemplateList/';
 const getTemplateIdUrl = '/business/init/struct';
 const delTemplateUrl = '/business/myTemplate/del';
-const app = require('../utils/globalData');
 
 export default class Index extends wepy.page {
   config = {
@@ -90,6 +90,8 @@ export default class Index extends wepy.page {
           try {
               await get(delTemplateUrl, { releaseId: releaseid });
               this.list.splice(index, 1);
+              this.delLayer = {};
+              this.myTemplateFull = false;
               this.$apply();
               toast('删除成功');
           } catch (ee) {
@@ -111,7 +113,7 @@ export default class Index extends wepy.page {
                   return;
               }
               if (status === 5) {
-                  wx.setStorageSync(`hideTag_${releaseid}`, true);
+                  wx.setStorageSync(`hideTag_${releaseid}_${status}`, true);
                   this.hideTag[releaseid] = true;
               }
               wx.setStorageSync('releaseId', releaseid);
@@ -151,20 +153,21 @@ export default class Index extends wepy.page {
       this.list.push(...data);
       this.$apply();
   }
+  onShow() {
+      if (this.my) { this.loadMyTemplate(); }
+  }
   async loadMyTemplate() {
-      console.log(app.globalData.extConfig);
+      console.log(globalData.extConfig);
       const { data } = await get(myTemplateUrl + wx.getStorageSync('current_mpid'), {
           pageNum: 1,
           pageSize: 10,
           v: 2,
-          appid: app.globalData.extConfig.appId,
+          appid: globalData.extConfig.appId,
       });
       this.list = data;
       this.list.forEach((item) => {
-          const hideTag = wx.getStorageSync(`hideTag_${item.releaseId}`);
-          if (hideTag) {
-              this.hideTag[item.releaseId] = true;
-          }
+          const hideTag = wx.getStorageSync(`hideTag_${item.releaseId}_${item.status}`);
+          this.hideTag[item.releaseId] = !!hideTag;
       });
       // 判断是否有正在审核的模板，如果有审核的模板，则审核的模板不能编辑，并且其他模板不能发布
       const filter = this.list.filter(x => x.status === 1);

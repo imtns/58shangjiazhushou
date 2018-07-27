@@ -116,9 +116,8 @@
                 <view>本产品目前仅支持到店支付</view>
             </view>
         </view>
-
-        <button class="save" :class="{ disabled: !canSubmit }" @tap="save">保存</button>
     </view>
+    <button class="save" :class="{ disabled: !canSubmit }" @tap="save">保存</button>
 </template>
 
 <script>
@@ -404,7 +403,7 @@ view {
 }
 .containe {
     font-size: 28rpx;
-    margin-bottom: 122rpx;
+    padding-bottom: 122rpx;
 }
 
 .section {

@@ -78,9 +78,9 @@ import { DELETE_COUPON } from '../utils/url';
 import { alertP } from '../utils';
 import globalService from '../utils/globalService';
 
-const pageSize = 10;
-let pageNum = 1;
-let noMore = false;
+const pageSize = 50;
+const pageNum = 1;
+// const noMore = false;
 
 export default class Index extends wepy.page {
     config = {
@@ -163,14 +163,14 @@ export default class Index extends wepy.page {
     }
 
     init() {
-        noMore = false;
-        pageNum = 1;
+        // noMore = false;
+        // pageNum = 1;
         this.coupons = [];
     }
 
-    updated() {
-        pageNum += 1;
-    }
+    // updated() {
+    //     pageNum += 1;
+    // }
 
     async loadData() {
         try {
@@ -185,9 +185,9 @@ export default class Index extends wepy.page {
                 this.coupons.push(...data);
             }
 
-            if (data && (data.length < pageSize)) {
-                noMore = true;
-            }
+            // if (data && (data.length < pageSize)) {
+            //     noMore = true;
+            // }
 
             this.$apply();
         } catch (e) {
@@ -195,14 +195,14 @@ export default class Index extends wepy.page {
         }
     }
 
-    onReachBottom() {
-        if (noMore) {
-            return;
-        }
+    // onReachBottom() {
+    //     if (noMore) {
+    //         return;
+    //     }
 
-        this.updated();
-        this.loadData();
-    }
+    //     this.updated();
+    //     this.loadData();
+    // }
 }
 </script>
 

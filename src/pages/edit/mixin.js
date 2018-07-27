@@ -1,12 +1,13 @@
 import wepy from 'wepy';
 // const { post } = require('../../utils/ajax');
-import { toast } from '../../utils';
-import { uploader } from '../../utils/uploader';
-// import imageUploader from '../../utils/upload';
+import { toast, picSrcDomain, alertP } from '../../utils';
+// import { uploader } from '../../utils/uploader';
+import uploadImages from '../../utils/upload';
+import { globalData } from '../../utils/globalData';
 // import modulesParse from '../../utils/modulesParse';
 // import { toast } from '../../utils';
-
-const app = require('../../utils/globalData');
+import { uploader } from '../../utils/uploader';
+import globalService from '../../utils/globalService';
 
 export default class Mixin extends wepy.mixin {
     data = {
@@ -25,8 +26,8 @@ export default class Mixin extends wepy.mixin {
         console.log(options);
         this.saveAvaliable = false;
         this.pageId = options.id;
-        const result = app.globalData.pageData.filter(obj => obj.id === this.pageId);
-        this.pageIndex = app.globalData.pageData.findIndex(obj => obj.id === this.pageId);
+        const result = globalData.pageData.filter(obj => obj.id === this.pageId);
+        this.pageIndex = globalData.pageData.findIndex(obj => obj.id === this.pageId);
         // this.pageData = Object.assign({}, this.pageData, {
         //     cfg: result[0].props.cfg, data: result[0].props.data, pageNum: result[0].props.pageNum, pageSize: result[0].props.pageNum, total: result[0].props.total,
         // });
@@ -34,88 +35,120 @@ export default class Mixin extends wepy.mixin {
         if (result[0].name === 'article') {
             this.pageData = Object.assign({}, this.pageData, { params: result[0].params });
         }
-        this.modules = app.globalData.modules;
+        this.modules = globalData.modules;
         this.tempModules = JSON.parse(JSON.stringify(this.modules));
-        this.extConfig = app.globalData.extConfig;
-        this.pageList = app.globalData.pageList.map((item, index) => ({
+        this.extConfig = globalData.extConfig;
+        this.pageList = globalData.pageList.map((item, index) => ({
             id: index,
             key: item.pageKey,
             name: item.pageName,
         }));
         console.log(result);
     }
-    onShow() {
-        const result = app.globalData.pageData.filter(obj => obj.id === this.pageId);
-        this.pageIndex = app.globalData.pageData.findIndex(obj => obj.id === this.pageId);
-        this.pageData = JSON.parse(JSON.stringify(result));
+    // onShow() {
+    //     const result = globalData.pageData.filter(obj => obj.id === this.pageId);
+    //     this.pageIndex = globalData.pageData.findIndex(obj => obj.id === this.pageId);
+    //     this.pageData = JSON.parse(JSON.stringify(result));
+    // }
+    async onShow() {
+        if (this.pageData[0].name === 'video') return;
+        if (globalData.selectedResource && Object.keys(globalData.selectedResource).length) {
+            const { confirm } = await alertP('是否裁剪图片？');
+            if (confirm) {
+                console.log('跳转');
+                wepy.navigateTo({
+                    url: `/pages/cropper?url=${picSrcDomain() + globalData.selectedResource[0].resourceUrl}&ratio=4,3`,
+                });
+                globalData.selectedResource = {};
+                return;
+            }
+            this.setImageData(globalData.selectedResource);
+            this.$apply();
+        }
+        if (globalService.get('afterCrop')) {
+            globalService.set('afterCrop', false);
+            const url = globalService.get('cropperUrl');
+            this.setImageData(url, true);
+        }
+        globalData.selectedResource = {};
+    }
+    setImageData(data, isCroped) {
+        if (isCroped) {
+            console.log(data);
+            this.pushImages(data);
+        } else {
+            data.forEach(item => {
+                this.pushImages(typeof item === 'object' ? item.resourceUrl : item);
+            });
+        }
+    }
+    pushImages(src) {
+        this.pageModule.cfg.images.push({
+            src,
+            pageKey: '',
+            title: this.picName,
+            linkName: this.linkName,
+        });
+        this.pageData[0].props.cfg.images.push({
+            src: picSrcDomain() + src,
+            title: this.picName,
+            linkName: this.linkName,
+            pageKey: '',
+        });
     }
     async addBanner(sourceType, type = 'image') {
-        const that = this;
+        if (type === 'image') {
+            const { result, msg, tempFilePaths } = await uploadImages({
+                sourceType: [sourceType],
+                count: 1,
+            });
+            if (msg) {
+                // 错误操作
+                toast(msg);
+                return;
+            }
 
+            const { confirm } = await alertP('是否裁剪图片？');
 
-        wx.chooseImage({
-            sourceType: [type],
-            count: 1,
-            success(res) {
-                const { tempFilePaths, tempFiles } = res;
-                wx.getImageInfo({
-                    src: tempFilePaths[0],
-                    success(ress) {
-                        if (ress.width < 200 && ress.height < 200) {
-                            console.log((ress));
-                        }
-                    },
+            if (confirm) {
+                console.log('跳转');
+                wepy.navigateTo({
+                    url: `/pages/cropper?url=${tempFilePaths[0]}&ratio=4,3`,
                 });
-                if (tempFiles.size > 4000 * 1024 || tempFiles.size) {
-                    toast('超出照片限制最大4M, 请重新上传');
+                return;
+            }
+
+            this.setImageData(result);
+            this.$apply();
+        } else {
+            const { tempFilePath, thumbTempFilePath } = await wepy.chooseVideo();
+            uploader(tempFilePath, { isVideo: true }, (e, result) => {
+                if (e) {
+                    toast('上传失败，请重试。');
+                    return;
                 }
-                uploader(tempFilePaths[0], (e, result) => {
-                    if (e) {
-                        toast('上传失败，请重试。');
-                        return;
-                    }
-                    toast('上传成功。');
-                    const src = result.content;
-                    const name = that.picName;
-                    that.pageModule.cfg.images.push({
-                        src: src,
-                        pageKey: '',
-                        title: name,
-                        linkName: that.linkName,
-                    });
-                    that.pageData[0].props.cfg.images.push({
-                        src: that.picDomain + src,
-                        title: name,
-                        linkName: that.linkName,
-                        pageKey: '',
-                    });
-                    that.saveImage(src, name);
-                    that.$apply();
-                });
-            },
-            fail(e) {
-                toast('上传失败，请从相册选择。', '提示', () => {
-                    // self.shoot();
-                });
-                console.log(e);
-            },
-        });
-        //   const tempFilePaths = await wx.chooseImage({ sourceType: [type] });
-        //   console.log(tempFilePaths);
+                toast('上传成功。');
+                Object.assign(this.video, { src: result.content, cover: thumbTempFilePath });
+                this.saveVideo(result.content);
+                this.$apply();
+            });
+        }
     }
     methods = {
         actionSheepTap(e) {
             const that = this;
             const { type = 'image' } = e.currentTarget.dataset;
             wx.showActionSheet({
-                itemList: ['拍摄', '添加本地照片', type === 'video' ? '去视频库选择' : '去图片库选择'],
+                itemList: ['拍摄', type === 'video' ? '添加本地视频' : '添加本地照片', type === 'video' ? '去视频库选择' : '去图片库选择'],
                 success (tap) {
                     if (tap.tapIndex === 0) {
-                        that.addBanner('camera');
-                    } else if (e.tapIndex === 1) {
-                        that.addBanner('album');
+                        that.addBanner('camera', type);
+                    } else if (tap.tapIndex === 1) {
+                        that.addBanner('album', type);
                     } else {
-                        console.log('去图库');
+                        wepy.navigateTo({
+                            url: `../resourceManage?limit=1&type=${type}&ratio=1,1`,
+                        });
                     }
                 },
             });

@@ -9,6 +9,7 @@
             <repeat for="{{pageData[0].props.cfg.texts}}" index="index" item="item">
                 <view class="edit-text-section">
                     <view class="label">文本内容</view>
+                    <view class="del" data-index="{{index}}" @tap="del"><image src="../assets/text-del.png" mode="aspectFill" /></view>
                     <view class="text-content">
                         <textarea bindinput="textAreaInput"  data-index="{{index}}" value="{{pageData[0].props.cfg.texts[index].text}}" maxlength="42" />
                         <text class="textLimit">{{textLimit[index] || 0}}/42</text>
@@ -21,8 +22,7 @@
 import wepy from 'wepy';
 import Mixin from './mixin';
 import { toast } from '../../utils';
-
-const app = require('../../utils/globalData');
+import { globalData } from '../../utils/globalData';
 
 export default class TextEdit extends wepy.page {
   config = {
@@ -38,15 +38,21 @@ export default class TextEdit extends wepy.page {
   };
   onLoad() {
       [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
-      this.pageData[0].props.cfg.texts.forEach((item, index) => {
-          this.textLimit[index] = item.text.length;
-      });
+      if (Object.keys(this.pageData[0].props.cfg).length > 0) {
+          this.pageData[0].props.cfg.texts.forEach((item, index) => {
+              this.textLimit[index] = item.text.length;
+          });
+      }
   }
   methods = {
       textAreaInput(e) {
           const { index } = e.currentTarget.dataset;
           this.textLimit[index] = e.detail.value.length;
           this.pageData[0].props.cfg.texts[index].text = e.detail.value;
+      },
+      del(e) {
+          const { index } = e.currentTarget.dataset;
+          this.pageData[0].props.cfg.texts.splice(index, 1);
       },
       addText() {
           if (this.pageData[0].props.cfg.texts.length >= 5) {
@@ -55,18 +61,19 @@ export default class TextEdit extends wepy.page {
           }
           this.pageData[0].props.cfg.texts.push({
               text: '',
+              item: 1,
           });
       },
       save() {
           //   const empty = this.pageData[0].props.cfg.texts.every((element) => element.text);
-          if ((this.pageData[0].props.cfg.texts.filter(item => item.text !== '').length === 0)) {
+          if ((this.pageData[0].props.cfg.texts.filter(item => item.text.trim() !== '').length === 0)) {
               toast('请至少输入一行文本');
               return;
           }
           this.pageData[0].props.cfg.theme = '2';
           this.pageModule.cfg = this.pageData[0].props.cfg;
-          [app.globalData.pageData[this.pageIndex]] = this.pageData;
-          app.globalData.modules[this.pageIndex] = this.pageModule;
+          [globalData.pageData[this.pageIndex]] = this.pageData;
+          globalData.modules[this.pageIndex] = this.pageModule;
           wx.navigateBack({
               delta: 1,
           });
@@ -89,6 +96,18 @@ page{
       position: relative;
       background: #545658;
       padding: 30rpx;
+      .del{
+          position:absolute;
+          top:45rpx;
+          right:30rpx;
+          width:28rpx;
+          height:28rpx;
+          image{
+              width:100%;
+              height:100%;
+
+          }
+      }
       .label {
         color: #999;
         padding: 20rpx 0;

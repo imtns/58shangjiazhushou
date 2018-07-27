@@ -18,7 +18,7 @@
             <text class="save" @tap="save">保存</text>
         </view>
         <view class="edit-cell">
-            <view class="edit-label" @tap="showGroup">{{articleGroupName}}<view class="arrow"></view></view>
+            <view class="edit-label" @tap="showGroup">{{articleGroupName || '请选择分组'}}<view class="arrow"></view></view>
             <view class="edit-input">
                 <checkbox-group bindchange="selectAll">
                     <label class="checkbox">
@@ -52,8 +52,8 @@
 import wepy from 'wepy';
 import Mixin from './mixin';
 import { picSrcDomain, toast } from '../../utils';
+import { globalData } from '../../utils/globalData';
 
-const app = require('../../utils/globalData');
 const { get } = require('../../utils/ajax');
 
 export default class Article extends wepy.page {
@@ -121,14 +121,14 @@ export default class Article extends wepy.page {
           });
           console.log(JSON.stringify(this.params));
           this.pageModule.params = this.params;
-          app.globalData.pageData[this.pageIndex].props = this.pageData[0].props;
-          //   console.log(app.globalData.pageData[this.pageIndex]);
-          //   const modulesData = JSON.parse(JSON.stringify(app.globalData.pageData));
-          //   app.globalData.modules = modulesParse.parsePageData(modulesData);
-          app.globalData.modules[this.pageIndex] = this.pageModule;
-          wx.navigateBack({
-              delta: 1,
-          });
+          globalData.pageData[this.pageIndex].props = this.pageData[0].props;
+          globalData.modules[this.pageIndex] = this.pageModule;
+          toast('已保存');
+          setTimeout(() => {
+              wx.navigateBack({
+                  delta: 1,
+              });
+          }, 1000);
       },
   };
   async onLoad() {
@@ -139,7 +139,7 @@ export default class Article extends wepy.page {
   }
   async loadArticleList() {
       const { data } = await get('/businessArticle/list', {
-          appid: this.extConfig.appId, group: this.params.articleGroupId, pageNum: this.params.pageNum, pageSize: this.params.pageSize,
+          appid: this.extConfig.appId, group: this.params.articleGroupId, pageNum: 1, pageSize: 30,
       });
       console.log(data);
       data.data.forEach(item => {
