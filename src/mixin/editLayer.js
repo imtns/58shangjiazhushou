@@ -45,6 +45,7 @@ module.exports = {
         }
         this.setData({
             editLayer: {},
+            layer: false,
             isEditing: false,
         });
     },

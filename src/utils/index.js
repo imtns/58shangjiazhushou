@@ -106,7 +106,7 @@ export const picSrcDomain = () => {
     return `https://pic${n}.58cdn.com.cn`;
 };
 export const previewImage = (imgs, index) => {
-    if (typeof imgs === 'object') {
+    if (typeof imgs === 'object' && !Array.isArray(imgs)) {
         imgs = imgs.map((obj) => obj.src);
     }
     const urls = imgs.map(img => {
