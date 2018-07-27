@@ -106,7 +106,7 @@
         <view class="edit-cell">
             <view class="edit-label">标题名称</view>
             <view class="edit-input">
-                <input data-name="name" value="{{pageData[0].props.cfg.title}}"  bindinput="bindTitle" class="weui-input" name="name" placeholder="请输入名称" />
+                <input data-name="name" value="{{pageData[0].props.cfg.title}}"  maxlength="16" bindinput="bindTitle" class="weui-input" name="name" placeholder="16字以内"  />
             </view>
         </view>
         <scroll-view scroll-x class="scrollView">
@@ -129,7 +129,7 @@
         <view class="edit-cell space">
             <view class="edit-label">图片名称</view>
             <view class="edit-input">
-                <input data-name="name" value="{{pageData[0].props.cfg.images[thumbActive].title}}"  class="weui-input" name="name" bindinput="bindNameInput"  placeholder="请输入名称" />
+                <input data-name="name" value="{{pageData[0].props.cfg.images[thumbActive].title}}"   maxlength="16" class="weui-input" name="name" bindinput="bindNameInput"  placeholder="16字以内"  />
             </view>
         </view>
          <view class="edit-cell">
