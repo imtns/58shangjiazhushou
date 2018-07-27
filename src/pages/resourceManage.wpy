@@ -122,7 +122,9 @@ export default class Index extends wepy.page {
         this.mpId = mpId;
         this.$apply();
     }
-
+    async onShow() {
+        await this.loadData(this.curTab);
+    }
     methods = {
         selectTab(name) {
             this.initData();

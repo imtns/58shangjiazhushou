@@ -138,13 +138,14 @@ export default class ArticleComponentList extends wepy.page {
             const nData = data.data;
             if (this.pageNum === 1 && (nData.length === 0 || !nData)) {
                 this.isLoading = false;
+                this.listData = [];
+                this.$apply();
                 // toast('没有数据');
                 return;
             }
             if (this.pageNum > 1 && nData.length < this.pageSzie) {
                 this.isLoading = false;
                 toast('没有更多数据');
-                return;
             }
             nData.forEach(item => {
                 Object.assign(item, {

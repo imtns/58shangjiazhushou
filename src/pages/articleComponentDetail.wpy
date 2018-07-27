@@ -69,7 +69,7 @@ export default class Index extends wepy.page {
             author,
             source,
             createTime,
-            content,
+            content: content,
             updateTime,
         });
         this.$apply();
