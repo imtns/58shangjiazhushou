@@ -28,7 +28,7 @@
                 <view class="crop-mask" style="border-top-width:{{cutT}}rpx;border-right-width:{{cropperW-cutL-cutW}}rpx;border-bottom-width:{{cropperH-cutT-cutH}}rpx;border-left-width:{{cutL}}rpx;"></view>
             </view>
         </view>
-        <canvas canvas-id="myCanvas" style="position:absolute;border: 1px solid red; width:{{qualityWidth}}px;height:{{qualityWidth / innerAspectRadio}}px;top:600rpx;left:-9999px"></canvas>
+        <canvas canvas-id="myCanvas" style="position:absolute;border: 1px solid red; width:{{qualityWidth}}px;height:{{qualityWidth / innerAspectRadio}}px;top:900rpx;left:-9999px"></canvas>
         <canvas canvas-id="myCanvas2" style="position:absolute;border: 1px solid red; width:{{canvasWidth}}px;height:{{canvasWidth}}px;top:600rpx;right:-9999px;"></canvas>
         <view class="options">
             <view class="option-item restore" @tap="restore">还原</view>
@@ -58,21 +58,21 @@ import wepy from 'wepy';
 import { uploadResource } from '../utils/upload';
 import globalService from '../utils/globalService';
 
-const downloadFile = ({ url }) => {
-    const result = new Promise((resolve, reject) => {
-        wx.downloadFile({
-            url,
-            success(res) {
-                resolve(res);
-            },
-            fail(err) {
-                reject(err);
-            },
-        });
-    });
+// const downloadFile = ({ url }) => {
+//     const result = new Promise((resolve, reject) => {
+//         wx.downloadFile({
+//             url,
+//             success(res) {
+//                 resolve(res);
+//             },
+//             fail(err) {
+//                 reject(err);
+//             },
+//         });
+//     });
 
-    return result;
-};
+//     return result;
+// };
 
 // pages/wx-cropper/index.js
 // 手机的宽度
@@ -133,6 +133,8 @@ export default class Cropper extends wepy.page {
     }
 
     onLoad({ url, ratio }) {
+        console.log('url============');
+        console.log(url);
         ctx = wx.createCanvasContext('myCanvas');
         this.$emit('crop-loadImage', url, ratio, true);
     }
@@ -144,7 +146,7 @@ export default class Cropper extends wepy.page {
             globalService.set('afterCrop', true);
             wepy.navigateBack();
         },
-        async 'crop-loadImage'(imageSrc, ratio = '1,1', first = false) {
+        'crop-loadImage'(imageSrc, ratio = '1,1', first = false) {
             const that = this;
             const { qualityWidth } = that;
             let { innerAspectRadio } = that;
@@ -154,11 +156,13 @@ export default class Cropper extends wepy.page {
                 title: '图片加载中...',
             });
 
-            if (!/tmp/.test(imageSrc)) {
-                // 网络图片，需要下载
-                const { tempFilePath } = await downloadFile({ url: imageSrc });
-                imageSrc = tempFilePath;
-            }
+            // if (!/tmp/.test(imageSrc)) {
+            //     // 网络图片，需要下载
+            //     const { tempFilePath } = await downloadFile({ url: imageSrc });
+            //     console.log('download -==============');
+            //     console.log(tempFilePath);
+            //     imageSrc = tempFilePath;
+            // }
 
             console.log(imageSrc);
 
@@ -253,7 +257,6 @@ export default class Cropper extends wepy.page {
                         qualityWidth,
                         qualityWidth / innerAspectRadio,
                     );
-                    ctx.draw();
                     that.innerAspectRadio = innerAspectRadio;
 
                     that.$apply();
@@ -509,7 +512,6 @@ export default class Cropper extends wepy.page {
                     destWidth: canvasW,
                     destHeight: canvasH,
                     quality: 0.5,
-                    fileType: 'png',
                     canvasId: 'myCanvas',
                     success(res) {
                         console.log('========> result');
@@ -522,6 +524,9 @@ export default class Cropper extends wepy.page {
                         //     current: res.tempFilePath, // 当前显示图片的http链接
                         //     urls: [res.tempFilePath], // 需要预览的图片http链接列表
                         // });
+                    },
+                    fail(err) {
+                        console.log(err);
                     },
                 });
             });

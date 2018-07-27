@@ -45,7 +45,7 @@ const uploadImages = async ({ count = 9, sourceType = ['album', 'camera'] } = {}
     // 上传图片
     const result = await Promise.all(filesToUpload.map(path => uploadResource(path, 'image')));
 
-    return { msg, result };
+    return { msg, result, tempFilePaths: filesToUpload };
 };
 
 export default uploadImages;

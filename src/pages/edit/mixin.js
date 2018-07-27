@@ -98,7 +98,7 @@ export default class Mixin extends wepy.mixin {
     }
     async addBanner(sourceType, type = 'image') {
         if (type === 'image') {
-            const { result, msg } = await uploadImages({
+            const { result, msg, tempFilePaths } = await uploadImages({
                 sourceType: [sourceType],
                 count: 1,
             });
@@ -113,12 +113,11 @@ export default class Mixin extends wepy.mixin {
             if (confirm) {
                 console.log('跳转');
                 wepy.navigateTo({
-                    url: `/pages/cropper?url=${picSrcDomain() + result[0]}&ratio=4,3`,
+                    url: `/pages/cropper?url=${tempFilePaths[0]}&ratio=4,3`,
                 });
                 return;
             }
 
-            console.log(result);
             this.setImageData(result);
             this.$apply();
         } else {
