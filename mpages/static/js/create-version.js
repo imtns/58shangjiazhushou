@@ -12,11 +12,11 @@ window.__staticConfig = {
         url:'/lbg/shangjiaxcxht/zhushou/js/zepto.min.js'
     },{
         name:'js',
-        version: '20180720',
+        version: '20180727111',
         url:'/lbg/shangjiaxcxht/zhushou/js/editor.js'
     },{
         name:'js',
-        version: '2018072444',
+        version: '20180727',
         url:'/lbg/shangjiaxcxht/zhushou/js/article-component-create.js'
     }]
 };
