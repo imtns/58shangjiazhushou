@@ -1,13 +1,10 @@
 <template name="video">
     <view class="mod-view mod-video">
         <view class="mod-head">{{cfg.title}}</view>
-        <!-- <navigator wx:if="{{cfg.src}}" class="mod-video-content" url='/pages/videoPlay/videoPlay?src={{cfg.src}}'>
+        <navigator wx:if="{{cfg.src}}" class="mod-video-content" url='/pages/videoPlay/videoPlay?src={{cfg.src}}'>
             <image wx:if="{{cfg.cover}}" src='{{cfg.cover}}' class="mod-video-tag"></image>
             <view class="mod-video-arrow"></view>
-        </navigator> -->
-        <view wx:if="{{cfg.src}}" class="mod-video-content">
-            <video src="{{cfg.src}}" style="width:690rpx;height:390rpx;"></video>
-        </view>
+        </navigator>
         <view wx:else class="mod-video-content">
             <view class="mod-video-arrow"></view>
         </view>
