@@ -1,6 +1,6 @@
 // pages/mod/consumerButton/consumerButton.js
 /*eslint-disable */
-const app = getApp();
+import { globalData } from '../../../utils/globalData';
 const { toast, alert } = require('../../../utils/index');
 const { get, post } = require('../../../utils/http');
 const { ajax } = require('../../../utils/ajax');
@@ -38,7 +38,7 @@ Component({
                         return;
                     }
                     emitEvent('consumerRegister', userInfo);
-                    Object.assign(app.globalData, {
+                    Object.assign(globalData, {
                         userInfo,
                     });
                     _this.doCallback();
@@ -65,14 +65,15 @@ Component({
             }
         },
         setLoginStatus(logining) {
-            Object.assign(app.globalData, {
+            Object.assign(globalData, {
                 logining,
             });
         },
         // 获取consumerId
         getConsumerId(callback) {
             const self = this;
-            const { consumerId, logining = false } = app.globalData;
+            return;
+            const { consumerId, logining = false } = globalData;
             if (consumerId) {
                 callback(null, consumerId);
                 return;
@@ -85,7 +86,7 @@ Component({
                     callback && callback(e);
                     return;
                 }
-                if (app.globalData.env58) {
+                if (globalData.env58) {
                     ajax('/wechat/getSession/', { code }, (e, res) => {
                         self.setLoginStatus(false);
                         if (e) {
@@ -93,7 +94,7 @@ Component({
                             return;
                         }
                         const { openid, session } = res.data;
-                        app.globalData.consumerId = session;
+                        globalData.consumerId = session;
 
                         callback(null, session);
                     });
@@ -106,7 +107,7 @@ Component({
                         return;
                     }
                     const { openid, session } = res;
-                    app.globalData.consumerId = session;
+                    globalData.consumerId = session;
 
                     callback(null, session);
                 });
@@ -145,7 +146,7 @@ Component({
         },
     },
     attached() {
-        const { consumerId = 0, userInfo = 0 } = app.globalData;
+        const { consumerId = 0, userInfo = 0 } = globalData;
         this.setData({
             consumerId,
             userInfo,

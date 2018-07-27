@@ -38,10 +38,7 @@ export default class Purchase extends wepy.page {
                 console.log(e);
             }
         } else {
-            Object.assign(that, {
-                src: buySrc,
-            });
-            // that.src = buySrc;
+            that.src = buySrc;
         }
         this.$apply();
         console.log(that.src);

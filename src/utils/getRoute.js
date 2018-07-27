@@ -1,4 +1,5 @@
 import { globalData } from '../utils/globalData';
+import switchTab from '../utils/switchTab';
 
 const route = require('./route.js');
 
@@ -16,13 +17,12 @@ module.exports = {
         return {
             url: path,
             type: pageType,
+            pagekey: pageKey,
         };
     },
     navigateTo (r) {
         if (r.type === 'tabbar') {
-            wx.switchTab({
-                url: r.url,
-            });
+            switchTab(r.pagekey);
         } else {
             wx.navigateTo({
                 url: r.url,

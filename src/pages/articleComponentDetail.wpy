@@ -15,8 +15,13 @@
                 <view class="base-text">{{ updateTime || createTime}}</view>
             </view>
         </view>
-        <rich-text class="article-content" nodes="{{content}}"></rich-text>
-        
+        <block wx:for="{{content}}" wx:for-index="idx" wx:for-item="p" wx:key="idx">
+            <view wx:if="{{p.type === 'text'}}" class="article-content">
+                <rich-text nodes="{{p.content}}"></rich-text>
+            </view>
+            <image wx:if="{{p.type === 'img'}}" class="rich-text-img" src="https:{{p.content}}"/>
+        </block>
+        <!-- <rich-text class="article-content" nodes="{{content}}"></rich-text> -->
     </view>
     <view class="block"></view>
     <view class="button article-edit-btn" @tap="toEdit">编辑</view>
@@ -64,12 +69,29 @@ export default class Index extends wepy.page {
             content,
             updateTime,
         } = data;
+        const ps = content.split('</p>')
+            .filter(p => p)
+            .map(p => {
+                const result = /<img src="([^<>]+)"/g.exec(p);
+                if (result) {
+                    const src = result[1].replace(/^http:/i, '').split('?');
+
+                    return {
+                        type: 'img',
+                        content: `${src[0]}?w=750`,
+                    };
+                }
+                return {
+                    type: 'text',
+                    content: `${p}</p>`,
+                };
+            });
         Object.assign(this, {
             title,
             author,
             source,
             createTime,
-            content: content,
+            content: ps,
             updateTime,
         });
         this.$apply();
@@ -147,18 +169,12 @@ export default class Index extends wepy.page {
             font-family: PingFangSC-Regular;
             font-size: 30rpx;
             color: #666666;
-            .rich-text-img{
-                width:670rpx;
-                height:503rpx;
-                margin:40rpx 0;
-                border-radius:6rpx;
-            }
-            // img,image{
-            //     width:670rpx;
-            //     height:503rpx;
-            //     margin:40rpx 0;
-            //     border-radius:6rpx;
-            // }
+        }
+        .rich-text-img{
+            width:670rpx;
+            height:503rpx;
+            margin:40rpx 0;
+            border-radius:6rpx;
         }
     }
     .block{

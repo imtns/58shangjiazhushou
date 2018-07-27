@@ -217,9 +217,9 @@
                 params.selectImage && params.selectImage(function (url) {
                     const $p = window.$p;
                     if ($p && $p.parent().dom) {
-                        $p.after('<p><image src="' + url + '" class="rich-text-img"/></p>');
+                        $p.after('<p><image src="' + url + '"/></p>');
                     } else {
-                        $editor.append('<p><image src="' + url + '" class="rich-text-img"/></p>');
+                        $editor.append('<p><image src="' + url + '"/></p>');
                     }
                     //$p = $('.zeditor-content p:last-child');
                     //$p = $(lastNode);
