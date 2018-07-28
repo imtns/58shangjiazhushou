@@ -23,7 +23,6 @@ module.exports = {
 
     set(key, v) {
         data[key] = v;
-        console.log(data);
     },
 
     commit(name) {
