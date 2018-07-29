@@ -138,6 +138,7 @@ export default class Index extends wepy.page {
     }
 
     async onLoad({ limit, type = 'image' }) {
+        console.log('onload');
         const mpId = wepy.getStorageSync('current_mpid');
         this.mpId = mpId;
 
@@ -154,7 +155,9 @@ export default class Index extends wepy.page {
         await this.loadData(this.curTab);
     }
     async onShow() {
-        await this.loadData(this.curTab);
+        if (this.curTab === 'article') {
+            await this.loadData(this.curTab);
+        }
     }
     methods = {
         chooseModalConfirm() {

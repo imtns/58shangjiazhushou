@@ -171,6 +171,7 @@
 .coupon2{
     height: 180rpx;
     width:315rpx;
+    padding-top: 15rpx;
 }
 .none-coupon{
     width:335rpx;
