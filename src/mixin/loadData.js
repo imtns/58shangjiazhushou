@@ -92,8 +92,8 @@ const parseCfgAndData = ({
         cfg.theme = cfg.theme || '1';
     }
 
-    if (name === 'services' || name === 'serviceOther') {
-        if (modData.data) {
+    if (name === 'services' || name === 'goods' || name === 'serviceOther') {
+        if (modData.data && name !== 'goods') {
             modData.data.forEach(service => {
                 service.img = picSrcDomain() + service.img;
             });
@@ -252,6 +252,7 @@ module.exports = {
 
             const newPageData = {
                 pageType: page,
+                pageKey: page,
                 current: 0,
                 page_data: page_data,
             };
