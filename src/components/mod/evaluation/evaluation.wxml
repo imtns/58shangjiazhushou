@@ -1,7 +1,8 @@
 <import src="../common.wxml"/>
 
 <template name="evaluation">
-    <view class="mod-view mod-evaluation" wx:if="{{data && data.length > 0}}">
+    <!-- <view class="mod-view mod-evaluation" wx:if="{{data && data.length > 0}}"> -->
+    <view class="mod-view mod-evaluation" >
         <view class="mod-head">用户评论</view>
         <view>
             <view class="mod-evaluation-li" wx:for="{{data}}" wx:for-index="evaIdx" wx:key="{{evaIdx}}">
