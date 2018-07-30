@@ -103,6 +103,7 @@
   padding: 24rpx 30rpx 20rpx;
   display: -webkit-box;
   display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
 }
 
@@ -119,8 +120,10 @@
 .orderlist .empty-wrap .order-ul-li .order-ul-li-row.logo-row .order-mpname {
   -webkit-box-flex: 1;
   -webkit-flex: 1;
+      -ms-flex: 1;
           flex: 1;
   -webkit-align-self: center;
+      -ms-flex-item-align: center;
           align-self: center;
   font-family: PingFangSC-Medium;
   font-size: 32rpx;

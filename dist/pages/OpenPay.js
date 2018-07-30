@@ -173,7 +173,7 @@ var OpenPay = function (_wepy$page) {
                             case 9:
                                 this.loading = false;
                                 this.userid = res.userid;
-                                this.opened = res.pay_open === 1;
+                                this.opened = res.pay_open;
                                 this.$apply();
 
                             case 13:

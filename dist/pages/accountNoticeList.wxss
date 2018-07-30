@@ -54,6 +54,7 @@ view, scroll-view {
   background: #fff;
   display: -webkit-box;
   display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
   border-bottom: 1rpx solid #f3f3f3;
   position: relative;
@@ -62,6 +63,7 @@ view, scroll-view {
 .notice-container .notice-list .notice-item .notice-content {
   -webkit-box-flex: 1;
   -webkit-flex: 1;
+      -ms-flex: 1;
           flex: 1;
 }
 
@@ -78,6 +80,7 @@ view, scroll-view {
 .notice-container .notice-list .notice-item .notice-money {
   -webkit-box-flex: 1;
   -webkit-flex: 1;
+      -ms-flex: 1;
           flex: 1;
   font-size: 48rpx;
   color: #333;

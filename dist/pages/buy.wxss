@@ -53,6 +53,7 @@ page .buy-container .buy-list .buy-list-item .buy-app-title::before {
   height: 17rpx;
   margin-right: 10rpx;
   -webkit-transform: rotate(-315deg);
+      -ms-transform: rotate(-315deg);
           transform: rotate(-315deg);
   background: #ffffff;
 }
@@ -67,6 +68,7 @@ page .buy-container .buy-list .buy-list-item .buy-app-bg {
   left: 50%;
   top: 27rpx;
   -webkit-transform: translateX(-50%);
+      -ms-transform: translateX(-50%);
           transform: translateX(-50%);
   z-index: 1;
 }
@@ -158,6 +160,7 @@ page .buy-container .buy-list .buy-list-item .buy-app-pay {
   position: relative;
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
           transform: translate(-50%, -50%);
   width: 360rpx;
   line-height: 88rpx;

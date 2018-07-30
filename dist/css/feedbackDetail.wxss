@@ -39,6 +39,7 @@
 .container .feedback-li-flex {
   display: -webkit-box;
   display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
 }
 
@@ -53,6 +54,7 @@
 .container .feedback-li-flex .feedback-right {
   -webkit-box-flex: 1;
   -webkit-flex: 1;
+      -ms-flex: 1;
           flex: 1;
   line-height: 45rpx;
   font-size: 26rpx;

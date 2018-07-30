@@ -85,10 +85,7 @@ var _class = function (_wepy$app) {
         value: function onLaunch() {
             console.log('onlainch');
             // 刘强起的ppu.测试使用，上线记得删除
-            // wepy.setStorageSync('ppu', 'UID=48917864286479&UN=zf3e85
-            // &TT=d81202a65af05aa8cb1ea5f6d92254d1&PBODY=JhH_NY6a8n2PvW6ZgBv_B1CwuIJH84mNn
-            // uJt4PxcpEQDl5QPvba4IdoMpCpk_GxpEfRtc9RPAvrK6G4o9J3zhKHmVv33iBDKO8EVnmRq6yp2ETg
-            // stCBISr9016TKao2yDyUeZG32vv_2yuyG01uAnqTlUL1vaRpLJ3fRd9NqySA&VER=1');
+            _wepy2.default.setStorageSync('ppu', 'UID=45797966958100&UN=pwsummer&TT=f7f0f301bf28821ba9726a81bb19cb1d&PBODY=fz68edEkqosu5bAEySyGDPrNsnbfwg0MlzuUy35lgq6IJqPeEjM4tIFG3bZL1RDSpqVlGdYPRoT5A2a06DVox9aPxsQwmS4xLhk_ggb3SYcIfUMa0Y7szAXNynJcQ27i0GZyEMI-x49gvzbDHZKLNrmQIzla6MglzroRbLMwuyk&VER=1');
         }
     }, {
         key: 'onShow',

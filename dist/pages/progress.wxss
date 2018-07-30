@@ -22,9 +22,11 @@
   height: 100rpx;
   display: -webkit-box;
   display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
   -webkit-box-pack: justify;
   -webkit-justify-content: space-between;
+      -ms-flex-pack: justify;
           justify-content: space-between;
   font-size: 34rpx;
   color: #333333;
@@ -62,6 +64,7 @@
 .progress .progressDetail .box .tips {
   display: -webkit-box;
   display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
   margin: 50rpx 0;
   position: relative;
@@ -126,6 +129,7 @@
 .progress .progressDetail .box .tips .time {
   -webkit-box-flex: 1;
   -webkit-flex: 1;
+      -ms-flex: 1;
           flex: 1;
   font-size: 30rpx;
   color: #666666;

@@ -23,6 +23,7 @@ view {
   width: 100%;
   display: -webkit-box;
   display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
   padding: 30rpx 0;
   border-bottom: 1rpx solid #eeeeee;
@@ -49,6 +50,7 @@ view {
 .pro-item .pro-item-line .pro-name {
   -webkit-box-flex: 1;
   -webkit-flex: 1;
+      -ms-flex: 1;
           flex: 1;
 }
 
@@ -132,11 +134,14 @@ view {
   line-height: 97rpx;
   display: -webkit-box;
   display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
   -webkit-justify-content: space-around;
+      -ms-flex-pack: distribute;
           justify-content: space-around;
   -webkit-box-align: center;
   -webkit-align-items: center;
+      -ms-flex-align: center;
           align-items: center;
 }
 
@@ -390,14 +395,18 @@ view {
 .main-body .main-boy-line.main-body-flex {
   display: -webkit-box;
   display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
   -webkit-flex-wrap: wrap;
+      -ms-flex-wrap: wrap;
           flex-wrap: wrap;
   -webkit-box-pack: start;
   -webkit-justify-content: start;
+      -ms-flex-pack: start;
           justify-content: start;
   -webkit-box-align: center;
   -webkit-align-items: center;
+      -ms-flex-align: center;
           align-items: center;
 }
 
@@ -439,9 +448,11 @@ view {
   line-height: 86rpx;
   display: -webkit-box;
   display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
   -webkit-box-pack: justify;
   -webkit-justify-content: space-between;
+      -ms-flex-pack: justify;
           justify-content: space-between;
 }
 
