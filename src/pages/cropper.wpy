@@ -106,6 +106,9 @@ let drawT = 0;
 let rotateCount = 0; // 旋转次数
 
 export default class Cropper extends wepy.page {
+    config = {
+        navigationBarTitleText: '图片裁剪',
+    }
     data = {
         imageSrc: '',
         isShowImg: false,
