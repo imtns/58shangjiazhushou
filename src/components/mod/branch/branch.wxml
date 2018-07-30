@@ -2,7 +2,7 @@
     <view class="mod-view mod-branch {{!data || data.length==0?'mod-branch-none':''}}">
         <view class="branch-main">
             <view class="branch-main-title">分店信息</view>
-            <view class="branch-main-text" bindtap="showBranchChooice" data-index="{{index}}"> 查看全部 3 个分店</view>
+            <view class="branch-main-text"  data-index="{{index}}"> 查看全部 3 个分店</view>
         </view>
         <view wx:if="{{cfg.showBranchChooice}}" bindtap="closeBranchChooice" class="branch-chooice-mask" data-index="{{index}}"></view>
         <view wx:if="{{cfg.showBranchChooice}}" class="branch-chooice-container">
