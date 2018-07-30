@@ -19,7 +19,7 @@
                 </view>
             </view>
         </view>
-        <EmptyPage wx:if="{{groupList.length === 0}}"></EmptyPage>
+        <EmptyPage wx:if="{{groupList.length === 0}}" :title.sync="title"></EmptyPage>
     </view>
     <view class="block"></view>
     <view class="options">
