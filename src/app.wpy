@@ -72,7 +72,6 @@ export default class extends wepy.app {
             'pages/articleComponentAdd', // 文章添加(选分组)
             'pages/articleComponentlist', // 文章列表
             'pages/articleComponentDetail', // 文章详情
-            'pages/articleChoseGroup', // 选择分组
             'pages/orderComponentDetail', // 预约预览页面
             'pages/paymentRecord', // 收款记录
             'pages/payChoseTime', // 选择时间
