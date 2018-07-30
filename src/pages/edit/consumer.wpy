@@ -1,36 +1,45 @@
 <template>
-    <view class="mod-me-container">
-         <view wx:if="{{pageData[0].props.cfg.title}}" style="height:88rpx;line-height:88rpx;text-align:center;background:white;">{{pageData[0].props.cfg.title}}</view>
-        <view class="mod-me mod-me-line" hidden="{{pageData[0].props.cfg.order}}">
-            <view class="mod-me-list ">
-                <image class="mod-me-icon" src="../assets/me/order.png"></image>
-                <view class="mod-me-text">我的订单</view>
-                <view class="mod-arrow"></view>
+<view class="mod-me-container">
+        <view wx:if="{{pageData[0].props.cfg.title}}" style="height:88rpx;line-height:88rpx;text-align:center;background:white;">{{pageData[0].props.cfg.title}}</view>
+        <block wx:if="{{!pageData[0].props.cfg.order}}"  hidden="{{pageData[0].props.cfg.order}}">
+            <view class="mod-me {{cfg.title?'':'mod-me-line'}}" style="margin-top:1rpx;">
+                <view class="mod-me-list  mod-me-space mod-me-line">
+                    <image class="mod-me-icon" src="../assets/me/order.png"></image>
+                    <view class="mod-me-text">我的订单</view>
+                    <view class="mod-arrow"></view>
+                </view>
             </view>
-        </view>
-        <view class="mod-me" hidden="{{pageData[0].props.cfg.coupon}}">
-            <view class="mod-me-list">
-                <image class="mod-me-icon" src="../assets/me/coupon.png"></image>
-                <view class="mod-me-text">我的优惠券</view>
-                <view class="mod-arrow"></view>
+        </block>
+        <block wx:if="{{!pageData[0].props.cfg.coupon}}"  hidden="{{pageData[0].props.cfg.coupon}}">
+            <view class="mod-me">
+                <view class="mod-me-list">
+                    <image class="mod-me-icon" src="../assets/me/coupon.png"></image>
+                    <view class="mod-me-text">我的优惠券</view>
+                    <view class="mod-arrow"></view>
+                </view>
             </view>
-        </view>
-        <view class="mod-me mod-me-space mod-me-line"  hidden="{{pageData[0].props.cfg.address}}">
-            <view class="mod-me-list">
-                <image class="mod-me-icon" src="../assets/me/address.png"></image>
-                <view class="mod-me-text">服务地址</view>
-                <view class="mod-arrow"></view>
+        </block>
+        <block wx:if="{{!pageData[0].props.cfg.address}}"  hidden="{{pageData[0].props.cfg.address}}">
+                <view class="mod-me mod-me-space mod-me-line">
+                    <view class="mod-me-list">
+                        <image class="mod-me-icon" src="../assets/me/address.png"></image>
+                        <view class="mod-me-text">服务地址</view>
+                        <view class="mod-arrow"></view>
+                    </view>
+                </view>
+        </block>
+        <block wx:if="{{!pageData[0].props.cfg.tel}}"  hidden="{{pageData[0].props.cfg.tel}}">
+            <view class="mod-me">
+                <view class="mod-me-list" >
+                    <image class="mod-me-icon" src="../assets/me/hotline.png"></image>
+                    <view class="mod-me-text">客服热线</view>
+                    <view class="mod-me-text mod-me-text-number">{{pageData[0].props.cfg.telnum || '请输入'}}</view>
+                    <view class="mod-arrow"></view>
+                </view>
             </view>
-        </view>
-        <view class="mod-me" hidden="{{pageData[0].props.cfg.tel}}">
-            <view class="mod-me-list">
-                <image class="mod-me-icon" src="../assets/me/hotline.png"></image>
-                <view class="mod-me-text">客服热线</view>
-                <view class="mod-me-text mod-me-me-number">{{telnum}}</view>
-                <view class="mod-arrow"></view>
-            </view>
-        </view>
+        </block>
     </view>
+
     <view class="me-editLayer">
         <view class="saveBar">
             <text class="label" hidden="{{!editMultiple}}">+添加文章</text>
@@ -81,11 +90,10 @@ import { toast } from '../../utils';
 
 export default class Me extends wepy.page {
   config = {
-      disableScroll: true,
+
   }
   mixins = [Mixin];
   data = {
-      telnum: '',
   }
   onLoad() {
       [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
@@ -93,7 +101,6 @@ export default class Me extends wepy.page {
       wx.setNavigationBarTitle({
           title: this.pageData[0].props.cfg.title,
       });
-      this.telnum = this.pageData[0].props.cfg.telnum || this.pageData[0].props.data;
   }
   methods = {
       checkboxChange(e) {
@@ -102,15 +109,14 @@ export default class Me extends wepy.page {
           });
       },
       telInput(e) {
-          this.telnum = e.detail.value;
+          this.pageData[0].props.cfg.telnum = e.detail.value;
       },
       titleInput(e) {
           this.pageData[0].props.cfg.title = e.detail.value;
       },
       save() {
           this.pageModule.cfg = this.pageData[0].props.cfg;
-          this.pageModule.cfg.telnum = this.telnum;
-          this.pageData[0].props.cfg.telnum = this.telnum;
+          this.pageModule.cfg.telnum = this.pageData[0].props.cfg.telnum;
           [globalData.pageData[this.pageIndex]] = this.pageData;
           globalData.modules[this.pageIndex] = this.pageModule;
           toast('已保存');
@@ -124,81 +130,66 @@ export default class Me extends wepy.page {
 }
 </script>
 <style lang="scss">
-.mod-me-container {
-  margin: 20rpx 0;
+.mod-me-container{
+    margin-bottom:20rpx;
+    position: relative;   
+    width: 750rpx;
+    padding-top:0;
+    padding-bottom:820rpx;
 }
 .mod-me {
-  display: inline-block;
-  width: 100%;
-  background-color: white;
-  padding: 0rpx 30rpx;
-  position: relative;
+    display: inline-block;
+    width: 100%;
+    background-color: white;
+    padding: 17rpx 30rpx;
+    position: relative;
 }
 
 .mod-me-line::after {
-  position: absolute;
-  display: block;
-  content: ' ';
-  width: 100%;
-  margin-left: -30rpx;
-  height: 2rpx;
-  bottom: 1rpx;
-  border-top: 2rpx solid #f3f3f3;
+    position: absolute;
+    display: block;
+    content: ' ';
+    width: 100%;
+    margin-left:-30rpx;
+    height: 2rpx;
+    bottom: 1rpx;
+    border-top: 2rpx solid #F3F3F3;
 }
 
 .mod-me-list {
-  display: flex;
-  height: 88rpx;
-  line-height: 88rpx;
-  align-items: center;
-  position: relative;
+    display: flex;
+    height: 68rpx;
+    line-height: 68rpx;
+    align-items: center;
 }
 
 .mod-me-text {
-  flex: 1;
-  margin-left: 40rpx;
-  font-size: 29rpx;
-  color: #333;
-  font-weight: 400;
+    flex: 1;
+    margin-left: 40rpx;
+    font-size: 29rpx;
+    color: #333;
+    font-weight: 400;
 }
 
-.mod-me-me-number {
-  opacity: 0.3;
-  font-size: 28rpx;
-  text-align: right;
-  margin-right:90rpx;
+.mod-me-text-number {
+    opacity: .3;
+    font-size: 28rpx;
+    text-align: right;
 }
 
 .mod-me-space {
-  margin-top: 20rpx;
+    margin-top: 20rpx;
 }
 
 .mod-me-icon {
-  width: 54rpx;
-  height: 54rpx;
-  vertical-align: middle;
-}
-.mod-arrow {
-  right: 55rpx;
-  position: absolute;
-}
-.mod-arrow:after {
-  display: block;
-  content: '';
-  height: 26rpx;
-  width: 16rpx;
-  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAaCAYAAAC+aNwHAAAAAXNSR0IArs4c6QAAAZ5JREFUOBGdlLFLw0AUxnPaIl0EpUPXDJ0DTt1cHFyKutRB0EEHUVAEQSyKoiiCIAqKiIuLQ53EDo5dhFzSJP+Ki4hCmvMLuTsIJphnlnd59/2+u3e8O8OQn+MEi7bt3QshmMoViUNKFEVihDG2DKM7qonyMACvcu5H2Mntv01gsA4DgXitnakDGGwkJt4VldV6x/G3YhPb9i90kjrg3NuW5ZxTWa237WAnNnEc70wnqQOU05blnFBZrUc5+0k53pFOUgc40MOkHP+Aymo9dnKclBPsxUlS3ysXzoNTIaJdxoy2vgtqskhkTLwnOjZWRJ/SoITN5DD9y9REkR/AaxK+KaJPadBIK/Kmkt8MXHNvScIP5Gvuuv4C4AG2/giYduiAWwBDNFAH8HCqJvmT2wfo/zk8c09olW6jMdHCcxdmGWRuCSs3sWIH8Gu5LObz4Njw1w4ATw8GxjPmetXq6Gy9Xv/OWlnlUgb9fjAVhlEXvm+12njTNM0vJcyLJTXhusEk4Bf0Ny+VxEwROGa1AQ7sA3CvUim3LMv6VMZ/xR8Pge7bkM3opAAAAABJRU5ErkJggg==')
-    no-repeat;
-  background-size: 16rpx 26rpx;
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+    width: 54rpx;
+    height: 54rpx;
+    vertical-align: middle;
 }
 .me-editLayer {
   width: 100%;
   box-sizing: border-box;
-  height: 740rpx;
+  height: 810rpx;
   position: fixed;
   bottom: 0;
   background: rgb(91, 93, 95);
