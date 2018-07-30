@@ -7,7 +7,7 @@
             :class="{ selected: curTab === item.name }"
             @tap="selectTab({{ item.name }})">{{ item.label }}</view>
         </view>
-        <EmptyPage wx:if="{{curTab === 'article' && !groupList.length}}"></EmptyPage>
+        <EmptyPage wx:if="{{curTab === 'article' && !groupList.length}}" :title.sync="title"></EmptyPage>
         <view class="work-list" wx:if="{{ curTab === 'image' || curTab === 'video' }}">
             <view class="content" wx:if="{{ works.length }}">
                 <view class="work-box" wx:for="{{ works }}" wx:key="id">
@@ -125,7 +125,7 @@ export default class Index extends wepy.page {
         // 展示时用的works
         works: [],
         groupList: [],
-        title: '没有文章分组~',
+        title: '没有图片~',
         isEditing: false,
         showPop: false,
         name: '',
@@ -138,7 +138,6 @@ export default class Index extends wepy.page {
     }
 
     async onLoad({ limit, type = 'image' }) {
-        console.log('onload');
         const mpId = wepy.getStorageSync('current_mpid');
         this.mpId = mpId;
 
@@ -167,8 +166,16 @@ export default class Index extends wepy.page {
 
         selectTab(name) {
             this.initData();
-
             this.curTab = name;
+            if (name === 'image') {
+                this.title = '没有图片~';
+            } else if (name === 'video') {
+                this.title = '没有视频~';
+            } else if (name === 'article') {
+                console.log(name);
+                this.title = '没有文章分组~';
+            }
+            this.$apply();
             this.loadData(name);
         },
 
@@ -478,13 +485,17 @@ export default class Index extends wepy.page {
     async loadArticle() {
         try {
             const { data } = await get('/businessArticle/groups');
-            if (!data || data.length === 0) return;
-            data.forEach(item => {
-                Object.assign(item, {
-                    choseStatu: false,
+            if (!data) {
+                this.groupList = [];
+            }
+            if (data.length) {
+                data.forEach(item => {
+                    Object.assign(item, {
+                        choseStatu: false,
+                    });
                 });
-            });
-            this.groupList = data;
+                this.groupList = data;
+            }
             this.$apply();
         } catch (e) {
             console.log(e);
