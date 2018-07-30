@@ -102,7 +102,7 @@ export default class extends wepy.app {
     }
     onLaunch () {
         console.log('onlaunch');
-        // wx.setStorageSync('ppu', 'UID=31755938744583&UN=huhy02&TT=b28ea41cef5861bea9331750993644a4&PBODY=LIbxOLdwSBO_HZKchfZw3KFwFO23PWqIZlLGC5vqitqpLHds2HIOidPNM_mUQoZ72mrX21sc7fBe40HW4lggeyKEa1RJn_ehL_yUTs4QPg7U5_Qwe0spRo8447xAWSwgXW4-wuTKyvDp51fpw9LXqkrTcDPrz3EGrGGkU9-JIWQ&VER=1');
+        // wx.setStorageSync('ppu', 'UID=15293583575559&UN=bigbang120&TT=daf49135ffc77118eb3405e06965c969&PBODY=fEFUOytlIH5DESMLO9gZ8OWwVGFM-pPqWmdqIirJk3gV3BpHhaMqlndjt3FFZwsVIuCBKMSKysPt40SUExGnFdoBcEojYdBAd2JurdfUwUDNZHh4UpFv7QHEhU0G6d43Pa_TzUJJw_X-mZ9hEcbJ169kBbMUq-dgAD1ZkdIsjPU&VER=1');
     }
     onShow (options) {
         // const { path } = options;
