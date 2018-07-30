@@ -16,7 +16,7 @@ window.__staticConfig = {
         url:'/lbg/shangjiaxcxht/zhushou/js/editor.js'
     },{
         name:'js',
-        version: '20180727',
+        version: '20180730',
         url:'/lbg/shangjiaxcxht/zhushou/js/article-component-add.js'
     }]
 };

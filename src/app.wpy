@@ -101,36 +101,8 @@ export default class extends wepy.app {
     }
     onLaunch () {
         console.log('onlaunch');
-        // wx.setStorageSync('ppu', 'UID=15293583575559&UN=bigbang120&TT=daf49135ffc77118eb3405e06965c969&PBODY=fEFUOytlIH5DESMLO9gZ8OWwVGFM-pPqWmdqIirJk3gV3BpHhaMqlndjt3FFZwsVIuCBKMSKysPt40SUExGnFdoBcEojYdBAd2JurdfUwUDNZHh4UpFv7QHEhU0G6d43Pa_TzUJJw_X-mZ9hEcbJ169kBbMUq-dgAD1ZkdIsjPU&VER=1');
     }
     onShow (options) {
-        // const { path } = options;
-        // console.log(path);
-        // const pages = getCurrentPages();
-        // const currPage = pages[pages.length - 1];
-        // console.log('currPage', currPage.route);
-        // if (options.scene === 1038 && path === 'pages/intro') {
-        //     if (!options.referrerInfo) {
-        //         console.log('options.referrerInfo为空');i
-        //     }
-        //     if (!options.referrerInfo.extraData) {
-        //         console.log('options.referrerInfo.extraData为空');
-        //     }
-        //     let { extraData } = options.referrerInfo;
-        //     if (typeof extraData !== 'object') {
-        //         extraData = JSON.parse(extraData);
-        //     }
-        //     if (extraData.ppu !== undefined) { // 如果获取ppu成功
-        //         console.log(`获取PPU成功！ ${extraData.ppu}`);
-        //         wepy.setStorageSync('ppu', extraData.ppu);
-        //         setTimeout(() => {
-        //             wepy.reLaunch({
-        //                 url: '/pages/home',
-        //             });
-        //         }, 1000);
-        //     }
-        // }
-        //
         // 赋值场景值、referrer信息
         const { scene, referrerInfo = {}, path } = options;
         const { appId } = referrerInfo;
