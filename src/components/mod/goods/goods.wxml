@@ -68,8 +68,8 @@
                 </block>
             </scroll-view>
         </block>
-        <view class="mod-more mod-more-goods {{cfg.showAll?'mod-more-up':''}}" data-index="{{index}}" bindtap='loadMore' wx:if="{{data.length>pageSize}}">
+        <!-- <view class="mod-more mod-more-goods {{cfg.showAll?'mod-more-up':''}}" data-index="{{index}}" bindtap='loadMore' wx:if="{{data.length>pageSize}}">
             {{cfg.showAll ? '收起':'查看更多'}}
-        </view>
+        </view> -->
     </view>
 </template>

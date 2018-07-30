@@ -64,9 +64,14 @@ export default class Index extends wepy.page {
       hideTag: {
 
       },
+      id: '',
+      appid: '',
   };
-  async onLoad() {
-      this.loadMyTemplate();
+  async onLoad(options) {
+      if (options.mpid) {
+          this.id = options.mpid;
+      }
+      //   this.loadMyTemplate();
   }
   methods = {
       tabClick(e) {
@@ -158,11 +163,12 @@ export default class Index extends wepy.page {
   }
   async loadMyTemplate() {
       console.log(globalData.extConfig);
-      const { data } = await get(myTemplateUrl + wx.getStorageSync('current_mpid'), {
+      const url = this.id || wx.getStorageSync('current_mpid');
+      const { data } = await get(myTemplateUrl + url, {
           pageNum: 1,
           pageSize: 10,
           v: 2,
-          appid: globalData.extConfig.appId,
+          appid: this.appid || globalData.extConfig.appId,
       });
       this.list = data;
       this.list.forEach((item) => {

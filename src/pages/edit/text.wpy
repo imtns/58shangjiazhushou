@@ -225,8 +225,8 @@ export default class EditText extends wepy.page {
   .radio {
     font-size: 28rpx;
     radio .wx-radio-input {
-      width: 27rpx;
-      height: 27rpx;
+      width: 30rpx;
+      height: 30rpx;
       background: transparent;
       border: 1rpx solid #bdbdbd;
       border-radius: 50%;

@@ -18,7 +18,7 @@
     white-space: nowrap;
 }
 .mod-goods-title-one{
-    width:75%;
+    float:left;
     font-size: 28rpx;
     color: #333333;
     letter-spacing: -0.68rpx;

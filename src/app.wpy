@@ -112,7 +112,7 @@ export default class extends wepy.app {
         // console.log('currPage', currPage.route);
         // if (options.scene === 1038 && path === 'pages/intro') {
         //     if (!options.referrerInfo) {
-        //         console.log('options.referrerInfo为空');
+        //         console.log('options.referrerInfo为空');i
         //     }
         //     if (!options.referrerInfo.extraData) {
         //         console.log('options.referrerInfo.extraData为空');
