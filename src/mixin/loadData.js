@@ -252,6 +252,7 @@ module.exports = {
 
             const newPageData = {
                 pageType: page,
+                pageKey: page,
                 current: 0,
                 page_data: page_data,
             };
