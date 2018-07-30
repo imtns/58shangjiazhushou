@@ -9,11 +9,14 @@
 import wepy from 'wepy';
 
 export default class EmptyPage extends wepy.component {
+    props = {
+        title: {
+            type: String,
+            default: null,
+        },
+    };
     onLoad() {
-        this.title = this.$parent.title;
-    }
-    data = {
-        title: '',
+        console.log('--------', this.title);
     }
 }
 </script>

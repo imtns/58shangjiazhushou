@@ -33,7 +33,7 @@
                 <view class="mod-me-list" >
                     <image class="mod-me-icon" src="../assets/me/hotline.png"></image>
                     <view class="mod-me-text">客服热线</view>
-                    <view class="mod-me-text mod-me-text-number">请输入</view>
+                    <view class="mod-me-text mod-me-text-number">{{cfg.telnum || '请输入'}}</view>
                     <view class="mod-arrow"></view>
                 </view>
             </view>

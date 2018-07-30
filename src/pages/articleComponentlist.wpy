@@ -36,7 +36,8 @@
                             <view class="base-text">{{item.updateTime || item.createTime}}</view>
                         </view>
                     </view>
-                    <view class="article-preview-con">{{item.intro}}</view>
+                    <rich-text nodes="{{item.intro}}" class="article-preview-con"></rich-text>
+                    <!-- <view class="article-preview-con">{{item.intro}}</view> -->
                 </view>
             </scroll-view>
             <EmptyPage wx:if="{{listData.length===0}}"></EmptyPage>

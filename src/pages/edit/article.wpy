@@ -273,8 +273,8 @@ export default class Article extends wepy.page {
           margin-right:10rpx;
       }
       checkbox .wx-checkbox-input {
-        width: 24rpx;
-        height: 24rpx;
+        width: 27rpx;
+        height: 27rpx;
         background: transparent;
         border: 1rpx solid #bdbdbd;
         border-radius: 50%;
@@ -283,15 +283,17 @@ export default class Article extends wepy.page {
         background: #4e88ff;
       }
       checkbox .wx-checkbox-input.wx-checkbox-input-checked::before {
-        font-size: 24rpx;
+        font-size: 32rpx;
         color: #fff; 
       }
     }
   }
 }
 checkbox .wx-checkbox-input {
-  width: 20rpx;
-  height: 20rpx;
+  width: 25rpx;
+  height: 25rpx;
+  position: relative;
+  top:-1rpx;
 }
 .space {
   margin-top: 20rpx !important;
