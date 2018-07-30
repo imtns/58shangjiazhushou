@@ -1,6 +1,6 @@
 <template>
 <view class="mod-me-container">
-        <view wx:if="{{pageData[0].props.cfg.title}}" style="height:88rpx;line-height:88rpx;text-align:center;background:white;">{{pageData[0].props.cfg.title}}</view>
+        <!-- <view wx:if="{{pageData[0].props.cfg.title}}" style="height:88rpx;line-height:88rpx;text-align:center;background:white;">{{pageData[0].props.cfg.title}}</view> -->
         <block wx:if="{{!pageData[0].props.cfg.order}}"  hidden="{{pageData[0].props.cfg.order}}">
             <view class="mod-me {{cfg.title?'':'mod-me-line1'}}" style="margin-top:1rpx;">
                 <view class="mod-me-list  mod-me-space mod-me-line1">
