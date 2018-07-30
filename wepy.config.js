@@ -32,7 +32,7 @@ const config = {
                 basePath: `${__dirname}/bgimages`,
             },
             autoprefixerConfig: {
-                browsers: ['last 11 iOS versions'],
+                browsers: ['last 10 Chrome versions', 'last 5 Firefox versions', 'Safari >= 6', 'ie > 8'],
             },
         },
     },
