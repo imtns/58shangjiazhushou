@@ -1,4 +1,5 @@
 {
+    "navigationBarTitleText": "预览",
     "enablePullDownRefresh": true,
     "usingComponents":{
         "consumer-button":"../../components/mod/consumerButton/consumerButton",
