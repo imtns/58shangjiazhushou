@@ -7,9 +7,9 @@
             :class="{ selected: curTab === item.name }"
             @tap="selectTab({{ item.name }})">{{ item.label }}</view>
         </view>
-        <EmptyPage wx:if="{{curTab === 'article' && !groupList.length}}" :title.sync="title"></EmptyPage>
-        <view class="work-list" wx:if="{{ curTab === 'image' || curTab === 'video' }}">
-            <view class="content" wx:if="{{ works.length }}">
+        <!--<EmptyPage wx:if="{{curTab === 'article' && !groupList.length}}" :title.sync="title"></EmptyPage>-->
+        <view class="work-list" wx:if="{{ (curTab === 'image' || curTab === 'video') && works.length }}">
+            <view class="content">
                 <view class="work-box" wx:for="{{ works }}" wx:key="id">
                     <image
                     class="item"
@@ -24,12 +24,9 @@
                 </view>
             </view>
             <!-- <view wx:else style="margin:30rpx;text-align:center;color:#bdbdbd;">啥也没有</view> -->
-            <block wx:else>
-                <EmptyPage></EmptyPage>
-            </block>
         </view>
         <view
-            class="group-list article-group-list {{isEditing ? 'edit' : ''}}" wx:if="{{ curTab === 'article' && groupList.length > 0}}">
+            class="group-list article-group-list {{isEditing ? 'edit' : ''}}" wx:elif="{{ curTab === 'article' && groupList.length > 0}}">
             <view
                 class="group-item article-group-item"
                 @tap.stop="editChose({{ item.id }}, {{ index }}, {{item.name}})"
@@ -45,6 +42,9 @@
                 </view>
             </view>
         </view>
+        <block wx:else>
+            <EmptyPage :title.sync="title"></EmptyPage>
+        </block>
         <view class="block"></view>
         <view class="options">
             <block wx:if="{{ chooseModal }}">
@@ -485,7 +485,7 @@ export default class Index extends wepy.page {
     async loadArticle() {
         try {
             const { data } = await get('/businessArticle/groups');
-            if (!data) {
+            if (!data || data.length === 0) {
                 this.groupList = [];
             }
             if (data.length) {
