@@ -9,7 +9,7 @@
                 <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
                     <view  class="mod-li-box-2 {{~idx%2==0?'mod-li-box-last':''}}" data-index="{{idx}}"
                         data-current="{{index}}" data-pagekey="{{item.pageKey}}" data-action="{{pageData[0].props.cfg.action}}" bindtap="onImageClick">
-                        <image class="mod-li-image-2" mode="aspectFill" src="{{item.src}}?w=336&h=252"></image>
+                        <image  class="mod-li-image-2 {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=336&h=252"></image>
                         <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-2">{{item.title}}</text>
                     </view>
                 </block>
@@ -19,7 +19,7 @@
                 <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
                     <view class="mod-li-box-3 {{~idx%3==0?'mod-li-box-last':''}}" data-index="{{idx}}"
                         data-current="{{index}}" data-pagekey="{{item.pageKey}}" data-action="{{pageData[0].props.cfg.action}}" bindtap="onImageClick">
-                        <image class="mod-li-image-3" mode="aspectFill" src="{{item.src}}?w=220&h=164"></image>
+                        <image class="mod-li-image-3 {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=220&h=164"></image>
                         <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-3">{{item.title}}</text>
                     </view>
                 </block>
@@ -30,16 +30,16 @@
                     <block wx:if="{{pageData[0].props.cfg.images[0].title}}">
                         <view  class="mod-li-box-4sub-{{idx%3+1}}" data-index="{{idx}}" data-current="{{index}}"
                             data-pagekey="{{item.pageKey}}" data-action="{{pageData[0].props.cfg.action}}" bindtap="onImageClick">
-                            <image class="mod-li-image-4sub-{{idx%3+1}}" mode="aspectFill" src="{{item.src}}?w=388&h=514" wx:if="{{idx%3==0}}"></image>
-                            <image class="mod-li-image-4sub-{{idx%3+1}}" mode="aspectFill" src="{{item.src}}?w=284&h=214" wx:else></image>
+                            <image class="mod-li-image-4sub-{{idx%3+1}} {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=388&h=514" wx:if="{{idx%3==0}}"></image>
+                            <image class="mod-li-image-4sub-{{idx%3+1}} {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=284&h=214" wx:else></image>
                             <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-4sub-{{idx%3+1}}">{{item.title}}</text>
                         </view>
                     </block>
                     <block wx:else>
                         <view  class="mod-li-box-4-{{idx%3+1}}" data-index="{{idx}}" data-current="{{index}}"
                             data-pagekey="{{item.pageKey}}" data-action="{{pageData[0].props.cfg.action}}" bindtap="onImageClick">
-                            <image class="mod-li-image-4-{{idx%3+1}}" mode="aspectFill" src="{{item.src}}?w=363&h=482" wx:if="{{idx%3==0}}"></image>
-                            <image class="mod-li-image-4-{{idx%3+1}}" mode="aspectFill" src="{{item.src}}?w=309&h=231" wx:else></image>
+                            <image class="mod-li-image-4-{{idx%3+1}} {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=363&h=482" wx:if="{{idx%3==0}}"></image>
+                            <image class="mod-li-image-4-{{idx%3+1}} {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=309&h=231" wx:else></image>
                         </view>
                     </block>
                 </block>
@@ -49,8 +49,8 @@
                 <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
                     <view class="mod-li-box-5-{{idx%3+1}} {{~idx%3==0?'mod-li-box-last':''}}" data-index="{{idx}}"
                         data-action="{{pageData[0].props.cfg.action}}" data-current="{{index}}" data-pagekey="{{item.pageKey}}" bindtap="onImageClick">
-                        <image class="mod-li-image-5-{{idx%3+1}}" mode="aspectFill" src="{{item.src}}?w=690&h=388" wx:if="{{idx%3==0}}"></image>
-                        <image class="mod-li-image-5-{{idx%3+1}}" mode="aspectFill" src="{{item.src}}?w=336&h=252" wx:else></image>
+                        <image class="mod-li-image-5-{{idx%3+1}} {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=690&h=388" wx:if="{{idx%3==0}}"></image>
+                        <image class="mod-li-image-5-{{idx%3+1}} {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=336&h=252" wx:else></image>
                         <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-5-{{idx%3+1}}">{{item.title}}</text>
                     </view>
                 </block>
@@ -60,8 +60,8 @@
                 <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
                     <view  class="mod-li-box-6-{{idx%4+1}} {{~idx%4==0?'mod-li-box-last':''}}" data-index="{{idx}}"
                         data-action="{{pageData[0].props.cfg.action}}" data-current="{{index}}" data-pagekey="{{item.pageKey}}" bindtap="onImageClick">
-                        <image class="mod-li-image-6-{{idx%4+1}}" mode="aspectFill" src="{{item.src}}?w=345&h=194" wx:if="{{idx%4==0}}"></image>
-                        <image class="mod-li-image-6-{{idx%4+1}}" mode="aspectFill" src="{{item.src}}?w=109&h=82" wx:else></image>
+                        <image class="mod-li-image-6-{{idx%4+1}} {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=345&h=194" wx:if="{{idx%4==0}}"></image>
+                        <image class="mod-li-image-6-{{idx%4+1}} {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=109&h=82" wx:else></image>
                         <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-6-{{idx%4+1}}">{{item.title}}</text>
                     </view>
                 </block>
@@ -71,7 +71,7 @@
                 <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
                     <view  class="mod-li-box-7 {{~idx%4==0?'mod-li-box-last':''}}" data-index="{{idx}}"
                         data-current="{{idx}}" data-action="{{pageData[0].props.cfg.action}}" data-pagekey="{{item.pageKey}}" bindtap="onImageClick">
-                        <image class="{{'mod-li-image-'+pageData[0].props.cfg.theme}}" mode="aspectFill" src="{{item.src}}?w=160&h=160"></image>
+                        <image class="{{'mod-li-image-'+pageData[0].props.cfg.theme}} {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=160&h=160"></image>
                         <text wx:if="{{item.title && item.title.length>0}}" class="{{'mod-li-text-'+cfg.theme}}">{{item.title}}</text>
                     </view>
                 </block>
@@ -81,7 +81,7 @@
                 <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
                     <view class="mod-li-box-8 {{~idx%2==0?'mod-li-box-last':''}}" data-index="{{idx}}"
                         data-current="{{index}}" data-action="{{pageData[0].props.cfg.action}}" data-pagekey="{{item.pageKey}}" bindtap="onImageClick">
-                        <image class="mod-li-image-8" mode="aspectFill" src="{{item.src}}?w=336&h=448"></image>
+                        <image class="mod-li-image-8 {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=336&h=448"></image>
                         <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-8">{{item.title}}</text>
                     </view>
                 </block>
@@ -91,15 +91,15 @@
                 <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
                     <view  class="mod-li-box-1" data-index="{{idx}}" data-current="{{index}}" data-pagekey="{{item.pageKey}}"
                         data-action="{{pageData[0].props.cfg.action}}" bindtap="onImageClick">
-                        <image class="mod-li-image-1" mode="aspectFill" src="{{item.src}}?w=690&h=510"></image>
+                        <image class="mod-li-image-1 {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=690&h=510"></image>
                         <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-1">{{item.title}}</text>
                     </view>
                 </block>
             </block>
         </view>
-        <view class="mod-more mod-more-images {{pageData[0].props.cfg.showAll?'mod-more-up':''}}" data-index="{{index}}" bindtap='loadMore' wx:if="{{pageData[0].props.cfg.images.length>cfg.showSize}}">
+        <!-- <view class="mod-more mod-more-images {{pageData[0].props.cfg.showAll?'mod-more-up':''}}" data-index="{{index}}" bindtap='loadMore' wx:if="{{pageData[0].props.cfg.images.length>cfg.showSize}}">
             {{pageData[0].props.cfg.showAll ? '收起':'查看更多'}}
-        </view>
+        </view> -->
     </view>
     <view class="shopPic-editLayer">
         <view class="saveBar" @tap="save">保存</view>
@@ -120,7 +120,7 @@
                 <repeat for="{{pageData[0].props.cfg.images}}" key="index" index="index" item="item">
                     <view class="scroll-view-item {{thumbActive == index?'active':''}}" data-index="{{index}}"  @tap="thumbClick">
                         <image src="{{item.src}}?w=90" mode="aspectFill"></image>
-                        <view class="span active">{{index+1}}</view>
+                        <view class="span {{thumbActive == index?'active':''}}">{{index+1}}</view>
                         <image class="del {{thumbActive == index?'active':''}}" src="../assets/del.png" @tap="del" data-index="{{index}}" />
                     </view>
                 </repeat>
@@ -260,12 +260,14 @@ export default class ShopImages extends wepy.page {
       margin-right: 20rpx;
       vertical-align: middle;
       display: inline-block;
+      border: 2rpx solid #aaa;
+      box-sizing: border-box;
       image {
         width: 100%;
         height: 100%;
       }
       &.active {
-        border: 1rpx solid #4e88ff;
+        border: 2rpx solid #4e88ff;
       }
       &.addButton {
         background: #aaa;
@@ -293,6 +295,7 @@ export default class ShopImages extends wepy.page {
         bottom: 0;
         &.active {
           background: rgb(78, 136, 255);
+          border:2rpx solid #aaa;
         }
       }
       .del {
@@ -337,6 +340,12 @@ export default class ShopImages extends wepy.page {
 }
 .mod-list-images{
     padding-bottom:600rpx;
+    image{
+        box-sizing: border-box;
+    &.active{
+            border: 2rpx solid #4e88ff;
+        }
+    }
 }
 </style>
 

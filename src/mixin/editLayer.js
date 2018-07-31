@@ -8,7 +8,7 @@ const { post } = require('../utils/ajax');
 module.exports = {
     showEdit(e) {
         const { name, title } = e.currentTarget.dataset;
-        if (title === 'evaluation' || title === 'information' || title === 'goods' || title === 'pay' || title === 'branch') {
+        if (title === 'evaluation' || title === 'information' || title === 'goods' || title === 'pay' || title === 'branch' || title === 'services') {
             this.setData({
                 noEdit: true,
             });
