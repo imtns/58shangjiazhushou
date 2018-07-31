@@ -3,7 +3,6 @@
         <view class="follow-public">
             <text>关注公众号接收通知</text>
             <navigator class="follow-action" url="/pages/followPublic">马上关注</navigator>
-            <cropper></cropper>
         </view>
         <view class="notice-header">
             <view>全部通知</view>
@@ -42,15 +41,11 @@
 
 <script>
 import wepy from 'wepy';
-import Cropper from '../components/Cropper';
 import { sleep, toast } from '../utils/index';
 
 import { get } from '../utils/ajax';
 
 export default class NoticeList extends wepy.page {
-    components = {
-        cropper: Cropper,
-    }
     config = {
         navigationBarTitleText: '通知',
         disableScroll: true,
