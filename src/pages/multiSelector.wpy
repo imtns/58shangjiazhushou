@@ -296,7 +296,8 @@ page {
     }
 
     .content-box {
-        padding: 0 30rpx;
+        padding-left: 30rpx;
+        white-space: nowrap;
 
         &.selected {
             color: #FFF;
