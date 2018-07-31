@@ -2,14 +2,14 @@
     <view class="mask" catchtouchmove="stopPro">
         <view class="pop">
             <view class="pop-title">
-                {{name ? '编辑分组' : '新建分组'}}
+                {{title}}
             </view>
             <view class="pop-body">
-                <input placeholder="请输入分组名称" cursor-spacing="80" @blur="input" value="{{name}}"></input>
+                <input placeholder="请输入分组名称" cursor-spacing="80" @input="input" value="{{content}}"></input>
             </view>
             <view class="pop-options">
                 <view class="pop-btn" @tap="close">取消</view>
-                <view class="pop-btn enter" @tap="add">{{name ? '确定' : '创建'}}</view>
+                <view class="pop-btn enter" @tap="add">{{surebtnText}}</view>
             </view>
         </view>
     </view>
@@ -31,27 +31,49 @@ export default class Pop extends wepy.component {
     }
     data = {
         name: '',
+        title: '新建分组',
+        content: '',
+        surebtnText: '创建',
     }
     methods = {
         close() {
             this.$emit('close');
-            this.name = '';
+            this.title = '新建分组';
+            this.surebtnText = '创建';
+            this.content = '';
             this.$apply();
         },
         async add() {
-            const name = this.name.trim();
-            if (!name) {
+            console.log(this.content);
+            const content = this.content.trim();
+            if (!content) {
                 toast('请填写分组名称');
                 return;
             }
-            if (name.length > 15) {
+            if (content.length > 15) {
                 toast('分组名称过长');
                 return;
             }
-            this.$emit('addGroup', name);
+            this.$emit('addGroup', content);
+            this.content = '';
+            this.$apply();
         },
         input(e) {
-            this.name = e.detail.value;
+            this.content = e.detail.value;
+            this.$apply();
+        },
+    }
+    events = {
+        postData: (name) => {
+            if (name) {
+                this.title = '编辑分组';
+                this.surebtnText = '确定';
+                this.content = name;
+            } else {
+                this.title = '新建分组';
+                this.surebtnText = '创建';
+                this.content = '';
+            }
         },
     }
 }
