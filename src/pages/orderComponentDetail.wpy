@@ -3,11 +3,9 @@
         <view class="order-banner">
             <image src="http://pic1.58cdn.com.cn/{{pics}}"></image>
         </view>
-        <view class="item-flex">
-            <view class="item-flex-line height-100">
-                <view class="item-base">{{serviceName}}</view>
-                <view class="item-text align-right"><image src="./assets/phone-icon.png"></image></view>
-            </view>
+        <view class="item-height-100">
+            <view class="item-base">{{serviceName}}</view>
+                <view class="item-text align-right"><image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/phone-icon.png"></image></view>
         </view>
         <view class="item-flex margin-top-20">
             <view class="item-flex-line">
@@ -146,6 +144,31 @@ export default class OrderComponentDetail extends wepy.page {
             height:100%;
         }
     }
+    .item-height-100{
+        background:#fff;
+        height:100rpx;
+        line-height:100rpx;
+        padding:0 30rpx;
+        position:relative;
+        .item-base{
+            max-width:600rpx;
+            overflow:hidden;
+            white-space:nowrap;
+            text-overflow:ellipsis;
+            font-family: PingFangSC-Regular;
+            font-size: 28rpx;
+            color: #333333;
+            letter-spacing: 0;
+        }
+        image{
+            width:44rpx;
+            height:44rpx;
+            position:absolute;
+            right:0;
+            top:50%;
+            margin-top:-22rpx;
+        }
+    }
     .item-flex{
         background:#fff;
         .height-100.item-flex-line{
@@ -169,15 +192,6 @@ export default class OrderComponentDetail extends wepy.page {
             }
             .item-text{
                 flex:1;
-                position:relative;
-                image{
-                    width:44rpx;
-                    height:44rpx;
-                    position:absolute;
-                    right:0;
-                    top:50%;
-                    margin-top:-22rpx;
-                }
             }
             .align-right{
                 text-align:right;

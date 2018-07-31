@@ -2,7 +2,7 @@ window.__staticConfig = {
     cssCdn: 'https://static.58.com',
     cssCfg:[{
         name:'css',
-        version: '20180725222',
+        version: '201807231',
         url:'/lbg/shangjiaxcxht/zhushou/css/article-component-create.css'
     }],
     jsCdn: 'https://static.58.com',
