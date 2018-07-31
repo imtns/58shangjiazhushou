@@ -68,8 +68,8 @@ html, body{
 }
 .wrap-items{
     width:100%;
-    height:4.27rem;
-    min-height:5.16rem;
+    /* height:4.27rem;
+    min-height:5.16rem; */
     margin-top:0.2rem;
 }
 
@@ -164,7 +164,7 @@ html, body{
     color: #FFA100;
     position:absolute;
     top:0.04rem;
-    left:-0.12rem;
+    left:-0.15rem;
 }
 .item-input-div{
     flex:1;

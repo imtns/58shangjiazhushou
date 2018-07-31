@@ -24,7 +24,7 @@
                     <image class="list-image" src="https://pic1.58cdn.com.cn{{item.pics}}"></image>
                     <view class="list-detail">
                         <view class="list-title">{{item.serviceName}}</view>
-                        <view class="list-intro">服务价格：<text>{{item.price}}</text>元/次
+                        <view class="list-intro">服务价格：<text>{{item.price!=null ? item.price : '0'}}</text>元/次
                         </view>
                     </view>
                     <view class="border-btn"  wx:if="{{item.status === 0}}" data-item="{{item}}" @tap.capture.stop="manageProduct">下架</view>

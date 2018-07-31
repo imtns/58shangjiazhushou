@@ -56,7 +56,7 @@
                 <button class="button" wx:else @tap="uploadFile({{ curTab }})">{{ optionNames[curTab] }}</button>
             </block>
         </view>
-        <Pop wx:if="{{showPop}}" @close.user="close" @addGroup.user="addGroup" :name.sync="name"></Pop>
+        <Pop wx:if="{{showPop}}" @close.user="close" @addGroup.user="addGroup"></Pop>
     </view>
 </template>
 
@@ -557,6 +557,7 @@ export default class Index extends wepy.page {
         }
         this.name = name;
         this.id = id;
+        this.$broadcast('postData', name);
         this.showPop = true;
         this.$apply();
     }

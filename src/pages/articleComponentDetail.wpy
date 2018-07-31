@@ -19,7 +19,7 @@
             <view wx:if="{{p.type === 'text'}}" class="article-content">
                 <rich-text nodes="{{p.content}}"></rich-text>
             </view>
-            <image wx:if="{{p.type === 'img'}}" class="rich-text-img" src="https:{{p.content}}"/>
+            <image wx:if="{{p.type === 'img'}}" class="rich-text-img" mode="aspectFill" src="https:{{p.content}}"/>
         </block>
         <!-- <rich-text class="article-content" nodes="{{content}}"></rich-text> -->
     </view>

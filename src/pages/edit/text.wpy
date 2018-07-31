@@ -3,7 +3,7 @@
         <view class="list">
             <view class="desc">
                 <image src="../assets/radio.png" hidden="{{!editMultiple}}"></image>
-                <swiper wx:if="{{editMultiple}}" class="swiper" style="width:600rpx" vertical="{{true}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}">
+                <swiper wx:if="{{editMultiple}}" class="swiper" style="width:600rpx" current="{{current}}" vertical="{{true}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}">
                     <repeat for="{{pageData[0].props.cfg.texts}}" item="item">
                         <swiper-item>{{item.text}}</swiper-item>
                     </repeat>
@@ -52,6 +52,7 @@ import { globalData } from '../../utils/globalData';
 export default class EditText extends wepy.page {
   config = {
       navigationBarTitleText: '文本',
+      disableScroll: true,
   };
   mixins = [Mixin];
 
@@ -60,9 +61,10 @@ export default class EditText extends wepy.page {
       editMultiple: true,
       textLimit: {},
       theme: '',
-      autoplay: false,
+      autoplay: true,
       interval: 2500,
       duration: 500,
+      current: 0,
   };
   onLoad() {
       [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
@@ -87,6 +89,7 @@ export default class EditText extends wepy.page {
           if (this.pageData[0].props.cfg.texts.length === 1) {
               this.editMultiple = false;
           }
+          this.current = 0;
       }
   }
   methods = {
@@ -225,8 +228,9 @@ export default class EditText extends wepy.page {
   .radio {
     font-size: 28rpx;
     radio .wx-radio-input {
-      width: 30rpx;
-      height: 30rpx;
+      width: 36rpx;
+      height: 36rpx;
+      top:-2rpx;
       background: transparent;
       border: 1rpx solid #bdbdbd;
       border-radius: 50%;
@@ -235,8 +239,14 @@ export default class EditText extends wepy.page {
       background: #4e88ff !important;
     }
     radio .wx-radio-input.wx-radio-input-checked::before {
-      font-size: 32rpx;
-      color: #fff;
+      font-size: 40rpx;
+      color: transparent;
+      position: relative;
+      border:0;
+      top:-1rpx;
+      left:-1rpx;
+      background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAAXNSR0IArs4c6QAAAxBJREFUSA3Fl01oE0EUx/+zUdSDHz0YtSBWQSkqingRP6rVnlQwUkEFBbV68GC1CKnH4BdJQLSCtkVBLyKKQgS1thVUBEWw1vp10KNgNR4snrw04/tvdpPdbDaNMUsHNjvz5s37zZt5M/uiUEaJaW0MJbB6VCGiNFbKkFrr4ehvfLTCQEgjtbwdL2JKZdhRqqhSnfuu6ckjP9AqRo9rjXApXbtPKaRlcudmzMLF6/vVH1te+PYFR5K6WWDn5ZlbOKictkzgqzxtqai6W0zfKBRqrdW2uD6TyeBOpVDa5FjaoC3aLOS4BFSIJHFTBu0sVPyftnh+KxXFbqVkE6zi8jiSwOlqQ8mhTdq2oXznPOaecmmcndWuGwZ22Htughm9v9L4zH2pNsxpjwFXE8YiRru51OaRCRjKCdAxslg3eDnwnLJRrbJ+MXD1MLC3wWuRLDLV9rheOwo896pUJtm4FDiyWTySTfz5GzjY6bUTAtYZvAa9XZVJGh1QWVbc8HGHTMO6eysjOUY1LgFaLU8JvdwLPPngUHBUyWRw8cL3FC7VqV1AxwFgwRi39AZCt2SXl9DOPqBvyGPSKaj1BYenA8vmAXUzgZMygfk+cAbSUQe0S6C9b52MonUTXLTn+wjQ/y7bNXVK1vtCOKHHtuY97eoHHo0N5bWl6TG/p0XLpZ78PhFOz7kCLA0OT9nuJnSQtTKKxnCovinWLKp1fuqvvgCza0RBlnrSRGBNPTBBpnuoCQhx2lK6ZXl7yoWKvoTPe14eA+Zonx+JFVy4Dzz9mFWYJp7vkYshBxVPH/4D1LRi4LXBdMWHmRMT3vEAePYpJzIrVx4L9I1bVk7LyOCe4vU1mMSwHAOfuM2b4hFr2QSsWgjcfllW9OYHWzX5UKRXRDFHTAGRuI5KdpbwaAUgkLBoT51QSTM8mJjxkxUAx2WSDLIoNMH8PoqwzaUVQIMMO/O0DgTAzEDW/WwAPNMkbdvZBwXmHtuwcUv2mAWa2WAVPc966s4wPR7bnvMddELvWmonmPVx+QvjnAQvmWr/afsLtJkfavwu5egAAAAASUVORK5CYII=');
+      background-size: cover;
     }
   }
   .saveBar {
