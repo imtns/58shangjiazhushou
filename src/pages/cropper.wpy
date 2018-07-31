@@ -237,6 +237,7 @@ export default class Cropper extends wepy.page {
                 // 用于canvas2
                 const drawT = (canvasWidth - (qualityWidth / innerAspectRadio)) / 2;
                 this.drawT = drawT;
+                this.drawL = 0;
 
             // height 较大
             } else {
@@ -274,6 +275,7 @@ export default class Cropper extends wepy.page {
                 // 用于canvas2
                 const drawL = (canvasWidth - qualityWidth) / 2;
                 this.drawL = drawL;
+                this.drawT = 0;
             }
             this.isShowImg = true;
 
