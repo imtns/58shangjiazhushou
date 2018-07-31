@@ -32,7 +32,7 @@
                 </view>
                 <view class="block"></view>
             </scroll-view>
-            <EmptyPage wx:if="{{!listData.length}}"></EmptyPage>
+            <EmptyPage wx:if="{{!listData.length}}" :title.sync="title"></EmptyPage>
         </view>
     </view>
     <view class="options" wx:if="{{!isEditing}}">
