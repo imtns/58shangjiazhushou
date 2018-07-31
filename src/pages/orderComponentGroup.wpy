@@ -27,7 +27,7 @@
         <button class="button" wx:if="{{ isEditing }}" @tap="deleteItem">删除</button>
         <button wx:else @tap="showDialog" class="button">添加分组</button>
     </view>
-    <Pop wx:if="{{showPop}}" @close.user="close" @addGroup.user="addGroup"></Pop>
+    <Pop wx:if="{{showPop}}" @close.user="close" @addGroup.user="addGroup" :name.sync= "name"></Pop>
 </template>
 
 <script>
@@ -69,16 +69,7 @@ export default class OrderComponentGroup extends wepy.page {
     }
     methods = {
         showDialog(id = '', name = '') {
-            const { groupList } = this;
-            if (!name && groupList && groupList.length >= 10) {
-                toast(' 分组数量达到最大（10个），无法创建更多。');
-                return;
-            }
-            this.name = name;
-            this.id = id;
-            this.$broadcast('postData', name);
-            this.showPop = true;
-            this.$apply();
+            this.showDialog(id, name);
         },
         async addGroup(content) {
             try {
@@ -88,14 +79,15 @@ export default class OrderComponentGroup extends wepy.page {
                 } else {
                     url = '/businessService/addGroup';
                 }
-                await get(url, {
-                    name: content,
-                    mpid: this.mpId,
-                });
                 this.showPop = false;
                 this.isEditing = false;
                 this.name = '';
                 this.id = '';
+                this.$apply();
+                await get(url, {
+                    name: content,
+                    mpid: this.mpId,
+                });
                 toast('添加成功！');
                 this.loadData();
             } catch (e) {
@@ -183,13 +175,15 @@ export default class OrderComponentGroup extends wepy.page {
         this.groupList = data;
         this.$apply();
     }
-    showDialog() {
+    showDialog(id = '', name = '') {
+        console.log(name, id);
         const { groupList } = this;
-        if (groupList && groupList.length >= 10) {
+        if (!name && groupList && groupList.length >= 10) {
             toast(' 分组数量达到最大（10个），无法创建更多。');
             return;
         }
-        this.$broadcast('postData', '');
+        this.name = name;
+        this.id = id;
         this.showPop = true;
         this.$apply();
     }
