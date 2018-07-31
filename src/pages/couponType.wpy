@@ -45,6 +45,7 @@
                 @input="dataAction('limitAmount')"/>
             </view>
         </view>
+        <button class="confirm" @tap="confirm">确认</button>
     </view>
 </template>
 
@@ -80,6 +81,9 @@ export default class Index extends wepy.page {
 
             this[prop] = value;
             this.updateData();
+        },
+        confirm() {
+            wepy.navigateBack();
         },
     }
 
@@ -188,6 +192,20 @@ view {
                 height: 40rpx;
             }
         }
+    }
+}
+
+.confirm {
+    background-color: #4E88FF;
+    border-radius: 4rpx;
+    color: #FFF;
+    font-size: 32rpx;
+    width: 690rpx;
+    height: 94rpx;
+    line-height: 94rpx;
+    margin-top: 80rpx;
+    &::after {
+        border: none;
     }
 }
 </style>
