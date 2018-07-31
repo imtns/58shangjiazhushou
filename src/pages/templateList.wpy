@@ -8,9 +8,10 @@
 </view>
 <view class="list" wx:if="{{list.length}}">
     <repeat for="{{list}}" item="item" index="index">
-        <view class="item" @tap="goEdit" data-releaseId="{{item.releaseId}}" data-status="{{item.status}}" data-index="{{index}}" data-id="{{item.id}}">
+        <view class="item" @tap="goEdit" data-cate="{{item.cate}}" data-releaseId="{{item.releaseId}}" data-status="{{item.status}}" data-index="{{index}}" data-id="{{item.id}}">
             <view wx:if="my" @tap.stop="closeLayer" data-index="{{index}}"  class="mySetting {{delLayer[index]?'delLayer':''}}">   
-                <view class="delBtn" data-releaseId="{{item.releaseId}}" data-index="{{index}}" @tap.stop="del" hidden="{{!delLayer[index]}}">删除</view>     
+                <view class="delBtn left " wx:if="{{item.cate===0}}" data-templateId="{{item.id}}" data-index="{{index}}" @tap.stop="publish" hidden="{{!delLayer[index]}}">发布</view>
+                <view class="delBtn {{item.cate===0?'right':''}}" data-releaseId="{{item.releaseId}}" data-index="{{index}}" @tap.stop="del" hidden="{{!delLayer[index]}}">删除</view>     
             </view>
             <view class="tip" hidden="{{!my || hideTag[item.releaseId]}}">{{status[item.status]}}</view>
             <view class="delTip" hidden="{{!my}}" data-index="{{index}}" @tap.stop="showDelLayer">...</view>
@@ -27,7 +28,7 @@
 
 <script>
 import wepy from 'wepy';
-import { get } from '../utils/ajax';
+import { get, post } from '../utils/ajax';
 import { toast } from '../utils/index';
 import { globalData } from '../utils/globalData';
 
@@ -109,9 +110,13 @@ export default class Index extends wepy.page {
       },
       async goEdit(e) {
           const {
-              releaseid, status, id,
+              releaseid, status, id, cate,
           } = e.currentTarget.dataset;
           this.delLayer = {};
+          if (cate === 0) {
+              toast('此模板不可编辑');
+              return;
+          }
           if (this.my) {
               if (this.isVerify[releaseid]) {
                   toast('此模板正在审核, 不可编辑');
@@ -133,6 +138,24 @@ export default class Index extends wepy.page {
           wx.navigateTo({
               url: 'index/index',
           });
+      },
+      async publish(e) {
+          const { templateid, index } = e.currentTarget.dataset;
+          this.delLayer[index] = false;
+
+          if (wx.getStorageSync('verify')) {
+              toast('有模板正在审核,不可发布');
+              return;
+          }
+          try {
+              await post('/business/templete/releasebg', {
+                  templateId: templateid,
+                  mpId: wx.getStorageSync('current_mpid'),
+              });
+              toast('发布成功');
+          } catch (err) {
+              toast(err);
+          }
       },
   };
   onReachBottom() {
@@ -247,6 +270,12 @@ export default class Index extends wepy.page {
         font-size: 26rpx;
         text-align: center;
         line-height: 46rpx;
+        &.left{
+            left:30%;
+        }
+        &.right{
+            left:70%;
+        }
       }
       &.delLayer {
         background: rgba(0, 0, 0, 0.3);
