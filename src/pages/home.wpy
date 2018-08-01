@@ -59,8 +59,10 @@ import wepy from 'wepy';
 import { alert } from '../utils';
 import { post, get } from '../utils/ajax';
 import { globalData } from '../utils/globalData';
+import Mixin from '../mixin';
 
 export default class Home extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '首页',
         disableScroll: true,
@@ -118,10 +120,10 @@ export default class Home extends wepy.page {
             {
                 title: '开店必做',
                 items: [
-                    // {
-                    //     iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-buy-mp.png',
-                    //     text: '购买小程序',
-                    // },
+                    {
+                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-buy-mp.png',
+                        text: '购买小程序',
+                    },
                     {
                         iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-regist-mp.png',
                         text: '注册小程序',
@@ -145,9 +147,10 @@ export default class Home extends wepy.page {
                 });
             } else if (text === '购买小程序') {
                 // 购买小程序页面
-                wepy.navigateTo({
-                    url: 'purchase',
-                });
+                // wepy.navigateTo({
+                //     url: 'purchase',
+                // });
+                this.buyMiniProgram();
             } else {
                 this.checkBeforeJump(text);
             }
@@ -401,9 +404,10 @@ export default class Home extends wepy.page {
                 });
                 break;
             case '购买小程序':
-                wepy.navigateTo({
-                    url: 'purchase',
-                });
+                // wepy.navigateTo({
+                //     url: 'purchase',
+                // });
+                this.buyMiniProgram();
                 break;
             case '注册小程序':
                 if (this.business.selected.app_type === 1) {

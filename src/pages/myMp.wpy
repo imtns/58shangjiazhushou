@@ -25,8 +25,8 @@
                     </view>
                 </view>
                 <view class="btns">
-                    <view bindtap="shouquan" wx:if="{{business.current.app_type === 2}}" :class="{ first: item.status === 1 }">{{business.current.status === 1 ? '重新授权' : '去授权'}}</view>
-                    <view bindtap="decorate" :class="{'grey': !business.current.address, 'first': !(item.status === 1)}" data-address="{{business.current.address}}" data-id="{{business.current.id}}">装修</view>
+                    <view bindtap="shouquan" wx:if="{{business.current.app_type === 2}}" :class="{ first: business.current.status === 1 }">{{business.current.status === 1 ? '重新授权' : '去授权'}}</view>
+                    <view bindtap="decorate" :class="{'grey': !business.current.address, 'first': !(business.current.status === 1)}" data-address="{{business.current.address}}" data-id="{{business.current.id}}">装修</view>
                     <view bindtap="checkDetail" data-address="{{business.current.address}}" data-id="{{business.current.id}}">查看</view>
                 </view>
             </view>
@@ -56,13 +56,14 @@
                     </view>
                     <view class="btns">
                         <view bindtap="shouquan" wx:if="{{item.app_type === 2}}" :class="{ first: item.status === 1 }" data-status="{{item.status}}">{{item.status === 1 ? '重新授权' : '去授权'}}</view>
-                        <!-- <view wx:if="{{item.app_type === 1}}" bindtap="upgrade" data-id="{{item.id}}">升级</view> -->
-                        <view :class="{'grey': !item.address, 'first': !(item.status === 1)}" bindtap="decorate" data-address="{{item.address}}">装修</view>
+                        <view wx:if="{{item.app_type === 1}}" :class="{ 'first': !(item.status === 1) }" @tap="buy({{ item.id }})">升级</view>
+                        <view :class="{'grey': !item.address}" bindtap="decorate" data-address="{{item.address}}">装修</view>
                         <view bindtap="checkDetail" data-address="{{item.address}}" data-id="{{item.id}}">查看</view>
                     </view>
                 </view>
             </repeat>
         </view>
+        <button class="buy" @tap="buy">购买新的小程序</button>
     </view>
 </template>
 
@@ -72,6 +73,7 @@ import wepy from 'wepy';
 import { alert } from '../utils';
 import { post } from '../utils/ajax';
 import CouponMixin from '../mixin/coupon';
+import Mixin from '../mixin';
 
 export default class Index extends wepy.page {
     data = {
@@ -84,11 +86,17 @@ export default class Index extends wepy.page {
         },
         shareImage: '',
     }
-    mixins = [CouponMixin];
+    mixins = [CouponMixin, Mixin];
     config = {
         navigationBarTitleText: '我的小程序',
     }
     methods = {
+        buy(mpId) {
+            if (typeof mpId !== 'string') {
+                mpId = '';
+            }
+            this.buyMiniProgram(mpId);
+        },
         shouquan() {
             alert('请您登录电脑端，打开https://yaofa.58.com，到授权管理页点击右上角授权按钮去授权', '提示');
         },
@@ -103,12 +111,12 @@ export default class Index extends wepy.page {
                 });
             }
         },
-        upgrade(type) {
-            const { id } = type.target.dataset;
-            wepy.navigateTo({
-                url: `purchase?mpid=${id}`,
-            });
-        },
+        // upgrade(type) {
+        //     const { id } = type.target.dataset;
+        //     wepy.navigateTo({
+        //         url: `purchase?mpid=${id}`,
+        //     });
+        // },
         checkDetail(type) {
             if (type.target.dataset.address) {
                 const { id } = type.target.dataset;
@@ -310,5 +318,17 @@ export default class Index extends wepy.page {
                 display: block;
             }
         }
+    }
+
+    button.buy {
+        color: #fff;
+        font-size: 34rpx;
+        line-height: 102rpx;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: #4E88FF;
+        border-radius: 0;
     }
 </style>
