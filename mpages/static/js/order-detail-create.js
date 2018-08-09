@@ -102,6 +102,12 @@ var Page = {
                 return;
             };
             console.log(content);
+            localStorage.setItem('content',content);
+            setTimeout(function() {
+                wx.miniProgram.navigateBack({
+                    url: '/pages/orderComponentEdit?group=' + Page.group + '&name=' + Page.name
+                });
+            },2000);
             //this.setStorage('order-detail',content);
         })
         $('.mask,._sure-btn').on('click', function() {

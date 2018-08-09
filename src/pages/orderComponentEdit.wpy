@@ -83,15 +83,16 @@
             latitude="{{ form.addressLatitude }}"></map>
         </view>
         <view class="section">
-            <!-- <view class="item">
+            <view class="item">
                 <text>服务详情</text>
             </view>
             <textarea class="service-detail" cols="30" rows="10"
             placeholder="详细描述下您的服务内容吧~"
             placeholder-class="placeholder"
             value="{{ form.serviceDetailInfo }}"
-            @input="setFormData('serviceDetailInfo')"></textarea> -->
-            <view class="item required">
+            @input="setFormData('serviceDetailInfo')">
+            </textarea>
+            <!-- <view class="item required">
                 <text>服务详情</text>
                 <navigator
                 hover-class="none"
@@ -100,7 +101,7 @@
                     {{ region || '未填写' }}
                     <view class="icon more"></view>
                 </navigator>
-            </view>
+            </view> -->
         </view>
         <view class="section">
             <view class="item border-bottom">
@@ -200,7 +201,7 @@ export default class Index extends wepy.page {
                 value: '2',
             },
             {
-                name: '定金',
+                name: '订金',
                 value: '3',
             },
         ],
@@ -308,7 +309,7 @@ export default class Index extends wepy.page {
             let result = true;
             const requiredFields = ['serviceName', 'pics', 'price', 'durationUnit',
                 'duration', 'serviceStarttime', 'serviceEndtime',
-                'provinceStr', 'cityStr', 'areaStr', 'address', 'payType'];
+                'provinceStr', 'cityStr', 'areaStr', 'address', 'payType', 'earnestMoney'];
 
             requiredFields.forEach(key => {
                 if (isEmpty(this.form[key])) {
@@ -353,9 +354,11 @@ export default class Index extends wepy.page {
     validator(data) {
         // 校验必填字段
         const {
-            serviceStarttime, serviceEndtime, price, duration, durationUnit,
+            serviceStarttime, serviceEndtime, payType, earnestMoney, price, duration, durationUnit,
         } = data;
-
+        console.log(price);
+        console.log(payType);
+        console.log(earnestMoney);
         if (serviceStarttime > serviceEndtime) {
             throw new Error('预约结束时间必须大于开始时间');
         }
@@ -370,6 +373,15 @@ export default class Index extends wepy.page {
 
         if (duration > 24 && durationUnit === 2) {
             throw new Error('输入时长不得大于24小时');
+        }
+        if (parseInt(payType) === 2 && earnestMoney > price) {
+            throw new Error('一口价不得大于服务价格');
+        }
+        if (parseInt(payType) === 3 && earnestMoney > price / 2) {
+            throw new Error('订金不得大于服务价格的一半');
+        }
+        if (parseInt(payType) === 1) {
+            this.form.earnestMoney = 0;
         }
     }
 
@@ -403,6 +415,7 @@ export default class Index extends wepy.page {
                 city,
                 area,
                 payType,
+                earnestMoney,
             } = service;
 
             Object.assign(this.form, {
@@ -428,6 +441,7 @@ export default class Index extends wepy.page {
                 city,
                 area,
                 payType,
+                earnestMoney,
             });
             this.defaultImages = [picSrcDomain() + pics];
 

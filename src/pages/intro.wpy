@@ -2,7 +2,7 @@
     <view class="intro">
         <view class="header">
             <text selectable="false" class="welcome">欢迎登录</text>
-            <text selectable="false" class="text">58小程序商家助手</text>
+            <text selectable="false" class="text">58商家程序助手</text>
             <button class="btn-login"  bindtap="callPassport">立即登录</button>
         </view>
         <view class="intro-content">

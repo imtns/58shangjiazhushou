@@ -1,7 +1,7 @@
 import wepy from 'wepy';
 
 const test = 'test';
-const host = 'http://yaofa.58.com';
+const host = 'https://yaofa.58.com';
 const http = (method, ...props) => {
     const [url, param, showLoading = true] = props;
     const sendData = Object.assign({}, param, { test });

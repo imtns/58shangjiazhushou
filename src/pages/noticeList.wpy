@@ -4,7 +4,7 @@
             <text>关注公众号接收通知</text>
             <!-- <navigator class="follow-action" url="/pages/followPublic">马上关注</navigator> -->
             <button class="follow-action" wx:if="{{canIUse}}" open-type="getUserInfo" @tap="loadSession()">马上关注</button>
-            <cropper></cropper>
+            <!-- <cropper></cropper> -->
         </view>
         <view class="notice-header">
             <view>全部通知</view>
@@ -90,10 +90,9 @@ export default class NoticeList extends wepy.page {
         },
     }
     async onShow() {
-        const that = this;
-        that.loadList();
-        that.loadCode();
-        that.getInfo();
+        this.loadList();
+        this.loadCode();
+        this.getInfo();
     }
     async onHide() {
         console.log('onHide');
@@ -132,7 +131,6 @@ export default class NoticeList extends wepy.page {
                 const { iv, encryptedData } = res;
                 that.iv = iv;
                 that.encryptedData = encryptedData;
-                // console.log(ress.userInfo);
             },
         });
     }
