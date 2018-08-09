@@ -18,13 +18,17 @@
                     <view class="left-label">联系电话</view>
                     <view class="right-text">{{order.consumerMobile}}</view>
                 </view> -->
-                <view class="order-row">
+                <view class="order-row" wx:if="{{order.status!=3}}" >
                     <view class="left-label">服务地址</view>
                     <view class="right-text">{{order.consumerAddress}}</view>
                 </view>
-                <view class="order-row none-border">
+                <view class="order-row">
                     <view class="left-label">服务时间</view>
                     <view class="right-text servicetime">{{order.startTime}} 至 {{order.endTime}}</view>
+                </view>
+                <view class="order-row none-border">
+                    <view class="left-label">支付方式</view>
+                    <view class="right-text {{fontClass[order.status] || ''}}">到店支付</view>
                 </view>
             </view>
             <view class="order-status">
@@ -33,9 +37,23 @@
                     {{statusSet[order.status]}}
                 </view>
             </view>
-            <view class="order-paytype">
+            <!-- <view class="order-price">
                 <view class="left-label">支付方式</view>
                 <view class="right-text {{fontClass[order.status] || ''}}">到店支付</view>
+            </view> -->
+            <view class="order-table">
+                <view class="order-row">
+                    <view class="left-label">订单总价</view>
+                    <view class="right-text">{{order.originalAmount}}元</view>
+                </view>
+                <view class="order-row">
+                    <view class="left-label">优惠券</view>
+                    <view class="right-text">{{order.realAmount}}元</view>
+                </view>
+                <view class="order-row none-border">
+                    <view class="left-label"></view>
+                    <view class="right-text">实际支付 <view class="{{fontClass[order.status] || ''}}">{{order.payType}}元</view></view>
+                </view>
             </view>
             <view class="order-desc" wx:if="{{contentSet[order.status]}}">{{contentSet[order.status]}}</view>
             <block wx:if="{{order.status==2}}">
@@ -52,14 +70,18 @@
             </block>
             <block wx:if="{{order.status==0}}">
                 <view class="order-confirm" @tap="bindSubmitOrder('ask')">确认订单</view>
-            </block>    
+            </block>
             <block wx:if="{{order.status==1}}">
                 <view class="order-finish">已确认订单</view>
+            </block>
+            <block wx:if="{{order.status==10}}">
+                <view class="order-confirm" @tap="bindAgreeRefund">同意退款</view>
             </block>
             <block wx:if="{{order.status==2}}">
                 <view class="order-evaluated">已评价</view>
             </block>
-            <view class="order-contact" @tap="bindPhoneCall({{order.consumerMobile}})">联系顾客</view>
+            <view wx:if="{{order.status!=3}}" class="order-contact" @tap="bindPhoneCall({{order.consumerMobile}})">联系顾客</view>
+            <view wx:if="{{order.status==10}}" class="order-apply" @tap="bindApplyPlat">申请平台介入</view>
         </view>
         <view class="ordersuccess" wx:if = "{{submitSuccess}}">
             <view class="ordersuccess-container">
@@ -82,9 +104,9 @@ export default class OrderDetail extends wepy.page {
         navigationBarTitleText: '订单管理',
     }
     data = {
-        fontClass: ['active', 'active', 'active', 'cancel', 'finish'],
-        statusSet: ['待接单', '待服务', '已评价', '已取消', '已删除'],
-        contentSet: ['顾客已下单，请尽快与顾客联系', '您已接单，请在约定时间联系顾客', '顾客已评价您的服务', '顾客已取消订单', ''],
+        fontClass: ['active', 'active', 'active', 'cancel', 'cancel', 'cancel', 'cancel', 'cancel', 'cancel', 'cancel', 'active'],
+        statusSet: ['已支付，待接单', '已接单，待服务', '已评价', '已取消', '已删除', '已下单，待支付', '退款成功', '退款失败', '已取消，系统自动取消', '已评价', '已取消'],
+        contentSet: ['顾客已支付订单，请尽快确认订单', '您已接单，请在约定时间联系顾客', ' 服务已经结束，订单费用已成功打入您的收款账户，谢谢您的服务', '顾客已取消订单', '系统已删除订单', '顾客已下单，还未支付订单', '订单已退款', '订单退款失败', '由于您长时间未接单，系统自动取消订单', '用户申请取消订单，并退款。请确认是否同意用户申请。'],
         order: {},
         submitSuccess: false,
     }
@@ -101,6 +123,9 @@ export default class OrderDetail extends wepy.page {
         },
         bindSubmitOrder () {
             this.submitOrder();
+        },
+        bindAgreeRefund () {
+            console.log('快申请退款，哈哈哈哈');
         },
     }
     async submitOrder () {
@@ -178,6 +203,16 @@ export default class OrderDetail extends wepy.page {
                     &.servicetime {
                         font-family: PingFangSC-Semibold;
                     }
+                    .active{
+                        display: inline;
+                        color: #ff552e;
+                    }
+                    .cancel {
+                        display: inline;
+                    }
+                    &.active{
+                        color: #ff552e;
+                    }
                 }
                 &.none-border {
                     border: none;
@@ -185,7 +220,7 @@ export default class OrderDetail extends wepy.page {
             }
         }
         .order-status,
-        .order-paytype,
+        .order-price,
         .order-evaluate {
             display: table;
             width: 100%;
@@ -212,7 +247,7 @@ export default class OrderDetail extends wepy.page {
                     color: #ff552e;
                 }
                 &.cancel {
-                    color: #bdbdbd;
+                    color: #333333;
                 }
             }
         }
@@ -233,6 +268,12 @@ export default class OrderDetail extends wepy.page {
             margin: 0 30rpx;
             line-height: 94rpx;
             border-radius: 4rpx;
+            text-align: center;
+        }
+        .order-apply{
+            font-size: 30rpx;
+            color: #576B95;
+            margin: 32rpx 0 50rpx;
             text-align: center;
         }
         .order-confirm {

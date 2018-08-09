@@ -2,7 +2,8 @@
     <view class="notice-container">
         <view class="follow-public">
             <text>关注公众号接收通知</text>
-            <navigator class="follow-action" url="/pages/followPublic">马上关注</navigator>
+            <!-- <navigator class="follow-action" url="/pages/followPublic">马上关注</navigator> -->
+            <button class="follow-action" wx:if="{{canIUse}}" open-type="getUserInfo" @tap="loadSession()">马上关注</button>
             <cropper></cropper>
         </view>
         <view class="notice-header">
@@ -59,6 +60,11 @@ export default class NoticeList extends wepy.page {
         noticeList: [],
         orderUnRead: 0,
         recivMoneyUnRead: 0,
+        code: '',
+        iv: '',
+        encryptedData: '',
+        session: '',
+        canIUse: wx.canIUse('button.open-type.getUserInfo'),
         unreadcount: 0,
         sendParams: {
             group: 1,
@@ -72,9 +78,26 @@ export default class NoticeList extends wepy.page {
             this.sendParams = Object.assign({}, this.sendParams, this.sendParams.page);
             this.loadNoticeList();
         },
+        async loadSession() {
+            try {
+                console.log(this.code);
+                const { data } = await get('/wechat/bizAssistAuth/session', { code: this.code });
+                console.log(data);
+                const { sessionKey } = data;
+                const { state } = await get('/wechat/bizAssistAuth/insert', { encryptedData: this.encryptedData, iv: this.iv, session: sessionKey });
+                if (state === 100) {
+                    wx.navigateTo = '/pages/followPublic';
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        },
     }
     async onShow() {
-        this.loadList();
+        const that = this;
+        that.loadList();
+        that.loadCode();
+        that.getInfo();
     }
     async onHide() {
         console.log('onHide');
@@ -89,6 +112,33 @@ export default class NoticeList extends wepy.page {
         } catch (e) {
             console.log(e);
         }
+    }
+    async loadCode() {
+        const that = this;
+        wx.login({
+            success(res) {
+                if (res.code) {
+                    console.log(res.code);
+                    that.code = res.code;
+                    // 查看是否授权
+                } else {
+                    console.log('denglishiba');
+                }
+            },
+        });
+    }
+    async getInfo() {
+        const that = this;
+        // 已经授权，可以调用getuseinfo获取头像昵称
+        wx.getUserInfo({
+            success(res) {
+                console.log(res);
+                const { iv, encryptedData } = res;
+                that.iv = iv;
+                that.encryptedData = encryptedData;
+                // console.log(ress.userInfo);
+            },
+        });
     }
     async loadList() {
         try {
@@ -180,9 +230,6 @@ view,scroll-view{
 .notice-container{
     width:100%;
     height:100%;
-    // display:flex;
-    // flex-direction:column;
-
     .follow-public {
         width: 100%;
         height: 80rpx;
@@ -192,15 +239,12 @@ view,scroll-view{
         color: #fd867e;
         padding: 0 30rpx;
         background-color: #ffecec;
-
-
         .follow-action {
             color: #fd867e;
             text-align: center;
             line-height: 50rpx;
             font-size: 28rpx;
             height: 50rpx;
-            width: 150rpx;
             border: 1rpx solid #fd867e;
             border-radius: 5rpx;
             position:absolute;

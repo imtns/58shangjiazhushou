@@ -1,0 +1,23 @@
+@charset "UTF-8";
+/* 加粗字体样式 */
+.font-style{
+    font-size: .28rem;
+    color: #bdbdbd;
+    line-height: .34rem;
+    display: inline-block;
+    border: 1px solid #CCCCCC;
+    border-radius: 2px;
+    -webkit-border-radius: 2px;
+    width: .34rem;
+    height: .34rem;
+    display: block;
+    position: absolute;
+    text-align: center;
+    right: .7rem;
+    top: 0.32rem;
+    cursor: pointer;
+}
+.active{
+    background: #D8D8D8;
+    border: 1px solid #D8D8D8;
+}

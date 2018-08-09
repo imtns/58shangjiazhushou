@@ -195,7 +195,8 @@
             console.error('节点配置不正确。');
             return;
         }
-        $(dom).addClass('zeditor-container').html("\n            <div class=\"zeditor-content\" contenteditable=\"true\" ></div>\n            ");
+        $(dom).addClass('zeditor-container').html("\n            <div class=\"zeditor-content\" contenteditable=\"true\" ></div>\n            <div class=\"zeditor-btn-main\">\n                <a href=\"javascript:void(0)\" class=\"zeditor-btn-li iconfont icon-zuoduiqi font-style _font-style\" data-type=\"fontweight\" />T</a>\n                <img src=\"//static.58.com/lbg/shangjiaxcxht/zhushou/img/upload-icon.png\" class=\"icon-tupian\"/>\n                <input type=\"file\" class=\"icon-tupian icon-tupian-btn\" data-type=\"image\">\n            </div>\n        ");
+        //$(dom).addClass('zeditor-container').html("\n            <div class=\"zeditor-content\" contenteditable=\"true\" ></div>\n            ");
         var $editor = $('.zeditor-content');
         $editor.focus();
         var $editorBtn = $('.zeditor-btn-main');
@@ -209,9 +210,13 @@
                 $editor.html();
             }
             window.$p = $(utils.focusDom());
-            var type = e.target.dataset.type;
-            if (type === 'left' || type === 'center' || type === 'right') {
-                $p.css({ 'text-align': type });
+            var type = e.target.dataset.type,
+                hasClass = $(e.path[0]).hasClass('active');
+            if (type === 'fontweight') {
+                $p.css({ 'font-weight': '800'});
+            }
+            if (type === 'fontweight' && !hasClass) {
+                $p.css({ 'font-weight': 'normal'});
             }
             if (type === 'image') {
                 params.selectImage && params.selectImage(function (url) {

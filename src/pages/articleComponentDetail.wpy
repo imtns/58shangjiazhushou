@@ -83,7 +83,7 @@ export default class Index extends wepy.page {
                 }
                 return {
                     type: 'text',
-                    content: `${p}</p>`,
+                    content: `${p}`,
                 };
             });
         Object.assign(this, {
