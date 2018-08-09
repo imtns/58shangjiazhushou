@@ -33,11 +33,15 @@ export default class CouponMixin extends wepy.mixin {
         return v.match(/([\d]{4})-([\d]{2})-([\d]{2})/);
     }
 
+    getCurrentDate() {
+        const today = new Date();
+        return `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+    }
+
     getCurrentDateValue() {
         const today = new Date();
         return today.getFullYear() * 1e4 + (today.getMonth() + 1) * 1e2 + today.getDate();
     }
-
     /**
      * @desc 检查优惠券是否可以使用
      * @param {Object} coupon 优惠券对象

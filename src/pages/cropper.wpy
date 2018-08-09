@@ -100,12 +100,13 @@ const dragScaleP = 2;
 let ctx = null;
 const cutCoefficient = 1; // 裁剪系数
 let originSrc = '';
-let drawL = 0;
-let drawT = 0;
 
 let rotateCount = 0; // 旋转次数
 
 export default class Cropper extends wepy.page {
+    config = {
+        navigationBarTitleText: '图片裁剪',
+    }
     data = {
         imageSrc: '',
         isShowImg: false,
@@ -134,6 +135,9 @@ export default class Cropper extends wepy.page {
         cutT: 0,
         qualityWidth: 720,
         innerAspectRadio: 1,
+
+        drawT: 0,
+        drawL: 0,
     }
 
     onLoad({ url, ratio, onlineImage }) {
@@ -231,7 +235,9 @@ export default class Cropper extends wepy.page {
                 // ============
 
                 // 用于canvas2
-                drawT = (canvasWidth - (qualityWidth / innerAspectRadio)) / 2;
+                const drawT = (canvasWidth - (qualityWidth / innerAspectRadio)) / 2;
+                this.drawT = drawT;
+                this.drawL = 0;
 
             // height 较大
             } else {
@@ -267,7 +273,9 @@ export default class Cropper extends wepy.page {
                 // ===================
 
                 // 用于canvas2
-                drawL = (canvasWidth - qualityWidth) / 2;
+                const drawL = (canvasWidth - qualityWidth) / 2;
+                this.drawL = drawL;
+                this.drawT = 0;
             }
             this.isShowImg = true;
 
@@ -475,10 +483,16 @@ export default class Cropper extends wepy.page {
             ctx2.rotate((90 * Math.PI) / 180);
             ctx2.translate(-x, -y);
 
+            let { drawT, drawL } = this;
             // 交换drawT drawL
             const temp = drawT;
             drawT = drawL;
             drawL = temp;
+
+            Object.assign(this, {
+                drawT,
+                drawL,
+            });
 
             ctx2.drawImage(
                 that.imageSrc,

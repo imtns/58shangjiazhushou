@@ -1,9 +1,9 @@
 <template>
 <view class="mod-me-container">
-        <view wx:if="{{pageData[0].props.cfg.title}}" style="height:88rpx;line-height:88rpx;text-align:center;background:white;">{{pageData[0].props.cfg.title}}</view>
+        <!-- <view wx:if="{{pageData[0].props.cfg.title}}" style="height:88rpx;line-height:88rpx;text-align:center;background:white;">{{pageData[0].props.cfg.title}}</view> -->
         <block wx:if="{{!pageData[0].props.cfg.order}}"  hidden="{{pageData[0].props.cfg.order}}">
-            <view class="mod-me {{cfg.title?'':'mod-me-line'}}" style="margin-top:1rpx;">
-                <view class="mod-me-list  mod-me-space mod-me-line">
+            <view class="mod-me {{cfg.title?'':'mod-me-line1'}}" style="margin-top:1rpx;">
+                <view class="mod-me-list  mod-me-space mod-me-line1">
                     <image class="mod-me-icon" src="../assets/me/order.png"></image>
                     <view class="mod-me-text">我的订单</view>
                     <view class="mod-arrow"></view>
@@ -20,7 +20,7 @@
             </view>
         </block>
         <block wx:if="{{!pageData[0].props.cfg.address}}"  hidden="{{pageData[0].props.cfg.address}}">
-                <view class="mod-me mod-me-space mod-me-line">
+                <view class="mod-me mod-me-space mod-me-line1">
                     <view class="mod-me-list">
                         <image class="mod-me-icon" src="../assets/me/address.png"></image>
                         <view class="mod-me-text">服务地址</view>
@@ -135,7 +135,8 @@ export default class Me extends wepy.page {
     position: relative;   
     width: 750rpx;
     padding-top:0;
-    padding-bottom:820rpx;
+    width:100%;
+    // padding-bottom:820rpx;
 }
 .mod-me {
     display: inline-block;
@@ -266,8 +267,8 @@ export default class Me extends wepy.page {
         margin-right: 10rpx;
       }
       checkbox .wx-checkbox-input {
-        width: 24rpx;
-        height: 24rpx;
+        width: 30rpx;
+        height: 30rpx;
         background: transparent;
         border: 1rpx solid #bdbdbd;
         border-radius: 50%;
@@ -276,7 +277,7 @@ export default class Me extends wepy.page {
         background: #4e88ff;
       }
       checkbox .wx-checkbox-input.wx-checkbox-input-checked::before {
-        font-size: 24rpx;
+        font-size: 32rpx;
         color: #fff;
       }
     }
@@ -284,6 +285,7 @@ export default class Me extends wepy.page {
 }
 .edit-cell-tip{
     font-size:26rpx;
+    width:100%;
     color:#999;
     padding-top:20rpx;
     height:150rpx;

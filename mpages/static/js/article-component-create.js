@@ -6,7 +6,7 @@ var Page = {
     id: '',
     name: '',
     saveStatus: '',
-    test: 'test',
+    test: '',
     toast: function(tar, cont) {
         var NONE = 'none',
             $ele = $('div.mask,div.win2'),

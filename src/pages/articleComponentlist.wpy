@@ -40,7 +40,7 @@
                     <!-- <view class="article-preview-con">{{item.intro}}</view> -->
                 </view>
             </scroll-view>
-            <EmptyPage wx:if="{{listData.length===0}}"></EmptyPage>
+            <EmptyPage wx:if="{{listData.length===0}}" :title.sync="title"></EmptyPage>
         </view>
     </view>
     <view class="block"></view>

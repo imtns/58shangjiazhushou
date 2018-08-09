@@ -2,7 +2,7 @@
     <view class="banner-container">
         <view class="list">
             <view class="item">
-                <swiper indicator-dots="{{indicatorDots}}">
+                <swiper indicator-dots="{{indicatorDots}}" style="height:252rpx;">
                     <repeat for="{{pageData[0].props.cfg.images}}" index="index" item="item">
                         <swiper-item>
                             <image src="{{item.src}}" class="slide-image" mode="aspectFill" data-index="{{index}}" @tap="onImageClick"/>
@@ -293,6 +293,7 @@ export default class ImageSwiper extends wepy.page {
     position: relative;
     image {
       width: 100%;
+      height:100%;
     }
   }
 }

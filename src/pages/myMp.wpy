@@ -5,8 +5,7 @@
         </view>
         <view class="current">
             <view class="tips">
-                <view>当前小程序</view>
-                <view>可在首页切换</view>
+                当前小程序（可在首页切换）
             </view>
             <view class="list">
                 <view class="infos">
@@ -26,8 +25,8 @@
                     </view>
                 </view>
                 <view class="btns">
-                    <view bindtap="shouquan" wx:if="{{business.current.app_type === 2}}">{{business.current.status === 1 ? '重新授权' : '去授权'}}</view>
-                    <view bindtap="decorate" :class="{'grey': !business.current.address}" data-address="{{business.current.address}}" data-id="{{business.current.id}}">装修</view>
+                    <view bindtap="shouquan" wx:if="{{business.current.app_type === 2}}" :class="{ first: item.status === 1 }">{{business.current.status === 1 ? '重新授权' : '去授权'}}</view>
+                    <view bindtap="decorate" :class="{'grey': !business.current.address, 'first': !(item.status === 1)}" data-address="{{business.current.address}}" data-id="{{business.current.id}}">装修</view>
                     <view bindtap="checkDetail" data-address="{{business.current.address}}" data-id="{{business.current.id}}">查看</view>
                 </view>
             </view>
@@ -56,9 +55,9 @@
                         </view>
                     </view>
                     <view class="btns">
-                        <view bindtap="shouquan" wx:if="{{item.app_type === 2}}" data-status="{{item.status}}">{{item.status === 1 ? '重新授权' : '去授权'}}</view>
-                        <view wx:if="{{item.app_type === 1}}" bindtap="upgrade" data-id="{{item.id}}">升级</view>
-                        <view :class="{'grey': !item.address}" bindtap="decorate" data-address="{{item.address}}">装修</view>
+                        <view bindtap="shouquan" wx:if="{{item.app_type === 2}}" :class="{ first: item.status === 1 }" data-status="{{item.status}}">{{item.status === 1 ? '重新授权' : '去授权'}}</view>
+                        <!-- <view wx:if="{{item.app_type === 1}}" bindtap="upgrade" data-id="{{item.id}}">升级</view> -->
+                        <view :class="{'grey': !item.address, 'first': !(item.status === 1)}" bindtap="decorate" data-address="{{item.address}}">装修</view>
                         <view bindtap="checkDetail" data-address="{{item.address}}" data-id="{{item.id}}">查看</view>
                     </view>
                 </view>
@@ -70,8 +69,9 @@
 <script>
 import wepy from 'wepy';
 
-import { sleep, alert } from '../utils';
+import { alert } from '../utils';
 import { post } from '../utils/ajax';
+import CouponMixin from '../mixin/coupon';
 
 export default class Index extends wepy.page {
     data = {
@@ -84,6 +84,7 @@ export default class Index extends wepy.page {
         },
         shareImage: '',
     }
+    mixins = [CouponMixin];
     config = {
         navigationBarTitleText: '我的小程序',
     }
@@ -93,12 +94,12 @@ export default class Index extends wepy.page {
         },
         decorate(type) {
             if (type.target.dataset.address) {
-                // const { id } = type.target.dataset;
+                const { id, authorizerAppid } = type.target.dataset;
                 // wepy.navigateTo({
                 //     url: `UploadInfo?mpid=${id}`,
                 // });
                 wepy.navigateTo({
-                    url: '/pages/templateList',
+                    url: `/pages/templateList?mpid=${id}&appid=${authorizerAppid}`,
                 });
             }
         },
@@ -139,11 +140,21 @@ export default class Index extends wepy.page {
             mpid: currentMpid,
         };
         const { data } = await post('/mplogic/mymplist', subData);
-        const mps = data.mpinfos;
+        let mps = data.mpinfos;
+
+        // 格式化时间，通过mixin/coupon.js
+        mps = mps.map(item => {
+            const result = Object.assign({}, item);
+            result.expiryDate = this.formatTime(result.expiryDate);
+
+            return result;
+        });
+
         const [currentMp] = mps.filter((item) => item.id === currentMpid);
         if (currentMp && currentMp.headImg && currentMp.headImg.indexOf('http') === -1) {
             currentMp.headImg = `https://pic1.58cdn.com.cn${currentMp.headImg}`;
         }
+
         const others = mps.filter((item) => item.id !== currentMpid);
         let othersMp = [];
         if (others.length > 0) {
@@ -155,16 +166,12 @@ export default class Index extends wepy.page {
                 return item;
             });
         }
+
         this.business = Object.assign({}, this.business, {
             current: currentMp,
             mps: othersMp,
         });
-        console.log('this.business', this.business);
         this.$apply();
-    }
-    async onLoad() {
-        await sleep();
-        console.log('onload');
     }
     async getMpShareImg(id, nickName) {
         const subData = {
@@ -193,33 +200,26 @@ export default class Index extends wepy.page {
     .myMP{
         padding: 0 30rpx;
         .tips{
-            display: flex;
-            justify-content: space-between;
-            height: 80rpx;
-            line-height: 80rpx;
             letter-spacing: 0;
-            view{
-                font-size: 28rpx;
-                color: #999999;
-                padding: 0 10rpx;
-            }
+            line-height: 40rpx;
+            font-size: 28rpx;
+            color: #999999;
+            margin: 20rpx 0 16rpx;
         }
         .list{
             background: #FFFFFF;
             box-shadow: 0 1px 10px 0 rgba(0,0,0,0.10);
-            height: 246rpx;
-            padding: 0 30rpx;
+            padding: 30rpx 26rpx 0 26rpx;
             margin-bottom: 20rpx;
             position: relative;
             .infos{
-                height: 175rpx;
                 display: flex;
+                margin-bottom: 28rpx;
                 .logBox{
-                    width: 124rpx;
+                    margin-top: 6rpx;
                     .logo{
                         width: 124rpx;
                         height: 124rpx;
-                        margin-top: 24rpx;
                         border: 1rpx solid #E7E7E7;
                     }
                 }
@@ -228,7 +228,6 @@ export default class Index extends wepy.page {
                     padding-left: 20rpx;
                     .title{
                         line-height: 40rpx;
-                        margin-top: 22rpx;
                         .share{
                             width: 80rpx;
                             border: none;    
@@ -255,14 +254,18 @@ export default class Index extends wepy.page {
                         }
                     }
                     .icons{
+                        margin-top: 8rpx;
+                        height: 38rpx;
                         .icon{
                             display: inline-block;
                             width: 66rpx;
                             height: 38rpx;
-                            margin: 0 3prx;
+                            margin-right: 6rpx;
                         }
                     }
                     .deadline{
+                        margin-top: 10rpx;
+                        line-height: 37rpx;
                         font-size: 26rpx;
                         color: #999999;
                         padding-left: 5rpx;
@@ -272,16 +275,20 @@ export default class Index extends wepy.page {
             .btns{
                 display: flex;
                 border-top: 1rpx solid #F3F3F3;
-                height: 72rpx;
-                line-height: 72rpx;
+                height: 74rpx;
+                line-height: 74rpx;
                 font-size: 28rpx;
                 color: #333333;
                 .grey{
                     color: #CCCCCC;
                 }
                 view{
-                    flex:1;
+                    flex: 1;
                     text-align: center;
+                    border-left: 1rpx solid #f3f3f3;
+                }
+                .first {
+                    border: none;
                 }
             }
         }

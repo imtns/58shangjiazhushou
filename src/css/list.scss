@@ -112,7 +112,7 @@
         .article-preview-con{
             max-width:670rpx;
             width:670px;
-            height:90px;
+            max-height:90px;
             line-height:30px;
             display:flex;
             line-clamp: 3;
@@ -127,7 +127,6 @@
         .list-image{
             width:120rpx;
             height:120rpx;
-            // background:pink;
             position:absolute;
             left:-20rpx;
             top:50%;

@@ -281,8 +281,7 @@ export default class AppEdit extends wepy.page {
     recordFirstCateStatus (appInfo) {
         const { mpSource, cate2 } = appInfo;
         console.log('mpSource', mpSource, 'cate2', cate2);
-        this.cateEditable = !!(mpSource && mpSource.toString() === '3' && !cate2)
-            || (mpSource && mpSource.toString() !== '3');
+        this.cateEditable = !(mpSource && mpSource.toString() === '3');
     }
     // 更新所属行业类别
     updateCateChoice() {
@@ -450,7 +449,7 @@ export default class AppEdit extends wepy.page {
             return false;
         }
         // 所属行业至少选择两项
-        if (!form.cate1 || !form.cate2) {
+        if ((!form.cate1 || !form.cate2) && form.mpSource.toString() !== '3') {
             this.toast('所属行业至少选择两项');
             return false;
         }

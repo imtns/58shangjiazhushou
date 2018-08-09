@@ -1,5 +1,5 @@
 <template>
-    <view class="mask" wx:if="{{showPop}}" catchtouchmove="stopPro">
+    <view class="mask" catchtouchmove="stopPro">
         <view class="pop">
             <view class="pop-title">
                 {{title}}
@@ -25,11 +25,14 @@ export default class Pop extends wepy.component {
         showPop: {
             type: Boolean,
         },
+        name: {
+            type: String,
+        },
     }
     data = {
-        showPop: false,
-        content: '',
+        name: '',
         title: '新建分组',
+        content: '',
         surebtnText: '创建',
     }
     methods = {
@@ -38,11 +41,12 @@ export default class Pop extends wepy.component {
             this.title = '新建分组';
             this.surebtnText = '创建';
             this.content = '';
+            this.$apply();
         },
         async add() {
             console.log(this.content);
             const content = this.content.trim();
-            if (!this.content) {
+            if (!content) {
                 toast('请填写分组名称');
                 return;
             }
@@ -50,17 +54,17 @@ export default class Pop extends wepy.component {
                 toast('分组名称过长');
                 return;
             }
-            this.$emit('addGroup', this.content);
+            this.$emit('addGroup', content);
             this.content = '';
             this.$apply();
         },
         input(e) {
             this.content = e.detail.value;
+            this.$apply();
         },
     }
     events = {
         postData: (name) => {
-            console.log('===========', name);
             if (name) {
                 this.title = '编辑分组';
                 this.surebtnText = '确定';
@@ -70,10 +74,7 @@ export default class Pop extends wepy.component {
                 this.surebtnText = '创建';
                 this.content = '';
             }
-            this.$apply();
         },
-    }
-    onLoad() {
     }
 }
 </script>

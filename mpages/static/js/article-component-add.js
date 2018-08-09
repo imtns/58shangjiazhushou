@@ -6,7 +6,7 @@ var Page = {
     group: '',
     name: '',
     saveStatus: '',
-    test: 'test',
+    test: '',
     pop:function(cont) {
         var NONE = 'none',
             $ele = $('div.mask,div._dialog'),

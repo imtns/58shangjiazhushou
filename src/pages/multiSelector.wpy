@@ -3,7 +3,7 @@
 
         <scroll-view class="column" wx:for="{{ contentList }}" scroll-y
         wx:key="index" wx:for-index="colIndex" wx:for-item="column"
-        :class="{ selected: boldColumn === colIndex }">
+        :class="{selected: boldColumn === colIndex,first: 0 === colIndex,second: 1 === colIndex,third: 2 === colIndex,}">
 
             <view class="content-box" wx:for="{{ column }}"
             wx:key="id" wx:for-index="conIndex" wx:for-item="content"
@@ -22,7 +22,7 @@ import wepy from 'wepy';
 import { get } from '../utils/ajax';
 import globalService from '../utils/globalService';
 
-const config = {
+const selectorConfig = {
     region: {
         size: 3,
         apiList: [
@@ -224,7 +224,7 @@ export default class Index extends wepy.page {
             this.contentList[i] = [];
         }
 
-        this.loadConfig(config[type]);
+        this.loadConfig(selectorConfig[type]);
 
         // 渲染第一个列表，第一个列表总是要渲染的
         const { data: firstCol } = await get(...this.getHttpParams(0));
@@ -276,7 +276,6 @@ page {
 
 .column {
     background-color: #FBFBFB;
-    width: 33%;
     color: #333;
     font-size: 28rpx;
     height: 100%;
@@ -286,8 +285,19 @@ page {
         background-color: #FFF;
     }
 
+    &.first {
+        width: 188rpx;
+    }
+    &.second {
+        width: 228rpx;
+    }
+    &.third {
+        width: 334rpx;
+    }
+
     .content-box {
-        padding: 0 30rpx;
+        padding-left: 30rpx;
+        white-space: nowrap;
 
         &.selected {
             color: #FFF;

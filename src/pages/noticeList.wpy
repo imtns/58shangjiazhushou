@@ -43,15 +43,11 @@
 
 <script>
 import wepy from 'wepy';
-import Cropper from '../components/Cropper';
 import { sleep, toast } from '../utils/index';
 
 import { get } from '../utils/ajax';
 
 export default class NoticeList extends wepy.page {
-    components = {
-        cropper: Cropper,
-    }
     config = {
         navigationBarTitleText: '通知',
         disableScroll: true,

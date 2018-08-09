@@ -19,9 +19,9 @@
             <view class="mod-information-view mod-information-view-more">公司地址：
                 <text class="mod-information-val">{{addr}}</text>
             </view>
-        <view class="mod-information-view">服务时间：
+        <!-- <view class="mod-information-view">服务时间：
             <text class="mod-information-val">{{serviceTime}}</text>
-        </view>
+        </view> -->
         <view class="mod-information-view mod-information-view-tel" bindtap="callTap" data-tel="{{tel}}">联系电话：
             <text class="mod-information-val">点击获取电话号码</text>
         </view>
