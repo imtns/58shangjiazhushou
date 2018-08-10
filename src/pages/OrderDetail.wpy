@@ -28,7 +28,9 @@
                 </view>
                 <view class="order-row none-border">
                     <view class="left-label">支付方式</view>
-                    <view class="right-text {{fontClass[order.status] || ''}}">到店支付</view>
+                    <view wx:if="{{order.payType==1}}" class="right-text {{fontClass[order.status] || ''}}">免费预约</view>
+                    <view wx:if="{{order.payType==2}}" class="right-text {{fontClass[order.status] || ''}}">一口价</view>
+                    <view wx:if="{{order.payType==3}}" class="right-text {{fontClass[order.status] || ''}}">线上支付订金</view>
                 </view>
             </view>
             <view class="order-status">
@@ -37,22 +39,19 @@
                     {{statusSet[order.status]}}
                 </view>
             </view>
-            <!-- <view class="order-price">
-                <view class="left-label">支付方式</view>
-                <view class="right-text {{fontClass[order.status] || ''}}">到店支付</view>
-            </view> -->
             <view class="order-table">
                 <view class="order-row">
-                    <view class="left-label">订单总价</view>
+                    <view wx:if="{{order.payType==3}}" class="left-label">订金价格</view>
+                    <view wx:else class="left-label">订单总价</view>
                     <view class="right-text">{{order.originalAmount}}元</view>
                 </view>
-                <view class="order-row">
+                <view class="order-row" wx:if="{{order.consumerCouponId!=0}}">
                     <view class="left-label">优惠券</view>
                     <view class="right-text">{{order.realAmount}}元</view>
                 </view>
                 <view class="order-row none-border">
                     <view class="left-label"></view>
-                    <view class="right-text">实际支付 <view class="{{fontClass[order.status] || ''}}">{{order.payType}}元</view></view>
+                    <view class="right-text">实际支付 <view class="{{fontClass[order.status] || ''}}">{{order.realAmount}}元</view></view>
                 </view>
             </view>
             <view class="order-desc" wx:if="{{contentSet[order.status]}}">{{contentSet[order.status]}}</view>
