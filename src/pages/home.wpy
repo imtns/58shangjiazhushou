@@ -10,7 +10,7 @@
                 <view class="item-title" :class="{logoPadding : business.mpCount > 0 }">可上传素材、提交注册信息到当前小程序</view>
                 <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">切换</view>
                 <image  class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
-                <view class="index-block-body">
+                <view class="index-block-body" style="height:193rpx;">
                     <view class="index-loaded-item" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
                         <image src="{{item.iconPath}}" class="item-img"></image>
                         <view class="item-text">{{item.text}}</view>
@@ -25,7 +25,7 @@
         <view class="index-block"  wx:for="{{nItems}}" wx:for-item="nItem"  wx:key="{{nItem.title}}">
             <view class="index-block-title">{{nItem.title}}</view>
             <view class="index-block-body">
-                <view class="index-loaded-item {{item.text === '店铺装修' ? 'shangxin' : ''}}" wx:for="{{nItem.items}}" wx:key="index" bindtap="link({{item.text}})">
+                <view class="index-loaded-item new-margin {{item.text === '店铺装修' ? 'shangxin' : ''}}" wx:for="{{nItem.items}}" wx:key="index" bindtap="link({{item.text}})">
                     <image src="{{item.iconPath}}" class="item-img"></image>
                     <view class="item-text">{{item.text}}</view>
                 </view>
@@ -109,7 +109,12 @@ export default class Home extends wepy.page {
                     }, {
                         iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-coupon.png',
                         text: '优惠劵',
-                    }, {
+                    },
+                    {
+                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-goods.png',
+                        text: '发布商品',
+                    },
+                    {
                         iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-resorce-manage.png',
                         text: '素材管理',
                     },
@@ -385,6 +390,11 @@ export default class Home extends wepy.page {
                     url: 'templateList',
                 });
                 break;
+            case '发布商品':
+                wepy.navigateTo({
+                    url: 'goodsComponentGroup',
+                });
+                break;
             case '发布服务':
                 wepy.navigateTo({
                     url: 'orderComponentGroup',
@@ -486,6 +496,9 @@ export default class Home extends wepy.page {
 </script>
 
 <style lang="scss">
+page{
+    overflow: auto !important;
+}
 view,
 scroll-view {
     box-sizing: border-box;
@@ -752,7 +765,6 @@ scroll-view {
     }
     .index-block{
         width: 698rpx;
-        height:266rpx;
         background: #fff;
         border-radius: 16rpx;
         margin: 30rpx 26rpx;
@@ -769,15 +781,17 @@ scroll-view {
     }
 
     .index-block-body{
-        height:193rpx;
         display:flex;
         flex-wrap: wrap;
         justify-content: flex-start;
         align-items:center;
+        padding-bottom:30rpx;
         .index-loaded-item {
             width: 156rpx;
             text-align: center;
-            
+            &.new-margin{
+                margin:30rpx 0 0rpx 15rpx;
+            }
             .item-img {
                 width: 72rpx;
                 height: 72rpx;

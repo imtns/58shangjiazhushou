@@ -1,4 +1,5 @@
 
+/*eslint-disable */
 var $errorPop = $('div.tips-error');
 var Page = {
     ppu: '',
