@@ -1,0 +1,27 @@
+<template>
+    <web-view src="{{url}}"></web-view>
+</template>
+<script>
+import wepy from 'wepy';
+
+export default class GoodsComponentAdd extends wepy.page {
+    config = {
+        navigationBarTitleText: '添加商品',
+    }
+    data = {
+        url: '',
+    }
+    onLoad(option) {
+        const ppu = encodeURIComponent(wx.getStorageSync('ppu'));
+        const v = (+new Date() * 1).toString(36);
+        this.url = `https://yaofa.58.com/uhtml/goodsComponentAdd?v=${v}&ppu=${ppu}&mpId=${wx.getStorageSync('current_mpid')}&group=${option.group}&id=${option.id}`;
+        this.$apply();
+        console.log(this.url);
+    }
+}
+</script>
+<style lang="scss">
+</style>
+<!--
+    此页面用于文章添加选分组，入口从编辑页面进来
+-->

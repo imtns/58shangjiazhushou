@@ -1,14 +1,14 @@
-;
+/*eslint-disable */
 (function() {
-    var LazyLoad = (function(doc) {
-        var env,
+    let LazyLoad = (function(doc) {
+        let env,
             head,
             pending = {},
             pollCount = 0,
             queue = { css: [], js: [] },
             styleSheets = doc.styleSheets;
         function createNode(name, attrs) {
-            var node = doc.createElement(name),
+            let node = doc.createElement(name),
                 attr;
 
             for (attr in attrs) {
@@ -20,7 +20,7 @@
             return node;
         }
         function finish(type) {
-            var p = pending[type],
+            let p = pending[type],
                 callback,
                 urls;
 
@@ -38,10 +38,10 @@
             }
         }
         function getEnv() {
-            var ua = navigator.userAgent;
+            let ua = navigator.userAgent;
 
             env = {
-                async: doc.createElement("script").async === true
+                async: doc.createElement('script').async === true,
             };
 
             (env.webkit = /AppleWebKit\//.test(ua)) ||
@@ -51,10 +51,10 @@
                 (env.unknown = true);
         }
         function load(type, urls, callback, obj, context) {
-            var _finish = function() {
+            let _finish = function() {
                     finish(type);
                 },
-                isCSS = type === "css",
+                isCSS = type === 'css',
                 nodes = [],
                 i,
                 len,
@@ -66,13 +66,13 @@
             env || getEnv();
 
             if (urls) {
-                urls = typeof urls === "string" ? [urls] : urls.concat();
+                urls = typeof urls === 'string' ? [urls] : urls.concat();
                 if (isCSS || env.async || env.gecko || env.opera) {
                     queue[type].push({
                         urls: urls,
                         callback: callback,
                         obj: obj,
-                        context: context
+                        context: context,
                     });
                 } else {
                     for (i = 0, len = urls.length; i < len; ++i) {
@@ -80,7 +80,7 @@
                             urls: [urls[i]],
                             callback: i === len - 1 ? callback : null,
                             obj: obj,
-                            context: context
+                            context: context,
                         });
                     }
                 }
@@ -90,7 +90,7 @@
                 return;
             }
 
-            head || (head = doc.head || doc.getElementsByTagName("head")[0]);
+            head || (head = doc.head || doc.getElementsByTagName('head')[0]);
             pendingUrls = p.urls.concat();
 
             for (i = 0, len = pendingUrls.length; i < len; ++i) {
@@ -98,24 +98,24 @@
 
                 if (isCSS) {
                     node = env.gecko
-                        ? createNode("style")
-                        : createNode("link", {
-                              href: url,
-                              rel: "stylesheet"
-                          });
+                        ? createNode('style')
+                        : createNode('link', {
+                            href: url,
+                            rel: 'stylesheet',
+                        });
                 } else {
-                    node = createNode("script", { src: url });
+                    node = createNode('script', { src: url });
                     node.async = false;
                 }
 
-                node.className = "lazyload";
-                node.setAttribute("charset", "utf-8");
+                node.className = 'lazyload';
+                node.setAttribute('charset', 'utf-8');
 
                 if (
                     env.ie &&
                     !isCSS &&
-                    "onreadystatechange" in node &&
-                    !("draggable" in node)
+                    'onreadystatechange' in node &&
+                    !('draggable' in node)
                 ) {
                     node.onreadystatechange = function() {
                         if (/loaded|complete/.test(node.readyState)) {
@@ -128,7 +128,7 @@
                         p.urls[i] = node.href;
                         pollWebKit();
                     } else {
-                        node.innerHTML = '@import "' + url + '";';
+                        node.innerHTML = `@import "${  url  }";`;
                         pollGecko(node);
                     }
                 } else {
@@ -144,7 +144,7 @@
         }
 
         function pollGecko(node) {
-            var hasRules;
+            let hasRules;
 
             try {
                 hasRules = !!node.sheet.cssRules;
@@ -152,21 +152,21 @@
                 pollCount += 1;
 
                 if (pollCount < 200) {
-                    setTimeout(function() {
+                    setTimeout(() => {
                         pollGecko(node);
                     }, 50);
                 } else {
-                    hasRules && finish("css");
+                    hasRules && finish('css');
                 }
 
                 return;
             }
 
-            finish("css");
+            finish('css');
         }
 
         function pollWebKit() {
-            var css = pending.css,
+            let css = pending.css,
                 i;
 
             if (css) {
@@ -174,7 +174,7 @@
 
                 while (--i >= 0) {
                     if (styleSheets[i].href === css.urls[0]) {
-                        finish("css");
+                        finish('css');
                         break;
                     }
                 }
@@ -185,24 +185,24 @@
                     if (pollCount < 200) {
                         setTimeout(pollWebKit, 50);
                     } else {
-                        finish("css");
+                        finish('css');
                     }
                 }
             }
         }
 
         return {
-            css: function(urls, callback, obj, context) {
+            css(urls, callback, obj, context) {
                 load("css", urls, callback, obj, context);
             },
 
-            js: function(urls, callback, obj, context) {
+            js(urls, callback, obj, context) {
                 load("js", urls, callback, obj, context);
-            }
+            },
         };
-    })(this.document);
+    }(this.document));
 
-    LazyLoad.js(window.__staticConfigUrl + '?' + (+new Date()).toString(36), function() {
+    LazyLoad.js(`${window.__staticConfigUrl  }?${  (+new Date()).toString(36)}`, () => {
         var sc = window.__staticConfig,
             jsCfg = sc.jsCfg,
             jsCdn = sc.jsCdn || '//j1.58cdn.com.cn',
@@ -217,4 +217,4 @@
             LazyLoad.css(cssCdn + css.url + "?" + css.version);
         }
     });
-})();
+}());
