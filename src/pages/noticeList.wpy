@@ -1,9 +1,9 @@
 <template>
     <view class="notice-container">
-        <view class="follow-public">
+        <view class="follow-public" wx:if="{{!isFollow}}">
             <text>关注公众号接收通知</text>
-            <!-- <navigator class="follow-action" url="/pages/followPublic">马上关注</navigator> -->
-            <button class="follow-action" wx:if="{{canIUse}}" open-type="getUserInfo" @tap="loadSession()">马上关注</button>
+            <navigator class="follow-action" wx:if="{{assistAuth}}" url="/pages/followPublic">马上关注</navigator>
+            <button class="follow-action" wx:if="{{canIUse && !assistAuth}}" open-type="getUserInfo" @tap="loadSession()">马上关注</button>
             <!-- <cropper></cropper> -->
         </view>
         <view class="notice-header">
@@ -65,6 +65,8 @@ export default class NoticeList extends wepy.page {
             page: 1,
             pageSize: 10,
         },
+        isFollow: false, // 是否关注公众号
+        assistAuth: false, // 是否授权
     }
     methods = {
         noticeListMore() {
@@ -80,7 +82,9 @@ export default class NoticeList extends wepy.page {
                 const { sessionKey } = data;
                 const { state } = await get('/wechat/bizAssistAuth/insert', { encryptedData: this.encryptedData, iv: this.iv, session: sessionKey });
                 if (state === 100) {
-                    wx.navigateTo = '/pages/followPublic';
+                    wx.navigateTo({
+                        url: '/pages/followPublic',
+                    });
                 }
             } catch (e) {
                 console.log(e);
@@ -91,6 +95,7 @@ export default class NoticeList extends wepy.page {
         this.loadList();
         this.loadCode();
         this.getInfo();
+        this.getAssistAuth();
     }
     async onHide() {
         console.log('onHide');
@@ -131,6 +136,27 @@ export default class NoticeList extends wepy.page {
                 that.encryptedData = encryptedData;
             },
         });
+    }
+    async getAssistAuth() {
+        const that = this;
+        try {
+            const { data } = await get('/wechat/bizAssistAuth/get');
+            console.log(data);
+            const { isFollow, assistInfo } = data;
+            if (!isFollow && JSON.stringify(assistInfo) === '{}') {
+                // 既没有授权也没有关注公众号
+                console.log('=======');
+                that.assistAuth = false;
+            } else if (!isFollow && JSON.stringify(assistInfo) !== '{}') {
+                // 已授权但没有关注公众号
+                console.log('---------');
+                that.assistAuth = true;
+            }
+            that.isFollow = isFollow;
+            console.log(that.assistAuth);
+        } catch (e) {
+            console.log(e);
+        }
     }
     async loadList() {
         try {
@@ -242,6 +268,8 @@ view,scroll-view{
             position:absolute;
             right:30rpx;
             top:15rpx;
+            background:#fff;
+            padding:0 15rpx;
         }
     }
     .notice-header{
