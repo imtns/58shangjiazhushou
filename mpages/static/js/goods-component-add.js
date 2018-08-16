@@ -102,6 +102,16 @@ var Page = {
                 });
             },
         });
+        $(".icon-bold").on("click",function(){
+            if($(this).attr("src").indexOf('unbold')>1){
+                $(this).attr("src",'//static.58.com/lbg/shangjiaxcxht/zhushou/img/bold.png');
+                $(".zeditor-content").find('p').css('font-weight','bold');
+            }else{
+                $(this).attr("src",'//static.58.com/lbg/shangjiaxcxht/zhushou/img/unbold.png');
+                $(".zeditor-content").find('p').css('font-weight','normal');
+            }
+           
+        });
         // 上传头图
         $('#item-file-btn').on('change', function() {
             let self = this,
