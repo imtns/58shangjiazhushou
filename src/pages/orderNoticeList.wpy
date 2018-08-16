@@ -61,12 +61,12 @@ export default class OrderNoticeList extends wepy.page {
             this.loadList();
         },
     }
+    onReady () {
+        this.loadList();
+    }
     async onLoad () {
         await sleep();
         console.log('onLoad');
-    }
-    async onShow () {
-        this.loadList();
     }
     async onHide () {
         console.log('onHide');

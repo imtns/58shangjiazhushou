@@ -35,6 +35,7 @@ export default class extends wepy.app {
             'pages/edit/title',
             'pages/edit/article',
             'pages/edit/images',
+            'pages/edit/goods',
             'pages/contact/contact',
             'pages/news/news',
             'pages/product/product',
@@ -68,6 +69,10 @@ export default class extends wepy.app {
             'pages/accountNoticeList', // 入账提醒页面
             'pages/OrderList', // 订单列表
             'pages/OrderDetail', // 订单详情
+            'pages/goodsComponentlist',
+            'pages/goodsComponentGroup',
+            'pages/goodsComponentAdd',
+            'pages/goodsComponentDetail',
             'pages/articleComponentCreate', // 文章添加(不选分组)
             'pages/articleComponentAdd', // 文章添加(选分组)
             'pages/articleComponentlist', // 文章列表
@@ -89,8 +94,8 @@ export default class extends wepy.app {
             'pages/multiSelector', // 多级选择页面
             'pages/followPublic', // 关注公众号页
             'pages/purchase',
-
             'pages/cropper',
+            'pages/orderDetailSelector', // 服务详情-服务详情编辑
         ],
         window: {
             backgroundTextStyle: 'light',
@@ -101,7 +106,7 @@ export default class extends wepy.app {
     }
     onLaunch () {
         console.log('onlaunch');
-        // wx.setStorageSync('ppu', 'UID=48917864286479&UN=zf3e85&TT=e7a9c8559c4c25e5c6ab1aa762d962a2&PBODY=iJR2IIKLdRVhe8Nv9tVmeSN3NBYSoaIAezJWJ02ovlVQcq5gvKnQmI5_WVGYBxKlDnpVUUzsWY154_vrvFHqUn6ndOwrYx0qJhr1s7guyApOp7zNFKcqIZFUK2n9QuI04wdwDgWyN9UrBhG0deEsG8EcLeY3LW5NUy6DV0qoCZ0&VER=1');
+        // wx.setStorageSync('ppu', 'UID=31755938744583&UN=huhy02&TT=b28ea41cef5861bea9331750993644a4&PBODY=LIbxOLdwSBO_HZKchfZw3KFwFO23PWqIZlLGC5vqitqpLHds2HIOidPNM_mUQoZ72mrX21sc7fBe40HW4lggeyKEa1RJn_ehL_yUTs4QPg7U5_Qwe0spRo8447xAWSwgXW4-wuTKyvDp51fpw9LXqkrTcDPrz3EGrGGkU9-JIWQ&VER=1');
     }
     onShow (options) {
         // 赋值场景值、referrer信息

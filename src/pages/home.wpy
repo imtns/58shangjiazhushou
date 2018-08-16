@@ -1,6 +1,11 @@
 <template>
-    <view class="home">
+    <scroll-view class="home" scroll-y>
         <view class="index-loaded-header">
+            <view class="follow-public" wx:if="{{!isFollow}}">
+                <text>关注公众号接收通知</text>
+                <navigator class="follow-action" wx:if="{{assistAuth}}" url="/pages/followPublic">马上关注</navigator>
+                <button class="follow-action" wx:elif="{{!assistAuth}}" open-type="getUserInfo" @tap="loadSession()">马上关注</button>
+            </view>
             <view class="welcome-block">
                 <view class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
                 <navigator url="noticeList" :class="{'new-msg': business.unread}" class="msg-box'"></navigator>
@@ -10,7 +15,7 @@
                 <view class="item-title" :class="{logoPadding : business.mpCount > 0 }">可上传素材、提交注册信息到当前小程序</view>
                 <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">切换</view>
                 <image  class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
-                <view class="index-block-body">
+                <view class="index-block-body" style="height:193rpx;">
                     <view class="index-loaded-item" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
                         <image src="{{item.iconPath}}" class="item-img"></image>
                         <view class="item-text">{{item.text}}</view>
@@ -25,7 +30,7 @@
         <view class="index-block"  wx:for="{{nItems}}" wx:for-item="nItem"  wx:key="{{nItem.title}}">
             <view class="index-block-title">{{nItem.title}}</view>
             <view class="index-block-body">
-                <view class="index-loaded-item {{item.text === '店铺装修' ? 'shangxin' : ''}}" wx:for="{{nItem.items}}" wx:key="index" bindtap="link({{item.text}})">
+                <view class="index-loaded-item new-margin {{item.text === '店铺装修' ? 'shangxin' : ''}}" wx:for="{{nItem.items}}" wx:key="index" bindtap="link({{item.text}})">
                     <image src="{{item.iconPath}}" class="item-img"></image>
                     <view class="item-text">{{item.text}}</view>
                 </view>
@@ -51,7 +56,7 @@
                 <view class="confirm" :class="{ 'active' : business.canConfirm}" bindtap="confirmAction">确定</view>
             </view>
         </view>
-    </view>
+    </scroll-view>
 </template>
 
 <script>
@@ -65,9 +70,14 @@ export default class Home extends wepy.page {
     mixins = [Mixin]
     config = {
         navigationBarTitleText: '首页',
-        disableScroll: true,
     }
     data = {
+        code: '',
+        iv: '',
+        encryptedData: '',
+        session: '',
+        isFollow: false, // 是否关注公众号
+        assistAuth: false, // 是否授权
         business: {
             mps: [],
             name: '您的姓名',
@@ -111,7 +121,12 @@ export default class Home extends wepy.page {
                     }, {
                         iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-coupon.png',
                         text: '优惠劵',
-                    }, {
+                    },
+                    {
+                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-goods.png',
+                        text: '发布商品',
+                    },
+                    {
                         iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-resorce-manage.png',
                         text: '素材管理',
                     },
@@ -245,7 +260,6 @@ export default class Home extends wepy.page {
                 // });
             }
             this.$apply();
-            // console.log('this.business.mps', this.business.mps);
         },
         bindHideMask () {
             this.business = Object.assign({}, this.business, {
@@ -272,13 +286,6 @@ export default class Home extends wepy.page {
             }
         },
     }
-    hideMask () {
-        this.business = Object.assign({}, this.business, {
-            changeMP: false,
-            canConfirm: false,
-        });
-        this.$apply();
-    }
     async onLoad () {
         // globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
         await this.loadData();
@@ -287,6 +294,9 @@ export default class Home extends wepy.page {
     }
     async onShow () {
         await this.loadData();
+        await this.getAssistAuth();
+        this.loadCode();
+        this.getInfo();
     }
     formatedMp (item) {
         const mp = item;
@@ -301,7 +311,6 @@ export default class Home extends wepy.page {
     onShareAppMessage (res) {
         if (res.from === 'button') {
             // 来自页面内转发按钮
-            console.log(res.target);
         }
         return {
             title: '高效管理商家小程序的一站式服务工具',
@@ -315,12 +324,82 @@ export default class Home extends wepy.page {
             },
         };
     }
+    async getAssistAuth() {
+        const that = this;
+        try {
+            const { data } = await get('/wechat/bizAssistAuth/get');
+            const { isFollow, assistInfo } = data;
+            if (!isFollow && JSON.stringify(assistInfo) === '{}') {
+                // 既没有授权也没有关注公众号
+                that.assistAuth = false;
+                this.$apply();
+            } else if (!isFollow && JSON.stringify(assistInfo) !== '{}') {
+                // 已授权但没有关注公众号
+                that.assistAuth = true;
+                this.$apply();
+            }
+            that.isFollow = isFollow;
+            console.log(that.assistAuth);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    // 获取授权数据
+    async loadSession() {
+        try {
+            const { data } = await get('/wechat/bizAssistAuth/session', { code: this.code });
+            const { sessionKey } = data;
+            const { state, msg } = await get('/wechat/bizAssistAuth/insert', { encryptedData: this.encryptedData, iv: this.iv, session: sessionKey });
+            if (state === 100) {
+                wx.navigateTo({
+                    url: '/pages/followPublic',
+                });
+            }
+            if (state === 0) {
+                alert(msg);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    async loadCode() {
+        const that = this;
+        wx.login({
+            success(res) {
+                if (res.code) {
+                    console.log(res.code);
+                    that.code = res.code;
+                    // 查看是否授权
+                } else {
+                    console.log('denglishiba');
+                }
+            },
+        });
+    }
+    async getInfo() {
+        const that = this;
+        // 已经授权，可以调用getuseinfo获取头像昵称
+        wx.getUserInfo({
+            success(res) {
+                console.log(res);
+                const { iv, encryptedData } = res;
+                that.iv = iv;
+                that.encryptedData = encryptedData;
+            },
+        });
+    }
+    hideMask () {
+        this.business = Object.assign({}, this.business, {
+            changeMP: false,
+            canConfirm: false,
+        });
+        this.$apply();
+    }
     // 获取当前小程序的extjson
     async loadExtJson() {
         const url = '/mpBusinessRelease/getExtJson';
         const { data } = await get(url, { sceneKey: wx.getStorageSync('current_mpid') });
         globalData.extConfig = data;
-        console.log(data);
     }
     async loadData () {
         try {
@@ -357,7 +436,6 @@ export default class Home extends wepy.page {
         }
     }
     checkBeforeJump (text) {
-        // console.log('this.business.selected.', this.business.selected);
         if (!this.business.mpCount) {
             alert('您还未购买小程序，请登录e.58.com进行购买', '提示');
             return;
@@ -386,6 +464,11 @@ export default class Home extends wepy.page {
             case '店铺装修':
                 wepy.navigateTo({
                     url: 'templateList',
+                });
+                break;
+            case '发布商品':
+                wepy.navigateTo({
+                    url: 'goodsComponentGroup',
                 });
                 break;
             case '发布服务':
@@ -490,6 +573,9 @@ export default class Home extends wepy.page {
 </script>
 
 <style lang="scss">
+page{
+    overflow: auto !important;
+}
 view,
 scroll-view {
     box-sizing: border-box;
@@ -497,6 +583,7 @@ scroll-view {
 .home {
     width: 100%;
     height: 1206rpx;
+    overflow: scroll;
     background: #f6f6f6;
     .mask {
         width: 100%;
@@ -596,7 +683,7 @@ scroll-view {
     }
     .index-loaded-header {
         width: 100%;
-        height: 548rpx;
+        height: 640rpx;
         .welcome-block {
             width: 100%;
             height: 306rpx;
@@ -723,6 +810,30 @@ scroll-view {
             color: #6AA1FF;
         }
     }
+    .follow-public {
+        width: 100%;
+        height: 80rpx;
+        line-height:80rpx;
+        position:relative;
+        font-size: 28rpx;
+        color: #FFA710;
+        padding: 0 30rpx;
+        background: #FFEDCF;
+        .follow-action {
+            color: #FFA710;
+            text-align: center;
+            line-height: 50rpx;
+            font-size: 28rpx;
+            height: 50rpx;
+            border: 1rpx solid #fd867e;
+            border-radius: 5rpx;
+            position:absolute;
+            right:30rpx;
+            top:15rpx;
+            background:#fff;
+            padding:0 15rpx;
+        }
+    }
     .index-loaded-body {
         width: 698rpx;
         height: 430rpx;
@@ -756,7 +867,6 @@ scroll-view {
     }
     .index-block{
         width: 698rpx;
-        height:266rpx;
         background: #fff;
         border-radius: 16rpx;
         margin: 30rpx 26rpx;
@@ -773,15 +883,17 @@ scroll-view {
     }
 
     .index-block-body{
-        height:193rpx;
         display:flex;
         flex-wrap: wrap;
         justify-content: flex-start;
         align-items:center;
+        padding-bottom:30rpx;
         .index-loaded-item {
             width: 156rpx;
             text-align: center;
-            
+            &.new-margin{
+                margin:30rpx 0 0rpx 15rpx;
+            }
             .item-img {
                 width: 72rpx;
                 height: 72rpx;

@@ -1,0 +1,233 @@
+<template>
+    <view class="containe">
+        <view class="banner">
+            <image class="banner-icon" src="./assets/banner-icon.png"></image>
+        </view>
+        <view class="items-body">
+            <view class="article-header">
+                <view class="line"></view>
+                <view class="article-header-text">{{name}}</view>
+                <view class="line"></view>
+            </view>
+            <scroll-view
+                class="article-list {{isEditing ? 'edit' : ''}}"
+                style="height:{{height}};"
+                scroll-y="true"
+                wx:if="{{listData.length > 0}}">
+                <view
+                    class="list-item order-component-list"
+                    @tap.stop="editChose({{item.id}}, {{index}})"
+                    :class="{ selected: item.choseStatu}"
+                    wx:for="{{listData}}"
+                    wx:key="{{index}}"
+                    data-item="{{item}}">
+                    <image class="list-image" src="{{item.pics}}"></image>
+                    <view class="list-detail">
+                        <view class="list-title">{{item.title}}</view>
+                        <view class="list-intro">服务价格：<text>{{item.price!=null ? item.price : '0'}}</text>元
+                        </view>
+                    </view>
+                    <view class="border-btn"  wx:if="{{item.status === 0}}" data-item="{{item}}" @tap.capture.stop="manageProduct">下架</view>
+                    <view class="border-btn" @tap.capture.stop="manageProduct" data-item="{{item}}" wx:if="{{item.status === 2}}">上架</view>
+                </view>
+                <view class="block"></view>
+            </scroll-view>
+            <EmptyPage wx:if="{{!listData.length}}" :title.sync="title"></EmptyPage>
+        </view>
+    </view>
+    <view class="options" wx:if="{{!isEditing}}">
+        <view class="button edit" @tap="edit" wx:if="{{listData.length}}">编辑</view>
+        <view class="button" @tap="addGroup">添加商品</view>
+    </view>
+    <view class="options" wx:if="{{isEditing}}">
+        <view class="button edit" @tap="cancle">取消</view>
+        <view class="button" @tap="toDelete">删除</view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { alert, toast } from '../utils';
+import { get } from '../utils/ajax';
+import EmptyPage from '../components/EmptyPage';
+
+export default class goodsComponentList extends wepy.page {
+    config = {
+        navigationBarTitleText: '预约列表',
+        disableScroll: true,
+    }
+    components = {
+        EmptyPage,
+    }
+    data = {
+        height: '',
+        isEditing: false,
+        listData: [],
+        delList: [],
+        id: '',
+        group: '',
+        mpId: '',
+        pageSize: 100,
+        pageNum: 1,
+        name: '',
+        title: '没有商品~',
+        isLoading: true,
+    }
+    onLoad(option) {
+        try {
+            const { id = '', name = '' } = option;
+            this.group = id;
+            this.name = name;
+            const mpId = wepy.getStorageSync('current_mpid');
+            this.mpId = mpId;
+            this.$apply();
+            const { windowHeight } = wepy.getSystemInfoSync();
+            const height = windowHeight;
+            this.height = `${(height * 2) - (88 * 2) - (40 * 2) - 96}rpx`;
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    onShow() {
+        console.log('show');
+        this.loadList();
+    }
+    onReachBottom() {
+        if (!this.isloading) return;
+        const pageNum = this.pageNum + 1;
+        this.pageNum = pageNum;
+        this.$apply();
+        this.loadList();
+    }
+    methods = {
+        editChose(id, index) {
+            if (this.isEditing) {
+                const item = this.listData[index];
+                const itemIndex = this.delList.length === 0 ? -2 : this.delList.indexOf(id);
+                console.log(itemIndex);
+                if (item) {
+                    item.choseStatu = !item.choseStatu;
+                }
+                if (itemIndex < 0) {
+                    this.delList.push(id);
+                } else {
+                    this.delList.splice(itemIndex, 1);
+                }
+                this.$apply();
+                console.log(this.delList);
+                return;
+            }
+            wepy.navigateTo({
+                url: `goodsComponentDetail?id=${id}&group=${this.group}`,
+            });
+        },
+    }
+    async loadList() {
+        const { pageSize, pageNum } = this;
+        const { data } = await get('/goods/list', {
+            pageSize,
+            pageNum,
+            mpId: this.mpId,
+            groupId: this.group,
+        });
+        const nData = data.data;
+        if (this.pageNum === 1 && (nData.length === 0 || !nData)) {
+            this.isLoading = false;
+            // toast('没有数据');
+            return;
+        }
+        if (this.pageNum > 1 && nData.length < this.pageSzie) {
+            this.isLoading = false;
+            toast('没有更多数据');
+            return;
+        }
+        nData.forEach(item => {
+            Object.assign(item, {
+                choseStatu: false,
+            });
+        });
+        this.listData = this.pageNum === 1 ? nData : this.listData.concat(nData);
+        this.$apply();
+        // console.log(this.listData);
+    }
+    edit() {
+        this.isEditing = !this.isEditing;
+        this.delList = [];
+        this.$apply();
+    }
+    async toDelete() {
+        try {
+            const { delList } = this;
+            if (delList.length === 0) {
+                alert('请选择要删除的服务');
+                return;
+            }
+            const ids = delList.join(',');
+            await get('/goods/del/', {
+                goodIds: ids,
+            });
+            alert('删除成功！');
+            this.loadList();
+        } catch (e) {
+            console.log(e);
+            alert('该服务在模板中被应用，不能被删除');
+        }
+        this.isEditing = false;
+        this.$apply();
+    }
+    cancle() {
+        const dataList = this.listData;
+        dataList.forEach(item => {
+            Object.assign(item, {
+                choseStatu: false,
+            });
+        });
+        this.isEditing = false;
+        this.listData = dataList;
+        this.$apply();
+    }
+    addGroup() {
+        // 添加预约服务
+        wepy.navigateTo({
+            url: `goodsComponentAdd?group=${this.group}`,
+        });
+    }
+    async manageProduct(e) {
+        const { status, id } = e.currentTarget.dataset.item;
+        let msg;
+        try {
+            await get('/businessService/update', {
+                id,
+                status: status === 2 ? 0 : 2,
+            });
+            if (status === 0) {
+                msg = '下架成功';
+            } else if (status === 2) {
+                msg = '上架成功';
+            }
+            alert(msg);
+            this.pageNum = 1;
+            this.$apply();
+            await this.loadList();
+        } catch (err) {
+            alert(err);
+            console.log(err);
+        }
+    }
+}
+</script>
+
+<style lang="scss">
+@import '../css/btn.scss';
+@import '../css/list.scss';
+    page{
+        position:relative;
+    }
+    .containe .items-body .order-component-list.list-item{
+        margin-left:40rpx;
+        width:690rpx;
+    }
+    .empty-box{
+        margin-top:100rpx;
+    }
+</style>

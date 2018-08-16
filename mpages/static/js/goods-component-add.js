@@ -4,6 +4,7 @@ const $errorPop = $('div.tips-error');
 var Page = {
     ppu: '',
     id: '',
+    mpId:'',
     group: '',
     name: '',
     saveStatus: '',
@@ -46,11 +47,15 @@ var Page = {
     init() {
         Page.ppu = decodeURIComponent(Page.getKey('ppu'));
         Page.id = Page.getKey('id');
+        Page.group = Page.getKey('group');
+        Page.mpId = Page.getKey('mpId');
         $('.item-file-div').removeClass('none');
-        Page.loadGroupData();
+        if(Page.id && Page.id != 'undefined'){
+            Page.loadGoodData();
+        }
     },
     initEvent () {
-        // 初始化文章编辑框
+        // 初始化商品编辑框
         window.editor = ZEditor('#editor', {
             selectImage (cb) {
                 // 商品详情内容编辑
@@ -70,7 +75,7 @@ var Page = {
                     formData.append('source', $(self).get(0).files[0]);
                     document.domain = '58.com';
                     $.ajax({
-                        url: '/fileUpload',
+                        url: 'https://yaofa.58.com/fileUpload',
                         type: 'POST',
                         data: formData,
                         contentType: false,
@@ -97,6 +102,16 @@ var Page = {
                 });
             },
         });
+        $(".icon-bold").on("click",function(){
+            if($(this).attr("src").indexOf('unbold')>1){
+                $(this).attr("src",'//static.58.com/lbg/shangjiaxcxht/zhushou/img/bold.png');
+                $(".zeditor-content").find('p').css('font-weight','bold');
+            }else{
+                $(this).attr("src",'//static.58.com/lbg/shangjiaxcxht/zhushou/img/unbold.png');
+                $(".zeditor-content").find('p').css('font-weight','normal');
+            }
+           
+        });
         // 上传头图
         $('#item-file-btn').on('change', function() {
             let self = this,
@@ -114,7 +129,7 @@ var Page = {
 
             formData.append('sources', $(self).get(0).files[0]);
             $.ajax({
-                url: '/fileUpload',
+                url: 'https://yaofa.58.com/fileUpload',
                 type: 'POST',
                 data: formData,
                 contentType: false,
@@ -148,18 +163,18 @@ var Page = {
         $('.save-btn').on('click', () => {
             let group = Page.group,
                 title = $('._title').val(),
-                intro = $('.zeditor-content').find('p:first-child').text().substring(0, 43),
-                source = $('._source').val(),
-                author = $('.item-input._author').val(),
+                description = $('.zeditor-content').html(),
+                stock = $('._source').val(),
+                price = $('.item-input._author').val(),
                 temp = $('.zeditor-content').find('p'),
                 content = $('.zeditor-content').html(),
-                cover = $('#cover').attr('src') ? $('#cover').attr('src').split('.cn')[1].replace(/([/])\1+/g, '$1') : '';
+                pics = $('#cover').attr('src') ? $('#cover').attr('src').split('.cn')[1].replace(/([/])\1+/g, '$1') : '';
             if (!title) {
-                Page.toast($errorPop, '请填写文章标题');
+                Page.toast($errorPop, '请填写商品标题');
                 return;
             }
-            if (!cover) {
-                Page.toast($errorPop, '请上传文章头图');
+            if (!pics) {
+                Page.toast($errorPop, '请上传商品头图');
                 return;
             }
             if (!Page.group) {
@@ -167,31 +182,42 @@ var Page = {
                 return;
             }
             if (temp.length == 1 && temp.html() == '<br>') {
-                Page.toast($errorPop, '请编辑文章内容');
+                Page.toast($errorPop, '请编辑商品内容');
                 return;
             }
             if (title.length > 15) {
-                Page.toast($errorPop, '文章标题不能多于15个字');
+                Page.toast($errorPop, '商品标题不能多于15个字');
                 return;
             }
             if (content.length >= 20000) {
-                Page.toast($errorPop, '文章内容不得大于20000个字符');
+                Page.toast($errorPop, '商品内容不得大于20000个字符');
                 return;
             }
-            var url = '/businessArticle/insert/';
+            var url = "";
+            if(Page.id && Page.id !='undefined'){
+                url = '/goods/modify';   
+            }else{
+                url = '/goods/insert';
+            }
+            var data = {
+                groupId: group,
+                title: title,
+                pics: 'http://pic1.58cdn.com.cn/'+pics,
+                stock: stock || '未知',
+                price: price || '0',
+                description: description,
+                test: Page.test || 'test',
+                mpId:Page.mpId
+            }
+            if(Page.id){
+                Object.assign(data,{
+                    goodId:Page.id
+                })
+            }
             $.ajax({
                 url: url,
                 type: 'POST',
-                data: {
-                    group: group,
-                    title: title,
-                    cover: cover,
-                    intro: intro,
-                    source: source || '未知',
-                    author: author || '未知',
-                    content: content,
-                    test: Page.test,
-                },
+                data: data,
                 headers: {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
                     PPU: Page.ppu || 'wanghongyue',
@@ -202,8 +228,8 @@ var Page = {
                     if (res.state == 100) {
                         Page.toast($('div.tips-success'));
                         setTimeout(function() {
-                            wx.miniProgram.redirectTo({
-                                url: '/pages/edit/article?id=' + Page.id
+                            wx.miniProgram.navigateBack({
+                                delta: 1,
                             });
                         },2000);
                     } else {
@@ -228,73 +254,13 @@ var Page = {
             $('.group-dialog').addClass('none');
             $('.dialog-create-group').removeClass('none');
         });
-        // 请求添加分组
-        $('._sure-create').on('click', () => {
-            let name = $('.dialog-content-input').val();
-            if (!name) {
-                Page.toast($errorPop, '请输入分组名称！', true);
-                return;
-            }
-            if (name.length > 15) {
-                Page.toast($errorPop, '分组名称不得超过15个字！', true);
-                return;
-            }
-            $.ajax({
-                url: '/businessArticle/addgroup',
-                data: {
-                    name: name,
-                    test: Page.test,
-                },
-                headers: {
-                    'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-                    PPU: Page.ppu || 'wanghongyue',
-                    reqfrom: 'biz_assistant',
-                },
-                success(res) {
-                    var res = JSON.parse(res);
-                    if(res.state == 100){
-                        $('.mask,.group-dialog').removeClass('none');
-                        // location.reload();
-                        Page.loadGroupData();
-                    }else{
-                        Page.toast($errorPop, res.msg);
-                    }
-                },
-            });
-            $('.mask,.dialog-create-group').addClass('none');
-            $('.dialog-content-input').val('');
-        });
-        // 选择分组
-        $('.group-dialog-list').attr('cursor', 'pointer').on('touchstart', '.group-dialog-item', function() {
-            const flag = $(this).hasClass('selected');
-            if (!flag) {
-                let name = $(this).data('name'),
-                    group = $(this).data('id');
-                $(this).addClass('selected').siblings('.group-dialog-item').removeClass('selected');
-                $('._chose-btn').data('name', name).data('group', group);
-            } else {
-                $(this).removeClass('selected');
-            }
-        });
-        $('._chose-btn').on('click', function() {
-            let name = $(this).data('name'),
-                group = $(this).data('group');
-            if (!name) {
-                Page.toast($errorPop, '请选择文章分组！');
-                return;
-            }
-            $('.item-chose').text(name);
-            Page.name = name;
-            Page.group = group;
-            $('.mask,.group-dialog').addClass('none');
-            $(this).data(name, '');
-            $(this).data(group, '');
-        });
+
     },
-    loadGroupData() {
+    loadGoodData() {
         $.ajax({
-            url: '/businessArticle/groups',
+            url: '/goods/get',
             data: {
+                goodId:Page.id,
                 test: Page.test,
             },
             headers: {
@@ -304,14 +270,16 @@ var Page = {
             },
             success(res) {
                 var res = JSON.parse(res);
+                console.log(res);
                 $('.group-dialog-list').html('');
                 if (res.state == 100) {
-                    let data = res.data,
-                        html = '';
-                    for (let i = 0;i < data.length; i++) {
-                        html += `<div class="group-dialog-item" data-id="${data[i].id}" data-name="${data[i].name}">${  data[i].name  }</div>`;
-                    }
-                    $('.group-dialog-list').html(html);
+                    $('._title').val(res.data.title);
+                    $('.zeditor-content').html(res.data.description);
+                    $('._source').val(res.data.stock);
+                    $('.item-input._author').val(res.data.price);
+                    $('#cover').attr('src',res.data.pics);
+                    $(".item-upload-img").removeClass('none');
+                    $(".item-file-div").addClass('none');
                 } else {
                     Page.toast($errorPop, res.msg);
                 }

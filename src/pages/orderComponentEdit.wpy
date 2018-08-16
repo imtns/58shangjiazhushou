@@ -61,6 +61,7 @@
                 <text>预约区域</text>
                 <navigator
                 :class="{ placeholder: region === '' }"
+                hover-class="none"
                 url="/pages/multiSelector">
                     {{ region || '去选择' }}
                     <view class="icon more"></view>
@@ -89,7 +90,18 @@
             placeholder="详细描述下您的服务内容吧~"
             placeholder-class="placeholder"
             value="{{ form.serviceDetailInfo }}"
-            @input="setFormData('serviceDetailInfo')"></textarea>
+            @input="setFormData('serviceDetailInfo')">
+            </textarea>
+            <!-- <view class="item required">
+                <text>服务详情</text>
+                <navigator
+                hover-class="none"
+                :class="{ placeholder: region === '' }"
+                url="/pages/orderDetailSelector">
+                    {{ region || '未填写' }}
+                    <view class="icon more"></view>
+                </navigator>
+            </view> -->
         </view>
         <view class="section">
             <view class="item border-bottom">
@@ -111,11 +123,27 @@
             </view>
         </view>
         <view class="section">
-            <view class="item required">
-                <text>支付方式</text>
-                <view>本产品目前仅支持到店支付</view>
+            <view class="item required border-bottom">
+                <text>收费方式</text>
+                <view class="pay-types">
+                    <view  wx:for="{{payTypeDetail}}" wx:key="{{index}}" class="pay-type {{item.value==form.payType?'selected':''}}" @tap="bindPayType({{item.value}})">{{item.name}}</view>
+                    <!-- <view>{{form.payTypeDetail}}</view> -->
+                </view>
+            </view>
+            <view class="item required" wx:if="{{form.payType == 2 || form.payType == 3}}">
+                <text wx:if="{{form.payType == 2}}">一口价</text>
+                <text wx:if="{{form.payType == 3}}">定金价格</text>
+                <input
+                class="price-font input-price"
+                type="digit"
+                placeholder="请输入价格"
+                placeholder-class="placeholder"
+                value="{{ form.earnestMoney }}"
+                @change="setFormData('earnestMoney')"/>
+                <text class="unit">元/次</text>
             </view>
         </view>
+        <view class="pay-tip">{{payTips[form.payType-1]}}</view>
     </view>
     <button class="save" :class="{ disabled: !canSubmit }" @tap="save">保存</button>
 </template>
@@ -162,11 +190,27 @@ export default class Index extends wepy.page {
             city: 0, // *城市id
             area: 0, // *区域id
             payType: 1, // *支付方式，只能为到店付
+            earnestMoney: 0, // 服务收费
         },
+        payTypeDetail: [
+            {
+                name: '免费预约',
+                value: '1',
+            },
+            {
+                name: '一口价',
+                value: '2',
+            },
+            {
+                name: '订金',
+                value: '3',
+            },
+        ],
         showImageDelete: false,
         defaultImages: [],
         region: '',
         canSubmit: false,
+        payTips: ['客户预约时无需付款，完成服务后线上收取费用', '一口价为服务的全部费用，商家需承诺无其他费用', '客户预约时支付订金，完成服务后线上收取尾款'],
     }
 
     mixins = [Mixin]
@@ -176,6 +220,11 @@ export default class Index extends wepy.page {
             if (images.length) {
                 [this.form.pics] = images;
             }
+        },
+
+        bindPayType(type) {
+            // 改变付款方式
+            this.form.payType = type;
         },
 
         async save() {
@@ -261,7 +310,7 @@ export default class Index extends wepy.page {
             let result = true;
             const requiredFields = ['serviceName', 'pics', 'price', 'durationUnit',
                 'duration', 'serviceStarttime', 'serviceEndtime',
-                'provinceStr', 'cityStr', 'areaStr', 'address', 'payType'];
+                'provinceStr', 'cityStr', 'areaStr', 'address', 'payType', 'earnestMoney'];
 
             requiredFields.forEach(key => {
                 if (isEmpty(this.form[key])) {
@@ -306,9 +355,11 @@ export default class Index extends wepy.page {
     validator(data) {
         // 校验必填字段
         const {
-            serviceStarttime, serviceEndtime, price, duration, durationUnit,
+            serviceStarttime, serviceEndtime, payType, earnestMoney, price, duration, durationUnit,
         } = data;
-
+        console.log(price);
+        console.log(payType);
+        console.log(earnestMoney);
         if (serviceStarttime > serviceEndtime) {
             throw new Error('预约结束时间必须大于开始时间');
         }
@@ -323,6 +374,15 @@ export default class Index extends wepy.page {
 
         if (duration > 24 && durationUnit === 2) {
             throw new Error('输入时长不得大于24小时');
+        }
+        if (parseInt(payType) === 2 && earnestMoney > price) {
+            throw new Error('一口价不得大于服务价格');
+        }
+        if (parseInt(payType) === 3 && earnestMoney > price / 2) {
+            throw new Error('订金不得大于服务价格的一半');
+        }
+        if (parseInt(payType) === 1) {
+            this.form.earnestMoney = 0;
         }
     }
 
@@ -356,6 +416,7 @@ export default class Index extends wepy.page {
                 city,
                 area,
                 payType,
+                earnestMoney,
             } = service;
 
             Object.assign(this.form, {
@@ -381,6 +442,7 @@ export default class Index extends wepy.page {
                 city,
                 area,
                 payType,
+                earnestMoney,
             });
             this.defaultImages = [picSrcDomain() + pics];
 
@@ -430,7 +492,25 @@ view {
         padding: 20rpx;
         width: 670rpx;
     }
-
+    .pay-types {
+        width: 396rpx;
+        display: flex;
+    }
+    .pay-type {
+        font-size: 26rpx;
+        color: #BDBDBD;
+        text-align: center;
+        border: 1px solid #CCCCCC;
+        border-radius: 4px;
+        width: 132rpx;
+        line-height: 48rpx;
+        margin-left: 20rpx;
+    }
+    .selected {
+        color: #fff;
+        border: 1px solid #4E88FF;
+        background: #4E88FF;
+    }
     .item {
         display: flex;
         justify-content: space-between;
@@ -538,5 +618,11 @@ button.save {
         background-size: auto 25rpx;
         background-position: right;
     }
+}
+.pay-tip{
+    font-size: 26rpx;
+    color: #999;
+    text-indent: 23rpx;
+    margin-top:10rpx;
 }
 </style>

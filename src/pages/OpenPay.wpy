@@ -21,6 +21,7 @@
         <navigator open-type="navigate"
             target="miniProgram"
             path="/pages/payAuthorize/payAuthorize?param={{userid}}" 
+            url="/pages/payAuthorize/payAuthorize?param={{userid}}" 
             app-id="{{payAppId}}"
             version="develop" wx:else>
             <view class="openpay-confirm">确认开通</view>
