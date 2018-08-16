@@ -1,11 +1,5 @@
 <template>
     <view class="notice-container">
-        <view class="follow-public" wx:if="{{!isFollow}}">
-            <text>关注公众号接收通知</text>
-            <navigator class="follow-action" wx:if="{{assistAuth}}" url="/pages/followPublic">马上关注</navigator>
-            <button class="follow-action" wx:if="{{canIUse && !assistAuth}}" open-type="getUserInfo" @tap="loadSession()">马上关注</button>
-            <!-- <cropper></cropper> -->
-        </view>
         <view class="notice-header">
             <view>全部通知</view>
             <view class="clear-notice attach-notice" bindtap="clearAll">清空</view>
@@ -54,19 +48,12 @@ export default class NoticeList extends wepy.page {
         noticeList: [],
         orderUnRead: 0,
         recivMoneyUnRead: 0,
-        code: '',
-        iv: '',
-        encryptedData: '',
-        session: '',
-        canIUse: wx.canIUse('button.open-type.getUserInfo'),
         unreadcount: 0,
         sendParams: {
             group: 1,
             page: 1,
             pageSize: 10,
         },
-        isFollow: false, // 是否关注公众号
-        assistAuth: false, // 是否授权
     }
     methods = {
         noticeListMore() {
@@ -74,28 +61,9 @@ export default class NoticeList extends wepy.page {
             this.sendParams = Object.assign({}, this.sendParams, this.sendParams.page);
             this.loadNoticeList();
         },
-        async loadSession() {
-            try {
-                console.log(this.code);
-                const { data } = await get('/wechat/bizAssistAuth/session', { code: this.code });
-                console.log(data);
-                const { sessionKey } = data;
-                const { state } = await get('/wechat/bizAssistAuth/insert', { encryptedData: this.encryptedData, iv: this.iv, session: sessionKey });
-                if (state === 100) {
-                    wx.navigateTo({
-                        url: '/pages/followPublic',
-                    });
-                }
-            } catch (e) {
-                console.log(e);
-            }
-        },
     }
     async onShow() {
         this.loadList();
-        this.loadCode();
-        this.getInfo();
-        this.getAssistAuth();
     }
     async onHide() {
         console.log('onHide');
@@ -107,53 +75,6 @@ export default class NoticeList extends wepy.page {
         }
         try {
             await get('/mplogic/readgroupmsg', { group: 1 });
-        } catch (e) {
-            console.log(e);
-        }
-    }
-    async loadCode() {
-        const that = this;
-        wx.login({
-            success(res) {
-                if (res.code) {
-                    console.log(res.code);
-                    that.code = res.code;
-                    // 查看是否授权
-                } else {
-                    console.log('denglishiba');
-                }
-            },
-        });
-    }
-    async getInfo() {
-        const that = this;
-        // 已经授权，可以调用getuseinfo获取头像昵称
-        wx.getUserInfo({
-            success(res) {
-                console.log(res);
-                const { iv, encryptedData } = res;
-                that.iv = iv;
-                that.encryptedData = encryptedData;
-            },
-        });
-    }
-    async getAssistAuth() {
-        const that = this;
-        try {
-            const { data } = await get('/wechat/bizAssistAuth/get');
-            console.log(data);
-            const { isFollow, assistInfo } = data;
-            if (!isFollow && JSON.stringify(assistInfo) === '{}') {
-                // 既没有授权也没有关注公众号
-                console.log('=======');
-                that.assistAuth = false;
-            } else if (!isFollow && JSON.stringify(assistInfo) !== '{}') {
-                // 已授权但没有关注公众号
-                console.log('---------');
-                that.assistAuth = true;
-            }
-            that.isFollow = isFollow;
-            console.log(that.assistAuth);
         } catch (e) {
             console.log(e);
         }
@@ -248,30 +169,6 @@ view,scroll-view{
 .notice-container{
     width:100%;
     height:100%;
-    .follow-public {
-        width: 100%;
-        height: 80rpx;
-        line-height:80rpx;
-        position:relative;
-        font-size: 28rpx;
-        color: #fd867e;
-        padding: 0 30rpx;
-        background-color: #ffecec;
-        .follow-action {
-            color: #fd867e;
-            text-align: center;
-            line-height: 50rpx;
-            font-size: 28rpx;
-            height: 50rpx;
-            border: 1rpx solid #fd867e;
-            border-radius: 5rpx;
-            position:absolute;
-            right:30rpx;
-            top:15rpx;
-            background:#fff;
-            padding:0 15rpx;
-        }
-    }
     .notice-header{
         width:100%;
         padding:0 30rpx;
