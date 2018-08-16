@@ -336,7 +336,7 @@ export default class Home extends wepy.page {
                 this.$apply();
             }
             that.isFollow = isFollow;
-            console.log(that.assistAuth);
+            this.$apply();
         } catch (e) {
             console.log(e);
         }
