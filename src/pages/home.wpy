@@ -1,11 +1,11 @@
 <template>
     <scroll-view class="home" scroll-y>
+        <view class="follow-public" wx:if="{{!isFollow}}">
+            <text>关注公众号接收通知</text>
+            <navigator class="follow-action" wx:if="{{assistAuth}}" url="/pages/followPublic">马上关注</navigator>
+            <button class="follow-action" wx:elif="{{!assistAuth}}" open-type="getUserInfo" @tap="loadSession()">马上关注</button>
+        </view>
         <view class="index-loaded-header">
-            <view class="follow-public" wx:if="{{!isFollow}}">
-                <text>关注公众号接收通知</text>
-                <navigator class="follow-action" wx:if="{{assistAuth}}" url="/pages/followPublic">马上关注</navigator>
-                <button class="follow-action" wx:elif="{{!assistAuth}}" open-type="getUserInfo" @tap="loadSession()">马上关注</button>
-            </view>
             <view class="welcome-block">
                 <view class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
                 <navigator url="noticeList" :class="{'new-msg': business.unread}" class="msg-box'"></navigator>
@@ -679,7 +679,7 @@ scroll-view {
     }
     .index-loaded-header {
         width: 100%;
-        height: 640rpx;
+        height: 562rpx;
         .welcome-block {
             width: 100%;
             height: 306rpx;
@@ -821,7 +821,7 @@ scroll-view {
             line-height: 50rpx;
             font-size: 28rpx;
             height: 50rpx;
-            border: 1rpx solid #fd867e;
+            border: 1rpx solid #FFA710;
             border-radius: 5rpx;
             position:absolute;
             right:30rpx;
