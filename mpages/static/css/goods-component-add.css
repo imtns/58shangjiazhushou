@@ -214,6 +214,13 @@ html, body{
     right:0;
     top:0.32rem;
 }
+.icon-bold{
+    width:0.35rem;
+    height:0.35rem;
+    position:absolute;
+    right:0.65rem;
+    top:0.32rem;
+}
 .icon-tupian-btn{
     opacity:0;
 }

@@ -37,7 +37,7 @@
     </view>
     <view class="options" wx:if="{{!isEditing}}">
         <view class="button edit" @tap="edit" wx:if="{{listData.length}}">编辑</view>
-        <view class="button" @tap="addGroup">添加服务</view>
+        <view class="button" @tap="addGroup">添加商品</view>
     </view>
     <view class="options" wx:if="{{isEditing}}">
         <view class="button edit" @tap="cancle">取消</view>

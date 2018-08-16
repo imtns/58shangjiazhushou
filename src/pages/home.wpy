@@ -63,7 +63,6 @@ import { globalData } from '../utils/globalData';
 export default class Home extends wepy.page {
     config = {
         navigationBarTitleText: '首页',
-        disableScroll: true,
     }
     data = {
         business: {
