@@ -11,10 +11,10 @@ export default class GoodsComponentAdd extends wepy.page {
     data = {
         url: '',
     }
-    onLoad() {
-        // const ppu = encodeURIComponent(wx.getStorageSync('ppu'));
-        // const v = (+new Date() * 1).toString(36);
-        this.url = `https://yaofa.58.com/uhtml/goodsComponentAdd?v=${1}`;
+    onLoad(option) {
+        const ppu = encodeURIComponent(wx.getStorageSync('ppu'));
+        const v = (+new Date() * 1).toString(36);
+        this.url = `https://yaofa.58.com/uhtml/goodsComponentAdd?v=${v}&ppu=${ppu}&mpId=${wx.getStorageSync('current_mpid')}&group=${option.group}&id=${option.id}&test=test`;
         this.$apply();
         console.log(this.url);
     }

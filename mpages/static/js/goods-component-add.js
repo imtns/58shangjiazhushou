@@ -176,6 +176,14 @@ var Page = {
                 temp = $('.zeditor-content').find('p'),
                 content = $('.zeditor-content').html(),
                 pics = $('#cover').attr('src') ? $('#cover').attr('src').split('.cn')[1].replace(/([/])\1+/g, '$1') : '';
+            if(Number(price)>999999){
+                Page.toast($errorPop, '商品价格不能大于99999');
+                return;
+            }
+            if(Number(stock)>999999){
+                Page.toast($errorPop, '商品库存不能大于99999');
+                return;
+            }
             if (!title) {
                 Page.toast($errorPop, '请填写商品标题');
                 return;
