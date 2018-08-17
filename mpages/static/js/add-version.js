@@ -11,19 +11,16 @@ window.__staticConfig = {
         name: 'jq',
         version: '20180717',
         url: '/lbg/shangjiaxcxht/zhushou/js/zepto.min.js',
-    }, {
-        name: 'js',
-        version: '20180727111',
-        url: '/lbg/shangjiaxcxht/zhushou/js/editor.js',
-    }, {
-        name: 'js',
-        version: '20180809',
-        url: '/lbg/shangjiaxcxht/zhushou/js/article-component-add.js',
-    },
+    }, 
     {
         name: 'js',
-        version: '20180809',
-        url: '/lbg/shangjiaxcxht/zhushou/js/goods-component-add.js',
-    }
+        version: '20180817',
+        url: '/lbg/shangjiaxcxht/zhushou/js/editor.js',
+    },
+     {
+        name: 'js',
+        version: '20180817',
+        url: '/lbg/shangjiaxcxht/zhushou/js/article-component-add.js',
+    },
 ],
 };
