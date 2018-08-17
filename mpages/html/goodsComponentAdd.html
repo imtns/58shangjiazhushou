@@ -8,104 +8,14 @@
     <script>
         (function(win,lib){var doc=win.document;var docEl=doc.documentElement;var dpr=0;var tid;var flexible=lib.flexible||(lib.flexible={});var isIPhone=win.navigator.appVersion.match(/iphone/gi);var devicePixelRatio=win.devicePixelRatio;if(isIPhone){if(devicePixelRatio>=3&&(!dpr||dpr>=3)){dpr=3}else if(devicePixelRatio>=2&&(!dpr||dpr>=2)){dpr=2}else{dpr=1}}else{dpr=1}docEl.setAttribute("data-dpr",dpr);if(doc.readyState==="complete"){doc.body.style.fontSize=12+"px"}else{doc.addEventListener("DOMContentLoaded",function(){doc.body.style.fontSize=12+"px"},false)}function refreshRem(){var width=docEl.getBoundingClientRect().width;var rem=width/7.5;docEl.style.fontSize=rem+"px";flexible.rem=win.rem=rem}var evt="onorientationchange"in window?"orientationchange":"resize";win.addEventListener(evt,function(){clearTimeout(tid);tid=setTimeout(refreshRem,300)},false);win.addEventListener("pageshow",function(e){if(e.persisted){clearTimeout(tid);tid=setTimeout(refreshRem,300)}},false);refreshRem();flexible.dpr=win.dpr=dpr;flexible.refreshRem=refreshRem;flexible.rem2px=function(d){var val=parseFloat(d)*this.rem;if(typeof d==="string"&&d.match(/rem$/)){val+="px"}return val};flexible.px2rem=function(d){var val=parseFloat(d)/this.rem;if(typeof d==="string"&&d.match(/px$/)){val+="rem"}return val}})(window,window["lib"]||(window["lib"]={}));
     </script>
-    <script>
-        window.__staticConfigUrl = 'https://static.58.com/lbg/shangjiaxcxht/zhushou/js/goods-add-version.js';
-    </script>
-    <script type="text/javascript" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/js/static-loader.js"></script>
-</head>
-<body>
-    <div class="wrap">
-        <div class="wrap-items">
-            <div class="item-flex">
-                <div class="item-text required">商品名称</div>
-                <div class="item-input-div">
-                    <input type="text" class="item-input _title" placeholder="16字以内" value="">
-                </div>
-            </div>
-            <div class="item-flex item-file">
-                <div class="item-upload-img none">
-                    <img src="" id="cover"/>
-                    <div class="exchange-img">替换图片</div>
-                </div>
+    <script src="https://static.58.com/lbg/shangjiaxcxht/zhushou/js/zepto.min.js"></script>
 
-                <div class="item-file-div none">
-                    <div class="item-upload">添加图片</div>
-                    <input type="file" class="item-file-btn" id="item-file-btn">
-                </div>
-            </div>
-            <div class="item-flex">
-                <div class="item-text required">商品价格</div>
-                <div class="item-input-div">
-                    <input type="number" class="item-input _author" placeholder="请输入价格" value="" >
-                </div>
-                <span>元</span>
-            </div>
-            <div class="item-flex">
-                <div class="item-text required">商品库存</div>
-                <div class="item-input-div">
-                    <input type="number" class="item-input _source" placeholder="请输入库存" value="">
-                </div>
-            </div>
-        </div>
-        <div class="wrap-content _wrap-content">
-            <div class="item-flex no-border">
-                <div class="item-text required">服务详情</div>
-            </div>
-            <div class="zeditor-btn-main">
-                <!-- <div style="width:0.3rem;height:0.3rem;color:#ccc;border-radius: 2px;border-color:#ccc;font-size:28rpx;">T</div> -->
-                <img src='//static.58.com/lbg/shangjiaxcxht/zhushou/img/unbold.png' class='icon-bold'>
-                <img src='//static.58.com/lbg/shangjiaxcxht/zhushou/img/upload-icon.png' class='icon-tupian'>
-                <input type='file' class='icon-tupian icon-tupian-btn' data-type="image">
-            </div>
-            <div id="editor" class="editor _content">
-            </div>
-        </div>
-        <div class="block"></div>
-        <div class="btn save-btn">保存</div>
-    </div>
-    <div class="mask none"></div>
-    <!-- toast -->
-    <div class="win2 none">
-        <div class="tips2 tips-submiting none">
-            <span class="icon"></span>
-            <p>正在处理</p>
-        </div>
-        <div class="before tips2 tips-error none">
-            <span class="icon"></span>
-            <p class="error-infor"></p>
-        </div>
-        <div class="tips2 tips-success none">
-            <span class="icon"></span>
-            <p>保存成功！</p>
-        </div>
-    </div>
-    <!-- dialog 废弃-->
-    <div class="dialog _dialog none">
-        <h2 class="dialog-title">提示</h2>
-        <p class="dialog-content">内容</p>
-        <div class="dialog-action-bar">
-            <a href="javascript:void(0);" class="btn _sure-btn">确定</a>
-        </div>
-    </div>
-    <!-- 新建分组 -->
-    <div class="dialog dialog-create-group none">
-        <h2 class="dialog-title">新建分组</h2>
-        <input type="text" placeholder="请输入分组名称(最多15个字)" class="dialog-content dialog-content-input">
-        <div class="dialog-action-bar">
-            <a href="javascript:void(0);" class="btn _cancel-btn">取消</a>
-            <a href="javascript:void(0);" class="btn _ok-btn _sure-create">创建</a>
-        </div>
-    </div>
-    <!-- 分组列表 -->
-    <div class="group-dialog none">
-        <div class="group-dialog-list"> 
-        </div>
-        <div class="dialog-action-bar">
-            <a href="javascript:void(0);" class="btn _ok-btn _create-btn">新建分组</a>
-            <a href="javascript:void(0);" class="btn _chose-btn">确认</a>
-        </div>
-    </div>
-</body>
+   <!--      window.__staticConfigUrl = 'https://static.58.com/lbg/shangjiaxcxht/zhushou/js/goods-add-version.js';
+    //
+    <script type="text/javascript" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/js/static-loader.js"></script> -->
+</head>
+<body><div id="d">asdasdasdasdasdasdasdasdasd</div></body>
 </html>
+<script src="https://static.58.com/lbg/shangjiaxcxht/zhushou/js/goods-add-version.js"> </script>
 <!-- html -->
 <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
