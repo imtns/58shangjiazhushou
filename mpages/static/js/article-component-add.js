@@ -1,6 +1,8 @@
 
 /*eslint-disable */
-const $errorPop = $('div.tips-error');
+'use strict';
+
+var $errorPop = $('div.tips-error');
 var Page = {
     ppu: '',
     id: '',
@@ -8,17 +10,19 @@ var Page = {
     name: '',
     saveStatus: '',
     test: '',
-    pop(cont) {
-        let NONE = 'none',
+    pop: function pop(cont) {
+        var NONE = 'none',
             $ele = $('div.mask,div._dialog'),
             $tips2 = $('._dialog p.dialog-content');
         $tips2.text(cont);
         $ele.removeClass(NONE);
     },
-    toast(tar, cont, mask = false) {
-        let $ele;
+    toast: function toast(tar, cont) {
+        var mask = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+        var $ele = void 0;
         $ele = mask ? $('div.win2') : $('div.mask,div.win2');
-        let NONE = 'none',
+        var NONE = 'none',
             $tips2 = $('div.tips2');
 
         $tips2.addClass(NONE); // 这一步的目的是为了防止目前有在显示的窗口冲突
@@ -29,34 +33,34 @@ var Page = {
         }
         tar.removeClass(NONE);
         // 提示消失
-        setTimeout(() => {
+        setTimeout(function () {
             $ele.addClass(NONE);
             $tips2.addClass(NONE);
         }, 2000);
     },
-    getKey (key) {
-        let reg = new RegExp('(^|&)' + key + '=([^&]*)(&|$)', 'i');
+    getKey: function getKey(key) {
+        var reg = new RegExp('(^|&)' + key + '=([^&]*)(&|$)', 'i');
         // search    从问号 (?) 开始的 URL（查询部分）
-        let r = window.location.search.substr(1).match(reg);
+        var r = window.location.search.substr(1).match(reg);
         if (r != null) {
             return decodeURIComponent(r[2]);
         }
         return null;
     },
-    init() {
+    init: function init() {
         Page.ppu = decodeURIComponent(Page.getKey('ppu'));
         Page.id = Page.getKey('id');
         $('.item-file-div').removeClass('none');
         Page.loadGroupData();
     },
-    initEvent () {
+    initEvent: function initEvent() {
         // 初始化文章编辑框
         window.editor = ZEditor('#editor', {
-            selectImage (cb) {
+            selectImage: function selectImage(cb) {
                 // 商品详情内容编辑
                 $('.icon-tupian-btn').on('change', function () {
                     // 上传中
-                    let NONE = 'none',
+                    var NONE = 'none',
                         $ele = $('div.mask,div.win2'),
                         $tips2 = $('div.tips2'),
                         $uploading = $('.tips-submiting');
@@ -65,8 +69,8 @@ var Page = {
                     $tips2.addClass(NONE);
                     $ele.removeClass(NONE);
                     $uploading.removeClass(NONE);
-                    self = this,
-                    formData = new FormData();
+                    var self = this;
+                    var formData = new FormData();
                     formData.append('source', $(self).get(0).files[0]);
                     document.domain = '58.com';
                     $.ajax({
@@ -75,34 +79,36 @@ var Page = {
                         data: formData,
                         contentType: false,
                         processData: false,
-                        success(data) {
+                        success: function success(data) {
                             var data = JSON.parse(data);
                             $ele.addClass(NONE);
                             $uploading.addClass(NONE);
+                            $('.icon-tupian-btn').val(null);
                             if (data.state == 100) {
                                 var url = '//pic1.58cdn.com.cn' + data.data.source;
-                                    cb(url + '?w=750');
+                                cb(url + '?w=750');
                                 $('.icon-tupian-btn').replaceWith('<input type="file" class="icon-tupian icon-tupian-btn" data-type="image">');
                             } else {
                                 Page.toast($errorPop, data.msg);
                             }
                         },
-                        error(e) {
+                        error: function error(e) {
                             $ele.addClass(NONE);
                             $uploading.addClass(NONE);
 
                             Page.toast($errorPop, e);
-                        },
+                        }
                     });
                 });
-            },
+            }
         });
         // 上传头图
-        $('#item-file-btn').on('change', function() {
-            let self = this,
+        $('#item-file-btn').on('change', function () {
+            var self = this,
                 formData = new FormData(),
-                // 上传中
-                NONE = 'none',
+
+            // 上传中
+            NONE = 'none',
                 $ele = $('div.mask,div.win2'),
                 $tips2 = $('div.tips2'),
                 $uploading = $('.tips-submiting');
@@ -119,9 +125,9 @@ var Page = {
                 data: formData,
                 contentType: false,
                 processData: false,
-                success(res) {
+                success: function success(res) {
                     var res = JSON.parse(res);
-                    let src = res.data.sources;
+                    var src = res.data.sources;
                     $ele.addClass(NONE);
                     $uploading.addClass(NONE);
                     if (src) {
@@ -132,21 +138,21 @@ var Page = {
                         Page.toast($errorPop, res.msg);
                     }
                 },
-                error(e) {
+                error: function error(e) {
                     $ele.addClass(NONE);
                     $uploading.addClass(NONE);
 
                     Page.toast($errorPop, e);
-                },
+                }
             });
         });
         // 重新上传
-        $('.exchange-img').on('click', () => {
+        $('.exchange-img').on('click', function () {
             $('.item-upload-img').attr('src', '').addClass('none');
             $('.item-file-div').removeClass('none');
         });
-        $('.save-btn').on('click', () => {
-            let group = Page.group,
+        $('.save-btn').on('click', function () {
+            var group = Page.group,
                 title = $('._title').val(),
                 intro = $('.zeditor-content').find('p:first-child').text().substring(0, 43),
                 source = $('._source').val(),
@@ -190,37 +196,37 @@ var Page = {
                     source: source || '未知',
                     author: author || '未知',
                     content: content,
-                    test: Page.test,
+                    test: Page.test
                 },
                 headers: {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
                     PPU: Page.ppu || 'wanghongyue',
-                    reqfrom: 'biz_assistant',
+                    reqfrom: 'biz_assistant'
                 },
-                success(res) {
+                success: function success(res) {
                     var res = JSON.parse(res);
                     if (res.state == 100) {
                         Page.toast($('div.tips-success'));
-                        setTimeout(function() {
+                        setTimeout(function () {
                             wx.miniProgram.redirectTo({
                                 url: '/pages/edit/article?id=' + Page.id
                             });
-                        },2000);
+                        }, 2000);
                     } else {
                         Page.toast($errorPop, res.msg);
                     }
-                },
+                }
             });
         });
-        $('._cancel-btn').on('click', () => {
+        $('._cancel-btn').on('click', function () {
             $('.mask,._dialog,.dialog-create-group').addClass('none');
             $('.dialog-content-input').val('');
         });
-        $('.item-chose').on('click', () => {
+        $('.item-chose').on('click', function () {
             $('.mask,.group-dialog').removeClass('none');
         });
-        $('._create-btn').on('click', () => {
-            let num = $('.group-dialog-list').find('.group-dialog-item').length;
+        $('._create-btn').on('click', function () {
+            var num = $('.group-dialog-list').find('.group-dialog-item').length;
             if (num >= 10) {
                 Page.toast($errorPop, '分组数量达到最大（10个），无法创建更多。');
                 return;
@@ -229,8 +235,8 @@ var Page = {
             $('.dialog-create-group').removeClass('none');
         });
         // 请求添加分组
-        $('._sure-create').on('click', () => {
-            let name = $('.dialog-content-input').val();
+        $('._sure-create').on('click', function () {
+            var name = $('.dialog-content-input').val();
             if (!name) {
                 Page.toast($errorPop, '请输入分组名称！', true);
                 return;
@@ -243,32 +249,32 @@ var Page = {
                 url: '/businessArticle/addgroup',
                 data: {
                     name: name,
-                    test: Page.test,
+                    test: Page.test
                 },
                 headers: {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
                     PPU: Page.ppu || 'wanghongyue',
-                    reqfrom: 'biz_assistant',
+                    reqfrom: 'biz_assistant'
                 },
-                success(res) {
+                success: function success(res) {
                     var res = JSON.parse(res);
-                    if(res.state == 100){
+                    if (res.state == 100) {
                         $('.mask,.group-dialog').removeClass('none');
                         // location.reload();
                         Page.loadGroupData();
-                    }else{
+                    } else {
                         Page.toast($errorPop, res.msg);
                     }
-                },
+                }
             });
             $('.mask,.dialog-create-group').addClass('none');
             $('.dialog-content-input').val('');
         });
         // 选择分组
-        $('.group-dialog-list').attr('cursor', 'pointer').on('touchstart', '.group-dialog-item', function() {
-            const flag = $(this).hasClass('selected');
+        $('.group-dialog-list').attr('cursor', 'pointer').on('touchstart', '.group-dialog-item', function () {
+            var flag = $(this).hasClass('selected');
             if (!flag) {
-                let name = $(this).data('name'),
+                var name = $(this).data('name'),
                     group = $(this).data('id');
                 $(this).addClass('selected').siblings('.group-dialog-item').removeClass('selected');
                 $('._chose-btn').data('name', name).data('group', group);
@@ -276,8 +282,8 @@ var Page = {
                 $(this).removeClass('selected');
             }
         });
-        $('._chose-btn').on('click', function() {
-            let name = $(this).data('name'),
+        $('._chose-btn').on('click', function () {
+            var name = $(this).data('name'),
                 group = $(this).data('group');
             if (!name) {
                 Page.toast($errorPop, '请选择文章分组！');
@@ -291,33 +297,62 @@ var Page = {
             $(this).data(group, '');
         });
     },
-    loadGroupData() {
+    loadGroupData: function loadGroupData() {
         $.ajax({
             url: '/businessArticle/groups',
             data: {
-                test: Page.test,
+                test: Page.test
             },
             headers: {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
                 PPU: Page.ppu || 'wanghongyue',
-                reqfrom: 'biz_assistant',
+                reqfrom: 'biz_assistant'
             },
-            success(res) {
+            success: function success(res) {
                 var res = JSON.parse(res);
                 $('.group-dialog-list').html('');
                 if (res.state == 100) {
-                    let data = res.data,
+                    var data = res.data,
                         html = '';
-                    for (let i = 0;i < data.length; i++) {
-                        html += `<div class="group-dialog-item" data-id="${data[i].id}" data-name="${data[i].name}">${  data[i].name  }</div>`;
+                    for (var i = 0; i < data.length; i++) {
+                        html += '<div class="group-dialog-item" data-id="' + data[i].id + '" data-name="' + data[i].name + '">' + data[i].name + '</div>';
                     }
                     $('.group-dialog-list').html(html);
                 } else {
                     Page.toast($errorPop, res.msg);
                 }
-            },
+            }
         });
-    },
+    }
 };
+if (typeof Object.assign != 'function') {
+    // Must be writable: true, enumerable: false, configurable: true
+    Object.defineProperty(Object, "assign", {
+      value: function assign(target, varArgs) { // .length of function is 2
+        'use strict';
+        if (target == null) { // TypeError if undefined or null
+          throw new TypeError('Cannot convert undefined or null to object');
+        }
+  
+        var to = Object(target);
+  
+        for (var index = 1; index < arguments.length; index++) {
+          var nextSource = arguments[index];
+  
+          if (nextSource != null) { // Skip over if undefined or null
+            for (var nextKey in nextSource) {
+              // Avoid bugs when hasOwnProperty is shadowed
+              if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+                to[nextKey] = nextSource[nextKey];
+              }
+            }
+          }
+        }
+        return to;
+      },
+      writable: true,
+      configurable: true
+    });
+  }
 Page.init();
 Page.initEvent();
