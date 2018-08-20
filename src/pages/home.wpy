@@ -20,6 +20,7 @@
                         <view class="star-list" style="width:{{ 142 * 0.2 * business.selected.score }}rpx">
                             <view class="icon-star" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
                         </view>
+                        <navigator class="star-box-title" url="/pages/shopScore">店铺评分</navigator>
                     </view>
                     <view wx:else>可上传素材、提交注册信息到当前小程序</view>
                 </view>
@@ -944,6 +945,24 @@ scroll-view {
 
 .star-box {
     position: relative;
+    display: flex;
+}
+
+.star-box-title {
+    font-size: 24rpx;
+    color: #999;
+    margin-left: 12rpx;
+
+    &::after {
+        display: inline-block;
+        width: 12rpx;
+        height: 20rpx;
+        content:'';
+        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAaBAMAAACa4xtRAAAAJFBMVEUAAACcnJyZmZmampqampqdnZ2ZmZmcnJyZmZmZmZmZmZmZmZn2rJLyAAAAC3RSTlMAOvOzgyfnGw/iltkIdIcAAAA8SURBVAjXY2AXYICAps1QRvVuAwiDZTdMyJuKQqt3Q2xkzd7UAGaE7VaECQiQK8AJFWCIhgowsBgyoAIAfN4dpEaw3mAAAAAASUVORK5CYII=') no-repeat;
+        background-size: 12rpx 20rpx;
+        margin-left: 8rpx;
+        line-height: 24rpx;
+    }
 }
 
 .unstar-list {
