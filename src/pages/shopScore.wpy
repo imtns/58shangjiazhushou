@@ -3,7 +3,7 @@
         <view class="top">
             <view class="top-shop-info">
                 <view class="shop-info-left">
-                    <view class="shop-info-left-name">家居家纺专卖</view>
+                    <view class="shop-info-left-name">{{ nickName }}</view>
                     <view class="shop-info-left-rank">
                         在北京地区店铺评分中排<text class="rank-bold">第{{ rank }}名</text>
                     </view>
@@ -65,6 +65,7 @@ export default class Index extends wepy.page {
         progressImg: '',
         over: 30,
         rank: 100,
+        nickName: ' ',
     }
 
     async onLoad() {
@@ -80,12 +81,19 @@ export default class Index extends wepy.page {
                 return;
             }
 
-            const { score, over, rank } = data;
+            const {
+                score,
+                over,
+                rank,
+                mpinfo: { nickName },
+            } = data;
+            console.log(nickName);
             const index = Math.round(score / 0.5) - 1;
             this.progressImg = imgs[index];
             Object.assign(this, {
                 over: (over * 100).toFixed(0),
                 rank,
+                nickName,
             });
             Object.assign(this.score, {
                 value: score,
@@ -94,7 +102,8 @@ export default class Index extends wepy.page {
             this.$apply();
         } catch (err) {
             console.log(err);
-            alertP('获取数据失败！');
+            await alertP('获取数据失败！');
+            wepy.navigateBack();
         }
     }
 }
