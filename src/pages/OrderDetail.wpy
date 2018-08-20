@@ -73,7 +73,7 @@
             <block wx:if="{{order.status==1}}">
                 <view class="order-finish">已确认订单</view>
             </block>
-            <block wx:if="{{order.status==10}}">
+            <block wx:if="{{order.status==10 || order.status==12}}">
                 <view class="order-confirm" @tap="bindAgreeRefund({{order.id}})">同意退款</view>
             </block>
             <block wx:if="{{order.status==2}}">
