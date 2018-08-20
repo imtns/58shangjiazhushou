@@ -637,7 +637,7 @@ $workHeight: 200rpx;
                 &::after {
                     content: ' ';
                     display: block;
-                    background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-unchecked.png');
+                    background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png');
                     background-size: 39rpx 39rpx;
                     width: 39rpx;
                     height: 39rpx;
@@ -647,7 +647,7 @@ $workHeight: 200rpx;
                 }
 
                 &.checked::after {
-                    background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-checked.png');
+                    background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/selected-icon.png');
                 }
             }
         }

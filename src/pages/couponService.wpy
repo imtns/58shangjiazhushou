@@ -16,8 +16,7 @@
             <view class="products" wx:if="{{ services && services.length }}">
                 <view class="item" wx:for="{{ services }}"
                 wx:key="id" @tap="chooseService({{ index }})">
-                    <view class="checkbox" :class="{ checked: item.checked }">
-                    </view>
+                    <view class="checkbox" :class="{ checked: item.checked }"></view>
                     <image mode="aspectFill" src="{{ item.pics + '?w=60' }}"/>
                     <view class="info">
                         <view class="title">{{ item.serviceName }}</view>
@@ -304,8 +303,6 @@ view {
         padding-left: 100rpx;
 
         .item {
-            display: flex;
-            align-items: center;
             background-color: #fff;
             width: 590rpx;
             height: 163rpx;
@@ -313,36 +310,45 @@ view {
             border-radius: 8rpx;
             padding: 22rpx 0;
             margin-bottom: 20rpx;
+            position: relative;
 
             .checkbox {
                 width: 40rpx;
                 height: 40rpx;
-                background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-unchecked.png');
+                background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png');
                 background-size: 40rpx 40rpx;
-                margin-left: -100rpx;
+                position: absolute;
+                left: -100rpx;
+                top: 61rpx;
 
                 &.checked {
-                    background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-checked.png');
+                    background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/selected-icon.png');
                 }
             }
 
             image {
                 width: 120rpx;
                 height: 120rpx;
-                margin-right: 30rpx;
-                margin-left: 40rpx;
                 border-radius: 8rpx;
                 background-color: #FFF;
                 border: 1rpx solid #eee;
                 box-shadow: 2rpx 6rpx 6rpx 0 rgba(213,219,255,0.30);
+                position: absolute;
+                top: 22rpx;
+                left: -20rpx;
             }
 
             .info {
+                margin-left: 130rpx;
                 .title {
                     font-size: 32rpx;
                     color: #333;
                     line-height: 45rpx;
                     margin-bottom: 10rpx;
+                    white-space: nowrap;
+                    width: 440rpx;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
                 .price {
                     font-size: 30rpx;

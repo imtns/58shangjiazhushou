@@ -33,7 +33,7 @@
 <script>
 import wepy from 'wepy';
 
-import { sleep, toast, alert } from '../utils';
+import { toast, alert } from '../utils';
 import { get } from '../utils/ajax';
 
 import Pop from '../components/Dialog';
@@ -60,11 +60,12 @@ export default class OrderComponentGroup extends wepy.page {
         name: '',
     }
     async onLoad() {
-        await sleep();
         console.log('onLoad');
         const mpId = wepy.getStorageSync('current_mpid');
         this.mpId = mpId;
         this.$apply();
+    }
+    onShow() {
         this.loadData();
     }
     methods = {
