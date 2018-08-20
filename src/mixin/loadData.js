@@ -181,7 +181,9 @@ const parseCfgAndData = ({
     }
     if (name === 'goods') {
         modData.data.forEach(img => {
-            img.img = img.img.substr(0, img.img.indexOf('?'));
+            if (img.img.indexOf('?') > -1) {
+                img.img = img.img.substr(0, img.img.indexOf('?'));
+            }
         });
     }
     // images 模块图片路径

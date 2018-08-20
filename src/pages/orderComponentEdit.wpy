@@ -400,7 +400,7 @@ export default class Index extends wepy.page {
         });
         console.log(data);
         console.log(state);
-        if (state == 100 && data == true) {
+        if (state === 100 && data === true) {
             this.isOpenPay = true;
             this.$apply();
         }
