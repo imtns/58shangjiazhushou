@@ -55,7 +55,7 @@
                 </view>
             </view>
             <view class="order-desc" wx:if="{{contentSet[order.status]}}">{{contentSet[order.status]}}</view>
-            <block wx:if="{{order.status==2}}">
+            <block wx:if="{{order.status==9}}">
                 <view class="order-evaluate">
                     <view class="left-label">服务评分</view>
                     <view class="right-text">
@@ -76,7 +76,7 @@
             <block wx:if="{{order.status==10 || order.status==12}}">
                 <view class="order-confirm" @tap="bindAgreeRefund({{order.id}})">同意退款</view>
             </block>
-            <block wx:if="{{order.status==2}}">
+            <block wx:if="{{order.status==9}}">
                 <view class="order-evaluated">已评价</view>
             </block>
             <view wx:if="{{order.status!=3}}" class="order-contact" @tap="bindPhoneCall({{order.consumerMobile}})">联系顾客</view>
