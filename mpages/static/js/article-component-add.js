@@ -153,11 +153,11 @@ var Page = {
         });
         $('.save-btn').on('click', function () {
             var group = Page.group,
-                title = $('._title').val(),
+                title = $('._title').val().trim(),
                 intro = $('.zeditor-content').find('p:first-child').text().substring(0, 43),
                 source = $('._source').val(),
                 author = $('.item-input._author').val(),
-                temp = $('.zeditor-content').find('p'),
+                temp = $('.zeditor-content').find('p'),l
                 content = $('.zeditor-content').html(),
                 cover = $('#cover').attr('src') ? $('#cover').attr('src').split('.cn')[1].replace(/([/])\1+/g, '$1') : '';
             if (!title) {
