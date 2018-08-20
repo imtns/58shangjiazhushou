@@ -17,7 +17,7 @@
                     </view>
                 </view>
             </view>
-            <button class="btn-edit-shop">立即装修店铺，获得高分</button>
+            <navigator url="/pages/templateList"><button class="btn-edit-shop">立即装修店铺，获得高分</button></navigator>
             <view class="shop-info-tips">
                 <view class="shop-info-tips-line"></view>
                 <view class="shop-info-tips-point"></view>
@@ -82,10 +82,9 @@ export default class Index extends wepy.page {
 
             const { score, over, rank } = data;
             const index = Math.round(score / 0.5) - 1;
-            console.log(index);
             this.progressImg = imgs[index];
             Object.assign(this, {
-                over: over * 100,
+                over: (over * 100).toFixed(0),
                 rank,
             });
             Object.assign(this.score, {
