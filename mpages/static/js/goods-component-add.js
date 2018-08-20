@@ -169,7 +169,7 @@ var Page = {
         $('.save-btn').on('click', function () {
           
             var group = Page.group,
-                title = $('._title').val(),
+                title = $('._title').val().trim(),
                 description = $('.zeditor-content').html(),
                 stock = $('._source').val(),
                 price = $('.item-input._author').val(),

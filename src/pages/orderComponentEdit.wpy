@@ -226,8 +226,13 @@ export default class Index extends wepy.page {
         bindPayType(type) {
             // 改变付款方式
             this.form.payType = type;
+            if (parseInt(type) !== 1) {
+                this.form.earnestMoney = null;
+            } else {
+                this.form.earnestMoney = 0;
+            }
+            this.$apply();
         },
-
         async save() {
             if (!this.canSubmit) {
                 return;
@@ -240,14 +245,14 @@ export default class Index extends wepy.page {
                 const { form } = this;
                 const postData = {};
                 Object.keys(form).forEach(key => {
-                    if (form[key]) {
+                    if (form[key] !== '') {
+                        // !== '' 付款方式为免费预约时earnestMoney=0
                         postData[key] = form[key];
                     }
                 });
 
                 // 校验数据
                 this.validator(postData);
-
                 if (form.id) {
                     requestUrl = SAVE_SERVICE;
                 } else {
@@ -314,11 +319,11 @@ export default class Index extends wepy.page {
                 'provinceStr', 'cityStr', 'areaStr', 'address', 'payType', 'earnestMoney'];
 
             requiredFields.forEach(key => {
+                console.log(this.form[key]);
                 if (isEmpty(this.form[key])) {
                     result = false;
                 }
             });
-
             return result;
         },
     }
@@ -359,45 +364,37 @@ export default class Index extends wepy.page {
         const {
             serviceStarttime, serviceEndtime, payType, earnestMoney, price, duration, durationUnit,
         } = data;
-        if (serviceStarttime > serviceEndtime) {
-            // alert('预约结束时间必须大于开始时间');
+        if (this.transform(serviceStarttime) > this.transform(serviceEndtime)) {
             throw new Error('预约结束时间必须大于开始时间');
         }
 
         if (price > 1e5) {
-            // alert('输入价格不超过10万');
             throw new Error('输入价格不超过10万');
         }
 
         if (duration > 1440 && durationUnit === 1) {
-            // alert('输入时长不得大于1440分钟');
             throw new Error('输入时长不得大于1440分钟');
         }
 
         if (duration > 24 && durationUnit === 2) {
-            // alert('输入时长不得大于24小时');
             throw new Error('输入时长不得大于24小时');
         }
-        console.log(this.isOpenPay);
         if (!this.isOpenPay && parseInt(payType) !== 1) {
             throw new Error('请开通支付功能');
         }
         if (parseInt(payType) === 2 && earnestMoney > price) {
-            // alert('一口价不得大于服务价格');
             throw new Error('一口价不得大于服务价格');
         }
         if (parseInt(payType) === 3 && earnestMoney > price / 2) {
-            // alert('订金不得大于服务价格的一半');
             throw new Error('订金不得大于服务价格的一半');
-        }
-        if (parseInt(payType) === 1) {
-            this.form.earnestMoney = 0;
         }
     }
     async isChecked() {
         const { data, state } = await await get('/mpInfo/isChecked', {
             id: this.form.mpid,
         });
+        console.log(data);
+        console.log(state);
         if (state === 100 && data === true) {
             this.isOpenPay = true;
             this.$apply();
@@ -472,6 +469,10 @@ export default class Index extends wepy.page {
     updateData() {
         const orderComponent = globalService.get('orderComponent');
         globalService.set('orderComponent', Object.assign(orderComponent, this.form));
+    }
+    transform(hours) {
+        const minutes = parseInt(hours.split(':')[0] * 60) + parseInt(hours.split(':')[1]);
+        return minutes;
     }
 }
 </script>
