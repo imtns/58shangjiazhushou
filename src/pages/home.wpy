@@ -966,8 +966,6 @@ scroll-view {
 }
 
 .unstar-list {
-    position: aboslute;
-    top: 0;
     .icon-unstar {
         display: inline-block;
         margin-right: 8rpx;
@@ -980,6 +978,7 @@ scroll-view {
 .star-list {
     position: absolute;
     top: 0;
+    left: 0;
     overflow: hidden;
     white-space: nowrap;
     .icon-star {
