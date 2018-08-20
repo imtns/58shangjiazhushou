@@ -182,7 +182,7 @@
     };
 
     var ZEditor = function ZEditor(dom, props) {
-        var defaultContent = '<p><br></p>';
+        var defaultContent = '<p></p>';
         var params = {
             content: defaultContent
         };
@@ -196,36 +196,49 @@
             console.error('节点配置不正确。');
             return;
         }
-        $(dom).addClass('zeditor-container').html("\n            <div class=\"zeditor-content\" contenteditable=\"true\" ></div>\n            <div class=\"zeditor-btn-main\">\n                <a href=\"javascript:void(0)\" class=\"zeditor-btn-li iconfont icon-zuoduiqi font-style _font-style\" data-type=\"fontweight\" />T</a>\n                <img src=\"//static.58.com/lbg/shangjiaxcxht/zhushou/img/upload-icon.png\" class=\"icon-tupian\"/>\n                <input type=\"file\" class=\"icon-tupian icon-tupian-btn\" data-type=\"image\">\n            </div>\n        ");
+        $(dom).addClass('zeditor-container').html("\n            <div class=\"zeditor-content\" id=\"mainWapper\" contenteditable=\"true\" ></div>\n            <div id=\"mainTest\"  class=\"zeditor-btn-main\">\n                <a href=\"javascript:void(0)\" class=\"zeditor-btn-li iconfont icon-zuoduiqi font-style _font-style\" data-type=\"fontweight\" /></a>\n                <img src=\"//static.58.com/lbg/shangjiaxcxht/zhushou/img/upload-icon.png\" class=\"icon-tupian\"/>\n                <input type=\"file\" class=\"icon-tupian icon-tupian-btn\" data-type=\"image\">\n            </div>\n        ");
         //$(dom).addClass('zeditor-container').html("\n            <div class=\"zeditor-content\" contenteditable=\"true\" ></div>\n            ");
         var $editor = $('.zeditor-content');
         $editor.focus();
-        var $editorBtn = $('.zeditor-btn-main');
-
+        $('#mainTest').on('touchend', editorBtnClick);
         var editorBtnHide = function editorBtnHide() {};
 
-        var editorBtnClick = function editorBtnClick(e) {
+        function editorBtnClick(e) {
             // var $p = $('.zeditor-content p:last-child');
             // var $p = $(lastNode);
-            if(utils.focusDom() == defaultContent){
+            if (utils.focusDom() == defaultContent) {
                 $editor.html();
             }
+
             window.$p = $(utils.focusDom());
-            var type = e.target.dataset.type,
-                hasClass = $(e.path[0]).hasClass('active');
+            var type = e.target.dataset.type;
+            var path = e.path || (e.composedPath && e.composedPath()) || composedPath(e.target);
+            var hasClass = $(path[0]).hasClass('active');
             if (type === 'fontweight') {
-                $p.css({ 'font-weight': '800'});
+                $p.css({ 'font-weight': '800' });
+            }
+            function composedPath (el) {
+                var path = [];
+                while (el) {
+                    path.push(el);
+                    if (el.tagName === 'HTML') {
+                        path.push(document);
+                        path.push(window);
+                        return path;
+                   }
+                   el = el.parentElement;
+                }
             }
             if (type === 'fontweight' && !hasClass) {
-                $p.css({ 'font-weight': 'normal'});
+                $p.css({ 'font-weight': 'normal' });
             }
             if (type === 'image') {
                 params.selectImage && params.selectImage(function (url) {
-                    const $p = window.$p;
+                    var $p = window.$p;
                     if ($p && $p.parent().dom) {
-                        $p.after('<p><image src="' + url + '"/></p>');
+                        $("#mainWapper").append('<p><img src="'+url+'" /></p>');
                     } else {
-                        $editor.append('<p><image src="' + url + '"/></p>');
+                        $editor.append('<p><img src="'+url+'" /></p>');
                     }
                     //$p = $('.zeditor-content p:last-child');
                     //$p = $(lastNode);
@@ -289,7 +302,6 @@
                 for (var _iterator = e.clipboardData.items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                     var item = _step.value;
 
-
                     if (item.type === "text/plain") {
                         item.getAsString(pasteText);
                     }
@@ -347,7 +359,7 @@
 
         var bindEvent = function bindEvent() {
             $editor.html(content).on('paste', paste).on('mouseup', mouseup).on('keyup', keyup).on('blur', blur);
-            $editorBtn.on('click', editorBtnClick);
+
             document.addEventListener('click', function (e) {
                 if (!$(e.target).closest('.zeditor-container')) {
                     editorBtnHide();
@@ -362,6 +374,6 @@
                 return $editor.html();
             }
         };
-    }
+    };
     window.ZEditor = ZEditor;
 })();

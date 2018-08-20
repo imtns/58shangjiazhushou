@@ -55,14 +55,26 @@ input{
 html, body{
     width:100%;
     height:100%;
+    display:-webkit-box;
+    display:-ms-flexbox;
     display:flex;
-    flex-direction:column;
+    -webkit-box-orient:vertical;
+    -webkit-box-direction:normal;
+        -ms-flex-direction:column;
+            flex-direction:column;
 }
 .wrap{
-   flex:1;
+   -webkit-box-flex:1;
+       -ms-flex:1;
+           flex:1;
     background:#f6f6f6;
+    display:-webkit-box;
+    display:-ms-flexbox;
     display:flex;
-    flex-direction:column;
+    -webkit-box-orient:vertical;
+    -webkit-box-direction:normal;
+        -ms-flex-direction:column;
+            flex-direction:column;
     position:relative;
     overflow:hidden;
 }
@@ -77,6 +89,8 @@ html, body{
     width:100%;
     height:.89rem;
     line-height:.89rem;
+    display:-webkit-box;
+    display:-ms-flexbox;
     display:flex;
     border-bottom:0.01rem solid #ccc;
     background:#fff;
@@ -89,7 +103,8 @@ html, body{
     height:1.6rem;
     border:0;
     padding:.2rem 0;
-    box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+            box-sizing:border-box;
 }
 .item-upload-img,.item-file-div{
     width:1.2rem;
@@ -153,6 +168,8 @@ html, body{
     margin-right:1.02rem;
     font-size:0.3rem;
     color:#999;
+    float:left;
+    position: relative;
 }
 .item-text.required{
     position:relative;
@@ -167,7 +184,10 @@ html, body{
     left:-0.15rem;
 }
 .item-input-div{
-    flex:1;
+    -webkit-box-flex:1;
+        -ms-flex:1;
+            flex:1;
+    
 }
 .item-chose{
     text-align:right;
@@ -203,7 +223,8 @@ html, body{
     font-size: .28rem;
     color: #666666;
     overflow:hidden;
-    text-overflow:ellipsis;
+    -o-text-overflow:ellipsis;
+       text-overflow:ellipsis;
     white-space:nowrap;
     background:rgba(0,0,0,0);
 }
@@ -214,6 +235,13 @@ html, body{
     right:0;
     top:0.32rem;
 }
+.icon-bold{
+    width:0.35rem;
+    height:0.35rem;
+    position:absolute;
+    right:0.65rem;
+    top:0.32rem;
+}
 .icon-tupian-btn{
     opacity:0;
 }
@@ -221,7 +249,8 @@ html, body{
     height:59%;
     background:#fff;
     padding:0.1rem 0.2rem 0.6rem 0.2rem;
-    box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+            box-sizing:border-box;
     overflow:hidden;
     position:relative;
 }
@@ -231,7 +260,8 @@ html, body{
     height:90%;
     padding:.2rem;
     overflow-y:scroll;
-    box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+            box-sizing:border-box;
 }
 .zeditor-content p{
     font-size:0.3rem;
@@ -243,12 +273,13 @@ html, body{
     text-align:justify
 }
 .zeditor-content p img{
-    width:6.7rem;
+    width:100%;
     height:5.03rem;
     border-radius:0.05rem;
     margin:0.3rem 0;
 }
 .zeditor-content{
+    height:200px;
     outline:0;
 }
 .block{
@@ -292,7 +323,8 @@ html, body{
     right:0;
     bottom:0;
     margin:auto;
-    box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+            box-sizing:border-box;
     padding-top: 0.50rem;
     text-align: center;
     z-index:11;
@@ -321,15 +353,20 @@ html, body{
     background:#f5f5f5;
     border-radius:0.05rem;
     color:#333;
-    box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+            box-sizing:border-box;
 }
 .dialog-action-bar{
     height:0.79rem;
     border-top:0.01rem solid #f5f5f5;
+    display:-webkit-box;
+    display:-ms-flexbox;
     display:flex;
 }
 .dialog-action-bar .btn{
-    flex:1;
+    -webkit-box-flex:1;
+        -ms-flex:1;
+            flex:1;
     height:0.79rem;
     line-height:0.79rem;
     display:block;
@@ -363,7 +400,8 @@ html, body{
     width:100%;
     height:4.91rem;
     padding:0 0.2rem;
-    box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+            box-sizing:border-box;
     overflow-y:scroll;
 }
 .group-dialog-item{
@@ -371,7 +409,8 @@ html, body{
     height:1.21rem;
     line-height:1.21rem;
     padding-left:0.5rem;
-    box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+            box-sizing:border-box;
     background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png) no-repeat left center;
     background-size:0.3rem 0.3rem;
     font-family: PingFangSC-Regular;
@@ -434,25 +473,15 @@ html, body{
     background:url(//img.58cdn.com.cn/ds/zhaobiao/v1/tips.png) no-repeat;
     background-size:1rem 1rem;
     -webkit-animation: rotate 1s linear infinite;
-    -moz-animation: rotate 1s linear infinite;
-    -o-animation: rotate 1s linear infinite;
     animation: rotate 1s linear infinite;
 }
 @-webkit-keyframes rotate{
     from{-webkit-transform: rotate(0deg)}
     to{-webkit-transform: rotate(360deg)}
 }
-@-moz-keyframes rotate{
-    from{-moz-transform: rotate(0deg)}
-    to{-moz-transform: rotate(359deg)}
-}
-@-o-keyframes rotate{
-    from{-o-transform: rotate(0deg)}
-    to{-o-transform: rotate(359deg)}
-}
 @keyframes rotate{
-    from{transform: rotate(0deg)}
-    to{transform: rotate(359deg)}
+    from{-webkit-transform: rotate(0deg);transform: rotate(0deg)}
+    to{-webkit-transform: rotate(359deg);transform: rotate(359deg)}
 }
 .win2 .tips-error .icon {
     position:relative;

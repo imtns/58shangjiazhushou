@@ -83,19 +83,33 @@
             </view>
         </view>
         <view class="edit-cell space">
-            <view class="edit-label" style="color:wihte !important;">选择分组</view>
+            <view class="edit-label" @tap="showGroup">{{goodsGroupName || '请选择分组'}}<view class="arrow"></view></view>
+            <view class="edit-input">
+                <checkbox-group bindchange="selectAll">
+                    <label class="checkbox">
+                        <checkbox class="checkSqure" value="全选当前分组" checked="{{false}}" />全选当前分组
+                    </label>
+                </checkbox-group>
+            </view>
         </view>
-        <view class="nogoods" wx:if="{{group.length==0}}">
-            您还没有分组哦0~
+        <view class="nogoods" wx:if="{{list.length==0}}">
+            您还没有商品哦~
         </view>
         <scroll-view wx:else scroll-y class="goods-scroll"> 
-            <radio-group bindchange="radioBoxChange">
-                <repeat for="{{group}}" index="index" item="item"> 
+            <checkbox-group bindchange="checkboxBoxChange">
+                <repeat for="{{list}}" index="index" item="item"> 
                     <label class="goods-checkbox"> 
-                        <radio class="checkSqure" value="{{item.data.id}}" checked="{{item.checked}}" />{{item.data.name}}
+                        <checkbox class="checkSqure" value="{{item.id}}" checked="{{item.checked}}" />{{item.title}}
                     </label>
                 </repeat>
-            </radio-group>
+            </checkbox-group>
+        </scroll-view>
+    </view>
+    <view class="goods-group" hidden="{{!showGroup}}">
+        <scroll-view scroll-y>
+            <repeat for="{{group}}" index="index" item="item">
+                <view class="group" @tap="selectGroup" data-name="{{item.data.name}}" data-id="{{item.data.id}}">{{item.data.name}}</view>    
+            </repeat>
         </scroll-view>
     </view>
 </template>
@@ -115,6 +129,7 @@ export default class goods extends wepy.page {
   mixins = [Mixin];
   data = {
       list: {},
+      showGroup: false,
       group: {},
       goodsGroupName: '',
       goodsGroupId: '',
@@ -131,25 +146,45 @@ export default class goods extends wepy.page {
               url: `../goodsComponentAdd?id=${this.pageId}`,
           });
       },
-      async radioBoxChange(e) {
-          this.group.forEach(item => {
-              item.checked = item.data.id === e.detail.value;
+      showGroup() {
+          this.showGroup = !this.showGroup;
+      },
+      async selectGroup(e) {
+          const { id, name } = e.currentTarget.dataset;
+          this.goodsGroupName = name;
+          this.params.goodsGroupId = id;
+          await this.loadgoodsList(true);
+          this.showGroup = false;
+          this.$apply();
+      },
+      selectAll(e) {
+          console.log(e);
+          this.list.forEach(item => {
+              item.checked = e.detail.value.length !== 0;
           });
-          const { data } = await get('/goods/list', {
-              mpId: wx.getStorageSync('current_mpid'),
-              groupId: e.detail.value,
-          });
-          this.params.goodsGroupId = e.detail.value;
-          console.log(data);
-          this.list = data.data;
-          this.pageData[0].props.data = [];
           this.list.forEach((item) => {
-              item.pics = item.pics.substr(0, item.pics.indexOf('?'));
-              this.pageData[0].props.data.push({
-                  img: item.pics,
-                  title: item.title,
-                  price: item.price,
-              });
+              if (item.checked) {
+                  this.appendData(item, true);
+              } else {
+                  this.appendData(item, false);
+              }
+          });
+      },
+      async checkboxBoxChange(e) {
+          this.list.map(item => {
+              if (e.detail.value.indexOf(item.id) === -1) {
+                  item.checked = false;
+              } else {
+                  item.checked = true;
+              }
+              return item;
+          });
+          this.list.forEach((item) => {
+              if (item.checked) {
+                  this.appendData(item, true);
+              } else {
+                  this.appendData(item, false);
+              }
           });
           this.$apply();
       },
@@ -157,13 +192,14 @@ export default class goods extends wepy.page {
           this.pageModule.cfg.title = e.detail.value;
       },
       save() {
-          const selectgoods = this.group.filter(obj => obj.checked === true);
-          if (selectgoods.length === 0) {
-              toast('至少选择一个分组');
+          if (this.pageData[0].props.data.length === 0) {
+              toast('至少选择一个商品');
               return;
           }
           console.log(JSON.stringify(this.params));
           this.pageModule.params = this.params;
+          const selectGoods = this.list.filter(obj => obj.checked === true);
+          this.params.goodsIds = selectGoods.map(good => good.id).join(',');
           globalData.pageData[this.pageIndex].props = this.pageData[0].props;
           globalData.modules[this.pageIndex] = this.pageModule;
           toast('已保存');
@@ -174,6 +210,26 @@ export default class goods extends wepy.page {
           }, 1000);
       },
   };
+  appendData(item, isPush) {
+      const filter = this.pageData[0].props.data.find(obj => obj.id === item.id);
+      if ((filter && isPush) || (!filter && !isPush)) return;
+      if (!isPush) {
+          const index = this.pageData[0].props.data.findIndex(obj => obj.id === item.id);
+          this.pageData[0].props.data.splice(index, 1);
+      } else {
+          this.pageData[0].props.data.push({
+              id: item.id,
+              img: item.pics.substr(0, item.pics.indexOf('?')),
+              price: item.price,
+              stock: 0,
+              oldPrice: '',
+              title: item.title,
+              unit: '',
+              unitName: '',
+              priority: false,
+          });
+      }
+  }
   async onLoad() {
       [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
       this.pageModule.cfg.title = '';
@@ -185,19 +241,38 @@ export default class goods extends wepy.page {
           this.loadgoodsList();
       }
   }
+  async loadgoodsList(fromGroup) {
+      const { data } = await get('/goods/list', {
+          mpId: wx.getStorageSync('current_mpid'), groupId: this.params.goodsGroupId, pageNum: 1, pageSize: 1000,
+      });
+      console.log(data);
+      this.list = data.data;
+      if (fromGroup) {
+          this.pageData[0].props.data = [];
+          this.list.forEach((item) => {
+              item.checked = true;
+              this.appendData(item, true);
+          });
+      } else {
+          this.list.forEach(item => {
+              this.pageData[0].props.data.forEach(item1 => {
+                  if (item.id === item1.id) {
+                      item.checked = true;
+                  }
+              });
+          });
+      }
+      this.$apply();
+  }
   async loadgoodsGroup() {
       const { data } = await get('/goods/groups/specail', {
           mpId: wx.getStorageSync('current_mpid'),
       });
       this.group = data;
-      this.group.forEach(item => {
-          Object.assign(item, {
-              checked: false,
-          });
-          if (item.data.id === this.params.goodsGroupId) {
-              item.checked = true;
-          }
-      });
+      if (this.pageData[0].params && Object.keys(JSON.parse(this.pageData[0].params)).length !== 0) {
+          this.goodsGroupName = this.group.find(obj => obj.data.id === JSON.parse(this.pageData[0].params).goodsGroupId).data.name;
+          this.params.goodsGroupId = this.group.find(obj => obj.data.id === JSON.parse(this.pageData[0].params).goodsGroupId).data.id;
+      }
       this.$apply();
   }
 }
@@ -315,7 +390,7 @@ page {
       border-bottom: 1rpx solid #5b5d5f;
       font-size: 30rpx;
       align-items: center;
-      radio .wx-radio-input {
+      checkbox .wx-checkbox-input {
         width: 36rpx;
         height: 36rpx;
         top: -2rpx;
@@ -323,10 +398,10 @@ page {
         border: 1rpx solid #bdbdbd;
         border-radius: 50%;
       }
-      radio .wx-radio-input.wx-radio-input-checked {
+      checkbox .wx-checkbox-input.wx-checkbox-input-checked {
         background: #4e88ff !important;
       }
-      radio .wx-radio-input.wx-radio-input-checked::before {
+      checkbox .wx-checkbox-input.wx-checkbox-input-checked::before {
         font-size: 40rpx;
         color: transparent;
         position: relative;

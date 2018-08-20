@@ -132,7 +132,7 @@
             </view>
             <view class="item required" wx:if="{{form.payType == 2 || form.payType == 3}}">
                 <text wx:if="{{form.payType == 2}}">一口价</text>
-                <text wx:if="{{form.payType == 3}}">定金价格</text>
+                <text wx:if="{{form.payType == 3}}">订金价格</text>
                 <input
                 class="price-font input-price"
                 type="digit"
@@ -210,6 +210,7 @@ export default class Index extends wepy.page {
         defaultImages: [],
         region: '',
         canSubmit: false,
+        isOpenPay: false,
         payTips: ['客户预约时无需付款，完成服务后线上收取费用', '一口价为服务的全部费用，商家需承诺无其他费用', '客户预约时支付订金，完成服务后线上收取尾款'],
     }
 
@@ -349,6 +350,7 @@ export default class Index extends wepy.page {
         if (province && city && area) {
             Object.assign(this.form, regionData);
         }
+        this.isChecked();
     }
 
     // 校验数据
@@ -357,35 +359,50 @@ export default class Index extends wepy.page {
         const {
             serviceStarttime, serviceEndtime, payType, earnestMoney, price, duration, durationUnit,
         } = data;
-        console.log(price);
-        console.log(payType);
-        console.log(earnestMoney);
         if (serviceStarttime > serviceEndtime) {
+            // alert('预约结束时间必须大于开始时间');
             throw new Error('预约结束时间必须大于开始时间');
         }
 
         if (price > 1e5) {
+            // alert('输入价格不超过10万');
             throw new Error('输入价格不超过10万');
         }
 
         if (duration > 1440 && durationUnit === 1) {
+            // alert('输入时长不得大于1440分钟');
             throw new Error('输入时长不得大于1440分钟');
         }
 
         if (duration > 24 && durationUnit === 2) {
+            // alert('输入时长不得大于24小时');
             throw new Error('输入时长不得大于24小时');
         }
+        console.log(this.isOpenPay);
+        if (!this.isOpenPay && parseInt(payType) !== 1) {
+            throw new Error('请开通支付功能');
+        }
         if (parseInt(payType) === 2 && earnestMoney > price) {
+            // alert('一口价不得大于服务价格');
             throw new Error('一口价不得大于服务价格');
         }
         if (parseInt(payType) === 3 && earnestMoney > price / 2) {
+            // alert('订金不得大于服务价格的一半');
             throw new Error('订金不得大于服务价格的一半');
         }
         if (parseInt(payType) === 1) {
             this.form.earnestMoney = 0;
         }
     }
-
+    async isChecked() {
+        const { data, state } = await await get('/mpInfo/isChecked', {
+            id: this.form.mpid,
+        });
+        if (state === 100 && data === true) {
+            this.isOpenPay = true;
+            this.$apply();
+        }
+    }
     async loadData(id) {
         try {
             const { mpid } = this;
