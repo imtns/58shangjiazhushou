@@ -11,7 +11,7 @@
             </view>
             <scroll-view
                 class="article-list {{isEditing ? 'edit' : ''}}"
-                style="height:{{height}};"
+                style="height:80vh;"
                 scroll-y="true"
                 wx:if="{{listData.length > 0}}">
                 <view
@@ -53,7 +53,7 @@ import EmptyPage from '../components/EmptyPage';
 
 export default class goodsComponentList extends wepy.page {
     config = {
-        navigationBarTitleText: '预约列表',
+        navigationBarTitleText: '商品列表',
         disableScroll: true,
     }
     components = {
@@ -80,10 +80,10 @@ export default class goodsComponentList extends wepy.page {
             this.name = name;
             const mpId = wepy.getStorageSync('current_mpid');
             this.mpId = mpId;
+            // this.height = '80vh';
             this.$apply();
-            const { windowHeight } = wepy.getSystemInfoSync();
-            const height = windowHeight;
-            this.height = `${(height * 2) - (88 * 2) - (40 * 2) - 96}rpx`;
+            // const { windowHeight } = wepy.getSystemInfoSync();
+            // const height = windowHeight;
         } catch (e) {
             console.log(e);
         }
