@@ -1,0 +1,287 @@
+<template>
+    <view class="containe">
+        <view class="top">
+            <view class="top-shop-info">
+                <view class="shop-info-left">
+                    <view class="shop-info-left-name">家居家纺专卖</view>
+                    <view class="shop-info-left-rank">
+                        在北京地区店铺评分中排<text class="rank-bold">第{{ rank }}名</text>
+                    </view>
+                    <view class="shop-info-left-percent">超过了{{ over }}%的商家</view>
+                </view>
+                <view class="shop-info-score">
+                    <image class="progress" src="{{ progressImg }}"/>
+                    <view class="shop-info-score-box">
+                        <view class="shop-info-score-value">{{ score.formated }}</view>
+                        <view class="shop-info-score-label">店铺评分</view>
+                    </view>
+                </view>
+            </view>
+            <button class="btn-edit-shop">立即装修店铺，获得高分</button>
+            <view class="shop-info-tips">
+                <view class="shop-info-tips-line"></view>
+                <view class="shop-info-tips-point"></view>
+                <view>高分商家可获得列表页专属推荐</view>
+                <view class="shop-info-tips-point"></view>
+                <view class="shop-info-tips-line"></view>
+            </view>
+        </view>
+        <view class="task">
+            <view class="task-title">
+                <view class="task-title-main">加分任务推荐</view>
+                <view class="task-title-extra">可在电脑上完成</view>
+            </view>
+            <view class="task-list">
+                <view class="task-list-item" wx:for="{{ taskList }}" wx:key="index">
+                    <image mode="aspectFill" class="task-list-item-icon" src="{{ item.icon }}"/>
+                    <view class="task-list-item-info">
+                        <view class="task-info-title">{{ item.title }}</view>
+                        <view class="task-info-subtitle">{{ item.subTitle }}</view>
+                    </view>
+                    <view class="task-info-score">{{ item.score }}</view>
+                </view>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { alertP } from '../utils';
+import { shopScore } from '../utils/config';
+import { post } from '../utils/ajax';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '店铺评分',
+    }
+
+    data = {
+        taskList: [],
+        score: {
+            value: 3.8,
+            formated: '3.8',
+        },
+        progressImg: '',
+        over: 30,
+        rank: 100,
+    }
+
+    async onLoad() {
+        try {
+            const { imgs, taskList } = shopScore;
+            this.taskList = taskList;
+
+            const { state, data } = await post('/mplogic/index', { mpid: wepy.getStorageSync('current_mpid') || '' });
+
+            if (state !== 100) {
+                await alertP('获取数据失败！');
+                wepy.navigateBack();
+                return;
+            }
+
+            const { score, over, rank } = data;
+            const index = Math.round(score / 0.5) - 1;
+            console.log(index);
+            this.progressImg = imgs[index];
+            Object.assign(this, {
+                over: over * 100,
+                rank,
+            });
+            Object.assign(this.score, {
+                value: score,
+                formated: score.toFixed(1),
+            });
+            this.$apply();
+        } catch (err) {
+            console.log(err);
+            alertP('获取数据失败！');
+        }
+    }
+}
+</script>
+
+<style lang="scss">
+.containe {
+    padding: 56rpx 30rpx 0;
+    background-color: #FFF;
+    background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/shop-score-bg.png') no-repeat;
+    background-size: 750rpx 782rpx;
+    background-position: 0 -128rpx;
+}
+
+.top {
+    color: #FFF;
+}
+
+.top-shop-info {
+    padding: 0 30rpx;
+}
+
+.top-shop-info {
+    display: flex;
+    align-items: center;
+}
+
+.shop-info-left {
+    flex-grow: 1;
+}
+
+.shop-info-left-name {
+    font-size: 42rpx;
+    line-height: 59rpx;
+    margin-bottom: 10rpx;
+}
+
+.shop-info-left-rank {
+    font-size: 26rpx;
+    line-height: 37rpx;
+    margin-bottom: 10rpx;
+}
+
+.rank-bold {
+    color: #FFE600;
+}
+
+.shop-info-left-percent {
+    font-size: 26rpx;
+    color: rgba(255,255,255,0.50);
+    line-height: 37rpx;
+}
+
+.shop-info-score {
+    text-align: center;
+    position: relative;
+    // width: 150rpx;
+    // height: 150rpx;
+    // background-color: transparent;
+    // border: 10rpx solid;
+    // border-image: linear-gradient(#EA6724, #FFB946) 10;
+    // border-radius: 50%;
+}
+
+.shop-info-score-value {
+    font-size: 48rpx;
+    line-height: 67rpx;
+}
+
+.shop-info-score-label {
+    font-size: 22rpx;
+    line-height: 22rpx;
+}
+
+.shop-info-score-box {
+    position: absolute;
+    top: 30rpx;
+    left: 0;
+    right: 0;
+}
+
+.progress {
+    width: 164rpx;
+    height: 145.7rpx;
+}
+
+.btn-edit-shop {
+    margin: 54rpx auto 56rpx;
+    font-size: 32rpx;
+    color: #FFF;
+    height: 83rpx;
+    width: 570rpx;
+    line-height: 83rpx;
+    background-image: linear-gradient(6deg, #EA6724 0%, #FFB946 100%);
+    border: 1rpx solid #F48F35;
+    box-shadow: 0 0 10rpx 0 rgba(53,28,104,0.70);
+    border-radius: 100rpx;
+}
+
+.shop-info-tips {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26rpx;
+    line-height: 37rpx;
+    color: #a278fb;
+    text-align: center;
+}
+
+.shop-info-tips-line {
+    width: 80rpx;
+    height: 2rpx;
+    background-color: #a278fb;
+}
+
+.shop-info-tips-point {
+    background-color: #a278fb;
+    width: 3rpx;
+    height: 3rpx;
+    margin: 0 13rpx;
+}
+
+.task {
+    box-shadow: 0 0 12px 0 rgba(204,204,204,0.50);
+    border-radius: 16rpx;
+    color: #333;
+    background-color: #FFF;
+    margin-top: 24rpx;
+    overflow: hidden;
+}
+
+.task-title {
+    height: 105rpx;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30rpx;
+    border-bottom: 1rpx solid #f3f3f3;
+}
+
+.task-title-main {
+    font-size: 32rpx;
+    font-family: PingFangSC-Medium;
+}
+
+.task-title-extra {
+    font-size: 26rpx;
+    color: #999;
+}
+
+.task-list {
+    padding: 40rpx 30rpx 0;
+}
+
+.task-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 50rpx;
+}
+
+.task-list-item-icon {
+    width: 96rpx;
+    height: 96rpx;
+    margin-right: 30rpx;
+}
+
+.task-list-item-info {
+    flex-grow: 1;
+}
+
+.task-info-title {
+    font-size: 28rpx;
+    color: #333;
+    line-height: 40rpx;
+    margin-bottom: 10rpx;
+}
+
+.task-info-subtitle {
+    font-size: 26rpx;
+    line-height: 37rpx;
+    color: #999;
+}
+
+.task-info-score {
+    font-size: 32rpx;
+    color: #f5a623;
+}
+</style>

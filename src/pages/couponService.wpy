@@ -315,14 +315,14 @@ view {
             .checkbox {
                 width: 40rpx;
                 height: 40rpx;
-                background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-unchecked.png');
+                background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png');
                 background-size: 40rpx 40rpx;
                 position: absolute;
                 left: -100rpx;
                 top: 61rpx;
 
                 &.checked {
-                    background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-checked.png');
+                    background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/selected-icon.png');
                 }
             }
 

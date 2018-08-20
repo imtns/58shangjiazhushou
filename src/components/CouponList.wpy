@@ -170,14 +170,14 @@ $radius: 4rpx;
         .checkbox {
             width: 40rpx;
             height: 40rpx;
-            background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-unchecked.png');
+            background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png');
             background-size: 40rpx 40rpx;
             position: absolute;
             left: -83rpx;
             top: 70rpx;
 
             &.checked {
-                background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-checked.png');
+                background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/selected-icon.png');
             }
         }
         .mask {
@@ -272,14 +272,14 @@ $radius: 4rpx;
         .checkbox {
             width: 40rpx;
             height: 40rpx;
-            background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-unchecked.png');
+            background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png');
             background-size: 40rpx 40rpx;
             position: absolute;
             left: -89rpx;
             top: 52rpx;
 
             &.checked {
-                background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-checked.png');
+                background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/selected-icon.png');
             }
         }
         .mask {

@@ -96,6 +96,7 @@ export default class extends wepy.app {
             'pages/purchase',
             'pages/cropper',
             'pages/orderDetailSelector', // 服务详情-服务详情编辑
+            'pages/shopScore', // 店铺评分
         ],
         window: {
             backgroundTextStyle: 'light',
