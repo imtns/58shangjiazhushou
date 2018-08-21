@@ -49,7 +49,7 @@
                     <view class="left-label">优惠券</view>
                     <view class="right-text">{{order.couponAmount}}元</view>
                 </view>
-                <view class="order-row none-border">
+                <view class="order-row none-border" wx:if="{{order.payType!=1}}">
                     <view class="left-label"></view>
                     <view class="right-text">实际支付 <view class="{{fontClass[order.status] || ''}}">{{order.realAmount}}元</view></view>
                 </view>
@@ -148,9 +148,10 @@ export default class OrderDetail extends wepy.page {
             });
             setTimeout(() => {
                 wx.hideLoading();
-                wx.navigateTo({
-                    url: '/pages/OrderList',
-                });
+                this.onLoad();
+                // wx.navigateBack({
+                //     delta: 0,
+                // });
             }, 2000);
         },
         async bindApplyPlat(o) {
@@ -166,11 +167,8 @@ export default class OrderDetail extends wepy.page {
             });
             setTimeout(() => {
                 wx.hideLoading();
-                wx.navigateTo({
-                    url: '/pages/OrderList',
-                });
+                this.onLoad();
             }, 2000);
-            this.onLoad();
         },
     }
     async submitOrder () {

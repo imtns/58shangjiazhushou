@@ -4,9 +4,8 @@
     <view class="openpay" wx:if="{{!opened}}">
         <view class="openpay-main">
             <!-- 状态图标 -->
-            <image class="openpay-main-icon" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-openinfo.png"/>
-            <view class="openpay-main-content">当前微信账号所绑定的手机号，必须与58账</view>
-            <view class="openpay-main-content">号绑定的手机号相同</view>
+            <image class="openpay-main-icon" src="{{failImg}}"/>
+            <view class="openpay-main-content">{{failTips}}</view>
         </view>
         <!-- 同意协议 -->
         <view class="openpay-protocol">
@@ -17,14 +16,17 @@
         </view>
         <!-- 跳转到支付助手小程序性开通支付 -->
         <!-- 小程序跳转时低版本不提供url会报错 -->
-        <view class="openpay-confirm disable" wx:if="{{!agreeProtocol}}">确认开通</view>
+        <view class="openpay-confirm disable" wx:if="{{!agreeProtocol}}">{{failText}}</view>
         <navigator open-type="navigate"
             target="miniProgram"
             path="/pages/payAuthorize/payAuthorize?param={{userid}}" 
             url="/pages/payAuthorize/payAuthorize?param={{userid}}" 
             app-id="{{payAppId}}"
             version="develop" wx:else>
-            <view class="openpay-confirm">确认开通</view>
+            <view class="openpay-confirm">{{failText}}</view>
+        </navigator>
+        <navigator open-type="redirect" url="/pages/home" wx:if="{{payOpenStatus === 3 && payOpenType === 2}}">
+            <view class="changepay-home">返回首页</view>
         </navigator>
         <!-- 协议内容弹框 -->
         <view class="openpay-protocol-mask" wx:if="{{showProtocol}}"
@@ -49,8 +51,7 @@
     <view class="changepay" wx:else>
         <view class="changepay-main">
             <image class="changepay-main-icon" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-openchange.png"/>
-            <view class="changepay-main-content">当前小程序已经开通支付，您可以</view>
-            <view class="changepay-main-content">使用买单功能啦</view>
+            <view class="changepay-main-content">{{tips}}</view>
         </view>
         <!-- 跳转支付助手更换收款微信 -->
         <navigator open-type="navigate"
@@ -59,7 +60,7 @@
             url="/pages/payAuthorize/payAuthorize?param={{userid}}"
             app-id="{{payAppId}}"
             version="develop">
-            <view class="changepay-confirm">更换收款微信</view>
+            <view class="changepay-confirm">{{btnText}}</view>
         </navigator>
         <navigator open-type="redirect" url="/pages/home">
             <view class="changepay-home">返回首页</view>
@@ -71,8 +72,6 @@
 import wepy from 'wepy';
 import { toast } from '../utils';
 import { get } from '../utils/ajaxP';
-
-const appinfoApi = '/mplogic/get';
 
 export default class OpenPay extends wepy.page {
     config = {
@@ -86,6 +85,14 @@ export default class OpenPay extends wepy.page {
         agreeProtocol: true, // 是否同意协议
         showProtocol: false, // 显示协议内容
         loading: true, // 加载中隐藏页面内容
+        tips: '', // 提示文案成功之后
+        btnText: '', // btn文案成功之后
+        failTips: '当前微信账号所绑定的手机号，必须与58账号绑定的手机号相同', // 失败文案
+        failText: '确认开通', // 失败btn文案
+        failImg: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-openinfo.png', // 失败图片
+        payOpenStatus: 0, // 支付状态
+        payOpenType: 0, // 支付方式
+
     }
     methods = {
         bindAgreeProtocol () {
@@ -101,8 +108,8 @@ export default class OpenPay extends wepy.page {
     }
     async onShow () {
         await this.saveAgreeProtocol();
-        const mpid = wepy.getStorageSync('current_mpid');
-        await this.getOpenedInfo(mpid);
+        // const mpid = wepy.getStorageSync('current_mpid');
+        await this.getOpenedInfo();
     }
     async saveAgreeProtocol () {
         // 开通支付后回传状态
@@ -112,18 +119,55 @@ export default class OpenPay extends wepy.page {
         const [e] = await get('/mpInfo/agree');
         e && toast(e);
     }
-    async getOpenedInfo (mpid) {
+    async getOpenedInfo () {
         // 获取用户是否开通支付
         // if更改支收款微信
         // else开通支付
-        const [e, res] = await get(`${appinfoApi}/${mpid}`);
+        // const [e, res] = await get(`${appinfoApi}/${mpid}`);
+        // if (e) {
+        //     toast(e);
+        //     return;
+        // }
+        const [e, res] = await get('/mplogic/getPayOpenStatus');
         if (e) {
             toast(e);
             return;
         }
+        const { payOpenStatus, payOpenType } = res;
+        Object.assign(this, {
+            payOpenStatus,
+            payOpenType,
+        });
+        this.$apply();
+        if (+payOpenStatus === 0) {
+            this.opened = false;
+        } else if (+payOpenStatus === 1) {
+            this.opened = true;
+            this.btnText = '';
+            if (+payOpenType === 1) {
+                this.tips = '当前小程序已经开通微信零钱支付，您的小程序支持线上支付啦～';
+            } else if (+payOpenType === 2) {
+                this.tips = '您开通银行卡支付的申请将在1-2个工作日内处理，请关注“58同城微学院”公众号实时收到处理结果。';
+            }
+        } else if (+payOpenStatus === 2) {
+            this.opened = true;
+            this.btnText = '更换收款方式';
+            if (+payOpenType === 1) {
+                this.tips = '当前小程序已经开通微信零钱支付，您的小程序支持线上支付啦～';
+            } else if (+payOpenType === 2) {
+                this.tips = '当前小程序已经开通银行卡支付，您的小程序支持线上支付啦～';
+            }
+        } else if (+payOpenStatus === 3) {
+            this.opened = false;
+            if (+payOpenType === 2) {
+                this.failText = '重新开通';
+                this.failTips = '您的银行卡信息不正确，请确认后重新开通。';
+                this.failImg = 'https://img.58cdn.com.cn/lbg/jianzhan/images/authorize-fail.png';
+            }
+        }
         this.loading = false;
         this.userid = res.userid;
-        this.opened = res.pay_open;
+        // this.opened = res.pay_open;
         this.$apply();
     }
 }
@@ -148,6 +192,7 @@ export default class OpenPay extends wepy.page {
                 color: #333333;
                 letter-spacing: 0;
                 text-align: center;
+                padding:0 11%;
             }
         }
         .openpay-protocol {
@@ -256,6 +301,19 @@ export default class OpenPay extends wepy.page {
             }
         }
     }
+    .changepay-home {
+        line-height: 94rpx;
+        margin: 60rpx 30rpx 0;
+        background: #4e88ff;
+        border-radius: 4rpx;
+        font-size: 32rpx;
+        color: #ffffff;
+        letter-spacing: 0;
+        text-align: center;
+        margin-top: 20rpx;
+        background: #ffffff;
+        color: #333333;
+    }
     .changepay {
         .changepay-main {
             background: #fff;
@@ -272,6 +330,7 @@ export default class OpenPay extends wepy.page {
                 color: #333333;
                 letter-spacing: 0;
                 text-align: center;
+                padding: 0 11%;
             }
         }
         .changepay-confirm,
