@@ -219,7 +219,7 @@ export default class goods extends wepy.page {
       } else {
           this.pageData[0].props.data.push({
               id: item.id,
-              img: item.pics.substr(0, item.pics.indexOf('?')),
+              img: item.pics.indexOf('?') > -1 ? item.pics.substr(0, item.pics.indexOf('?')) : item.pics,
               price: item.price,
               stock: 0,
               oldPrice: '',
