@@ -365,27 +365,34 @@ export default class Index extends wepy.page {
             serviceStarttime, serviceEndtime, payType, earnestMoney, price, duration, durationUnit,
         } = data;
         if (this.transform(serviceStarttime) > this.transform(serviceEndtime)) {
+            alert('预约结束时间必须大于开始时间');
             throw new Error('预约结束时间必须大于开始时间');
         }
 
         if (price > 1e5) {
+            alert('输入价格不超过10万');
             throw new Error('输入价格不超过10万');
         }
 
         if (duration > 1440 && durationUnit === 1) {
+            alert('输入时长不得大于1440分钟');
             throw new Error('输入时长不得大于1440分钟');
         }
 
         if (duration > 24 && durationUnit === 2) {
+            alert('输入时长不得大于24小时');
             throw new Error('输入时长不得大于24小时');
         }
         if (!this.isOpenPay && parseInt(payType) !== 1) {
+            alert('请开通支付功能');
             throw new Error('请开通支付功能');
         }
         if (parseInt(payType) === 2 && earnestMoney > price) {
+            alert('一口价不得大于服务价格');
             throw new Error('一口价不得大于服务价格');
         }
         if (parseInt(payType) === 3 && earnestMoney > price / 2) {
+            alert('订金不得大于服务价格的一半');
             throw new Error('订金不得大于服务价格的一半');
         }
     }
