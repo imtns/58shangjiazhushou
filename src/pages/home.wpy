@@ -26,7 +26,7 @@
                 </view>
                 <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">切换</view>
                 <image  class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
-                <view class="index-block-body" style="height:193rpx;">
+                <view class="index-block-body">
                     <view class="index-loaded-item" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
                         <image src="{{item.iconPath}}" class="item-img"></image>
                         <view class="item-text">{{item.text}}</view>
@@ -903,8 +903,8 @@ scroll-view {
         display:flex;
         flex-wrap: wrap;
         justify-content: flex-start;
-        align-items:center;
-        padding-bottom:30rpx;
+        padding-bottom: 30rpx;
+        margin-top: 50rpx;
         .index-loaded-item {
             width: 156rpx;
             text-align: center;
@@ -946,12 +946,14 @@ scroll-view {
 .star-box {
     position: relative;
     display: flex;
+    margin-top: 16rpx;
 }
 
 .star-box-title {
     font-size: 24rpx;
     color: #999;
     margin-left: 12rpx;
+    line-height: 24rpx;
 
     &::after {
         display: inline-block;
@@ -966,8 +968,9 @@ scroll-view {
 }
 
 .unstar-list {
+    display: flex;
     .icon-unstar {
-        display: inline-block;
+        flex: none;
         margin-right: 8rpx;
         width: 22rpx;
         height: 22rpx;
@@ -980,9 +983,9 @@ scroll-view {
     top: 0;
     left: 0;
     overflow: hidden;
-    white-space: nowrap;
+    display: flex;
     .icon-star {
-        display: inline-block;
+        flex: none;
         margin-right: 8rpx;
         width: 22rpx;
         height: 22rpx;
