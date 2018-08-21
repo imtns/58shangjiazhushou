@@ -299,6 +299,7 @@ export default class Home extends wepy.page {
         },
     }
     async onLoad () {
+        wepy.setStorageSync('ppu', 'UID=55436982950166&UN=w86fs5j5i&TT=23bf813ba05f5ec31a7968e6a2b23ac0&PBODY=CADRw0-nsBji0Pl88aJfbhK_Bwsy8gLifwV1A9YX9bWu9UYCrJujoFgpJ8EIB_27D2scFWeIOvSwBuAq22XruTRwk0U1xkMDYHG5-KkLBcRFHBZ-8VjeGumZNAo39gUlIFYr01J6UTNF1HQH_irqs9cA1U8GXnkfNAz1Bw3vPOI&VER=1');
         // globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
         await this.loadData();
         this.setGlobalMpId(this.business.selected.id);
