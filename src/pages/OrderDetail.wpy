@@ -51,7 +51,7 @@
                 </view>
                 <view class="order-row none-border">
                     <view class="left-label"></view>
-                    <view class="right-text">实际支付 <view class="{{fontClass[order.status] || ''}}">{{order.realAmount}}元</view></view>
+                    <view class="right-text" wx:if="{{order.payType!=1}}">实际支付 <view class="{{fontClass[order.status] || ''}}">{{order.realAmount}}元</view></view>
                 </view>
             </view>
             <view class="order-desc" wx:if="{{contentSet[order.status]}}">{{contentSet[order.status]}}</view>
