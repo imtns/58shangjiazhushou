@@ -305,10 +305,31 @@ export default class Home extends wepy.page {
         this.loadExtJson();
     }
     async onShow () {
-        await this.loadData();
-        await this.getAssistAuth();
-        this.loadCode();
-        this.getInfo();
+        const that = this;
+        await that.loadData();
+        await that.getAssistAuth();
+        await that.loadCode();
+        await that.getInfo();
+        if (!that.isFollow) {
+            wx.showModal({
+                title: '提示',
+                content: '关注公众号接收通知。',
+                success(res) {
+                    if (res.confirm) {
+                        if (that.assistAuth) {
+                            wx.navigateTo({
+                                url: '/pages/followPublic',
+                            });
+                            return;
+                        }
+                        that.loadSession();
+                        console.log('用户点击确定');
+                    } else if (res.cancel) {
+                        console.log('用户点击取消');
+                    }
+                },
+            });
+        }
     }
     formatedMp (item) {
         const mp = item;
