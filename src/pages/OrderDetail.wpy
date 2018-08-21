@@ -73,14 +73,14 @@
             <block wx:if="{{order.status==1}}">
                 <view class="order-finish">已确认订单</view>
             </block>
-            <block wx:if="{{order.status==10 || order.status==12}}">
-                <view class="order-confirm" @tap="bindAgreeRefund({{order.id}})">同意退款</view>
+            <block wx:if="{{order.status==10}}">
+                <view class="order-confirm" @tap="bindAgreeRefund" data-orderid="{{order.id}}">同意退款</view>
             </block>
             <block wx:if="{{order.status==9}}">
                 <view class="order-evaluated">已评价</view>
             </block>
             <view wx:if="{{order.status!=3}}" class="order-contact" @tap="bindPhoneCall({{order.consumerMobile}})">联系顾客</view>
-            <view wx:if="{{order.status==10}}" class="order-apply" @tap="bindApplyPlat({{order.id}})">申请平台介入</view>
+            <view wx:if="{{order.status==10}}" class="order-apply" @tap="bindApplyPlat" data-orderId="{{order.id}}">申请平台介入</view>
         </view>
         <view class="ordersuccess" wx:if = "{{submitSuccess}}">
             <view class="ordersuccess-container">
@@ -117,7 +117,7 @@ export default class OrderDetail extends wepy.page {
             '服务已经结束,订单费用已成功打入您的收款账户，谢谢您的服务',
             '用户申请取消订单,并退款。请确认是否同意用户申请。',
             '',
-            '用户申请取消订单,并退款。请确认是否同意用户申请。'],
+            '用户申请取消订单,并退款。已同意用户申请退款。'],
         order: {},
         submitSuccess: false,
     }
@@ -135,15 +135,16 @@ export default class OrderDetail extends wepy.page {
         bindSubmitOrder () {
             this.submitOrder();
         },
-        bindAgreeRefund (orderId) {
-            const [e, data] = get(`/consumerAppointment/optRefund/${orderId}`, { action: 'agree' });
-            console.log(data);
+        async bindAgreeRefund (o) {
+            const orderId = o.currentTarget.dataset.orderid;
+            const [e, data] = await get(`/consumerAppointment/optRefund/${orderId}`, { action: 'agree' });
             if (e) {
                 toast(e);
                 return;
             }
+            console.log(data);
             wx.showLoading({
-                title: '您同意退款成功',
+                title: '退款成功',
             });
             setTimeout(() => {
                 wx.hideLoading();
@@ -152,8 +153,9 @@ export default class OrderDetail extends wepy.page {
                 });
             }, 2000);
         },
-        bindApplyPlat(orderId) {
-            const [e, data] = get(`/consumerAppointment/optRefund/${orderId}`, { action: 'refuse' });
+        async bindApplyPlat(o) {
+            const orderId = o.currentTarget.dataset.orderid;
+            const [e, data] = await get(`/consumerAppointment/optRefund/${orderId}`, { action: 'refuse' });
             if (e) {
                 toast(e);
                 return;
@@ -168,6 +170,7 @@ export default class OrderDetail extends wepy.page {
                     url: '/pages/OrderList',
                 });
             }, 2000);
+            this.onLoad();
         },
     }
     async submitOrder () {
@@ -204,8 +207,6 @@ export default class OrderDetail extends wepy.page {
             toast(e);
             return;
         }
-        console.log(data);
-        console.log('==============');
         const order = this.parseOrder(data);
         this.order = Object.assign({}, order);
         this.$apply();
