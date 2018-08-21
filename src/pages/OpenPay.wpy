@@ -25,6 +25,9 @@
             version="develop" wx:else>
             <view class="openpay-confirm">{{failText}}</view>
         </navigator>
+        <navigator open-type="redirect" url="/pages/home" wx:if="{{payOpenStatus === 3 && payOpenType === 2}}">
+            <view class="changepay-home">返回首页</view>
+        </navigator>
         <!-- 协议内容弹框 -->
         <view class="openpay-protocol-mask" wx:if="{{showProtocol}}"
          catchtouchmove="stopAuthorizeScroll" @tap="bindShowProtocol({{false}})">
@@ -87,6 +90,9 @@ export default class OpenPay extends wepy.page {
         failTips: '当前微信账号所绑定的手机号，必须与58账号绑定的手机号相同', // 失败文案
         failText: '确认开通', // 失败btn文案
         failImg: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-openinfo.png', // 失败图片
+        payOpenStatus: 0, // 支付状态
+        payOpenType: 0, // 支付方式
+
     }
     methods = {
         bindAgreeProtocol () {
@@ -128,6 +134,11 @@ export default class OpenPay extends wepy.page {
             return;
         }
         const { payOpenStatus, payOpenType } = res;
+        Object.assign(this, {
+            payOpenStatus,
+            payOpenType,
+        });
+        this.$apply();
         if (+payOpenStatus === 0) {
             this.opened = false;
         } else if (+payOpenStatus === 1) {
@@ -289,6 +300,19 @@ export default class OpenPay extends wepy.page {
                 text-indent: 2em;
             }
         }
+    }
+    .changepay-home {
+        line-height: 94rpx;
+        margin: 60rpx 30rpx 0;
+        background: #4e88ff;
+        border-radius: 4rpx;
+        font-size: 32rpx;
+        color: #ffffff;
+        letter-spacing: 0;
+        text-align: center;
+        margin-top: 20rpx;
+        background: #ffffff;
+        color: #333333;
     }
     .changepay {
         .changepay-main {
