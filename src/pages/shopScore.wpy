@@ -4,10 +4,10 @@
             <view class="top-shop-info">
                 <view class="shop-info-left">
                     <view class="shop-info-left-name">{{ nickName }}</view>
-                    <view class="shop-info-left-rank">
+                    <view class="shop-info-left-rank" wx:if="{{ rank }}">
                         在北京地区店铺评分中排<text class="rank-bold">第{{ rank }}名</text>
                     </view>
-                    <view class="shop-info-left-percent">超过了{{ over }}%的商家</view>
+                    <view class="shop-info-left-percent" wx:if="{{ over }}">超过了{{ over || 0 }}%的商家</view>
                 </view>
                 <view class="shop-info-score">
                     <image class="progress" src="{{ progressImg }}"/>
