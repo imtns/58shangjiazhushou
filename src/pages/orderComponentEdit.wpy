@@ -35,7 +35,7 @@
                 placeholder-class="placeholder"
                 value="{{ form.duration }}"
                 @change="setFormData('duration')"/>
-                <text class="unit">分钟</text>
+                <text class="unit">{{ form.durationUnit === 1 ? '分钟' : '小时' }}</text>
             </view>
         </view>
         <view class="section">
