@@ -67,6 +67,18 @@
                 <view class="confirm" :class="{ 'active' : business.canConfirm}" bindtap="confirmAction">确定</view>
             </view>
         </view>
+        <view wx:if="{{!isFollow && showModal}}">
+            <view class="showModal_mask" bindtap="hideModal"></view>
+            <view class="showModal_modal">
+                <view class="showModal_title">提示</view>
+                <view class="showModal_text">关注公众号接受订单通知</view>
+                <view class="showModal_btns">
+                    <button class="showModal_btn" bindtap="hideModal">取消</button>
+                    <navigator class="showModal_btn red_text" wx:if="{{assistAuth}}" url="/pages/followPublic">马上关注</navigator>
+                    <button class="showModal_btn red_text" wx:elif="{{!assistAuth}}" open-type="getUserInfo" @tap="loadSession()">马上关注</button>
+                </view>
+            </view>
+        </view>
     </scroll-view>
 </template>
 
@@ -89,6 +101,7 @@ export default class Home extends wepy.page {
         session: '',
         isFollow: false, // 是否关注公众号
         assistAuth: false, // 是否授权
+        showModal: false, // 是否显示弹框
         business: {
             mps: [],
             name: '您的姓名',
@@ -297,6 +310,9 @@ export default class Home extends wepy.page {
                 this.hideMask();
             }
         },
+        hideModal() {
+            this.showModal = false;
+        },
     }
     async onLoad () {
         // globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
@@ -310,25 +326,9 @@ export default class Home extends wepy.page {
         await that.getAssistAuth();
         await that.loadCode();
         await that.getInfo();
-        if (!that.isFollow) {
-            wx.showModal({
-                title: '提示',
-                content: '关注公众号接收通知。',
-                success(res) {
-                    if (res.confirm) {
-                        if (that.assistAuth) {
-                            wx.navigateTo({
-                                url: '/pages/followPublic',
-                            });
-                            return;
-                        }
-                        that.loadSession();
-                        console.log('用户点击确定');
-                    } else if (res.cancel) {
-                        console.log('用户点击取消');
-                    }
-                },
-            });
+        if (!that.isFollow && wepy.getStorageSync('ppu')) {
+            that.showModal = true;
+            this.$apply();
         }
     }
     formatedMp (item) {
@@ -1014,4 +1014,56 @@ scroll-view {
         background-size: 22rpx 22rpx;
     }
 }
+.showModal_mask{
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.5);
+    position:fixed;
+    top:0;
+    bottom:0;
+    z-index:1;    
+ }
+ .showModal_modal{
+     width:540rpx;
+     background:white;
+     z-index:2;
+     position:fixed;
+     top:50%;
+     left:50%;
+     transform:translate3d(-50%,-50%,0);
+     text-align:center;    
+ }
+ .showModal_title{
+     font-size: 36rpx;
+     color: #333333;
+     line-height: 36rpx;
+     margin: 60rpx 0 30rpx 0;
+ }
+ .showModal_text{
+     font-size: 28rpx;
+     color: #666666;
+     padding: 0 62rpx;
+     text-align: center;
+     margin-bottom: 48rpx;
+ }
+ .showModal_btns{
+     display: flex;
+     border-top: 1rpx solid #F3F3F3;
+ }
+ .showModal_btn{
+     flex: 1;
+     background: white;
+     padding: 0;
+     border: none;
+     border-radius: 0;
+     font-size: 34rpx;
+     color: #666666;
+ }
+ .showModal_btn::after{
+     display: none;
+ }
+ .red_text{
+     color: #FF552E;
+     border-left: 1rpx solid #F3F3F3;
+ }
 </style>
