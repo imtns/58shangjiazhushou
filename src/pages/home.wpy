@@ -299,17 +299,37 @@ export default class Home extends wepy.page {
         },
     }
     async onLoad () {
-        wepy.setStorageSync('ppu', 'UID=55436982950166&UN=w86fs5j5i&TT=23bf813ba05f5ec31a7968e6a2b23ac0&PBODY=CADRw0-nsBji0Pl88aJfbhK_Bwsy8gLifwV1A9YX9bWu9UYCrJujoFgpJ8EIB_27D2scFWeIOvSwBuAq22XruTRwk0U1xkMDYHG5-KkLBcRFHBZ-8VjeGumZNAo39gUlIFYr01J6UTNF1HQH_irqs9cA1U8GXnkfNAz1Bw3vPOI&VER=1');
         // globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
         await this.loadData();
         this.setGlobalMpId(this.business.selected.id);
         this.loadExtJson();
     }
     async onShow () {
-        await this.loadData();
-        await this.getAssistAuth();
-        this.loadCode();
-        this.getInfo();
+        const that = this;
+        await that.loadData();
+        await that.getAssistAuth();
+        await that.loadCode();
+        await that.getInfo();
+        if (!that.isFollow) {
+            wx.showModal({
+                title: '提示',
+                content: '关注公众号接收通知。',
+                success(res) {
+                    if (res.confirm) {
+                        if (that.assistAuth) {
+                            wx.navigateTo({
+                                url: '/pages/followPublic',
+                            });
+                            return;
+                        }
+                        that.loadSession();
+                        console.log('用户点击确定');
+                    } else if (res.cancel) {
+                        console.log('用户点击取消');
+                    }
+                },
+            });
+        }
     }
     formatedMp (item) {
         const mp = item;

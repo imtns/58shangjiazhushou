@@ -41,9 +41,11 @@
             </view>
             <view class="order-table">
                 <view class="order-row">
+                    <view wx:if="{{order.payType==1}}" class="left-label">订单总价</view>
+                    <view wx:if="{{order.payType==2}}" class="left-label">一口价价格</view>
                     <view wx:if="{{order.payType==3}}" class="left-label">订金价格</view>
-                    <view wx:else class="left-label">订单总价</view>
-                    <view class="right-text">{{order.originalAmount}}元</view>
+                    <view wx:if="{{order.payType==1}}" class="right-text">{{order.originalAmount}}元</view>
+                    <view wx:if="{{order.payType!=1}}" class="right-text">{{order.earnestMoney}}元</view>
                 </view>
                 <view class="order-row" wx:if="{{order.couponAmount!=null}}">
                     <view class="left-label">优惠券</view>
@@ -148,7 +150,7 @@ export default class OrderDetail extends wepy.page {
             });
             setTimeout(() => {
                 wx.hideLoading();
-                this.onLoad();
+                this.getOrder();
                 // wx.navigateBack({
                 //     delta: 0,
                 // });
@@ -167,7 +169,7 @@ export default class OrderDetail extends wepy.page {
             });
             setTimeout(() => {
                 wx.hideLoading();
-                this.onLoad();
+                this.getOrder();
             }, 2000);
         },
     }
@@ -200,6 +202,12 @@ export default class OrderDetail extends wepy.page {
     }
     async onLoad (options) {
         const { id } = options;
+        console.log(id);
+        wx.setStorageSync('orderId', id);
+        await this.getOrder();
+    }
+    async getOrder() {
+        const id = wx.getStorageSync('orderId');
         const [e, data] = await get(`/consumerAppointment/get/${id}`);
         if (e) {
             toast(e);
