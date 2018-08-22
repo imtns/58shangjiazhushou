@@ -81,7 +81,7 @@ export default class Index extends wepy.page {
                 return;
             }
 
-            let {
+            const {
                 score,
                 over = 0,
                 rank = 0,
