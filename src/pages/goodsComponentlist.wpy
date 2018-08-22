@@ -90,6 +90,7 @@ export default class goodsComponentList extends wepy.page {
     }
     onShow() {
         console.log('show');
+        this.listData = [];
         this.loadList();
     }
     onReachBottom() {
