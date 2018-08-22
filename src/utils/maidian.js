@@ -54,7 +54,7 @@ function SendClickLog(appid, uid, _trackURL, clickTag) {
     }
 }
 
-function getUid() {
+function getUid() { // 商家助手截取ppu作为唯一标识
     const uid = wx.getStorageSync('ppu').split('UID=')[1].split('&')[0];
     return uid;
 }

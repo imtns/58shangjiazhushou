@@ -72,6 +72,7 @@
 import wepy from 'wepy';
 import { picSrcDomain, toastSync } from '../utils';
 import { get } from '../utils/ajaxP';
+import { getUid, SendClickLog } from '../utils/maidian';
 
 const appinfoApi = '/mplogic/get';
 
@@ -140,6 +141,7 @@ export default class AppInfo extends wepy.page {
     }
     methods = {
         bindClickPreview (qrcodeUrl) {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_appinfo_youxiang_code');
             wepy.previewImage({
                 urls: [picSrcDomain() + qrcodeUrl],
             });

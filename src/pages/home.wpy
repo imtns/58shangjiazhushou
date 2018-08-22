@@ -181,8 +181,6 @@ export default class Home extends wepy.page {
     }
     methods = {
         link(text) {
-            // console.log('asdada', SendClickLog());
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_home_test');
             // console.log(text);意见反馈不做判断
             if (text === '意见反馈') {
                 wepy.navigateTo({
@@ -199,6 +197,7 @@ export default class Home extends wepy.page {
             }
         },
         checkProgress () {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_home_buy_app');
             if (!this.business.mpCount) {
                 alert('您还未购买小程序，请登录e.58.com进行购买', '提示');
                 return;
@@ -263,6 +262,7 @@ export default class Home extends wepy.page {
             this.$apply();
         },
         async changeAction () {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_home_switch_app');
             this.business = Object.assign({}, this.business, {
                 changeMP: true,
             });
@@ -329,6 +329,7 @@ export default class Home extends wepy.page {
         await that.getAssistAuth();
         await that.loadCode();
         await that.getInfo();
+        console.log(wepy.getStorageSync('ppu'));
         if (!that.isFollow && wepy.getStorageSync('ppu')) {
             that.showModal = true;
             this.$apply();
