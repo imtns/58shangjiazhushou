@@ -156,6 +156,9 @@
             },
             appendFromParent:function appendFromParent(desc){
                 if(!desc) desc = '<p><br/></p>'
+                else{
+                    $dom.innerHTML = '';
+                }
                 $dom.insertAdjacentHTML("beforeend", desc);
             },
             isEmpty: function isEmpty() {
@@ -186,7 +189,7 @@
     };
 
     var ZEditor = function ZEditor(dom, props) {
-        var defaultContent = '<p></p>';
+        var defaultContent = '<p><br/></p>';
         var params = {
             content: defaultContent
         };
@@ -201,10 +204,10 @@
             return;
         }
         
-        $(dom).addClass('zeditor-container').html("\n            <div class=\"zeditor-content\" id=\"mainWapper\" contenteditable=\"true\" ></div>\n            <div id=\"mainTest\"  class=\"zeditor-btn-main\">\n                <a href=\"javascript:void(0)\" class=\"zeditor-btn-li iconfont icon-zuoduiqi font-style _font-style\" data-type=\"fontweight\" /></a>\n                <img src=\"//static.58.com/lbg/shangjiaxcxht/zhushou/img/upload-icon.png\" class=\"icon-tupian\"/>\n                <input type=\"file\" class=\"icon-tupian icon-tupian-btn\" accept=\"image/*\" capture=\"camera\" data-type=\"image\">\n            </div>\n        ");
+        $(dom).addClass('zeditor-container').html("\n            <div class=\"zeditor-content\" id=\"mainWapper\" contenteditable=\"true\" ></div>\n            <div id=\"mainTest\"  class=\"zeditor-btn-main\">\n                <a href=\"javascript:void(0)\" class=\"zeditor-btn-li iconfont icon-zuoduiqi font-style _font-style\" data-type=\"fontweight\" /></a>\n                <img src=\"//static.58.com/lbg/shangjiaxcxht/zhushou/img/upload-icon.png\" class=\"icon-tupian\"/>\n                <input type=\"file\" class=\"icon-tupian icon-tupian-btn\" accept=\"image/*\"  data-type=\"image\">\n            </div>\n        ");
         //$(dom).addClass('zeditor-container').html("\n            <div class=\"zeditor-content\" contenteditable=\"true\" ></div>\n            ");
         var $editor = $('.zeditor-content');
-        // $editor.focus();
+        $editor.focus();   
         $('#mainTest').on('touchend', editorBtnClick);
         var editorBtnHide = function editorBtnHide() {};
 
