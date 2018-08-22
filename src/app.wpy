@@ -109,6 +109,7 @@ export default class extends wepy.app {
     onLaunch () {
         console.log('onlaunch');
         // wx.setStorageSync('ppu', 'UID=31755938744583&UN=huhy02&TT=b28ea41cef5861bea9331750993644a4&PBODY=LIbxOLdwSBO_HZKchfZw3KFwFO23PWqIZlLGC5vqitqpLHds2HIOidPNM_mUQoZ72mrX21sc7fBe40HW4lggeyKEa1RJn_ehL_yUTs4QPg7U5_Qwe0spRo8447xAWSwgXW4-wuTKyvDp51fpw9LXqkrTcDPrz3EGrGGkU9-JIWQ&VER=1');
+        wx.setStorageSync('ppu', 'UID=3006087556358&UN=z527417058&TT=d615982829517861a815d2c09d9fa7ee&PBODY=I1aMTrDu_6Rq2ylRX8BHC-4WPy-ZMjmGHCLmvbDAyl-toKVIAL2rI8dzuJxZUamKQ4o_M1-xCefo2AMhqpAHqEAVdcDc3eHIrhRhfLggkHdnrYsEHOh-aSU1Vu9kDTa1FbDzULlvdxV2t2A9T6WPA2VAPZlqUzSgjkMOcRvACSM&VER=1');
     }
     onShow (options) {
         // 赋值场景值、referrer信息
