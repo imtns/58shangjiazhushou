@@ -5,7 +5,7 @@
                 <view class="shop-info-left">
                     <view class="shop-info-left-name">{{ nickName }}</view>
                     <view class="shop-info-left-rank" wx:if="{{ rank }}">
-                        在北京地区店铺评分中排<text class="rank-bold">第{{ rank }}名</text>
+                        在{{ cityName }}地区店铺评分中排<text class="rank-bold">第{{ rank }}名</text>
                     </view>
                     <view class="shop-info-left-percent" wx:if="{{ over }}">超过了{{ over || 0 }}%的商家</view>
                 </view>
@@ -66,6 +66,7 @@ export default class Index extends wepy.page {
         over: 0,
         rank: 0,
         nickName: ' ',
+        cityName: ' ',
     }
 
     async onLoad() {
@@ -85,7 +86,7 @@ export default class Index extends wepy.page {
                 score,
                 over = 0,
                 rank = 0,
-                mpinfo: { nickName },
+                mpinfo: { nickName, cityName },
             } = data;
             const index = Math.round(score / 0.5) - 1;
             this.progressImg = imgs[index];
@@ -93,6 +94,7 @@ export default class Index extends wepy.page {
                 over: Math.floor((+over) * 100),
                 rank: Math.floor(+rank),
                 nickName,
+                cityName,
             });
             Object.assign(this.score, {
                 value: score,
