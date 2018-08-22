@@ -291,7 +291,7 @@ var Page = {
                 $('.group-dialog-list').html('');
                 if (res.state == 100) {
                     $('._title').val(res.data.title);
-                    $('.zeditor-content').html(res.data.description);
+                    window.editor.appendFromParent(res.data.description);
                     $('._source').val(res.data.stock);
                     $('.item-input._author').val(res.data.price);
                     $('#cover').attr('src', res.data.pics);
