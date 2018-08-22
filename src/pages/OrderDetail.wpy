@@ -83,7 +83,7 @@
             </block>
             <view wx:if="{{order.status!=3}}" class="order-contact" @tap="bindPhoneCall({{order.consumerMobile}})">联系顾客</view>
             <view wx:if="{{order.status==10 && order.applyStatus==0}}" class="order-apply" @tap="bindApplyPlat" data-orderId="{{order.id}}">申请平台介入</view>
-            <vidw wx:if="{{order.status==10 && order.applyStatu!=0}}" class="order-apply">已申请平台接入</vidw>
+            <view wx:if="{{order.status==10 && order.applyStatu!=0}}" class="order-apply">已申请平台介入</view>
         </view>
         <view class="ordersuccess" wx:if = "{{submitSuccess}}">
             <view class="ordersuccess-container">
