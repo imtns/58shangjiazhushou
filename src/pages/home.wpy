@@ -88,7 +88,7 @@ import Mixin from '../mixin';
 import { alert } from '../utils';
 import { post, get } from '../utils/ajax';
 import { globalData } from '../utils/globalData';
-// import { getUid, SendClickLog } from '../utils/maidian';
+import { getUid, SendClickLog } from '../utils/maidian';
 
 export default class Home extends wepy.page {
     mixins = [Mixin]
@@ -182,7 +182,7 @@ export default class Home extends wepy.page {
     methods = {
         link(text) {
             // console.log('asdada', SendClickLog());
-            // SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_home_test');
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_home_test');
             // console.log(text);意见反馈不做判断
             if (text === '意见反馈') {
                 wepy.navigateTo({
