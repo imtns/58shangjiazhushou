@@ -14,12 +14,12 @@ window.__staticConfig = {
     }, 
     {
         name: 'js',
-        version: '20180817',
+        version: '20180822',
         url: '/lbg/shangjiaxcxht/zhushou/js/editor.js',
     },
      {
         name: 'js',
-        version: '20180817',
+        version: '20180822',
         url: '/lbg/shangjiaxcxht/zhushou/js/article-component-add.js',
     },
 ],
