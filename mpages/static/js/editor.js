@@ -154,6 +154,10 @@
                     return this;
                 }
             },
+            appendFromParent:function appendFromParent(desc){
+                if(!desc) desc = '<p><br/></p>'
+                $dom.insertAdjacentHTML("beforeend", desc);
+            },
             isEmpty: function isEmpty() {
                 return $dom.innerHTML === '' || $dom.innerHTML === void 0;
             },
@@ -196,18 +200,19 @@
             console.error('节点配置不正确。');
             return;
         }
+        
         $(dom).addClass('zeditor-container').html("\n            <div class=\"zeditor-content\" id=\"mainWapper\" contenteditable=\"true\" ></div>\n            <div id=\"mainTest\"  class=\"zeditor-btn-main\">\n                <a href=\"javascript:void(0)\" class=\"zeditor-btn-li iconfont icon-zuoduiqi font-style _font-style\" data-type=\"fontweight\" /></a>\n                <img src=\"//static.58.com/lbg/shangjiaxcxht/zhushou/img/upload-icon.png\" class=\"icon-tupian\"/>\n                <input type=\"file\" class=\"icon-tupian icon-tupian-btn\" accept=\"image/*\" capture=\"camera\" data-type=\"image\">\n            </div>\n        ");
         //$(dom).addClass('zeditor-container').html("\n            <div class=\"zeditor-content\" contenteditable=\"true\" ></div>\n            ");
         var $editor = $('.zeditor-content');
-        $editor.focus();
+        // $editor.focus();
         $('#mainTest').on('touchend', editorBtnClick);
         var editorBtnHide = function editorBtnHide() {};
 
         function editorBtnClick(e) {
-            // var $p = $('.zeditor-content p:last-child');
-            // var $p = $(lastNode);
+            var $p = $('.zeditor-content p:last-child');
+            var $p = $(lastNode);
             if (utils.focusDom() == defaultContent) {
-                $editor.html();
+                // $editor.html();
             }
 
             window.$p = $(utils.focusDom());
@@ -347,7 +352,7 @@
 
         var keyup = function keyup(e) {
             if (e.keyCode === 8 && $editor.isEmpty()) {
-                $editor.html(defaultContent);
+                // $editor.html(defaultContent);
             }
             editorBtnHide();
         };
@@ -358,7 +363,7 @@
         };
 
         var bindEvent = function bindEvent() {
-            $editor.html(content).on('paste', paste).on('mouseup', mouseup).on('keyup', keyup).on('blur', blur);
+            $editor.append(content).on('paste', paste).on('mouseup', mouseup).on('keyup', keyup).on('blur', blur);
 
             document.addEventListener('click', function (e) {
                 if (!$(e.target).closest('.zeditor-container')) {
@@ -372,6 +377,9 @@
         return {
             getHtml: function getHtml() {
                 return $editor.html();
+            },
+            appendFromParent:function appendFromParent(desc){
+                return $editor.appendFromParent(desc);
             }
         };
     };
