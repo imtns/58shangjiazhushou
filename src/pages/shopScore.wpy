@@ -87,8 +87,6 @@ export default class Index extends wepy.page {
                 rank = 0,
                 mpinfo: { nickName },
             } = data;
-            over = undefined;
-            rank = undefined;
             const index = Math.round(score / 0.5) - 1;
             this.progressImg = imgs[index];
             Object.assign(this, {
