@@ -63,8 +63,8 @@ export default class Index extends wepy.page {
             formated: '3.8',
         },
         progressImg: '',
-        over: 30,
-        rank: 100,
+        over: 0,
+        rank: 0,
         nickName: ' ',
     }
 
@@ -83,16 +83,15 @@ export default class Index extends wepy.page {
 
             const {
                 score,
-                over,
-                rank,
+                over = 0,
+                rank = 0,
                 mpinfo: { nickName },
             } = data;
-            console.log(nickName);
             const index = Math.round(score / 0.5) - 1;
             this.progressImg = imgs[index];
             Object.assign(this, {
-                over: (over * 100).toFixed(0),
-                rank,
+                over: Math.floor((+over) * 100),
+                rank: Math.floor(+rank),
                 nickName,
             });
             Object.assign(this.score, {
