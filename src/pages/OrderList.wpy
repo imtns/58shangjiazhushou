@@ -58,6 +58,7 @@
 import wepy from 'wepy';
 import { toast, picSrcDomain } from '../utils';
 import { get } from '../utils/ajaxOrder';
+import { getUid, SendClickLog } from '../utils/maidian';
 
 export default class OrderList extends wepy.page {
     config = {
@@ -78,6 +79,7 @@ export default class OrderList extends wepy.page {
     }
     methods = {
         bindClickTab (status) {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_orderList_status_${status}`);
             const resetParams = {
                 pageNum: 1,
                 pageSize: 5,
