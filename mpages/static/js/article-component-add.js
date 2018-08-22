@@ -87,7 +87,7 @@ var Page = {
                             if (data.state == 100) {
                                 var url = '//pic1.58cdn.com.cn' + data.data.source;
                                 cb(url + '?w=750');
-                                $('.icon-tupian-btn').replaceWith('<input type="file" class="icon-tupian icon-tupian-btn" data-type="image">');
+                                $('.icon-tupian-btn').replaceWith('<input type="file" accept="image/*" class="icon-tupian icon-tupian-btn" data-type="image">');
                             } else {
                                 Page.toast($errorPop, data.msg);
                             }
