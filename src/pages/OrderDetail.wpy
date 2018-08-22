@@ -29,7 +29,7 @@
                 <view class="order-row none-border">
                     <view class="left-label">支付方式</view>
                     <view wx:if="{{order.payType==1}}" class="right-text {{fontClass[order.status] || ''}}">免费预约</view>
-                    <view wx:if="{{order.payType==2}}" class="right-text {{fontClass[order.status] || ''}}">一口价</view>
+                    <view wx:if="{{order.payType==2}}" class="right-text {{fontClass[order.status] || ''}}">线上支付</view>
                     <view wx:if="{{order.payType==3}}" class="right-text {{fontClass[order.status] || ''}}">线上支付订金</view>
                 </view>
             </view>
@@ -42,7 +42,7 @@
             <view class="order-table">
                 <view class="order-row">
                     <view wx:if="{{order.payType==1}}" class="left-label">订单总价</view>
-                    <view wx:if="{{order.payType==2}}" class="left-label">一口价价格</view>
+                    <view wx:if="{{order.payType==2}}" class="left-label">一口价</view>
                     <view wx:if="{{order.payType==3}}" class="left-label">订金价格</view>
                     <view wx:if="{{order.payType==1}}" class="right-text">{{order.originalAmount}}元</view>
                     <view wx:if="{{order.payType!=1}}" class="right-text">{{order.earnestMoney}}元</view>
