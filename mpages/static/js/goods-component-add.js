@@ -293,6 +293,9 @@ var Page = {
                     $('._title').val(res.data.title);
                     window.editor.appendFromParent(res.data.description);
                     $('._source').val(res.data.stock);
+                    if(res.data.description.indexOf('bold')>-1){
+                        $(".icon-bold").attr("src",'//static.58.com/lbg/shangjiaxcxht/zhushou/img/bold.png');
+                    }
                     $('.item-input._author').val(res.data.price);
                     $('#cover').attr('src', res.data.pics);
                     $(".item-upload-img").removeClass('none');
