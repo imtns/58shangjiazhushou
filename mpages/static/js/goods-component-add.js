@@ -112,9 +112,10 @@ var Page = {
             if ($(this).attr("src").indexOf('unbold') > 1) {
                 $(this).attr("src", '//static.58.com/lbg/shangjiaxcxht/zhushou/img/bold.png');
                 $(".zeditor-content").css('font-weight', 'bold');
+                $(".zeditor-content").find('p').css('font-weight', 'bold');
             } else {
                 $(this).attr("src", '//static.58.com/lbg/shangjiaxcxht/zhushou/img/unbold.png');
-                $(".zeditor-content").css('font-weight', 'normal');
+                $(".zeditor-content").find('p').css('font-weight', 'normal');
             }
         });
         // 上传头图
