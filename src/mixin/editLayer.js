@@ -58,7 +58,7 @@ module.exports = {
             console.log('编辑');
             console.log(this.data.page_data);
             const { name, id } = this.data.page_data[0];
-            if (name === 'evaluation' || name === 'information' || name === 'goods') {
+            if (name === 'evaluation' || name === 'information' || name === 'pay' || name === 'branch' || name === 'services') {
                 this.setData({
                     noEdit: true,
                 });
