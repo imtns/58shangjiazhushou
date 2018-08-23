@@ -17,7 +17,8 @@
                         <view class="unstar-list">
                             <view class="icon-unstar" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
                         </view>
-                        <view class="star-list" style="width:{{ 142 * 0.2 * business.selected.score }}rpx">
+                        <view class="star-list"
+                        style="width:{{ 30 * (~~(business.selected.score / 1)) + 22 * (business.selected.score % 1) }}rpx">
                             <view class="icon-star" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
                         </view>
                         <navigator class="star-box-title" url="/pages/shopScore">店铺评分</navigator>
@@ -116,7 +117,6 @@ export default class Home extends wepy.page {
                 id: 0,
             },
             chosedId: 0,
-            score: 0,
         },
         items: [
             {
@@ -440,7 +440,6 @@ export default class Home extends wepy.page {
                 mpid: wepy.getStorageSync('current_mpid') || '',
             };
             const { data } = await post('/mplogic/index', subData);
-            console.log('loadData', data);
             const {
                 username = '',
                 mpinfo = {},
