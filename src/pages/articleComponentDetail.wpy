@@ -161,9 +161,11 @@ export default class Index extends wepy.page {
                 margin:0 130rpx 0 40rpx;
             }
         }
+        .article-content:first-child{
+            padding-top:20rpx;
+        }
         .article-content{
             flex:1;
-            padding:20rpx 0;
             line-height:60rpx;
             letter-spacing: 0.3rpx;
             font-family: PingFangSC-Regular;
@@ -173,7 +175,7 @@ export default class Index extends wepy.page {
         .rich-text-img{
             width:670rpx;
             height:503rpx;
-            margin:40rpx 0;
+            margin:20rpx 0;
             border-radius:6rpx;
         }
     }
