@@ -223,7 +223,7 @@ var Page = {
                 stock: stock || '未知',
                 price: price || '0',
                 description: description,
-                test: Page.test || 'test',
+                test: Page.test || '',
                 mpId: Page.mpId
             };
            
