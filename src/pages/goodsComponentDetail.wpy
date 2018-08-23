@@ -55,6 +55,7 @@ export default class goodsComponentDetail extends wepy.page {
     }
     async loadData() {
         const { id } = this;
+        console.log(id);
         const { data } = await get('/goods/get', {
             goodId: id,
         });

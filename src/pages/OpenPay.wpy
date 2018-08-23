@@ -72,6 +72,7 @@
 import wepy from 'wepy';
 import { toast } from '../utils';
 import { get } from '../utils/ajaxP';
+import { getUid, SendClickLog } from '../utils/maidian';
 
 export default class OpenPay extends wepy.page {
     config = {
@@ -96,6 +97,7 @@ export default class OpenPay extends wepy.page {
     }
     methods = {
         bindAgreeProtocol () {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_openPay_confirmBtn');  
             this.agreeProtocol = !this.agreeProtocol;
         },
         bindShowProtocol (showProtocol) {

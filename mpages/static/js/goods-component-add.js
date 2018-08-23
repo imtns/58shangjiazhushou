@@ -112,9 +112,10 @@ var Page = {
             if ($(this).attr("src").indexOf('unbold') > 1) {
                 $(this).attr("src", '//static.58.com/lbg/shangjiaxcxht/zhushou/img/bold.png');
                 $(".zeditor-content").css('font-weight', 'bold');
+                $(".zeditor-content").find('p').css('font-weight', 'bold');
             } else {
                 $(this).attr("src", '//static.58.com/lbg/shangjiaxcxht/zhushou/img/unbold.png');
-                $(".zeditor-content").css('font-weight', 'normal');
+                $(".zeditor-content").find('p').css('font-weight', 'normal');
             }
         });
         // 上传头图
@@ -290,8 +291,11 @@ var Page = {
                 $('.group-dialog-list').html('');
                 if (res.state == 100) {
                     $('._title').val(res.data.title);
-                    $('.zeditor-content').html(res.data.description);
+                    window.editor.appendFromParent(res.data.description);
                     $('._source').val(res.data.stock);
+                    if(res.data.description.indexOf('bold')>-1){
+                        $(".icon-bold").attr("src",'//static.58.com/lbg/shangjiaxcxht/zhushou/img/bold.png');
+                    }
                     $('.item-input._author').val(res.data.price);
                     $('#cover').attr('src', res.data.pics);
                     $(".item-upload-img").removeClass('none');
