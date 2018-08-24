@@ -1054,6 +1054,8 @@ scroll-view {
  .showModal_btns{
      display: flex;
      border-top: 1rpx solid #F3F3F3;
+     height: 86rpx;
+    line-height: 86rpx;
  }
  .showModal_btn{
      flex: 1;
