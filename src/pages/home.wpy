@@ -1063,13 +1063,13 @@ scroll-view {
      border: none;
      border-radius: 0;
      font-size: 34rpx;
-     color:#6AA1FF;
+     color:#333;
  }
  .showModal_btn::after{
      display: none;
  }
  .red_text{
-     color: #FF552E;
+    color:#6AA1FF;
      border-left: 1rpx solid #F3F3F3;
  }
 </style>

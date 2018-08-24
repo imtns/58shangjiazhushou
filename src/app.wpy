@@ -113,20 +113,30 @@ export default class extends wepy.app {
     }
     onShow (options) {
         // 赋值场景值、referrer信息
-        const { scene, referrerInfo = {}, path } = options;
+        const {
+            scene, referrerInfo = {}, path,
+        } = options;
+        // console.log(options.query);
         const { appId } = referrerInfo;
         const fromAppId = appId;
         // action:通过fromAppId和scene返回当前小程序处理
         console.log('referrerInfo', referrerInfo);
         console.log(scene);
+        console.log(path);
+        // const path = '/pages/home?toRedirect=/pages/OrderDetail&ParamNames=orderId&ParamValues=123456';
         let action = scene === 1038 || scene === '1038' ? CALLBACKAPPS[fromAppId] : '';
 
         // 1037进入 从别的小程序进入
         action = scene === 1037 || scene === '1037' ? CALLBACKAPPS[fromAppId] : action;
         // 登陆已经上线保持原有判断逻辑
-        // 条件1：scene：1038从另一个小程序返回
         if (scene === 1038 && path === 'pages/intro' && fromAppId === 'wx2a9c6eeb1c44a284') {
             action = 'Login';
+        }
+        // 从58同城微学院公共号跳转到小程序
+        if (options.query && scene !== 1038) {
+            const { query } = options;
+            wepy.setStorageSync('query', query);
+            console.log(wepy.getStorageSync('query'));
         }
         // 从小程序返回场景处理
         action && DoMiniProgramBack[`Do${action}`].call(this, referrerInfo.extraData);
