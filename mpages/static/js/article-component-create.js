@@ -145,6 +145,16 @@ var Page = {
             $('.item-upload-img').attr('src', '').addClass('none');
             $('.item-file-div').removeClass('none');
         });
+        $(".icon-bold").on("click", function () {
+            if ($(this).attr("src").indexOf('unbold') > 1) {
+                $(this).attr("src", '//static.58.com/lbg/shangjiaxcxht/zhushou/img/bold.png');
+                $(".zeditor-content").css('font-weight', 'bold');
+                $(".zeditor-content").find('p').css('font-weight', 'bold');
+            } else {
+                $(this).attr("src", '//static.58.com/lbg/shangjiaxcxht/zhushou/img/unbold.png');
+                $(".zeditor-content").find('p').css('font-weight', 'normal');
+            }
+        });
         $('.save-btn').on('click', function() {
             var group = Page.group,
                 title = $('._title').val(),
@@ -238,10 +248,14 @@ var Page = {
                         source = data.data.source,
                         intro = data.data.intro,
                         cover = data.data.cover;
+                        if(content.indexOf('bold')>-1){
+                            $(".icon-bold").attr("src",'//static.58.com/lbg/shangjiaxcxht/zhushou/img/bold.png');
+                        }
                         $('._title').val(title);
                         $('._author').val(author);
                         $('._source').val(source);
-                        $("#editor .zeditor-content").html(content);
+                        // $("#editor .zeditor-content").html(content);
+                        window.editor.appendFromParent(content);
                         if (!cover) {
                             $('.item-file-div').removeClass('none');
                         } else {
