@@ -132,7 +132,7 @@ export default class extends wepy.app {
             action = 'Login';
         }
         // 从58同城微学院公共号跳转到小程序
-        if (options.query && scene !== 1038) {
+        if (options.query && scene === 1043) {
             const { query } = options;
             wepy.setStorageSync('query', query);
             console.log(wepy.getStorageSync('query'));
