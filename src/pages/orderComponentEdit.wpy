@@ -126,7 +126,7 @@
             <view class="item required border-bottom">
                 <text>收费方式</text>
                 <view class="pay-types">
-                    <view  wx:for="{{payTypeDetail}}" wx:key="{{index}}" class="pay-type {{item.value==form.payType?'selected':''}}" @tap="bindPayType({{item.value}})">{{item.name}}</view>
+                    <view  wx:for="{{payTypeDetail}}" wx:key="{{index}}" class="pay-type {{item.value==form.payType?'selected':''}}" @tap="bindPayType" data-type="{{item.value}}">{{item.name}}</view>
                     <!-- <view>{{form.payTypeDetail}}</view> -->
                 </view>
             </view>
@@ -223,7 +223,8 @@ export default class Index extends wepy.page {
             }
         },
 
-        bindPayType(type) {
+        bindPayType(e) {
+            const { type } = e.currentTarget.dataset;
             // 改变付款方式
             this.form.payType = type;
             if (parseInt(type) !== 1) {
@@ -400,8 +401,6 @@ export default class Index extends wepy.page {
         const { data, state } = await await get('/mpInfo/isChecked', {
             id: this.form.mpid,
         });
-        console.log(data);
-        console.log(state);
         if (state === 100 && data === true) {
             this.isOpenPay = true;
             this.$apply();

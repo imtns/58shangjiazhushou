@@ -97,7 +97,7 @@ export default class OpenPay extends wepy.page {
     }
     methods = {
         bindAgreeProtocol () {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_openPay_confirmBtn');  
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_openPay_confirmBtn');
             this.agreeProtocol = !this.agreeProtocol;
         },
         bindShowProtocol (showProtocol) {
