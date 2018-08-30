@@ -3,7 +3,7 @@
         <view class="follow-public" wx:if="{{!isFollow}}">
             <text>关注公众号接收通知</text>
             <navigator class="follow-action" wx:if="{{assistAuth}}" url="/pages/followPublic">马上关注</navigator>
-            <button class="follow-action" wx:elif="{{!assistAuth}}" open-type="getUserInfo" @tap="loadSession()">马上关注</button>
+            <button class="follow-action" wx:elif="{{!assistAuth}}" open-type="getUserInfo" @tap="loadSession">马上关注</button>
         </view>
         <view class="index-loaded-header">
             <view class="welcome-block">
@@ -72,7 +72,7 @@
             <view class="showModal_mask" bindtap="hideModal"></view>
             <view class="showModal_modal">
                 <view class="showModal_title">提示</view>
-                <view class="showModal_text">关注公众号接受订单通知</view>
+                <view class="showModal_text">关注公众号接收订单通知</view>
                 <view class="showModal_btns">
                     <button class="showModal_btn" bindtap="hideModal">取消</button>
                     <navigator class="showModal_btn red_text" wx:if="{{assistAuth}}" url="/pages/followPublic">马上关注</navigator>
@@ -366,11 +366,11 @@ export default class Home extends wepy.page {
         try {
             const { data } = await get('/wechat/bizAssistAuth/get');
             const { isFollow, assistInfo } = data;
-            if (!isFollow && JSON.stringify(assistInfo) === '{}') {
+            if (!isFollow && assistInfo === null) {
                 // 既没有授权也没有关注公众号
                 that.assistAuth = false;
                 this.$apply();
-            } else if (!isFollow && JSON.stringify(assistInfo) !== '{}') {
+            } else if (!isFollow && assistInfo !== null) {
                 // 已授权但没有关注公众号
                 that.assistAuth = true;
                 this.$apply();
