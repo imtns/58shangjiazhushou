@@ -8,9 +8,6 @@ export default {
             console.log(`获取PPU成功！ ${extraDataJSON.ppu}`);
             wepy.setStorageSync('ppu', extraDataJSON.ppu);
             const query = wepy.getStorageSync('query');
-            console.log('query');
-            console.log(query);
-            console.log(typeof query);
             const { toRedirect } = query;
             if (query && JSON.stringify() !== '{}' && !query.ParamNames) { // 如果从公众号进来的消息
                 setTimeout(() => {
