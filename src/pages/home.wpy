@@ -340,7 +340,10 @@ export default class Home extends wepy.page {
             this.showModal = true;
             this.$apply();
         }
+<<<<<<< HEAD
         this.$apply();
+=======
+>>>>>>> 4c4d24b6e6e05f65ccf39853d2fe884fc1cf685b
     }
     formatedMp (item) {
         const mp = item;
@@ -376,8 +379,13 @@ export default class Home extends wepy.page {
             if (!isFollow && assistInfo === null) {
                 // 既没有授权也没有关注公众号
                 that.assistAuth = false;
+<<<<<<< HEAD
                 this.$apply();
             } else if (!isFollow && assistInfo !== null) {
+=======
+                that.$apply();
+            } else if (!isFollow && JSON.stringify(assistInfo) !== '{}') {
+>>>>>>> 4c4d24b6e6e05f65ccf39853d2fe884fc1cf685b
                 // 已授权但没有关注公众号
                 that.assistAuth = true;
                 that.$apply();
