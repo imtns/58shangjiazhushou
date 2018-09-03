@@ -109,6 +109,7 @@ export default class extends wepy.app {
     onLaunch () {
         console.log('onlaunch');
         // wx.setStorageSync('ppu', 'UID=31755938744583&UN=huhy02&TT=b28ea41cef5861bea9331750993644a4&PBODY=LIbxOLdwSBO_HZKchfZw3KFwFO23PWqIZlLGC5vqitqpLHds2HIOidPNM_mUQoZ72mrX21sc7fBe40HW4lggeyKEa1RJn_ehL_yUTs4QPg7U5_Qwe0spRo8447xAWSwgXW4-wuTKyvDp51fpw9LXqkrTcDPrz3EGrGGkU9-JIWQ&VER=1');
+        // wx.setStorageSync('ppu', 'UID=53182521946894&UN=v55kara1u&TT=477ee0a09336e8da5f02f938b8ea1824&PBODY=a-wMsHWdBqOFQ7vp2s195NhWq2-BTSaWLDlh4Dxgl7DdJz4oD2Kjn0yO8CTfTomVbA9Ro2fK5ik29-6-Q4DDQqkAp1BAJWQEMtu5lBVRanfc6uMaiakz6nNvOfMwBuGtC4vA_NysRqNtueTjMLnUdNSWg-43X0UEUFvHEGTvAHQ&VER=1');
     }
     onShow (options) {
         // 赋值场景值、referrer信息
@@ -122,7 +123,9 @@ export default class extends wepy.app {
         console.log('referrerInfo', referrerInfo);
         console.log(scene);
         console.log(path);
+        console.log(options.query);
         // const path = '/pages/home?toRedirect=/pages/OrderDetail&ParamNames=orderId&ParamValues=123456';
+        // console.log(valueArr);
         let action = scene === 1038 || scene === '1038' ? CALLBACKAPPS[fromAppId] : '';
 
         // 1037进入 从别的小程序进入
@@ -132,10 +135,37 @@ export default class extends wepy.app {
             action = 'Login';
         }
         // 从58同城微学院公共号跳转到小程序
-        if (options.query && scene === 1043) {
+        if (options.query && JSON.stringify(options.query) !== '{}' && scene === 1043) {
             const { query } = options;
+            const { toRedirect } = query;
             wepy.setStorageSync('query', query);
             console.log(wepy.getStorageSync('query'));
+            if (wepy.getStorageSync('ppu') && !query.ParamNames) {
+                setTimeout(() => {
+                    wepy.redirectTo({
+                        url: toRedirect,
+                    });
+                }, 1000);
+            }
+            if (wepy.getStorageSync('ppu') && query.ParamNames) {
+                let paramsStr = '';
+                if (query.ParamNames.split('|').length === 1) {
+                    paramsStr = `&${query.ParamNames}=${query.ParamValues}`;
+                } else {
+                    const keyArr = query.ParamNames.split('|');
+                    const valueArr = query.ParamValues.split('|');
+                    keyArr.forEach((item, index) => {
+                        paramsStr += `&${keyArr[index]}=${valueArr[index]}`;
+                    });
+                }
+                console.log(`${toRedirect}?${paramsStr.substring(1)}`);
+                setTimeout(() => {
+                    wepy.redirectTo({
+                        // url: toRedirectArr[0] + '?' + paramsStr.split('&')[1],
+                        url: `${toRedirect}?${paramsStr.substring(1)}`,
+                    });
+                }, 1000);
+            }
         }
         // 从小程序返回场景处理
         action && DoMiniProgramBack[`Do${action}`].call(this, referrerInfo.extraData);
