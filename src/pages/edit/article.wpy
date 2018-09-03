@@ -59,7 +59,6 @@ const { get } = require('../../utils/ajax');
 export default class Article extends wepy.page {
   config = {
       navigationBarTitleText: '文章',
-      disableScroll: true,
   };
   mixins = [Mixin];
   data = {
@@ -153,11 +152,15 @@ export default class Article extends wepy.page {
       this.$apply();
   }
   async loadArticleGroup() {
-      const { data } = await get('/businessArticle/groups', { appid: this.extConfig.appId });
-      this.group = data;
-      if (this.pageData.params && Object.keys(JSON.parse(this.pageData.params)).length !== 0) {
-          this.articleGroupName = this.group.find(obj => obj.id === JSON.parse(this.pageData.params).articleGroupId).name;
-          this.params.articleGroupId = this.group.find(obj => obj.id === JSON.parse(this.pageData.params).articleGroupId).id;
+      try {
+          const { data } = await get('/businessArticle/groups', { appid: this.extConfig.appId });
+          this.group = data;
+          if (this.pageData.params && Object.keys(JSON.parse(this.pageData.params)).length !== 0) {
+              this.articleGroupName = this.group.find(obj => obj.id === JSON.parse(this.pageData.params).articleGroupId).name;
+              this.params.articleGroupId = this.group.find(obj => obj.id === JSON.parse(this.pageData.params).articleGroupId).id;
+          }
+      } catch (err) {
+          console.log(err);
       }
       this.$apply();
   }
@@ -326,6 +329,7 @@ checkbox .wx-checkbox-input {
   overflow: hidden;
   background: white;
   margin-top: 20rpx;
+  padding-bottom: 570rpx;
   .list {
     width: 100%;
     margin: 0 auto;

@@ -10,7 +10,7 @@ module.exports = {
             {
                 icon: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/shop-score-resource.png',
                 title: '丰富图片素材',
-                subTitle: '图片越多越清晰分支越高',
+                subTitle: '图片越多越清晰分值越高',
                 score: '+0.2~0.5分',
             },
             {

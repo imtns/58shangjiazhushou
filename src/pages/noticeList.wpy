@@ -8,7 +8,7 @@
             <navigator class="notice-name notice-order" url="orderNoticeList" hover-class="none">订单提醒<view class="num" wx:if="{{orderUnRead > 0}}">{{orderUnRead}}</view></navigator>
             <navigator class="notice-name notice-account" url="accountNoticeList" hover-class="none">入账通知<view class="num" wx:if="{{recivMoneyUnRead > 0}}">{{recivMoneyUnRead}}</view></navigator>
         </view>
-        <scroll-view class="notice-list" wx:if="{{noticeList.length>0}}" scroll-y="true" scroll-with-animation="true" lower-threshold="50" bindscrolltolower="noticeListMore">
+        <scroll-view class="notice-list" wx:if="{{noticeList.length>0}}" scroll-y="true" scroll-with-animation="true" lower-threshold="50" bindscrolltolower="noticeListMore" style="height: {{height}}">
         <block wx:for="{{noticeList}}" wx:key="index">
             <view class="notice-list-item">
                 <view class="notice-item" bindtap="touploadInfo" data-item="{{item}}">
@@ -49,6 +49,7 @@ export default class NoticeList extends wepy.page {
         orderUnRead: 0,
         recivMoneyUnRead: 0,
         unreadcount: 0,
+        height: '',
         sendParams: {
             group: 1,
             page: 1,
@@ -64,6 +65,9 @@ export default class NoticeList extends wepy.page {
     }
     async onShow() {
         this.loadList();
+        const { screenHeight } = wepy.getSystemInfoSync();
+        this.height = screenHeight - 258;
+        this.$apply();
     }
     async onHide() {
         console.log('onHide');
@@ -202,10 +206,6 @@ view,scroll-view{
     }
     .notice-new{
         width:100%;
-        // position: fixed;
-        // top: 160rpx;
-        // left: 0;
-        // z-index:9;
         .notice-name{
             display:block;
             font-size: 28rpx;
@@ -245,7 +245,6 @@ view,scroll-view{
     }
     .notice-list{
         width:100%;
-        height:900rpx;
         // margin-top:335rpx;
         // position: absolute;
         // top:0;

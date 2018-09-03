@@ -27,7 +27,8 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
     const ppu = wx.getStorageSync('ppu');
     console.log('请求接口', url);
     console.log('请求参数', sendData);
-    wx.showLoading && wx.showLoading({ title: loadingTitle || '加载中', mask: true });
+    // wx.showLoading && wx.showLoading({ title: loadingTitle || '加载中', mask: true });
+    wepy.showNavigationBarLoading && wepy.showNavigationBarLoading();
     return wx.request({
         url: host + url + (~url.indexOf('?') ? '' : '?') + (+new Date()).toString(36).substr(3),
         data: sendData,
@@ -46,6 +47,7 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
                 resolve(response.data);
                 // callback && callback(null, response.data);
             } else if (state == -10001) {
+                console.log(url);
                 toast(msg);
                 setTimeout(() => {
                     wepy.reLaunch({
@@ -66,10 +68,10 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
         complete() {
             if (delay) {
                 setTimeout(() => {
-                    wx.hideLoading && wx.hideLoading();
+                    wepy.hideNavigationBarLoading() && wepy.hideNavigationBarLoading();
                 }, delay);
             }else {
-                wx.hideLoading && wx.hideLoading();
+                wepy.hideNavigationBarLoading && wepy.hideNavigationBarLoading();
             }
         },
     });

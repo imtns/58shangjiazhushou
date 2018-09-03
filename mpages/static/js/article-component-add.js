@@ -146,6 +146,16 @@ var Page = {
                 }
             });
         });
+        $(".icon-bold").on("click", function () {
+            if ($(this).attr("src").indexOf('unbold') > 1) {
+                $(this).attr("src", '//static.58.com/lbg/shangjiaxcxht/zhushou/img/bold.png');
+                $(".zeditor-content").css('font-weight', 'bold');
+                $(".zeditor-content").find('p').css('font-weight', 'bold');
+            } else {
+                $(this).attr("src", '//static.58.com/lbg/shangjiaxcxht/zhushou/img/unbold.png');
+                $(".zeditor-content").find('p').css('font-weight', 'normal');
+            }
+        });
         // 重新上传
         $('.exchange-img').on('click', function () {
             $('.item-upload-img').attr('src', '').addClass('none');
@@ -157,7 +167,7 @@ var Page = {
                 intro = $('.zeditor-content').find('p:first-child').text().substring(0, 43),
                 source = $('._source').val(),
                 author = $('.item-input._author').val(),
-                temp = $('.zeditor-content').find('p'),l
+                temp = $('.zeditor-content').find('p'),
                 content = $('.zeditor-content').html(),
                 cover = $('#cover').attr('src') ? $('#cover').attr('src').split('.cn')[1].replace(/([/])\1+/g, '$1') : '';
             if (!title) {
