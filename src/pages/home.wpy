@@ -340,13 +340,6 @@ export default class Home extends wepy.page {
             this.showModal = true;
             this.$apply();
         }
-<<<<<<< HEAD
-        const { screenHeight } = wepy.getSystemInfoSync();
-        this.height = screenHeight;
-        that.$apply();
-=======
-        this.$apply();
->>>>>>> ec65b1882faa1848457d1aacef27088d1349f657
     }
     formatedMp (item) {
         const mp = item;
@@ -382,13 +375,8 @@ export default class Home extends wepy.page {
             if (!isFollow && assistInfo === null) {
                 // 既没有授权也没有关注公众号
                 that.assistAuth = false;
-<<<<<<< HEAD
                 that.$apply();
             } else if (!isFollow && JSON.stringify(assistInfo) !== '{}') {
-=======
-                this.$apply();
-            } else if (!isFollow && assistInfo !== null) {
->>>>>>> ec65b1882faa1848457d1aacef27088d1349f657
                 // 已授权但没有关注公众号
                 that.assistAuth = true;
                 that.$apply();
