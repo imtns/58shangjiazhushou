@@ -3,7 +3,8 @@
         <view class="header">
             <text selectable="false" class="welcome">欢迎登录</text>
             <text selectable="false" class="text">58商家程序助手</text>
-            <button class="btn-login"  bindtap="callPassport">立即登录</button>
+            <!-- <button class="btn-login"  bindtap="callPassport">立即登录</button> -->
+            <navigator class="btn-login" target="miniProgram" open-type="navigate" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="develop">立即登录</navigator>
         </view>
         <view class="intro-content">
             <text class="title">小程序四大价值</text>
@@ -39,7 +40,8 @@
                     </view>
                 </repeat>
             </view>
-            <view class="login" bindtap="callPassport">立即登录</view>
+            <!-- <view class="login" bindtap="callPassport">立即登录</view> -->
+            <navigator class="login" target="miniProgram" open-type="navigate" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="develop">立即登录</navigator>
         </view>
     </view>
 </template>
@@ -186,6 +188,9 @@ export default class Index extends wepy.page {
                 line-height: 45rpx;
             }
             .btn-login{
+                display:block;
+                text-align:center;
+                margin:0 auto;
                 background: #FFFFFF;
                 box-shadow: 0 0 12rpx 0 rgba(164,170,190,0.40), inset 0 0 10rpx 0 rgba(164,170,190,0.20);
                 border-radius: 100rpx;
