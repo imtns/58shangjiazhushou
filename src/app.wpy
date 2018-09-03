@@ -26,23 +26,23 @@ export default class extends wepy.app {
             'pages/templateList',
             'pages/index/index',
 
-
-            'pages/edit/coupon',
-            'pages/edit/consumer',
-            'pages/edit/text',
-            'pages/edit/order',
-            'pages/edit/imageSwiper',
-            'pages/edit/video',
-            'pages/edit/title',
-            'pages/edit/article',
-            'pages/edit/images',
-            'pages/edit/goods',
-            'pages/contact/contact',
-            'pages/news/news',
-            'pages/product/product',
-            'pages/custom/custom',
-
-            'pages/article/article',
+            // 模板编辑页面
+            'pages/edit/coupon', // 优惠券编辑
+            'pages/edit/consumer', // 个人中心编辑
+            'pages/edit/text', // 文本编辑
+            'pages/edit/order', // 订单标记
+            'pages/edit/imageSwiper', // 轮播图编辑
+            'pages/edit/video', // 门店视频编辑
+            'pages/edit/title', // 标题编辑
+            'pages/edit/article', // 文章编辑
+            'pages/edit/images', // 预览图编辑
+            'pages/edit/goods', // 商品编辑
+            // 底部tab页面
+            'pages/contact/contact', // 关于我们
+            'pages/news/news', // 新闻介绍
+            'pages/product/product', // 产品预览
+            'pages/custom/custom', // 用户自定义界面
+            'pages/article/article', // 文章
 
 
             'pages/intro', // 没有登陆的介绍页面
