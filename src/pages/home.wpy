@@ -338,8 +338,8 @@ export default class Home extends wepy.page {
         await this.getInfo();
         if (!this.isFollow && wepy.getStorageSync('ppu')) {
             this.showModal = true;
-            this.$apply();
         }
+        this.$apply();
     }
     formatedMp (item) {
         const mp = item;
