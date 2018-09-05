@@ -50,7 +50,7 @@ var Page = {
         return null;
     },
     init: function init() {
-        Page.ppu = decodeURIComponent(Page.getKey('ppu'));
+        Page.ppu = Page.getKey('ppu');
         Page.id = Page.getKey('id');
         Page.group = Page.getKey('group');
         Page.mpId = Page.getKey('mpId');
@@ -238,8 +238,8 @@ var Page = {
                 data: data,
                 headers: {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-                    PPU: Page.ppu || 'wanghongyue',
-                    reqfrom: 'biz_assistant'
+                    'PPU': Page.ppu || 'wanghongyue',
+                    'reqfrom': 'biz_assistant'
                 },
                 success: function success(res) {
                     var res = JSON.parse(res);
