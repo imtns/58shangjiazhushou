@@ -330,16 +330,16 @@ export default class Home extends wepy.page {
         await this.loadData();
         this.setGlobalMpId(this.business.selected.id);
         this.loadExtJson();
-    }
-    async onShow () {
-        await this.loadData();
         await this.getAssistAuth();
-        await this.loadCode();
-        await this.getInfo();
         if (!this.isFollow && wepy.getStorageSync('ppu')) {
             this.showModal = true;
             this.$apply();
         }
+    }
+    async onShow () {
+        await this.loadData();
+        await this.loadCode();
+        await this.getInfo();
     }
     formatedMp (item) {
         const mp = item;

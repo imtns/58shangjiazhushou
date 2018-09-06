@@ -98,6 +98,8 @@ export default class extends wepy.app {
             'pages/cropper', // 图片裁剪
             'pages/orderDetailSelector', // 服务详情-服务详情编辑
             'pages/shopScore', // 店铺评分
+
+            'pages/wechat/chat/chat', // 聊天
         ],
         window: {
             backgroundTextStyle: 'light',
