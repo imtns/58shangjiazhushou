@@ -100,12 +100,33 @@ export default class extends wepy.app {
             'pages/shopScore', // 店铺评分
 
             'pages/wechat/chat/chat', // 聊天
+            'pages/chatMessages', // 消息tab 消息列表
+            'pages/orderAll', // 订单tab 订单页面
         ],
         window: {
             backgroundTextStyle: 'light',
             navigationBarBackgroundColor: '#fff',
             navigationBarTitleText: 'WeChat',
             navigationBarTextStyle: 'black',
+        },
+        tabBar: {
+            selectedColor: '#4E88FF',
+            list: [{
+                pagePath: 'pages/home',
+                text: '店铺',
+                iconPath: 'pages/assets/tabbar/tabbar_shop.png',
+                selectedIconPath: 'pages/assets/tabbar/tabbar_shop_selected.png',
+            }, {
+                pagePath: 'pages/chatMessages',
+                text: '消息',
+                iconPath: 'pages/assets/tabbar/tabbar_message.png',
+                selectedIconPath: 'pages/assets/tabbar/tabbar_message_selected.png',
+            }, {
+                pagePath: 'pages/orderAll',
+                text: '订单',
+                iconPath: 'pages/assets/tabbar/tabbar_order.png',
+                selectedIconPath: 'pages/assets/tabbar/tabbar_order_selected.png',
+            }],
         },
     }
     onLaunch () {

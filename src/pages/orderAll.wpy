@@ -1,0 +1,27 @@
+<template>
+    <view class="orderAll">
+        orderAll
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class AppInfo extends wepy.page {
+    config = {
+        navigationBarTitleText: '订单',
+    }
+    data = {}
+    methods = {}
+    onLoad () {
+        console.log('onload');
+    }
+    onShow () {
+        console.log('onshow');
+    }
+}
+</script>
+
+<style lang="scss">
+
+</style>

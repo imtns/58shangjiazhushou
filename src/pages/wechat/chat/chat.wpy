@@ -1,0 +1,247 @@
+<template>
+    <view class="chat-container">
+        <scroll-view
+            class="chat-zone"
+            scroll-y="{{true}}">
+            <view class="chat-msg-loading">加载中</view>
+            <view class="chat-msg-body chat-right">
+                <view class="chat-msg-time">时间</view>
+                <image class="chat-msg-avatar" src=""></image>
+                <view class="chat-msg-content">
+                        fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfae
+                </view>
+            </view>
+
+
+            <view class="chat-msg-body">
+                <view class="chat-msg-time">时间</view>
+                <image class="chat-msg-avatar" src=""></image>
+                <view class="chat-msg-content">
+                        fedsnj
+                </view>
+            </view>
+            <view class="chat-msg-body chat-right">
+                <view class="chat-msg-time">时间</view>
+                <image class="chat-msg-avatar" src=""></image>
+                <view class="chat-msg-content">
+                        南街速度快
+                </view>
+            </view>
+            <view class="chat-msg-body">
+                <view class="chat-msg-time">时间</view>
+                <image class="chat-msg-avatar" src=""></image>
+                <view class="chat-msg-content">
+                        额外的撒KOK
+                </view>
+            </view>
+            <view class="chat-msg-body chat-right">
+                <view class="chat-msg-time">时间</view>
+                <image class="chat-msg-avatar" src=""></image>
+                <view class="chat-msg-content">
+                        fed让我分的少找借口snj
+                </view>
+            </view>
+            <view class="chat-msg-body chat-right">
+                <view class="chat-msg-time">时间</view>
+                <image class="chat-msg-avatar" src=""></image>
+                <image class="chat-msg-img" src="">
+                </image>
+            </view>
+        </scroll-view>
+        <view class="chat-input-zone">
+            <view class="chat-input-view">
+                <input
+                type="text"
+                class="chat-input"
+                placeholder="请输入文字"
+                cursor-spacing="30"/>
+            </view>
+            <view class="chat-show-upload upload" @tap="showpanel" wx:if="{{!showpanel}}"></view>
+            <view class="chat-show-upload" @tap="closepanel" wx:else></view>
+            
+            <view class="chat-send-msg sended">发送</view>
+        </view>
+        <view class="chat-input-panel" wx:if="{{showpanel}}">
+            <view class="chat-btn">
+                拍照
+            </view>
+            <view class="chat-btn upload-pic">
+                照片
+            </view>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+
+export default class Chat extends wepy.page {
+    config = {
+        navigationBarTitleText: '贺燕珍',
+        disableScroll: true,
+    }
+    data = {
+        height: '',
+        showpanel: false,
+    }
+    onLoad() {
+    }
+    methods = {
+        showpanel() {
+            this.showpanel = true;
+            this.$apply();
+        },
+        closepanel() {
+            this.showpanel = false;
+            this.$apply();
+        },
+    }
+}
+</script>
+
+<style lang="scss">
+page{
+    width:100%;
+    height:100%;
+}
+.chat-container{
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    .chat-zone{
+        height: calc(100vh - 100rpx);
+        overflow-y:scroll;
+        background:#f2f2f2;
+        .chat-msg-body{
+            display:flow-root;
+            overflow:hidden;
+            padding: 20rpx 30rpx;
+            .chat-msg-time{
+                font-family: PingFangSC-Regular;
+                font-size: 24rpx;
+                color: #999999;
+                letter-spacing: 0;
+                text-align: center;
+                margin-bottom:20rpx;
+            }
+            .chat-msg-avatar{
+                width:80rpx;
+                height:80rpx;
+                border-radius:50%;
+                background:pink;
+                float:left;
+            }
+            .chat-msg-content{
+                float:left;
+                margin:0 20rpx;
+                padding:18rpx 20rpx;
+                background:#fff;
+                border-radius:0 20rpx 20rpx 20rpx;
+                max-width:490rpx;
+                font-family: PingFangSC-Regular;
+                font-size: 32rpx;
+                color: #333333;
+                letter-spacing: 0;
+                word-break:break-all;
+                line-height:50rpx;
+            }
+            .chat-msg-img{
+                width:400rpx;
+                height:300rpx;
+                border-radius:0 20rpx 20rpx 20rpx;
+                background:pink;
+                margin:0 20rpx;
+                float:left;
+            }
+            &.chat-right .chat-msg-avatar{
+                float:right;
+            }
+            &.chat-right .chat-msg-content{
+                float:right;
+                border-radius:20rpx 0 20rpx 20rpx;
+                background-image: linear-gradient(-180deg, #008DFF 0%, #30B2DC 100%);
+                color: #FFFFFF;
+            }
+            &.chat-right .chat-msg-img{
+                border-radius:20rpx 0 20rpx 20rpx;
+                float:right;
+            }
+        }
+    }
+    .chat-input-zone{
+        width:100%;
+        min-height:100rpx;
+        background:#ffffff;
+        padding:18rpx 30rpx;
+        .chat-input-view{
+            background: #F2F2F2;
+            border-radius: 4px;
+            width:510rpx;
+            min-height:64rpx;
+            max-height:320rpx;
+            line-height:64rpx;
+            overflow-y:auto;
+            float:left;
+            padding:10rpx 20rpx;
+            box-sizing:border-box;
+        }
+        .chat-input{
+            font-family: PingFangSC-Regular;
+            font-size: 32rpx;
+            color: #333333;
+            letter-spacing: 0;
+        }
+        .chat-show-upload{
+            margin:8rpx 26rpx 0;
+            float:left;
+            width:48rpx;
+            height:48rpx;
+            border-radius:50%;
+            background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/chat-close-panel.png);
+            background-size:48rpx;
+        }
+        .chat-send-msg{
+            float:left;
+            width:80rpx;
+            height:48rpx;
+            margin-top:8rpx;
+            text-align:center;
+            line-height:48rpx;
+            background: #DBDBDB;
+            border-radius: 4rpx;
+            font-family: PingFangSC-Regular;
+            font-size: 26rpx;
+            color: #FFFFFF;
+            letter-spacing: 0;
+            &.sended{
+                background: #4E88FF;
+                color:#fff;
+            }
+        }
+    }
+    .chat-input-panel{
+        width:100%;
+        height:252rpx;
+        background:#ffffff;
+        .chat-btn{
+            margin:20rpx 0 0 62rpx;
+            float:left;
+            font-family: PingFangSC-Regular;
+            font-size: 24rpx;
+            color: #888888;
+            letter-spacing: 0;
+            text-align: center;
+            width:110rpx;
+            height:153rpx;
+            line-height:260rpx;
+            text-align:center;
+            background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/chat-take-pic.png) no-repeat center top;
+            background-size:110rpx 110rpx;
+            &.upload-pic{
+                background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/chat-upload-pic.png) no-repeat center top;
+                background-size:110rpx 110rpx;
+            }
+        }
+    }
+}
+</style>
