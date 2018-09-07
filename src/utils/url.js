@@ -13,3 +13,8 @@ export const LOAD_SERVICE_LIST = '/businessService/listByPageForUser'; // 获取
 export const LOAD_SERVICE = '/businessService/get/'; // 获取预约服务组件内容
 export const INSERT_SERVICE = '/businessService/insert'; // 新增
 export const SAVE_SERVICE = '/businessService/update'; // 更新
+
+
+
+// 聊天对应的接口
+export const CHAT_LOGIN = '/chat/login'; // 聊天登录接口

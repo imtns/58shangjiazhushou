@@ -216,4 +216,3 @@ export default class extends wepy.app {
 @import "components/mod/branch/branch.wxss";   
 @import "components/mod/tabBar/tabBar.wxss";
 </style>
-      
