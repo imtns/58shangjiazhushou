@@ -96,7 +96,7 @@ import { getUid, SendClickLog } from '../utils/maidian';
 
 import { CHAT_LOGIN } from '../utils/url';
 
-// import { sdkLogin, onMsgNotify } from '../utils/IM/IM';
+import { sdkLogin, onMsgNotify } from '../utils/IM/IM';
 
 export default class Home extends wepy.page {
     mixins = [Mixin]
@@ -613,18 +613,16 @@ export default class Home extends wepy.page {
         }
     }
 
-    initIM() {
+    initIM(tim) {
         console.log('initIM');
         // 当前用户身份
-        const loginInfo = {
-
-        };
+        const loginInfo = tim;
         console.log(loginInfo);
         // listeners
-        // const listeners = {
-        //     onMsgNotify: onMsgNotify, // 监听新消息
-        // };
-        // sdkLogin(loginInfo, listeners, {});
+        const listeners = {
+            onMsgNotify: onMsgNotify, // 监听新消息
+        };
+        sdkLogin(loginInfo, listeners, {});
     }
 }
 </script>
