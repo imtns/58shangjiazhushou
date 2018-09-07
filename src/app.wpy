@@ -20,7 +20,6 @@ export default class extends wepy.app {
 
     config = {
         pages: [
-            'pages/visitorLogs', // 访问历史记录
             'pages/home',
             'pages/edit/textEdit',
             // 登陆之后的主页
@@ -103,6 +102,8 @@ export default class extends wepy.app {
             'pages/wechat/chat/chat', // 聊天
             'pages/chatMessages', // 消息tab 消息列表
             'pages/orderAll', // 订单tab 订单页面
+
+            'pages/visitorLogs', // 访问历史记录
         ],
         window: {
             backgroundTextStyle: 'light',
