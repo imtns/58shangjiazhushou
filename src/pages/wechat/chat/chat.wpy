@@ -54,12 +54,14 @@
                 type="text"
                 class="chat-input"
                 placeholder="请输入文字"
-                cursor-spacing="30"/>
+                cursor-spacing="30"
+                @input="input"
+                value="{{content}}"/>
             </view>
             <view class="chat-show-upload" @tap="showpanel" wx:if="{{!showpanel}}"></view>
             <view class="chat-show-upload close-upload" @tap="closepanel" wx:else></view>
             
-            <view class="chat-send-msg sended">发送</view>
+            <view class="chat-send-msg sended" @tap="sendMsg({type: 0})">发送</view>
         </view>
         <view class="chat-input-panel" wx:if="{{showpanel}}">
             <view class="chat-btn">
@@ -74,6 +76,12 @@
 <script>
 import wepy from 'wepy';
 
+import { post } from '../../../utils/ajax';
+import { MSG_LIST, SEND_MSG } from '../../../utils/url';
+import { globalData } from '../../../utils/globalData';
+
+const { token = '8jWhS4S1jREubPX55LsnuHx4YrKn9KR3BNuWj' } = globalData.chat;
+let from = '';
 export default class Chat extends wepy.page {
     config = {
         navigationBarTitleText: '贺燕珍',
@@ -82,8 +90,15 @@ export default class Chat extends wepy.page {
     data = {
         height: '',
         showpanel: false,
+        contact: '',
+        msgList: [],
+        content: '',
     }
-    onLoad() {
+    onLoad(contact) {
+        globalData.chat.currentContact = contact;
+        this.contact = contact;
+        this.$apply();
+        // this.loadData();
     }
     methods = {
         showpanel() {
@@ -94,6 +109,53 @@ export default class Chat extends wepy.page {
             this.showpanel = false;
             this.$apply();
         },
+        input(e) {
+            console.log(e);
+            this.content = e.detail.value;
+            this.$apply();
+        },
+        async sendMsg(type) {
+            if (type === 0 && !this.content.trim()) return;
+            const { content, contact } = this;
+            console.log(content, contact);
+            const msg = {
+                type,
+                status: 1,
+                content,
+                contact,
+                token,
+            };
+            console.log(msg);
+            await post(SEND_MSG, msg);
+            type === 0 && this.clearInput();
+        },
+    }
+    async loadData() {
+        try {
+            const { contact } = this;
+            const { data } = await post(MSG_LIST, {
+                token,
+                contact,
+            });
+            if (!data || data.length <= 0) return;
+            this.msgList = data;
+            from = data[0].id;
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    async loadMore() {
+        console.log('loadMore……', from);
+        const { data } = await post(MSG_LIST, {
+            token,
+            contact: this.contact,
+            from,
+        });
+        console.log(data);
+    }
+    clearInput() {
+        this.content = '';
+        this.$apply();
     }
 }
 </script>
