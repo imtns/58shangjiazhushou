@@ -55,7 +55,9 @@ export default class extends wepy.app {
             'pages/AppEdit', // 小程序编辑
             'pages/buy', // 购买页面
             'pages/index',
+            'pages/noticeSet', // 消息通知设置页面
             'pages/noticeList', // 消息通知页面
+            'pages/sysNoticeList', // 系统通知页面
             'pages/registed', // 当前小程序已注册
             'pages/registMainAccount', // 主体账户信息
             'pages/registManage', // 管理员信息
