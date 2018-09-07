@@ -1,17 +1,48 @@
 <template>
     <view class="chatMessages">
-        chatMessages
+        <view class="message_box">
+            <view class="message_header" style="background:url({{hello}}) no-repeat center">
+                <view class="message_tips">21</view>
+            </view>
+            <view class="message_info">
+                <view class="chat_name">初夏</view>
+                <view class="chat_info">请问还在吗？请问还在吗？请问还在吗？请问还在吗？请问还在吗？请问还在吗？请问还在吗？请问还在吗？</view>
+                <view class="chat_time">2017/04/10</view>
+            </view>
+        </view>
+        <view class="message_box">
+            <view class="message_header" style="background:url({{hello}}) no-repeat center">
+                <view class="message_tips">21</view>
+            </view>
+            <view class="message_info">
+                <view class="chat_name">初夏</view>
+                <view class="chat_info">请问还在吗？</view>
+                <view class="chat_time">2017/04/10</view>
+            </view>
+        </view>
+        <view class="message_box">
+            <view class="message_header" style="background:url({{hello}}) no-repeat center">
+                <view class="message_tips">21</view>
+            </view>
+            <view class="message_info">
+                <view class="chat_name">初夏</view>
+                <view class="chat_info">请问还在吗？</view>
+                <view class="chat_time">2017/04/10</view>
+            </view>
+        </view>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
 
-export default class AppInfo extends wepy.page {
+export default class chatMessages extends wepy.page {
     config = {
         navigationBarTitleText: '消息',
     }
-    data = {}
+    data = {
+        hello: '//upload.jianshu.io/users/upload_avatars/6080248/dea138ef-394d-48e2-9d57-df740e59b974.jpg?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96',
+    }
     methods = {}
     onLoad () {
         console.log('onload');
@@ -23,5 +54,65 @@ export default class AppInfo extends wepy.page {
 </script>
 
 <style lang="scss">
-
+.chatMessages{
+    background:white;
+    padding: 0 30rpx;
+    .message_box{
+        background: white;
+        padding: 35rpx 0;
+        height: 160rpx;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        border: 1rpx solid #F3F3F3;
+        border-left: 0;
+        border-right: 0;
+        border-top: 0;
+        .message_header{
+            width: 90rpx;
+            height: 90rpx;
+            background-size: contain !important;
+            border-radius: 100%;
+            position: relative;
+            .message_tips{
+                position: absolute;
+                width: 36rpx;
+                height: 36rpx;
+                top: -10rpx;
+                right: -12rpx;
+                background: #FF552E;
+                line-height: 36rpx;
+                font-size: 20rpx;
+                color: #FFFFFF;
+                border-radius: 100%;
+                text-align: center;
+            }
+        }
+        .message_info{
+            flex: 1;
+            padding-left: 30rpx;
+            position: relative;
+            overflow: hidden;
+            .chat_name{
+                font-size: 34rpx;
+                color: #000000;
+                line-height: 55rpx;
+            }
+            .chat_info{
+                font-size: 28rpx;
+                color: #A8A8A8;
+                overflow: hidden;
+                text-overflow:ellipsis;
+                white-space: nowrap;
+            }
+            .chat_time{
+                position: absolute;
+                top: 0;
+                right: 0;
+                font-size: 24rpx;
+                color: #999999;
+            }
+        }
+    }
+}
 </style>

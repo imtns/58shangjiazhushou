@@ -56,8 +56,8 @@
                 placeholder="请输入文字"
                 cursor-spacing="30"/>
             </view>
-            <view class="chat-show-upload upload" @tap="showpanel" wx:if="{{!showpanel}}"></view>
-            <view class="chat-show-upload" @tap="closepanel" wx:else></view>
+            <view class="chat-show-upload" @tap="showpanel" wx:if="{{!showpanel}}"></view>
+            <view class="chat-show-upload close-upload" @tap="closepanel" wx:else></view>
             
             <view class="chat-send-msg sended">发送</view>
         </view>
@@ -197,8 +197,13 @@ page{
             width:48rpx;
             height:48rpx;
             border-radius:50%;
-            background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/chat-close-panel.png);
+            background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/chat-msg-upload.png);
+            
             background-size:48rpx;
+            &.close-upload{
+                background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/chat-close-panel.png);
+                background-size:48rpx;
+            }
         }
         .chat-send-msg{
             float:left;

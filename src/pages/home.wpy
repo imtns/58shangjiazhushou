@@ -86,10 +86,17 @@
 <script>
 import wepy from 'wepy';
 import Mixin from '../mixin';
+
+import { items, nItems } from '../utils/homeList';
+
 import { alert } from '../utils';
 import { post, get } from '../utils/ajax';
 import { globalData } from '../utils/globalData';
 import { getUid, SendClickLog } from '../utils/maidian';
+
+import { CHAT_LOGIN } from '../utils/url';
+
+// import { sdkLogin, onMsgNotify } from '../utils/IM/IM';
 
 export default class Home extends wepy.page {
     mixins = [Mixin]
@@ -127,65 +134,9 @@ export default class Home extends wepy.page {
             // 优化页面跳转体验
             first: true,
         },
-        items: [
-            {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-my-mp.png',
-                text: '我的小程序',
-            }, {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-order-manage.png',
-                text: '订单管理',
-            }, {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-payment-record.png',
-                text: '收款记录',
-            }, {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-payment.png',
-                text: '支付开通',
-            },
-        ],
-        nItems: [
-            {
-                title: '店铺运营',
-                items: [
-                    {
-                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-store-fit.png',
-                        text: '店铺装修',
-                    }, {
-                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-order-service.png',
-                        text: '发布服务',
-                    }, {
-                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-coupon.png',
-                        text: '优惠劵',
-                    },
-                    {
-                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-goods.png',
-                        text: '发布商品',
-                    },
-                    {
-                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-resorce-manage.png',
-                        text: '素材管理',
-                    },
-                ],
-            },
-            {
-                title: '开店必做',
-                items: [
-                    {
-                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-buy-mp.png',
-                        text: '购买小程序',
-                    },
-                    {
-                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-regist-mp.png',
-                        text: '注册小程序',
-                    }, {
-                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-mp-progress.png',
-                        text: '进度查询',
-                    }, {
-                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-feedback-mp.png',
-                        text: '意见反馈',
-                    },
-                ],
-            },
-        ],
+        items,
+        nItems,
+        cardId: '1037641283830616064',
     }
     methods = {
         link(text) {
@@ -340,6 +291,11 @@ export default class Home extends wepy.page {
         await this.loadData();
         await this.loadCode();
         await this.getInfo();
+        // 聊天登录，监控未读消息
+        const { isLoagin } = globalData.chat;
+        if (!isLoagin) {
+            this.chatLogin();
+        }
     }
     formatedMp (item) {
         const mp = item;
@@ -406,12 +362,10 @@ export default class Home extends wepy.page {
         }
     }
     async loadCode() {
-        const that = this;
         wx.login({
-            success(res) {
+            success: (res) => {
                 if (res.code) {
-                    console.log(res.code);
-                    that.code = res.code;
+                    this.code = res.code;
                     // 查看是否授权
                 } else {
                     console.log('denglishiba');
@@ -619,6 +573,58 @@ export default class Home extends wepy.page {
                 break;
         }
         this.$apply();
+    }
+
+    // chatLogin 聊天登录
+    async chatLogin() {
+        try {
+            const { cardId } = this.data;
+            /**
+                tim 包含 sdkAppID identifier userSig
+                myInfo 包含 token nickName headImg
+                unReadCount 未读消息数
+            */
+            const { data } = await get(CHAT_LOGIN, {
+                channel: 1, // channel 身份 1是名片 2是用户
+                userId: cardId, // userId 该身份对应的识别id，商家传cardId(名片Id)
+            });
+            const { tim, myInfo, unReadCount = 20 } = data;
+            const { unReadCount: counts } = globalData.chat;
+            const text = counts && counts > 0 ? (counts + Number(unReadCount)) : unReadCount;
+            if (Number(text) && Number(text) > 0) {
+                wx.setTabBarBadge({
+                    index: 1,
+                    text: text > 99 ? '99+' : text,
+                });
+            }
+            const { token, nickName, headImg } = myInfo;
+            // 设置全局token
+            globalData.chat.token = token;
+            globalData.chat.nickName = nickName;
+            globalData.chat.headImg = headImg;
+
+            // IM 登录，获取实时消息
+            this.initIM(tim);
+            // sdkLogin(tim, listeners, {}, () => {
+            //     globalData.chat.isLogin = true;
+            // });
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    initIM() {
+        console.log('initIM');
+        // 当前用户身份
+        const loginInfo = {
+
+        };
+        console.log(loginInfo);
+        // listeners
+        // const listeners = {
+        //     onMsgNotify: onMsgNotify, // 监听新消息
+        // };
+        // sdkLogin(loginInfo, listeners, {});
     }
 }
 </script>
