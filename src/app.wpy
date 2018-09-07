@@ -20,6 +20,7 @@ export default class extends wepy.app {
 
     config = {
         pages: [
+            'pages/visitorLogs', // 访问历史记录
             'pages/home',
             'pages/edit/textEdit',
             // 登陆之后的主页
