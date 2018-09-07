@@ -1,60 +1,34 @@
 <template>
     <view class="notice-container">
-        <view class="notice-new">
-            <navigator class="notice-name" url="sysNoticeList" hover-class="none">
-                <view class="notice-system">
-                    <image src="assets/system-icon.png"/>
-                    <view class="num">16</view>
-                </view>
-                <view class="notice-txt">
-                    <view class="sys-txt">系统通知</view>
-                    <view class="mp-txt">朝阳大药房上线了</view>
-                </view>
-            </navigator>
-            <navigator class="notice-name" url="accountNoticeList" hover-class="none">
-                <view class="notice-system">
-                    <image src="assets/account-icon.png"/>
-                    <view class="num">9</view>
-                </view>
-                <view class="notice-txt">
-                    <view class="sys-txt">入账通知</view>
-                    <view class="mp-txt">您有最新入帐600元</view>
-                </view>
-            </navigator>
+        <view class="notice-header">
+            <view>全部通知</view>
+            <view class="clear-notice attach-notice" bindtap="clearAll">清空</view>
         </view>
-        <!-- <scroll-view class="notice-list" wx:if="{{noticeList.length>0}}" scroll-y="true" scroll-with-animation="true" lower-threshold="50" bindscrolltolower="noticeListMore" style="height: {{height}}">
-            <block wx:for="{{noticeList}}" wx:key="index">
-                <view class="notice-list-item">
-                    <view class="notice-item" bindtap="touploadInfo" data-item="{{item}}">
-                        <view class="notice-img {{item.status === 1 ? 'new-msg' : ''}}">
-                            <image src="{{item.mpLogo || 'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=120&h=120'}}"></image>
+        <view class="notice-new">
+            <navigator class="notice-name notice-order" url="orderNoticeList" hover-class="none">订单提醒<view class="num" wx:if="{{orderUnRead > 0}}">{{orderUnRead}}</view></navigator>
+            <navigator class="notice-name notice-account" url="accountNoticeList" hover-class="none">入账通知<view class="num" wx:if="{{recivMoneyUnRead > 0}}">{{recivMoneyUnRead}}</view></navigator>
+        </view>
+        <scroll-view class="notice-list" wx:if="{{noticeList.length>0}}" scroll-y="true" scroll-with-animation="true" lower-threshold="50" bindscrolltolower="noticeListMore" style="height: {{height}}">
+        <block wx:for="{{noticeList}}" wx:key="index">
+            <view class="notice-list-item">
+                <view class="notice-item" bindtap="touploadInfo" data-item="{{item}}">
+                    <view class="notice-img {{item.status === 1 ? 'new-msg' : ''}}">
+                        <image src="{{item.mpLogo || 'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=120&h=120'}}"></image>
+                    </view>
+                    <view class="notice-content">
+                        <view class="notice-name">
+                            <view class="notice-weixin-type {{item.app_type === 1 ? 'youxiang' : ''}}">{{item.app_type === 1 ? '优享' : '微信'}}</view>
+                            <view class="notice-weixin-name">{{item.mpName}}</view>
+                            <view class="notice-status">{{item.title}}</view>
                         </view>
-                        <view class="notice-content">
-                            <view class="notice-name">
-                                <view class="notice-weixin-type {{item.app_type === 1 ? 'youxiang' : ''}}">{{item.app_type === 1 ? '优享' : '微信'}}</view>
-                                <view class="notice-weixin-name">{{item.mpName}}</view>
-                                <view class="notice-status">{{item.title}}</view>
-                            </view>
-                            <view class="notice-more">
-                                <view class="notice-msg">{{item.content}}</view>
-                                <view class="notice-time">{{item.createTime}}</view>
-                            </view>
+                        <view class="notice-more">
+                            <view class="notice-msg">{{item.content}}</view>
+                            <view class="notice-time">{{item.createTime}}</view>
                         </view>
                     </view>
                 </view>
-            </block>
-        </scroll-view> -->
-        <scroll-view class="card-list" scroll-y="true" style="height: 100vh">
-            <view class="card-list-item">
-                <view class="card-time">2018年8月25日 21:45</view>
-                <navigator class="card-item">
-                    <image class="avator" src=""/>
-                    <view class="info">
-                        <view class="visitor">张艳查看了您的名片</view>
-                        <view class="contact">有可能对你感兴趣，快去联系ta吧</view>
-                    </view>
-                </navigator>
             </view>
+        </block>
         </scroll-view>
     </view>
 </template>
@@ -199,14 +173,47 @@ view,scroll-view{
 .notice-container{
     width:100%;
     height:100%;
+    .notice-header{
+        width:100%;
+        padding:0 30rpx;
+        height: 80rpx;
+        line-height: 80rpx;
+        position: relative;
+        // top: 80rpx;
+        // left: 0;
+        // z-index:9;
+        background:#f5f5f5;
+        view{
+            font-size: 28rpx;
+            color: #999999;
+            letter-spacing: 0;
+        }
+        .attach-notice{
+            position:absolute;
+            right:30rpx;
+            top:0;
+        }
+        .clear-notice::before{
+            position:absolute;
+            left:-40rpx;
+            top:22rpx;
+            content:'';
+            width:36rpx;
+            height:36rpx;
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAAGWB6gOAAAAAXNSR0IArs4c6QAAA2ZJREFUWAntWD2PGjEQXSAFDUiQiJa/cCU/IFFEvgqkdCeSjqPI7wFEdUmDdF0iILqGEiVKQ3EXGlCgOOlQBEgoShEEmWd2LNtrdvcWohSJJdae8Zu3Mx57vMJxLC0GXa1W2/JctVoVOqHcug2TcRdxzkj09/Agk9fUvcLY2jwvEQpwA97pdCS5MJ9Opzvier0uFOl0OrtzikRStsnyiZhRHtJx6BCR2YbDoXgfBwLcTzzU1uv1hChB8Xj8pQq481g6rq4ys7DT8nU8ofYU8SlkCTo7O3Py+bz8QaZoHwIkMoIB2mQy2Q3cJwVzgaFkWq/XGgBCpVJpo5eg0WgE2b+128iK3thC+kSZPado1J2yYFCoHskPBfwjINuu0iPeSbe3t1vCfmYn5EqyQu0pJCGaPZTj8djhnEH2JQJgX0MKN5uNSD4wHqJYLPZlNpvts5f61WqF8/6NFR4iWoELuH1wazQaD5rN5sa2wKxbLBZbWrfNwS/7+wRhdrYsJeyuraTwnNpTdjtUJJ6quqOMNY8ohFPKzLuwzFz8gJclwjV+UyqVnFwuF8jFx4aB2oYkb77SHuE5p9vtirHZS4Ay0IjoEF6pRFxYzV6xl0ONiLTX8/lcTt5loBHRadY8ikyE04xTHdTcq0K7MTWPggh4HuHThrxiGX0kIiSEMnwcInLiWvXIMw5T/HEJUt3SzpknNIp9u1wuPS9QFTc3N/hW+aTqzCPipFKp+61WC5dzRgUa47eU4e+G7r/ovwJIdtji6sek1UcbEGWf9rDna9aGDaujDdamav/MhvfsRhOEq4J0R7jAJfOYAvwoJWPgu0K0Opdk/KhQKDgnJyeGaTRxMBg4/X4fJeiSVumxyRK0Qr9gkM1mTbvIciYjT6/3Y5xYgxwSZct2p+BqVK/HIJkjULisJdHXIS7I6m3JxFF75mJuk8fXoUQiIW4IJjGNo8jMxdwmh69DyWRyb8pMorAyp4y5TTtfh8rl8g8ymOCGD/MlYJKbMjjcr4WJy21CAjc1DMQq8VJ7GO6gUDisGxpUvisEANULsY94qaGL2piDOW08nuveBPFpUKITEPwzoLYgGVjmYE7VnseBDhHQmrJiscgcog+SAWKHaLg3Zb5Xh3gTPajovaeonrN8SE/p+kBXxotDOP5t29/lY/k82n3mRQAAAABJRU5ErkJggg==);
+            background-size: 36rpx 36rpx;
+        }
+    }
     .notice-new{
         width:100%;
         .notice-name{
-            display:flex;
+            display:block;
             font-size: 28rpx;
             color:#333;
             width: 100%;
-            padding:30rpx;
+            height: 88rpx;
+            padding:0 30rpx;
+            line-height: 88rpx;
             background: #fff;
             border-bottom: 1rpx solid #F3F3F3;
             box-sizing: border-box;
@@ -219,48 +226,31 @@ view,scroll-view{
                 background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png) no-repeat;
                 background-size: 100% 100%;
                 position: absolute;
-                top: 61rpx;
+                top: 31rpx;
                 right: 30rpx;
             }
-            .notice-system{
-                width: 100rpx;
-                position: relative;
-                .num{
-                    font-size:18rpx;
-                    color:#fff;
-                    width:32rpx;
-                    height:32rpx;
-                    line-height:28rpx;
-                    text-align:center;
-                    background:#FF552E;
-                    border-radius:100%;
-                    position:absolute;
-                    border:3rpx solid #fff;
-                    top:10rpx;
-                    right:30rpx;
-                }
-            }
-            .notice-txt{
-                flex: 1;
-                .sys-txt{
-                    font-size: 32rpx;
-                    color: #333;
-                }
-                .mp-txt{
-                    font-size: 26rpx;
-                    color: #666;
-                    margin-top: 10rpx;
-                }
-            }
-            image{
-                width: 60rpx;
-                height: 60rpx;
-                margin-top:15rpx;
-            }
+        }
+        .num{
+            font-size: 20rpx;
+            color:#fff;
+            width:34rpx;
+            line-height: 34rpx;
+            text-align:center;
+            background:#FF552E;
+            border-radius:100%;
+            margin:27rpx 5rpx 0 0;
+            float:right;
+            margin-right:45rpx;
         }
     }
     .notice-list{
         width:100%;
+        // margin-top:335rpx;
+        // position: absolute;
+        // top:0;
+        // bottom: 0;
+        // left: 0;
+        // right:0;
         .notice-list-item{
             padding:0 30rpx;
             background:#fff;
@@ -353,50 +343,6 @@ view,scroll-view{
                     }
                 }
             }
-        }
-    }
-    .card-list{
-        width:100%;
-        .card-time{
-            font-size: 28rpx;
-            color: #999;
-            text-align: center;
-            margin: 50rpx 0 30rpx;
-        }
-        .card-item{
-            padding: 30rpx;
-            background: #fff;
-            border-bottom: 1rpx solid #f3f3f3;
-            display: flex;
-            position: relative;
-            &:after{
-                content:'';
-                display:block;
-                width:15rpx;
-                height:26rpx;
-                background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png) no-repeat;
-                background-size: 100% 100%;
-                position: absolute;
-                top: 61rpx;
-                right: 30rpx;
-            }
-        }
-        .avator{
-            width: 60rpx;
-            height: 60rpx;
-            margin: 15rpx 40rpx 0 0;
-            background: red;
-        }
-        .info{
-            flex: 1;
-            color: #666;
-        }
-        .visitor{
-            font-size: 32rpx;
-        }
-        .contact{
-            font-size: 26rpx;
-            margin-top: 10rpx;
         }
     }
     .emptyBox{
