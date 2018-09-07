@@ -45,7 +45,7 @@
 <script>
 import wepy from 'wepy';
 
-export default class AppInfo extends wepy.page {
+export default class visitorLogs extends wepy.page {
     config = {
         navigationBarTitleText: '访问记录',
     }

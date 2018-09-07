@@ -1,5 +1,5 @@
-const webim = require('../../utils/webim_wx.js');
-const { pubsub } = require('../../utils/pubsub');
+const webim = require('../../utils/IM/webim_wx.js');
+const { pubsub } = require('../../utils/IM/pubsub');
 
 import { get } from '../../utils/ajax';
 import { CHAT_LOGIN } from '../../utils/url';
