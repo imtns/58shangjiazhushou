@@ -1,4 +1,4 @@
-const webim = require('../../utils/webim_wx.js');
+const webim = require('../../utils/IM/webim_wx.js');
 const { pubsub } = require('../../utils/pubsub');
 
 import { get } from '../../utils/ajax';

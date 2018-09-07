@@ -36,7 +36,7 @@
 <script>
 import wepy from 'wepy';
 
-export default class AppInfo extends wepy.page {
+export default class chatMessages extends wepy.page {
     config = {
         navigationBarTitleText: '消息',
     }
