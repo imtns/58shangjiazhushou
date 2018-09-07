@@ -1,0 +1,110 @@
+<template>
+    <view class="visitors">
+        <view class="tips">以下客户访问过您的名片，可联系他们哦</view>
+        <view class="visitor_content">
+            <view class="visitor_box">
+                <view class="visitor_header" style="background:url({{hello}}) no-repeat center"></view>
+                <view class="visitor_name">苏娜尼</view>
+                <view class="visitor_count">
+                    访问您的名片
+                    <text class="visitor_num">17</text> 
+                    次
+                </view>
+            </view> 
+            <view class="visitor_box">
+                <view class="visitor_header" style="background:url({{hello}}) no-repeat center"></view>
+                <view class="visitor_name">苏娜尼苏娜尼苏娜尼苏娜尼苏娜尼苏娜尼苏娜尼苏娜尼</view>
+                <view class="visitor_count">
+                    访问您的名片
+                    <text class="visitor_num">17</text> 
+                    次
+                </view>
+            </view> 
+            <view class="visitor_box">
+                <view class="visitor_header" style="background:url({{hello}}) no-repeat center"></view>
+                <view class="visitor_name">苏娜尼</view>
+                <view class="visitor_count">
+                    访问您的名片
+                    <text class="visitor_num">17</text> 
+                    次
+                </view>
+            </view> 
+            <view class="visitor_box">
+                <view class="visitor_header" style="background:url({{hello}}) no-repeat center"></view>
+                <view class="visitor_name">苏娜尼</view>
+                <view class="visitor_count">
+                    访问您的名片
+                    <text class="visitor_num">17</text> 
+                    次
+                </view>
+            </view>   
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class AppInfo extends wepy.page {
+    config = {
+        navigationBarTitleText: '访问记录',
+    }
+    data = {
+        hello: '//upload.jianshu.io/users/upload_avatars/6080248/dea138ef-394d-48e2-9d57-df740e59b974.jpg?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96',
+    }
+    methods = {}
+    onLoad () {
+        console.log('onload');
+    }
+    onShow () {
+        console.log('onshow');
+    }
+}
+</script>
+
+<style lang="scss">
+.visitors{
+    .tips{
+        font-size: 24rpx;
+        color: #D38658;
+        line-height: 56rpx;
+        height: 56rpx;
+        font-size: 24rpx;
+        padding-left: 80rpx;
+        background: #FFF9DF url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_log_tips.png') no-repeat 30rpx 50%;
+        background-size: 40rpx 40rpx;
+    }
+    .visitor_content{
+        background: white;
+        .visitor_box{
+            padding: 37rpx 20rpx;
+            border-bottom: 1rpx solid #F3F3F3;
+            display: flex;
+            .visitor_header{
+                width: 60rpx;
+                height: 60rpx;
+                background-size: contain !important;
+                border-radius: 100%;
+            }
+            .visitor_name{
+                line-height: 60rpx;
+                font-size: 30rpx;
+                color: #333333;
+                flex:1;
+                padding-left: 30rpx;
+            }
+            .visitor_count{
+                line-height: 60rpx;
+                font-size: 28rpx;
+                color: #999999;
+                flex:1;
+                text-align: right;
+                .visitor_num{
+                    font-size: 28rpx;
+                    color: #151515;
+                }
+            }
+        }
+    }
+}
+</style>
