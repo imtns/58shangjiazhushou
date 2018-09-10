@@ -161,6 +161,7 @@ export default class Home extends wepy.page {
                 alert('您还未购买小程序，请登录e.58.com进行购买', '提示');
                 return;
             }
+            console.log(this.business.nexttask);
             switch (this.business.nexttask) {
                 case 2:
                     wepy.navigateTo({
@@ -617,7 +618,7 @@ export default class Home extends wepy.page {
     initIM(tim) {
         console.log('initIM');
         // 当前用户身份
-        let loginInfo = { 
+        const loginInfo = {
             accountType: 37611,
         };
         Object.assign(loginInfo, tim);
