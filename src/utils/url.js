@@ -18,3 +18,8 @@ export const SAVE_SERVICE = '/businessService/update'; // 更新
 
 // 聊天对应的接口
 export const CHAT_LOGIN = '/chat/login'; // 聊天登录接口
+export const MSG_LIST = '/chat/msgList'; // 聊天记录
+export const SEND_MSG = '/chat/msgSend'; // 发送消息
+
+//访客记录接口
+export const CONSUMER_RECORDS = '/mpCardBusiness/consumerRecords';

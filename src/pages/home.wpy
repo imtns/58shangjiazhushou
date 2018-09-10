@@ -96,7 +96,7 @@ import { getUid, SendClickLog } from '../utils/maidian';
 
 import { CHAT_LOGIN } from '../utils/url';
 
-// import { sdkLogin, onMsgNotify } from '../utils/IM/IM';
+import { sdkLogin, onMsgNotify } from '../utils/IM/IM';
 
 export default class Home extends wepy.page {
     mixins = [Mixin]
@@ -588,6 +588,7 @@ export default class Home extends wepy.page {
                 channel: 1, // channel 身份 1是名片 2是用户
                 userId: cardId, // userId 该身份对应的识别id，商家传cardId(名片Id)
             });
+
             const { tim, myInfo, unReadCount = 20 } = data;
             const { unReadCount: counts } = globalData.chat;
             const text = counts && counts > 0 ? (counts + Number(unReadCount)) : unReadCount;
@@ -599,32 +600,33 @@ export default class Home extends wepy.page {
             }
             const { token, nickName, headImg } = myInfo;
             // 设置全局token
-            globalData.chat.token = token;
-            globalData.chat.nickName = nickName;
-            globalData.chat.headImg = headImg;
+            Object.assign(globalData.chat, {
+                isLogin: true,
+                token,
+                nickName,
+                headImg,
+            });
 
             // IM 登录，获取实时消息
             this.initIM(tim);
-            // sdkLogin(tim, listeners, {}, () => {
-            //     globalData.chat.isLogin = true;
-            // });
         } catch (e) {
             console.log(e);
         }
     }
 
-    initIM() {
+    initIM(tim) {
         console.log('initIM');
         // 当前用户身份
-        const loginInfo = {
-
+        let loginInfo = { 
+            accountType: 37611,
         };
+        Object.assign(loginInfo, tim);
         console.log(loginInfo);
         // listeners
-        // const listeners = {
-        //     onMsgNotify: onMsgNotify, // 监听新消息
-        // };
-        // sdkLogin(loginInfo, listeners, {});
+        const listeners = {
+            onMsgNotify: onMsgNotify, // 监听新消息
+        };
+        sdkLogin(loginInfo, listeners, {});
     }
 }
 </script>
