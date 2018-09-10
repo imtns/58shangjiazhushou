@@ -1,6 +1,6 @@
 <template>
     <view class="chatMessages">
-        <view class="message_box"  @tap="toChat('OOC7ZFdxeDZpqLp7fgAbLzB3Ba4PuvNguU8UJ21dkzLxvC')">
+        <view class="message_box"  @tap="toChat('OOC7ZFdxeDZpqLp7fgAbLzB3Ba4PuvNguU8UJ21dkzLxvC', '可以跳转')">
             <view class="message_header" style="background:url({{hello}}) no-repeat center">
                 <view class="message_tips">21</view>
             </view>
@@ -44,10 +44,9 @@ export default class chatMessages extends wepy.page {
         hello: '//upload.jianshu.io/users/upload_avatars/6080248/dea138ef-394d-48e2-9d57-df740e59b974.jpg?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96',
     }
     methods = {
-        toChat(contact) {
-            console.log(contact);
+        toChat(contact, chatWith) {
             wepy.navigateTo({
-                url: `wechat/chat/chat?contact=${contact}`,
+                url: `wechat/chat/chat?contact=${contact}&chatWith=${chatWith}`,
             });
         },
     }
