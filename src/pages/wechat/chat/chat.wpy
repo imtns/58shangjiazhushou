@@ -4,49 +4,26 @@
             class="chat-zone"
             scroll-y="{{true}}">
             <view class="chat-msg-loading">加载中</view>
-            <view class="chat-msg-body chat-right">
-                <view class="chat-msg-time">时间</view>
-                <image class="chat-msg-avatar" src=""></image>
-                <view class="chat-msg-content">
-                        fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfaefrrdcshjxk问问几十块合肥市fedsnjzkjfae
-                </view>
-            </view>
-
-
             <view class="chat-msg-body">
-                <view class="chat-msg-time">时间</view>
-                <image class="chat-msg-avatar" src=""></image>
+                <image class="chat-msg-avatar" src="{{item.portrait}}"></image>
                 <view class="chat-msg-content">
-                        fedsnj
+                    <view class="chat-msg-title">您可以通过一下方式和我沟通</view>
+                    <view class="chat-msg-btn">加微信</view>
+                    <view class="chat-msg-btn">留下联系方式</view>
+                    <view class="chat-msg-btn">电话咨询</view>
                 </view>
             </view>
-            <view class="chat-msg-body chat-right">
-                <view class="chat-msg-time">时间</view>
-                <image class="chat-msg-avatar" src=""></image>
-                <view class="chat-msg-content">
-                        南街速度快
+            <block wx:for="{{msgList}}" wx:key="index">
+                <view class="chat-msg-body {{item.currentContact ? 'chat-right' : ''}}">
+                    <view class="chat-msg-time">{{item.sendTime}}</view>
+                    <image class="chat-msg-avatar" src="{{item.portrait}}"></image>
+                    <view class="chat-msg-content" wx:if="{{item.type === '0'}}">{{item.content}}</view>
+                    <view class="chat-img-box" wx:else>
+                        <image class="chat-msg-img" src="https://pic1.58cdn.com.cn{{item.content}}"></image>
+                        <view class="chat-img-mask" wx:if="{{item.status === 1}}">{{progress}}%</view>
+                    </view>
                 </view>
-            </view>
-            <view class="chat-msg-body">
-                <view class="chat-msg-time">时间</view>
-                <image class="chat-msg-avatar" src=""></image>
-                <view class="chat-msg-content">
-                        额外的撒KOK
-                </view>
-            </view>
-            <view class="chat-msg-body chat-right">
-                <view class="chat-msg-time">时间</view>
-                <image class="chat-msg-avatar" src=""></image>
-                <view class="chat-msg-content">
-                        fed让我分的少找借口snj
-                </view>
-            </view>
-            <view class="chat-msg-body chat-right">
-                <view class="chat-msg-time">时间</view>
-                <image class="chat-msg-avatar" src=""></image>
-                <image class="chat-msg-img" src="">
-                </image>
-            </view>
+            </block>
         </scroll-view>
         <view class="chat-input-zone">
             <view class="chat-input-view">
@@ -56,19 +33,34 @@
                 placeholder="请输入文字"
                 cursor-spacing="30"
                 @input="input"
+                @focus="closepanel"
                 value="{{content}}"/>
             </view>
             <view class="chat-show-upload" @tap="showpanel" wx:if="{{!showpanel}}"></view>
             <view class="chat-show-upload close-upload" @tap="closepanel" wx:else></view>
             
-            <view class="chat-send-msg sended" @tap="sendMsg({type: 0})">发送</view>
+            <view class="chat-send-msg {{canIsend ? 'sended' : ''}}" @tap="sendMsg()" data-type="TEXT">发送</view>
         </view>
         <view class="chat-input-panel" wx:if="{{showpanel}}">
-            <view class="chat-btn">
+            <view class="chat-btn" @tap="upload" data-type="camera">
                 拍照
             </view>
-            <view class="chat-btn upload-pic">
+            <view class="chat-btn upload-pic" @tap="upload" data-type="album">
                 照片
+            </view>
+        </view>
+    </view>
+    <view class="chat-mask" wx:if="{{showMask}}">
+        <view class="chat-dialog">
+            <view class="chat-dialog-title">填写联系方式</view>
+            <view class="chat-dialog-close">×</view>
+            <view class="chat-dialog-body">
+                <view class="chat-dialog-body-title">填写完成后，我会尽快联系您</view>
+                <input type="number" placeholder="请输入电话号码…" class="chat-dialog-input">
+            </view>
+            <view class="chat-dialog-foot">
+                <!-- <view class="chat-btn">关闭</view> -->
+                <view class="chat-btn chat-btn-sure">确定</view>
             </view>
         </view>
     </view>
@@ -76,12 +68,18 @@
 <script>
 import wepy from 'wepy';
 
+import { globalData } from '../../../utils/globalData';
+import { pubsub } from '../../../utils/IM/pubsub';
+import '../../../utils/date';
+import { toast } from '../../../utils';
+import { uploader } from '../../../utils/uploader';
+
 import { post } from '../../../utils/ajax';
 import { MSG_LIST, SEND_MSG } from '../../../utils/url';
-import { globalData } from '../../../utils/globalData';
+import { msgType } from '../../../utils/msg/msgType';
 
-const { token = '8jWhS4S1jREubPX55LsnuHx4YrKn9KR3BNuWj' } = globalData.chat;
 let from = '';
+let msgListToken = '';
 export default class Chat extends wepy.page {
     config = {
         navigationBarTitleText: '贺燕珍',
@@ -90,49 +88,124 @@ export default class Chat extends wepy.page {
     data = {
         height: '',
         showpanel: false,
+        canIsend: false,
         contact: '',
         msgList: [],
         content: '',
+        token: '',
+        progress: 0,
     }
-    onLoad(contact) {
+    onLoad(options) {
+        const { token } = globalData.chat;
+        const { contact } = options;
+
         globalData.chat.currentContact = contact;
+
         this.contact = contact;
+        this.token = token;
         this.$apply();
         // this.loadData();
+        // this.newMsgs();
     }
-    methods = {
-        showpanel() {
-            this.showpanel = true;
-            this.$apply();
-        },
-        closepanel() {
-            this.showpanel = false;
-            this.$apply();
-        },
-        input(e) {
-            console.log(e);
-            this.content = e.detail.value;
-            this.$apply();
-        },
-        async sendMsg(type) {
-            if (type === 0 && !this.content.trim()) return;
-            const { content, contact } = this;
-            console.log(content, contact);
+    onUnload() {
+        // 取消订阅
+        pubsub.unsubscribe(msgListToken);
+    }
+    showpanel() {
+        this.showpanel = true;
+        this.$apply();
+    }
+    closepanel() {
+        this.showpanel = false;
+        this.$apply();
+    }
+    input(e) {
+        console.log(e);
+        this.content = e.detail.value;
+        this.canIsend = this.content.trim().length > 0;
+        this.$apply();
+    }
+    // 拍照、上传图片
+    async upload(target) {
+        this.showpanel = false;
+        this.$apply();
+        try {
+            const that = this;
+            const { type } = target.currentTarget.dataset.type;
+            const { contact } = this;
             const msg = {
-                type,
                 status: 1,
+                content: null,
+                target: contact,
+            };
+            const { tempFilePaths } = await wepy.chooseImage({
+                sourceType: [type],
+            });
+            this.msgList.push(Object.assign(msg, {
+                sendTime: new Date().format('hh:mm'),
+                portrait: globalData.chat.headImg,
+            }));
+            const uploaded = uploader(tempFilePaths[0], (e, result) => {
+                this.showpanel = false;
+                this.$apply();
+                if (e) {
+                    toast('上传失败，请重试。');
+                    return;
+                }
+                // toast('上传成功。');
+                const url = result.content;
+
+                msg.content = result.content;
+                this.$apply();
+
+                that.sendMsg(url);
+
+                msg.status = 2;
+                this.$apply();
+            });
+            uploaded.onProgressUpdate(({ progress }) => {
+                this.progress = progress;
+                this.$apply();
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    async sendMsg(target) {
+        try {
+            console.error(target);
+            const type = target.currentTarget ? target.currentTarget.dataset.type : 'IMAGE';
+            const content = type === 'TEXT' ? this.content.trim() : target;
+            type === 'TEXT' && this.clearInput();
+            if (!content) return;
+
+            const { contact, token } = this;
+            const msg = {
+                type: msgType[type],
+                status: 1, // 发送中
                 content,
                 contact,
                 token,
             };
-            console.log(msg);
+            const newMsg = Object.assign({
+                sendTime: new Date().format('hh:mm'),
+                portrait: globalData.chat.headImg,
+            }, msg);
+            if (type === 'TEXT') {
+                this.msgList.push(newMsg);
+                this.$apply();
+            }
+            console.log(msg, this.msgList);
             await post(SEND_MSG, msg);
-            type === 0 && this.clearInput();
-        },
+            newMsg.status = 2; // 发送成功
+            this.$apply();
+        } catch (e) {
+            console.log(e);
+        }
     }
     async loadData() {
         try {
-            const { contact } = this;
+            const { contact, token } = this;
             const { data } = await post(MSG_LIST, {
                 token,
                 contact,
@@ -146,6 +219,7 @@ export default class Chat extends wepy.page {
     }
     async loadMore() {
         console.log('loadMore……', from);
+        const { token } = this;
         const { data } = await post(MSG_LIST, {
             token,
             contact: this.contact,
@@ -154,8 +228,21 @@ export default class Chat extends wepy.page {
         console.log(data);
     }
     clearInput() {
+        console.log('000');
         this.content = '';
+        this.canIsend = false;
         this.$apply();
+    }
+    newMsgs() {
+        const { contact } = this;
+        // 订阅当前联系人的未读消息
+        msgListToken = pubsub.subscribe(contact, (...props) => {
+            const newMsgs = props[0];
+            newMsgs.forEach((msg) => {
+                this.msgList.push(msg);
+                this.$apply();
+            });
+        });
     }
 }
 </script>
@@ -206,14 +293,42 @@ page{
                 letter-spacing: 0;
                 word-break:break-all;
                 line-height:50rpx;
+                .chat-msg-title{
+                    text-align:left;
+                }
+                .chat-msg-btn{
+                    width:442rpx;
+                    height:68rpx;
+                    border-radius:4rpx;
+                    border: 2rpx solid #DDDDDD;
+                    margin-top:20rpx;
+                    text-align:center;
+                    line-height:68rpx;
+                }
             }
-            .chat-msg-img{
+            .chat-img-box{
+                position:relative;
+                font-family: PingFangSC-Regular;
+                font-size: 32rpx;
+                color: #FFFFFF;
+                text-align: center;
+                line-height:300rpx;
+            }
+            .chat-img-box,.chat-msg-img{
                 width:400rpx;
                 height:300rpx;
                 border-radius:0 20rpx 20rpx 20rpx;
-                background:pink;
                 margin:0 20rpx;
                 float:left;
+            }
+            .chat-img-mask{
+                width:400rpx;
+                height:300rpx;
+                border-radius:0 20rpx 20rpx 20rpx;
+                background:rgba(0,0,0,.5);
+                position:absolute;
+                left:20rpx;
+                top:0;
             }
             &.chat-right .chat-msg-avatar{
                 float:right;
@@ -238,7 +353,7 @@ page{
         .chat-input-view{
             background: #F2F2F2;
             border-radius: 4px;
-            width:510rpx;
+            width:488rpx;
             min-height:64rpx;
             max-height:320rpx;
             line-height:64rpx;
@@ -254,7 +369,7 @@ page{
             letter-spacing: 0;
         }
         .chat-show-upload{
-            margin:8rpx 26rpx 0;
+            margin:8rpx 30rpx 0;
             float:left;
             width:48rpx;
             height:48rpx;
@@ -269,15 +384,15 @@ page{
         }
         .chat-send-msg{
             float:left;
-            width:80rpx;
-            height:48rpx;
+            width:90rpx;
+            height:54rpx;
             margin-top:8rpx;
             text-align:center;
-            line-height:48rpx;
+            line-height:54rpx;
             background: #DBDBDB;
-            border-radius: 4rpx;
+            border-radius: 8rpx;
             font-family: PingFangSC-Regular;
-            font-size: 26rpx;
+            font-size: 28rpx;
             color: #FFFFFF;
             letter-spacing: 0;
             &.sended{
@@ -307,6 +422,86 @@ page{
             &.upload-pic{
                 background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/chat-upload-pic.png) no-repeat center top;
                 background-size:110rpx 110rpx;
+            }
+        }
+    }
+}
+
+.chat-mask{
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.5);
+    position:fixed;
+    left:0;
+    top:0;
+    .chat-dialog{
+        width:540rpx;
+        height:384rpx;
+        background: #fff;
+        border-radius:4rpx;
+        position:absolute;
+        left:0;
+        top:0;
+        bottom:0;
+        right:0;
+        margin:auto;
+        .chat-dialog-close{
+            width:24rpx;
+            height:24rpx;
+            text-align:center;
+            line-height:24rpx;
+            color:#cacaca;
+            font-size:40rpx;
+            font-weight:bold;
+            position:absolute;
+            right:28rpx;
+            top:28rpx;
+
+        }
+        .chat-dialog-title{
+            font-family: PingFangSC-Regular;
+            font-size: 32rpx;
+            color: #333333;
+            padding: 0 28rpx;
+            height:88rpx;
+            line-height:88rpx;
+            border-bottom: 1rpx solid #E6E6E6;
+        }
+        .chat-dialog-body{
+            padding:32rpx 30rpx 40rpx;
+            height:208rpx;
+            .chat-dialog-body-title{
+                font-family: PingFangSC-Regular;
+                font-size: 28rpx;
+                color: #666666;
+            }
+            .chat-dialog-input{
+                height:80rpx;
+                background: #F9F9F9;
+                border: 1rpx solid #E6E6E6;
+                border-radius: 4rpx;
+                padding:0 20rpx;
+                font-family: PingFangSC-Regular;
+                font-size: 26rpx;
+                color: #333333;
+                margin-top:16rpx;
+            }
+        }
+        .chat-dialog-foot{
+            height:88rpx;
+            border-top:1rpx solid #E6E6E6;
+            display:flex;
+            .chat-btn{
+                flex:1;
+                line-height:88rpx;
+                text-align:center;
+                font-family: PingFangSC-Regular;
+                font-size: 32rpx;
+                color: #333333;
+                text-align: center;
+                &.chat-btn-sure{
+                    color: #FF552E;
+                }
             }
         }
     }

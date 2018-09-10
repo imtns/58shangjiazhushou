@@ -1,6 +1,6 @@
 const webim = require('../../utils/IM/webim_wx.js');
 const { pubsub } = require('../../utils/IM/pubsub');
-import { globalData } from '../../utils/globalData';
+import { globalData, setTabBar } from '../../utils/globalData';
 
 import { get } from '../../utils/ajax';
 import { CHAT_LOGIN } from '../../utils/url';
@@ -18,22 +18,40 @@ export const sdkLogin = (userInfo, listeners, options, callBack) => {
 
 // 监听实时消息
 export const onMsgNotify = (newMsgList) => {
-    let obj = {};
-    newMsgList.forEach((msg) => {
-        if (!obj[msg.userId]) {
-            obj[msg.userId] = [];
+    console.error('list', newMsgList[0]);
+    // let session,newMsg;
+    // const sessMap = webim.MsgStore.sessMap();
+    // console.log()
+
+    const { unReadCount, currentContactId } = globalData.chat;
+    globalData.chat.unReadCount = Number(unReadCount) + Number(newMsgList.length);
+    if (globalData.chat.unReadCount > 0) {
+        setTabBar(globalData.chat.unReadCount);
+    }
+    console.log();
+    // let obj = {};
+    newMsgList.forEach((newMsg) => {
+        // if (!obj[msg.userId]) {
+        //     obj[msg.userId] = [];
+        // }
+        if (newMsg.getSession().id() == currentContactId) {
+            console.log('&&&&&&&');
+            pushMsg(newMsg);
         }
     });
-    for (let j in obj) {
-        newMsgList.forEach((msg) => {
-            if (Number(j) === msg.userId) {
-                obj[j].push(msg);
-            }
-        });
-    }
+    // for (let j in obj) {
+    //     newMsgList.forEach((msg) => {
+    //         if (Number(j) === msg.userId) {
+    //             obj[j].push(msg);
+    //         }
+    //     });
+    // }
     // 发布未读消息
-    for (let userId in obj) {
-        pubsub.publish(userId, obj[userId], +new Date());
-    }
+    // for (let userId in obj) {
+    //     pubsub.publish(userId, obj[userId], +new Date());
+    // }
 }
+const pushMsg = (newMsg) => {
+    console.log('pushMsg');
+};
 
