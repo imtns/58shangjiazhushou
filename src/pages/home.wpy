@@ -293,11 +293,17 @@ export default class Home extends wepy.page {
         await this.loadData();
         await this.loadCode();
         await this.getInfo();
+<<<<<<< HEAD
         // 聊天登录，监控未读消息
         const { isLoagin } = globalData.chat;
         if (!isLoagin) {
             this.chatLogin();
+=======
+        if (!this.isFollow && wepy.getStorageSync('ppu')) {
+            this.showModal = true;
+>>>>>>> dev
         }
+        this.$apply();
     }
     formatedMp (item) {
         const mp = item;
