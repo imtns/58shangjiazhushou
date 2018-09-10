@@ -23,3 +23,6 @@ export const SEND_MSG = '/chat/msgSend'; // 发送消息
 
 //访客记录接口
 export const CONSUMER_RECORDS = '/mpCardBusiness/consumerRecords';
+// 底部消息tab，获取contact列表
+export const CHAT_CONTACT_LIST = '/chat/contactList';
+
