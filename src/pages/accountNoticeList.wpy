@@ -34,7 +34,7 @@ import { get } from '../utils/ajax';
 
 export default class AccountNoticeList extends wepy.page {
     config = {
-        navigationBarTitleText: '入账提醒',
+        navigationBarTitleText: '入账通知',
     }
     data = {
         accountList: [],

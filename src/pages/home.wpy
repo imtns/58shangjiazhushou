@@ -673,7 +673,7 @@ scroll-view {
         position: absolute;
         background: rgba(0, 0, 0, 0.5);
         top: 0;
-        z-index: 99;
+        z-index:9;
     }
     .mpBox {
         width: 540rpx;
@@ -683,6 +683,7 @@ scroll-view {
         transform: translate3d(-50%, -50%, 0);
         background: white;
         border-radius: 2rpx;
+        z-index: 99;
         .name {
             width: 400rpx;
             white-space: nowrap;
