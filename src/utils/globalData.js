@@ -19,6 +19,9 @@ export const globalData = {
         isLogin: false, // 登录状态
         unReadCount: 0, // 未读消息总数
         token: '', // 消息相关接口必传字段
+        nickName: '',
+        headImg: '',
+        currentContactId: 'OOC7ZFdxeDZpqLp7fgAbLzB3Ba4PuvNguU8UJ21dkzLxvC',
     },
 }
 
@@ -152,6 +155,13 @@ export const getMappDetail = ({ userId, appId, releaseId } = {}) => {
 
             resolve(res);
         })
+    });
+}
+
+export const setTabBar = (text) => {
+    wx.setTabBarBadge({
+        index: 1,
+        text: text > 99 ? '99+' : `${text}`,
     });
 }
 const utils = {

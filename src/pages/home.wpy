@@ -617,7 +617,7 @@ export default class Home extends wepy.page {
     initIM(tim) {
         console.log('initIM');
         // 当前用户身份
-        let loginInfo = { 
+        const loginInfo = {
             accountType: 37611,
         };
         Object.assign(loginInfo, tim);
