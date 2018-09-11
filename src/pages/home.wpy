@@ -1179,22 +1179,20 @@ scroll-view {
     background-size: 100% 100%;
  }
  .showIdentity_modal{
-    font-size: 26rpx;
-    color:#4E88FF;
+    font-size: 32rpx;
+    color:#333;
     width: 100%;
-    line-height: 80rpx;
+    line-height: 100rpx;
     text-align: center;
     bottom: 0;
     position: fixed;
-    background: #fff;
     z-index: 99;
  }
  .switch_btn{
-    font-size: 26rpx;
-    color:#4E88FF;
+    background: #fff;
  }
  .show_cancle{
-    font-size: 26rpx;
-    color:#4E88FF;
+    margin-top: 12rpx;
+    background: #fff;
  }
 </style>
