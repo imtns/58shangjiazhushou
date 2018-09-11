@@ -102,7 +102,7 @@ import { items, nItems } from '../utils/homeList';
 
 import { alert } from '../utils';
 import { post, get } from '../utils/ajax';
-import { globalData } from '../utils/globalData';
+import { globalData, setTabBar } from '../utils/globalData';
 import { getUid, SendClickLog } from '../utils/maidian';
 
 import { CHAT_LOGIN } from '../utils/url';
@@ -173,7 +173,6 @@ export default class Home extends wepy.page {
                 alert('您还未购买小程序，请登录e.58.com进行购买', '提示');
                 return;
             }
-            console.log(this.business.nexttask);
             switch (this.business.nexttask) {
                 case 2:
                     wepy.navigateTo({
@@ -315,12 +314,20 @@ export default class Home extends wepy.page {
             this.showModal = true;
         }
         this.$apply();
-    }
+    };
     async onShow () {
         await this.loadData();
         await this.loadCode();
         await this.getInfo();
-    }
+        // 聊天登录，监控未读消息
+        const { isLoagin } = globalData.chat;
+        if (!isLoagin) {
+            this.chatLogin();
+        if (!this.isFollow && wepy.getStorageSync('ppu')) {
+            this.showModal = true;
+        }
+        this.$apply();
+    };
     formatedMp (item) {
         const mp = item;
         if (mp.headImg && mp.headImg.indexOf('http') === -1) {
@@ -635,18 +642,16 @@ export default class Home extends wepy.page {
             const { unReadCount: counts } = globalData.chat;
             const text = counts && counts > 0 ? (counts + Number(unReadCount)) : unReadCount;
             if (Number(text) && Number(text) > 0) {
-                wx.setTabBarBadge({
-                    index: 1,
-                    text: text > 99 ? '99+' : text,
-                });
+                setTabBar(text);
             }
-            const { token, nickName, headImg } = myInfo;
+            const { token, nickName, headImg, id } = myInfo;
             // 设置全局token
             Object.assign(globalData.chat, {
                 isLogin: true,
                 token,
                 nickName,
                 headImg,
+                myId: id,
             });
 
             // IM 登录，获取实时消息

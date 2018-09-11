@@ -22,6 +22,7 @@ export const globalData = {
         nickName: '',
         headImg: '',
         currentContactId: 'OOC7ZFdxeDZpqLp7fgAbLzB3Ba4PuvNguU8UJ21dkzLxvC',
+        myId: '', // 当前登录者id
     },
 }
 
