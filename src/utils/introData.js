@@ -1,3 +1,4 @@
+// intro 页面的数据
 export const business = [{
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code1.png',
     name: '家装服务',
@@ -45,4 +46,28 @@ export const advantage = [{
 }, {
     title: '使用无门槛',
     text: '无需下载无需注册，即开即用难度低',
+}];
+
+// mybizcard页面，我的名片页面的数据
+export const myCardItems = [{
+    src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_visitor_logs.png',
+    name: '访客记录',
+},{
+    src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_chat_msg.png',
+    name: '消息',
+},{
+    src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_go_share.png',
+    name: '去分享',
+},{
+    src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_edit_card.png',
+    name: '编辑名片',
+},{
+    src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_go_pay.png',
+    name: '开通支付',
+},{
+    src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_go_pics.png',
+    name: '线下物料',
+},{
+    src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_go_notice.png',
+    name: '通知设置',
 }];

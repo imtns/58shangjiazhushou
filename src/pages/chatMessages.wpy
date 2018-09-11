@@ -1,8 +1,8 @@
 <template>
     <view class="chatMessages">
         <repeat wx:if="{{contactList.length > 0}}" for="{{contactList}}" key="index" index="index" item="item">
-            <view class="message_box"  @tap="toChat(item.id, item.nickName)">
-                <view class="message_header" style="background:url(http://pic1.58cdn.com.cn{{item.portrait || 'http://pic1.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png'}}?=690'}}) no-repeat center">
+            <view class="message_box"  @tap="toChat({{item.id}}, {{item.nickName}})">
+                <view class="message_header" style="background:url(http://pic1.58cdn.com.cn{{item.portrait}}?=690'}}) no-repeat center">
                     <view class="message_tips" wx:if="{{item.unReadCount > 0}}">{{item.unReadCount}}</view>
                 </view>
                 <view class="message_info">
@@ -62,7 +62,6 @@ export default class chatMessages extends wepy.page {
 
 <style lang="scss">
 .chatMessages{
-    padding: 0 30rpx;
     .img-no-data {
         display: block;
         width: 180rpx;
@@ -76,8 +75,8 @@ export default class chatMessages extends wepy.page {
         color: #ccc;
     }
     .message_box{
+        padding: 35rpx 30rpx;
         background: white;
-        padding: 35rpx 0;
         height: 160rpx;
         width: 100%;
         display: flex;
