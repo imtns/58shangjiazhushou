@@ -8,7 +8,8 @@
         <view class="index-loaded-header">
             <view class="welcome-block">
                 <view class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
-                <navigator url="noticeList" :class="{'new-msg': business.unread}" class="msg-box'"></navigator>
+                <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">切换</view>
+                <!-- <navigator url="noticeList" :class="{'new-msg': business.unread}" class="msg-box'"></navigator> -->
             </view>
             <view class="item-detail">
                 <view class="item-name" :class="{logoPadding : business.mpCount > 0 }">{{ business.miniProgramName }}</view>
@@ -28,7 +29,7 @@
                 <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">切换</view>
                 <image  class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
                 <view class="index-block-body index-item">
-                    <view class="index-loaded-item" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
+                    <view class="index-loaded-item" :class="{new-msg: item.text === '通知' && business.unread}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
                         <image src="{{item.iconPath}}" class="item-img"></image>
                         <view class="item-text">{{item.text}}</view>
                     </view>
@@ -291,11 +292,17 @@ export default class Home extends wepy.page {
         await this.loadData();
         await this.loadCode();
         await this.getInfo();
+<<<<<<< HEAD
         // 聊天登录，监控未读消息
         const { isLoagin } = globalData.chat;
         if (!isLoagin) {
             this.chatLogin();
+=======
+        if (!this.isFollow && wepy.getStorageSync('ppu')) {
+            this.showModal = true;
+>>>>>>> dev
         }
+        this.$apply();
     }
     formatedMp (item) {
         const mp = item;
@@ -446,14 +453,19 @@ export default class Home extends wepy.page {
             return;
         }
         switch (text) {
-            case '我的小程序':
+            case '名片管理':
                 wepy.navigateTo({
-                    url: 'myMp',
+                    url: '',
                 });
                 break;
-            case '订单管理':
+            case '通知':
                 wepy.navigateTo({
-                    url: 'OrderList',
+                    url: 'noticeList',
+                });
+                break;
+            case '访客记录':
+                wepy.navigateTo({
+                    url: 'visitorLogs',
                 });
                 break;
             case '收款记录':
@@ -461,34 +473,49 @@ export default class Home extends wepy.page {
                     url: 'paymentRecord',
                 });
                 break;
-            case '支付开通':
+            case '我的小程序':
                 wepy.navigateTo({
-                    url: 'OpenPay',
+                    url: 'myMp',
                 });
                 break;
-            case '店铺装修':
+            case '小程序制作':
                 wepy.navigateTo({
                     url: 'templateList',
-                });
-                break;
-            case '发布商品':
-                wepy.navigateTo({
-                    url: 'goodsComponentGroup',
-                });
-                break;
-            case '发布服务':
-                wepy.navigateTo({
-                    url: 'orderComponentGroup',
-                });
-                break;
-            case '优惠劵':
-                wepy.navigateTo({
-                    url: 'couponManage',
                 });
                 break;
             case '素材管理':
                 wepy.navigateTo({
                     url: 'resourceManage',
+                });
+                break;
+            case '支付开通':
+                wepy.navigateTo({
+                    url: 'OpenPay',
+                });
+                break;
+            // case '店铺装修':
+            //     wepy.navigateTo({
+            //         url: 'templateList',
+            //     });
+            //     break;
+            case '服务':
+                wepy.navigateTo({
+                    url: 'orderComponentGroup',
+                });
+                break;
+            case '商品':
+                wepy.navigateTo({
+                    url: 'goodsComponentGroup',
+                });
+                break;
+            case '文章':
+                wepy.navigateTo({
+                    url: 'resourceManage',
+                });
+                break;
+            case '优惠劵':
+                wepy.navigateTo({
+                    url: 'couponManage',
                 });
                 break;
             case '购买小程序':
@@ -649,6 +676,7 @@ scroll-view {
         position: absolute;
         background: rgba(0, 0, 0, 0.5);
         top: 0;
+        z-index: 99;
     }
     .mpBox {
         width: 540rpx;
@@ -764,15 +792,28 @@ scroll-view {
                 background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAAfCAYAAAB6Q+RGAAAAAXNSR0IArs4c6QAAAzpJREFUWAnNmMdP1GEQhhcwerDXgyC2owePYoktnowxGmOMsRy88Ccgij0GoxHFFhs2bAcvnvGgwRCMRqKRk11PerImiyD4DJmXfKy7vy2wsJO8mfm+aU8Wthb19PTMicVijagCFaNCsW5AWtHWIiCbCFYVClkSjiaDjJMY5clOfDX64ufhcCUsPYxKfXk8BqTsrwft+GnDQcfeEnTXOfpcCLmD27hnXuGnDiUo+wzwju83V684hJzO5WrU4cmX+ClDAcoeA7zte83tRKU694M0IBJrkEBfEE/OJyjzDfAWktlzwjhSQ3rBWor+eFcbflI+QJlbjG76HnO7tIc4GtJB11Eo0OfEEzVgMDzzDLARyXaHc7lMD+mg6ynu9CnP8BPCQbnGzDHAGz7XXE3iLO4yg3TQDTQI9CnxgEDpN8DrSLYnEdD3Zg7pDRuZ2OVTn+DHJxuc7o4+A7zmc8ztTdVDLjtIB91Eo0BbicelWpDsnnoDvIpk+5LV6Y6i7CGtmcbNSKAtxGM1NMpTZ2+/V5Bsf1S95SjMDdKbtzBAb6GPicdELSRvgA1IdiCqXjmKc4d00EPaiG9GozU89Nwb4GUkaw7zUTENuUPSvAB901b3j/D9QDkb4CXPh84+4aQ1GnKDpLECffeNn/FVSH/6h8S9L/j4kSj8E9dyDh/R2nSU1GcPSdNCFALOtUXcbUcC/Up8H71Dsl4gDvbIXtQl/kgUKPnsIGlYhH4gs0/IvnL0GWd7HU38F7C31Kq+IgLOBnoByY6G+TCmIHNIihcjAX4knh0OU8x9OapG9onmIJqvXOi5N9DzSHYszCsmmRkkhUvQT5/2AT9LQwbimWOg53yuueOJ87hLD0nRUiTA98SDAigY5hnoWSSrU848l9GQFCxDv5CZPQlmhgMGM2b2GVvidlKzOaeGJLkcCfAtcbka8+XZcQrJ6m0Ph+SQJFag315tgDPyBZY4l131vtfcaVSmsxHLthEI8A1xWeKgfJ/ZeUIw+HuKQ8guv3yN1xfzfHP9N5/ddYKTH0FVB7JfMOyXgy7UgFZSgBsWa2NrO5rn2+P2MtDEoZB/C3pgv6JVohbUjQrJjMe4Kv8BnZkdhMJllJAAAAAASUVORK5CYII=);
                 background-size: 100% auto;
             }
-            .msg-box.new-msg::after {
-                width: 20rpx;
-                height: 20rpx;
-                background: red;
-                border-radius: 50%;
-                content: '';
+            .item-switch {
+                font-size: 28rpx;
+                color: #fff;
+                letter-spacing: 0;
+                line-height: 60rpx;
+            }
+            .item-switch {
+                color: #fff;
                 position: absolute;
-                right: -9rpx;
-                top: -8rpx;
+                right: 30rpx;
+                top: 33rpx;
+                &:before{
+                    width:18rpx;
+                    height:17rpx;
+                    content: '';
+                    background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/switch-icon.png) no-repeat;
+                    background-size:18rpx 17rpx;
+                    position:absolute;
+                    left:-25rpx;
+                    top:50%;
+                    margin-top:-8rpx;
+                }
             }
         }
         .item-detail {
@@ -906,6 +947,7 @@ scroll-view {
             width: 156rpx;
             margin-bottom: 70rpx;
             text-align: center;
+            position: relative;
             .item-img {
                 width: 72rpx;
                 height: 72rpx;
@@ -948,6 +990,34 @@ scroll-view {
         .index-loaded-item {
             width: 156rpx;
             text-align: center;
+            position: relative;
+            &.new-msg::after {
+                display: block;
+                content: '';
+                width: 20rpx;
+                height: 20rpx;
+                background: red;
+                border-radius: 50%;
+                position: absolute;
+                right: 37rpx;
+                top: 0;
+                z-index: 1;
+            }
+            &.new-mingpian::after {
+                font-size: 18rpx;
+                color: #fff;
+                display: block;
+                content: '上新';
+                width: 52rpx;
+                height:30rpx;
+                line-height: 30rpx;
+                background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/shangxin.png) no-repeat;
+                background-size: 100% 100%;
+                position: absolute;
+                right: 15rpx;
+                top: -5rpx;
+                z-index: 1;
+            }
             &.new-margin{
                 margin:30rpx 0 0rpx 15rpx;
             }

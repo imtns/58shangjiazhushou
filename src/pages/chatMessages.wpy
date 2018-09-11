@@ -1,47 +1,40 @@
 <template>
     <view class="chatMessages">
-        <view class="message_box"  @tap="toChat('OOC7ZFdxeDZpqLp7fgAbLzB3Ba4PuvNguU8UJ21dkzLxvC', '可以跳转')">
-            <view class="message_header" style="background:url({{hello}}) no-repeat center">
-                <view class="message_tips">21</view>
+        <repeat wx:if="{{contactList.length > 0}}" for="{{contactList}}" key="index" index="index" item="item">
+            <view class="message_box"  @tap="toChat(item.id, item.nickName)">
+                <view class="message_header" style="background:url(http://pic1.58cdn.com.cn{{item.portrait || 'http://pic1.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png'}}?=690'}}) no-repeat center">
+                    <view class="message_tips" wx:if="{{item.unReadCount > 0}}">{{item.unReadCount}}</view>
+                </view>
+                <view class="message_info">
+                    <view class="chat_name">{{item.nickName}}</view>
+                    <view class="chat_info" wx:if="{{item.recentMsgs[item.recentMsgs.length - 1].type == 0}}">{{item.recentMsgs[item.recentMsgs.length - 1].content}}</view>
+                    <view class="chat_info" wx:if="{{item.recentMsgs[item.recentMsgs.length - 1].type == 1}}">[图片]</view>
+                    <view class="chat_time">{{item.recentMsgs[item.recentMsgs.length - 1].sendTime}}</view>
+                </view>
             </view>
-            <view class="message_info">
-                <view class="chat_name">可以跳转</view>
-                <view class="chat_info">可以跳转，请点击第一个</view>
-                <view class="chat_time">2017/04/10</view>
+        </repeat>
+        <view wx:if="{{contactList.length == 0}}">
+            <view class="empty-wrap">
+                <image class="img-no-data" src="//img.58cdn.com.cn/lbg/jianzhan/images/empty.png"/>
+                <view class="txt-no-data">暂无消息记录</view>
             </view>
-        </view>
-        <view class="message_box">
-            <view class="message_header" style="background:url({{hello}}) no-repeat center">
-                <view class="message_tips">21</view>
-            </view>
-            <view class="message_info">
-                <view class="chat_name">初夏</view>
-                <view class="chat_info">请问还在吗？</view>
-                <view class="chat_time">2017/04/10</view>
-            </view>
-        </view>
-        <view class="message_box">
-            <view class="message_header" style="background:url({{hello}}) no-repeat center">
-                <view class="message_tips">21</view>
-            </view>
-            <view class="message_info">
-                <view class="chat_name">初夏</view>
-                <view class="chat_info">请问还在吗？</view>
-                <view class="chat_time">2017/04/10</view>
-            </view>
-        </view>
+        </view>  
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
+import { CHAT_CONTACT_LIST } from '../utils/url';
+import { get } from '../utils/ajax';
+import { globalData } from '../utils/globalData';
+
 
 export default class chatMessages extends wepy.page {
     config = {
         navigationBarTitleText: '消息',
     }
     data = {
-        hello: '//upload.jianshu.io/users/upload_avatars/6080248/dea138ef-394d-48e2-9d57-df740e59b974.jpg?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96',
+        contactList: [],
     }
     methods = {
         toChat(contact, chatWith) {
@@ -53,16 +46,35 @@ export default class chatMessages extends wepy.page {
     onLoad () {
         console.log('onload');
     }
-    onShow () {
-        console.log('onshow');
+    async onShow () {
+        const { token = '' } = globalData.chat;
+        if (!token) {
+            return;
+        }
+        const { data } = await get(CHAT_CONTACT_LIST, {
+            token,
+        });
+        this.contactList = data;
+        this.$apply();
     }
 }
 </script>
 
 <style lang="scss">
 .chatMessages{
-    background:white;
     padding: 0 30rpx;
+    .img-no-data {
+        display: block;
+        width: 180rpx;
+        height: 180rpx;
+        margin: 200rpx auto 20rpx;
+    }
+    .txt-no-data {
+        line-height: 88rpx;
+        text-align: center;
+        font-size: 30rpx;
+        color: #ccc;
+    }
     .message_box{
         background: white;
         padding: 35rpx 0;
