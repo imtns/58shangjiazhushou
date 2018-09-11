@@ -2,9 +2,11 @@
     <view class="chat-container">
         <scroll-view
             class="chat-zone"
-            scroll-y="{{true}}">
+            scroll-y="{{true}}"
+            upper-threshold="100"
+            @scrolltoupper="loadMore">
             <view class="chat-msg-loading">加载中</view>
-            <view class="chat-msg-body">
+            <!-- <view class="chat-msg-body">
                 <image class="chat-msg-avatar" src="{{item.portrait}}"></image>
                 <view class="chat-msg-content">
                     <view class="chat-msg-title">您可以通过一下方式和我沟通</view>
@@ -12,12 +14,12 @@
                     <view class="chat-msg-btn">留下联系方式</view>
                     <view class="chat-msg-btn">电话咨询</view>
                 </view>
-            </view>
+            </view> -->
             <block wx:for="{{msgList}}" wx:key="index">
-                <view class="chat-msg-body {{item.currentContact ? 'chat-right' : ''}}">
+                <view class="chat-msg-body {{item.senderId === myId ? 'chat-right' : ''}}">
                     <view class="chat-msg-time">{{item.sendTime}}</view>
-                    <image class="chat-msg-avatar" src="{{item.portrait}}"></image>
-                    <view class="chat-msg-content" wx:if="{{item.type === '0'}}">{{item.content}}</view>
+                    <image class="chat-msg-avatar" src="https://pic1.58cdn.com.cn{{item.senderPortrait}}"></image>
+                    <view class="chat-msg-content" wx:if="{{item.type === '0' || item.type === 0}}">{{item.content}}</view>
                     <view class="chat-img-box" wx:else>
                         <image class="chat-msg-img" src="https://pic1.58cdn.com.cn{{item.content}}"></image>
                         <view class="chat-img-mask" wx:if="{{item.status === 1}}">{{progress}}%</view>
@@ -80,10 +82,11 @@ import { msgType } from '../../../utils/msg/msgType';
 
 let from = '';
 let msgListToken = '';
+let isEnd = false;
+const pageSize = 20;
 export default class Chat extends wepy.page {
     config = {
         navigationBarTitleText: '贺燕珍',
-        disableScroll: true,
     }
     data = {
         height: '',
@@ -94,17 +97,19 @@ export default class Chat extends wepy.page {
         content: '',
         token: '',
         progress: 0,
+        myId: '',
     }
     onLoad(options) {
-        const { token } = globalData.chat;
+        const { token, myId } = globalData.chat;
         const { contact } = options;
 
-        globalData.chat.currentContact = contact;
+        globalData.chat.currentContactId = contact;
 
         this.contact = contact;
         this.token = token;
+        this.myId = myId;
         this.$apply();
-        // this.loadData();
+        this.loadData();
         // this.newMsgs();
     }
     onUnload() {
@@ -120,7 +125,6 @@ export default class Chat extends wepy.page {
         this.$apply();
     }
     input(e) {
-        console.log(e);
         this.content = e.detail.value;
         this.canIsend = this.content.trim().length > 0;
         this.$apply();
@@ -133,10 +137,13 @@ export default class Chat extends wepy.page {
             const that = this;
             const { type } = target.currentTarget.dataset.type;
             const { contact } = this;
+            const { headImg } = globalData.chat;
             const msg = {
                 status: 1,
                 content: null,
                 target: contact,
+                senderId: this.myId,
+                senderPortrait: headImg,
             };
             const { tempFilePaths } = await wepy.chooseImage({
                 sourceType: [type],
@@ -173,19 +180,21 @@ export default class Chat extends wepy.page {
     }
     async sendMsg(target) {
         try {
-            console.error(target);
             const type = target.currentTarget ? target.currentTarget.dataset.type : 'IMAGE';
             const content = type === 'TEXT' ? this.content.trim() : target;
             type === 'TEXT' && this.clearInput();
             if (!content) return;
 
             const { contact, token } = this;
+            const { headImg } = globalData.chat;
             const msg = {
                 type: msgType[type],
                 status: 1, // 发送中
                 content,
                 contact,
                 token,
+                senderId: this.myId,
+                senderPortrait: headImg,
             };
             const newMsg = Object.assign({
                 sendTime: new Date().format('hh:mm'),
@@ -194,8 +203,11 @@ export default class Chat extends wepy.page {
             if (type === 'TEXT') {
                 this.msgList.push(newMsg);
                 this.$apply();
+                wepy.pageScrollTo({
+                    scrollTop: 5000,
+                    duration: 300,
+                });
             }
-            console.log(msg, this.msgList);
             await post(SEND_MSG, msg);
             newMsg.status = 2; // 发送成功
             this.$apply();
@@ -211,24 +223,31 @@ export default class Chat extends wepy.page {
                 contact,
             });
             if (!data || data.length <= 0) return;
+            isEnd = data.length < pageSize;
             this.msgList = data;
             from = data[0].id;
+            this.$apply();
         } catch (e) {
             console.log(e);
         }
     }
     async loadMore() {
-        console.log('loadMore……', from);
+        if (isEnd) return;
         const { token } = this;
         const { data } = await post(MSG_LIST, {
             token,
             contact: this.contact,
             from,
         });
-        console.log(data);
+        if (data.length) {
+            isEnd = data.length < pageSize;
+            from = data[0].id;
+            const { msgList } = this;
+            this.msgList = data.concat(msgList);
+            this.$apply();
+        }
     }
     clearInput() {
-        console.log('000');
         this.content = '';
         this.canIsend = false;
         this.$apply();
@@ -304,6 +323,7 @@ page{
                     margin-top:20rpx;
                     text-align:center;
                     line-height:68rpx;
+                    font-size: 28rpx;
                 }
             }
             .chat-img-box{
@@ -313,12 +333,12 @@ page{
                 color: #FFFFFF;
                 text-align: center;
                 line-height:300rpx;
+                margin:0 20rpx;
             }
             .chat-img-box,.chat-msg-img{
                 width:400rpx;
                 height:300rpx;
                 border-radius:0 20rpx 20rpx 20rpx;
-                margin:0 20rpx;
                 float:left;
             }
             .chat-img-mask{
@@ -339,7 +359,7 @@ page{
                 background-image: linear-gradient(-180deg, #008DFF 0%, #30B2DC 100%);
                 color: #FFFFFF;
             }
-            &.chat-right .chat-msg-img{
+            &.chat-right .chat-img-box{
                 border-radius:20rpx 0 20rpx 20rpx;
                 float:right;
             }

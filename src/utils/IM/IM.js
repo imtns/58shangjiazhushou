@@ -19,39 +19,48 @@ export const sdkLogin = (userInfo, listeners, options, callBack) => {
 // 监听实时消息
 export const onMsgNotify = (newMsgList) => {
     console.error('list', newMsgList[0]);
-    // let session,newMsg;
-    // const sessMap = webim.MsgStore.sessMap();
-    // console.log()
 
     const { unReadCount, currentContactId } = globalData.chat;
     globalData.chat.unReadCount = Number(unReadCount) + Number(newMsgList.length);
     if (globalData.chat.unReadCount > 0) {
         setTabBar(globalData.chat.unReadCount);
     }
-    console.log();
-    // let obj = {};
+
+
     newMsgList.forEach((newMsg) => {
-        // if (!obj[msg.userId]) {
-        //     obj[msg.userId] = [];
-        // }
-        if (newMsg.getSession().id() == currentContactId) {
+        pushMsg(newMsg);
+        if (currentContactId && newMsg.getSession().id() == currentContactId) {
             console.log('&&&&&&&');
             pushMsg(newMsg);
         }
     });
-    // for (let j in obj) {
-    //     newMsgList.forEach((msg) => {
-    //         if (Number(j) === msg.userId) {
-    //             obj[j].push(msg);
-    //         }
-    //     });
-    // }
     // 发布未读消息
     // for (let userId in obj) {
     //     pubsub.publish(userId, obj[userId], +new Date());
     // }
 }
 const pushMsg = (newMsg) => {
+    let ele, content;
     console.log('pushMsg');
+    const eles = newMsg.getElems();
+    console.log(eles);
+    for(let i in eles) {
+        ele = eles[i];
+        content = Object.prototype.toString.call(ele.getContent().data) ? JSON.parse(ele.getContent().data) : ele.getContent().data;
+        const { contact } = content;
+        console.log(content);
+        // if (!currentContactId) {
+        //     // 遍历
+        //     caontactList.forEach((item) => {
+        //         if (item.contact != contact) {
+        //             // 新建联系人，unshift,更新联系人列表
+        //         }
+        //     });
+        // }
+        // 当前聊天人的未读，发布
+        if (currentContactId && contact === currentContactId) {
+            pubsub.publish(contact, content, +new Date());
+        }
+    }
 };
 
