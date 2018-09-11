@@ -110,7 +110,7 @@ export default class Chat extends wepy.page {
         this.myId = myId;
         this.$apply();
         this.loadData();
-        // this.newMsgs();
+        this.newMsgs();
     }
     onUnload() {
         // 取消订阅
@@ -257,7 +257,8 @@ export default class Chat extends wepy.page {
         // 订阅当前联系人的未读消息
         msgListToken = pubsub.subscribe(contact, (...props) => {
             const newMsgs = props[0];
-            newMsgs.forEach((msg) => {
+            console.log(newMsgs);
+            [newMsgs].forEach((msg) => {
                 this.msgList.push(msg);
                 this.$apply();
             });
