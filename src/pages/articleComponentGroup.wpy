@@ -73,18 +73,13 @@
 
 import wepy from 'wepy';
 import Mixin from '../mixin';
-import { LOAD_RESOURCE_URL, DELETE_RESOURCE, SAVE_RESOURCE_URL } from '../utils/url';
+import { DELETE_RESOURCE } from '../utils/url';
 import { get } from '../utils/ajax';
-import { toast, alert, alertP, picSrcDomain, sleep, getNetStatus } from '../utils';
+import { toast, alert, alertP, sleep, getNetStatus } from '../utils';
 import { globalData } from '../utils/globalData';
-import uploadImages from '../utils/upload';
-import uploader from '../utils/uploaderP';
 import EmptyPage from '../components/EmptyPage';
 import Pop from '../components/Dialog';
 
-let pageNum = 1;
-const pageSize = 20;
-let urls = [];
 let selectedIds = []; // 已选择作品
 
 export default class Index extends wepy.page {
@@ -212,10 +207,9 @@ export default class Index extends wepy.page {
         /**
          * 上传素材
          */
-         async uploadFile(type) {
+        async uploadFile(type) {
             try {
                 const netStatus = await getNetStatus();
-
                 if (netStatus === 0) {
                     toast('无网络');
                     return;
@@ -312,8 +306,6 @@ export default class Index extends wepy.page {
         // 初始化数据
         this.works = [];
         this.$apply();
-        pageNum = 1;
-        urls = [];
         selectedIds = [];
     }
     async loadArticle() {
