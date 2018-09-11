@@ -9,7 +9,7 @@ export default {
             wepy.setStorageSync('ppu', extraDataJSON.ppu);
             const query = wepy.getStorageSync('query');
             const { toRedirect } = query;
-            if (query && JSON.stringify() !== '{}' && !query.ParamNames) { // 如果从公众号进来的消息
+            if (query && JSON.stringify(query) !== '{}' && !query.ParamNames) { // 如果从公众号进来的消息
                 setTimeout(() => {
                     wepy.redirectTo({
                         url: toRedirect,

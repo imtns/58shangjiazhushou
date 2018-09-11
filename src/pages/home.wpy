@@ -1,5 +1,5 @@
 <template>
-    <scroll-view class="home" scroll-y style="height:100vh" wx:if="{{ !status.loading || !status.first }}">
+    <scroll-view class="home" scroll-y style="height:100vh" wx:if="{{ !status.loading }}">
         <view class="follow-public" wx:if="{{!isFollow}}">
             <text>关注公众号接收通知</text>
             <navigator class="follow-action" wx:if="{{assistAuth}}" url="/pages/followPublic">马上关注</navigator>
@@ -123,9 +123,6 @@ export default class Home extends wepy.page {
         // 将状态属性收敛到status
         status: {
             loading: true,
-            // 是否第一次进入小程序
-            // 优化页面跳转体验
-            first: true,
         },
         items: [
             {
@@ -447,8 +444,6 @@ export default class Home extends wepy.page {
         globalData.extConfig = data;
     }
     async loadData () {
-        this.status.loading = true;
-        this.$apply();
         try {
             const subData = {
                 mpid: wepy.getStorageSync('current_mpid') || '',
@@ -474,7 +469,6 @@ export default class Home extends wepy.page {
                 },
             });
             this.status.loading = false;
-            this.status.first = false;
             nexttask && this.setNextTask(nexttask);
             // console.log('this.business', this.business);
             this.$apply();
