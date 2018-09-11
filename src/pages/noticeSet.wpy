@@ -1,16 +1,16 @@
 <template>
     <view class="notice-container">
         <view class="notice-tips">
-            <view class="notice-item" wx:for="{{noticeSet}}" wx:key="index"><text>{{item.name}}</text><switch class="switch" checked="{{item.value}}" color="#4E88FF" bindchange="switchchange" /></view>
+            <view class="notice-item" wx:for="{{noticeSet}}" wx:key="index"><text>{{item.name}}</text><switch class="switch" checked="{{item.value === 1 ? 'checked' : ''}}" color="#4E88FF" bindchange="switchchange" data-index="{{index}}"/></view>
         </view>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
-// import { sleep, toast } from '../utils/index';
+import { toast } from '../utils/index';
 
-// import { get } from '../utils/ajax';
+import { get, post } from '../utils/ajax';
 
 export default class NoticeSet extends wepy.page {
     config = {
@@ -18,17 +18,46 @@ export default class NoticeSet extends wepy.page {
     }
     data = {
         noticeSet: [
-            { name: '通知推送提醒', value: 'checked' },
-            { name: '聊天推送提醒', value: '' },
+            { name: '通知推送提醒', value: 1 },
+            { name: '聊天推送提醒', value: 1 },
         ],
     }
     methods = {
-        switchchange(e) {
-            console.log(e);
+        async switchchange(e) {
+            const { index } = e.currentTarget.dataset;
+            const { value } = e.detail;
+            if (value) {
+                this.noticeSet[index].value = 1;
+            } else {
+                this.noticeSet[index].value = 0;
+            }
+            this.$apply();
+            const postData = {
+                noticePush: this.noticeSet[0].value,
+                chatPush: this.noticeSet[1].value,
+            };
+            const { data, msg, state } = await post('/mpCardBusiness/pushSetup', postData);
+            if (state !== 100) toast(msg);
+            console.log(data);
         },
     }
+    async onLoad() {
+        // this.loadNoticeStatus();
+    }
     async onShow() {
+        this.loadNoticeStatus();
         console.log('===');
+    }
+    async loadNoticeStatus() {
+        try {
+            const { data } = await get('/mpCardBusiness/toPushSetup');
+            const { noticePush, chatPush } = data;
+            this.noticeSet[0].value = noticePush;
+            this.noticeSet[1].value = chatPush;
+            this.$apply();
+        } catch (e) {
+            console.log(e);
+        }
     }
 }
 </script>

@@ -2,32 +2,32 @@
     <view class="visitor-container">
         <view class="visitor-card">
             <view class="visitor-info">
-                <image class="avator" src="" />
-                <view class="name">张飞</view>
+                <image class="avator" src="{{visitInfo.portrait}}" />
+                <view class="name">{{visitInfo.nickName}}</view>
                 <text class="other">
-                    <text class="location">北京</text>
-                    <text class="sex">男</text>
+                    <text class="location">{{visitInfo.otherInfo.city}}</text>
+                    <text class="sex">{{visitInfo.otherInfo.gender === 1 ? '男' : '女'}}</text>
                 </text>
                 <view class="actions">
                     <view class="action">
-                        <view class="num">15</view>
+                        <view class="num">{{visitInfo.visit}}</view>
                         <view class="title">访问次数</view>
                     </view>
                     <view class="action">
-                        <view class="num">15</view>
+                        <view class="num">{{visitInfo.share}}</view>
                         <view class="title">转发次数</view>
                     </view>
                     <view class="action">
-                        <view class="num">15</view>
+                        <view class="num">{{visitInfo.vote}}</view>
                         <view class="title">点赞</view>
                     </view>    
                 </view>
             </view>
         </view>
-        <view class="visitor-list">
+        <view class="visitor-list" wx:for="{{visitInfo.actions}}">
             <view class="item">
-                <text class="time">2018-08-23  16:24</text>
-                <text class="action">查看了您的名片</text>
+                <text class="time">{{item.createTime}}</text>
+                <text class="action">{{item.action}}</text>
             </view>
         </view>
         <view class="visitor-action">
@@ -39,17 +39,66 @@
 
 <script>
 import wepy from 'wepy';
+import { get } from '../utils/ajax';
 
 export default class visitorInfo extends wepy.page {
     config = {
         navigationBarTitleText: '访客信息',
     }
+    data = {
+        cardId: '',
+        consumerId: '',
+        sendParams: {
+            pageNum: 1,
+            pageSize: 10,
+        },
+        visitInfo: {
+            actions: [],
+            chatToken: '',
+            mobile: '',
+            nickName: '',
+            otherInfo: '',
+            portrait: '',
+            share: 0,
+            visit: 0,
+            vote: 0,
+        },
+    }
     methods = {}
-    onLoad () {
-        console.log('onload');
+    onLoad (option) {
+        const { cardId, consumerId } = option;
+        this.cardId = cardId;
+        this.consumerId = consumerId;
+        this.$apply();
     }
     onShow () {
         console.log('onshow');
+        this.loadInfo();
+    }
+    async loadInfo() {
+        try {
+            const sendData = {
+                cardId: this.cardId,
+                consumerId: this.consumerId,
+            };
+            const { data } = await get('/mpCardBusiness/consumerInfo', sendData);
+            const {
+                actions, chatToken, mobile, nickName, otherInfo, portrait, share, visit, vote,
+            } = data;
+            this.visitInfo.actions = actions;
+            this.visitInfo.chatToken = chatToken;
+            this.visitInfo.mobile = mobile;
+            this.visitInfo.nickName = nickName;
+            this.visitInfo.otherInfo = otherInfo;
+            this.visitInfo.portrait = portrait;
+            this.visitInfo.share = share;
+            this.visitInfo.visit = visit;
+            this.visitInfo.vote = vote;
+            this.$apply();
+            console.log(data);
+        } catch (e) {
+            console.log(e);
+        }
     }
 }
 </script>
@@ -60,16 +109,29 @@ page {
     height: 100%;
     background: #fff;
 }
-.visitor-info{
-    background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor-bg.png) no-repeat;
-    background-size: 100%;
+.visitor-container{
+    position: relative;
+    overflow: hidden;
+    &:before{
+        display: block;
+        content: '';
+        width: 100%;
+        height: 300rpx;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor-bg.png) no-repeat;
+        background-size: 100% 100%;
+    }
 }
 .visitor-card{
-    width: 100%;
+    margin:50rpx 10rpx 30rpx 10rpx;
+    padding:75rpx 0;
+    position:relative;
+    z-index:9;
     background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor-infobg.png) no-repeat;
-    background-size: 100% 100%;
-    margin: 60rpx 0 30rpx;
-    padding:0 30rpx 30rpx 30rpx;
+    background-size:100% 100%;
+    overflow: hidden;
 }
 .visitor-info{
     text-align: center;
@@ -77,10 +139,12 @@ page {
     .avator{
         width: 120rpx;
         height: 120rpx;
+        border-radius: 100%;
     }
     .name{
         font-size: 32rpx;
         color: #333;
+        margin:20rpx 0;
     }
     .other{
         font-size: 24rpx;
@@ -89,7 +153,7 @@ page {
         line-height: 30rpx;
         padding: 10rpx 30rpx;
         background: #F5F9FF;
-        margin: 20rpx auto 40rpx;
+        margin: 0 auto;
         border-radius: 4rpx;
     }
     .location{
@@ -100,8 +164,7 @@ page {
             content: '';
             width: 18rpx;
             height: 22rpx;
-            background: red;
-            margin-right: 8rpx;
+            margin:0 8rpx -3rpx 0;
             background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/location-icon.png) no-repeat;
             background-size: 100% 100%;
         }
@@ -113,14 +176,14 @@ page {
             content: '';
             width: 25rpx;
             height: 22rpx;
-            background: red;
-            margin-right: 8rpx;
-            background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/location-icon.png) no-repeat;
+            margin: 0 8rpx -3rpx 0;
+            background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/sex-icon.png) no-repeat;
             background-size: 100% 100%;
         }
     }
     .actions{
         display: flex;
+        margin-top: 40rpx;
         .action{
             flex:1;
             position: relative;
@@ -151,6 +214,7 @@ page {
     }
 }
 .visitor-list{
+    margin-top: 30rpx;
     padding: 0 30rpx;
     .item{
         line-height: 88rpx;

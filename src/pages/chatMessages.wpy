@@ -38,6 +38,7 @@ export default class chatMessages extends wepy.page {
     }
     methods = {
         toChat(contact, chatWith) {
+            console.log('*****', contact, chatWith);
             wepy.navigateTo({
                 url: `wechat/chat/chat?contact=${contact}&chatWith=${chatWith}`,
             });

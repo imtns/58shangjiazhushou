@@ -108,6 +108,7 @@ export default class extends wepy.app {
             'pages/visitorLogs', // 访客记录页面
             'pages/visitorInfo', // 访客信息页面
             'pages/myBizCard', // 我的名片页面
+            'pages/articleComponentGroup', // 文章分组页面
         ],
         window: {
             backgroundTextStyle: 'light',
