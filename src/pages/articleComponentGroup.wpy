@@ -1,13 +1,12 @@
 <template>
     <view class="containe" :class="{ 'choose-modal': chooseModal }">
-        <view class="tabs-wrap" wx:if="{{ !chooseModal }}">
+        <!-- <view class="tabs-wrap" wx:if="{{ !chooseModal }}">
             <view wx:for="{{ tabbarItems }}"
             wx:key="name"
             class="tab-box"
             :class="{ selected: curTab === item.name }"
             @tap="selectTab({{ item.name }})">{{ item.label }}</view>
-        </view>
-        <!--<EmptyPage wx:if="{{curTab === 'article' && !groupList.length}}" :title.sync="title"></EmptyPage>-->
+        </view> -->
         <view class="work-list" wx:if="{{ (curTab === 'image' || curTab === 'video') && works.length }}">
             <view class="content">
                 <view class="work-box" wx:for="{{ works }}" wx:key="id">
@@ -23,8 +22,27 @@
                     @tap.stop="selectItem({{ item.id }}, {{ index }})"></view>
                 </view>
             </view>
-            <!-- <view wx:else style="margin:30rpx;text-align:center;color:#bdbdbd;">啥也没有</view> -->
         </view>
+        <view
+            class="group-list article-group-list {{isEditing ? 'edit' : ''}}" wx:elif="{{ curTab === 'article' && groupList.length > 0}}">
+            <view
+                class="group-item article-group-item"
+                @tap.stop="editChose({{ item.id }}, {{ index }}, {{item.name}})"
+                wx:for="{{groupList}}"
+                wx:key="index"
+                data-item="{{item}}">
+                <view class="group-line article-group-line"
+                :class="{ selected: item.choseStatu}">
+                    <view class="group-name article-group-name">{{item.name}}</view>
+                    <view class="group-size article-group-size"> ({{item.count}})</view>
+                    <view class="group-angel article-group-angel" wx:if="{{!isEditing}}"></view>
+                    <view class="rename-btn article-rename-btn" wx:if="{{isEditing}}" @tap.catch.stop="showDialog({{item.id}}, {{item.name}})">重命名</view>
+                </view>
+            </view>
+        </view>
+        <block wx:else>
+            <EmptyPage :title.sync="title"></EmptyPage>
+        </block>
         <view class="block"></view>
         <view class="options">
             <block wx:if="{{ chooseModal }}">
@@ -71,7 +89,7 @@ let selectedIds = []; // 已选择作品
 
 export default class Index extends wepy.page {
     config = {
-        navigationBarTitleText: '素材管理',
+        navigationBarTitleText: '文章管理',
     }
 
     components = {
@@ -81,26 +99,14 @@ export default class Index extends wepy.page {
     mixins = [Mixin]
 
     data = {
-        curTab: 'image',
-        tabbarItems: [
-            {
-                label: '图片',
-                name: 'image',
-            },
-            {
-                label: '视频',
-                name: 'video',
-            },
-        ],
+        curTab: 'article',
         // 按钮文字
         optionNames: {
-            image: '上传图片',
-            video: '上传视频',
+            article: '添加文章分组',
         },
         // 展示时用的works
         works: [],
         groupList: [],
-        title: '没有图片~',
         isEditing: false,
         showPop: false,
         name: '',
@@ -126,12 +132,10 @@ export default class Index extends wepy.page {
         this.$apply();
 
         this.initData();
-        await this.loadData(this.curTab);
+        await this.loadArticle();
     }
     async onShow() {
-        if (this.curTab === 'article') {
-            await this.loadData(this.curTab);
-        }
+        await this.loadArticle();
     }
     methods = {
         chooseModalConfirm() {
@@ -139,69 +143,11 @@ export default class Index extends wepy.page {
             wepy.navigateBack();
         },
 
-        selectTab(name) {
-            this.initData();
-            this.curTab = name;
-            if (name === 'image') {
-                this.title = '没有图片~';
-            } else if (name === 'video') {
-                this.title = '没有视频~';
-            } else if (name === 'article') {
-                console.log(name);
-                this.title = '没有文章分组~';
-            }
-            this.$apply();
-            this.loadData(name);
-        },
-
         /**
          * 选择作品
          * id用于删除作品
          * index用于找到作品，标记check
          */
-        selectItem(id, index) {
-            const { chooseModal, limit, works } = this;
-            const work = works[index];
-
-            if (!work) {
-                return;
-            }
-
-            if (!work.checked) {
-                // 选中
-                if (chooseModal && selectedIds.length >= limit) {
-                    alert(`只能选择${limit}张照片`);
-                    return;
-                }
-
-                if (selectedIds.length >= 10) {
-                    alert('一次只能删除10条素材！');
-                    return;
-                }
-
-                selectedIds.push(id);
-            } else {
-                // 去除选项
-                selectedIds.splice(selectedIds.findIndex(v => (v === id)), 1);
-            }
-
-            work.checked = !work.checked;
-        },
-
-        previewResource(url) {
-            if (this.curTab === 'image') {
-                wx.previewImage({
-                    current: url,
-                    urls,
-                });
-            }
-
-            if (this.curTab === 'video') {
-                wx.navigateTo({
-                    url: `/pages/VideoPlay?url=${url}`,
-                });
-            }
-        },
 
         edit(e) {
             const { status } = e.currentTarget.dataset;
@@ -255,7 +201,7 @@ export default class Index extends wepy.page {
                 this.$apply();
 
                 this.initData();
-                this.loadData(this.curTab);
+                this.loadArticle();
             } catch (e) {
                 this.errorHandler(e);
                 toast('删除失败！');
@@ -263,11 +209,10 @@ export default class Index extends wepy.page {
                 this.$apply();
             }
         },
-
         /**
          * 上传素材
          */
-        async uploadFile(type) {
+         async uploadFile(type) {
             try {
                 const netStatus = await getNetStatus();
 
@@ -275,7 +220,6 @@ export default class Index extends wepy.page {
                     toast('无网络');
                     return;
                 }
-
                 if (netStatus === 2 && type === 'video') {
                     const { cancel } = await alertP('确定在移动网络下上传视频？', '提示');
                     if (cancel) {
@@ -327,7 +271,7 @@ export default class Index extends wepy.page {
                     name: content,
                 });
                 toast('操作成功！');
-                this.loadData(this.curTab);
+                this.loadArticle();
             } catch (e) {
                 this.showPop = false;
                 this.isEditing = false;
@@ -372,131 +316,24 @@ export default class Index extends wepy.page {
         urls = [];
         selectedIds = [];
     }
-
-    async loadData(type) {
-        let resourceType = 1;
-
-        switch (type) {
-            case 'image':
-            case 'video':
-                resourceType = ({
-                    image: 1,
-                    video: 2,
-                })[type];
-                await this.loadResource(resourceType);
-                break;
-            default:
-                break;
-        }
-    }
-
-    async loadResource(resourceType) {
-        const postData = {
-            resourceType,
-        };
-
-        Object.assign(postData, {
-            pageNum,
-            pageSize,
-        });
-        pageNum += 1;
-
+    async loadArticle() {
         try {
-            const { data } = await get(LOAD_RESOURCE_URL, postData);
-            if ((!data || !data.length) && this.works.length) {
-                toast('已经到底了');
+            const { data } = await get('/businessArticle/groups');
+            if (!data || data.length === 0) {
+                this.groupList = [];
             }
-
-            data.forEach(item => {
-                const workItem = Object.assign({}, item);
-
-                // 加载图片，url加上宽度，加上前置域名
-                if (resourceType === 1) {
-                    workItem.previewUrl = `${picSrcDomain()}${workItem.resourceUrl}?w=375`; // 预览图片
-                    workItem.imageUrl = `${picSrcDomain()}${workItem.resourceUrl}?w=100`;
-                }
-
-                // 加载视频
-                if (resourceType === 2) {
-                    workItem.previewUrl = workItem.resourceUrl;
-                    let imageUrl = '';
-
-                    // 在这里添加try catch是有必要的，若不添加，报错了会终止循环
-                    try {
-                        if (workItem.extend) {
-                            const extend = JSON.parse(workItem.extend);
-                            imageUrl = `${extend.sourceCoverUrl}?w=100`; // 封面图片
-                        }
-                    } catch (e) {
-                        this.errorHandler(e);
-                    }
-
-                    workItem.imageUrl = imageUrl;
-                }
-
-                this.works.push(workItem);
-                urls.push(workItem.previewUrl);
-            });
+            if (data.length) {
+                data.forEach(item => {
+                    Object.assign(item, {
+                        choseStatu: false,
+                    });
+                });
+                this.groupList = data;
+            }
             this.$apply();
         } catch (e) {
-            this.errorHandler(e);
-        }
-    }
-
-    async uploadImage() {
-        try {
-            // 得到上传后的图片地址
-            const { msg, result: resourceUrls } = await uploadImages();
-
-            // 将资源插入到对应资源库
-            await Promise.all(resourceUrls.map(resourceUrl => get(SAVE_RESOURCE_URL, {
-                resourceUrl,
-                resourceType: 1,
-            })));
-
-            if (msg) {
-                toast(msg, 3000);
-            } else {
-                toast('上传成功');
-            }
-        } catch (e) {
             console.log(e);
-            this.errorHandler('上传失败', e);
-            toast('上传失败');
         }
-    }
-
-    async uploadVideo() {
-        try {
-            const { tempFilePath, size } = await wepy.chooseVideo();
-
-            // 大于50M不让上传
-            if (size > 50 * 1000 * 1024) {
-                toast('视频大小需小于50M', 3000);
-                return;
-            }
-            await this.uploadResource(tempFilePath, 'video');
-            toast('上传成功', 3000);
-        } catch (e) {
-            this.errorHandler('上传失败', e);
-            toast('上传失败', 3000);
-        }
-    }
-
-    /**
-     * @desc 上传素材
-     */
-    async uploadResource(path, type) {
-        // 上传资源
-        const { content: resourceUrl } = await uploader(path, {
-            type,
-        });
-
-        // 将资源插入到对应资源库
-        await get(SAVE_RESOURCE_URL, {
-            resourceUrl,
-            resourceType: type === 'image' ? 1 : 2,
-        });
     }
     showDialog(id = '', name = '') {
         console.log(name, id);
@@ -516,7 +353,7 @@ export default class Index extends wepy.page {
     }
 
     onReachBottom() {
-        this.loadData(this.curTab);
+        this.loadArticle();
     }
 }
 </script>
@@ -527,10 +364,8 @@ export default class Index extends wepy.page {
 $workWidth: 200rpx;
 $workHeight: 200rpx;
 .containe{
-    margin-top: 110rpx;
     width:100%;
     height:100%;
-
     &.choose-modal {
         margin-top: 0;
     }
