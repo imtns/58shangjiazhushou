@@ -14,14 +14,17 @@ export const LOAD_SERVICE = '/businessService/get/'; // 获取预约服务组件
 export const INSERT_SERVICE = '/businessService/insert'; // 新增
 export const SAVE_SERVICE = '/businessService/update'; // 更新
 
-
-
 // 聊天对应的接口
 export const CHAT_LOGIN = '/chat/login'; // 聊天登录接口
 export const MSG_LIST = '/chat/msgList'; // 聊天记录
 export const SEND_MSG = '/chat/msgSend'; // 发送消息
+export const MY_MPLIST = '/mplogic/mymplist'; // 小程序列表
+export const SESSION = '/wechat/bizAssistAuth/session'; // 获取SESSION数据
+export const INSERT_SESSION = '/wechat/bizAssistAuth/insert'; // 插入SESSION数据
+export const GET_EXT_JSON = '/mpBusinessRelease/getExtJson'; // 获取ExtJson
+export const GET_ASSIST_AUTH = '/wechat/bizAssistAuth/get'; // 获取关注公众号信息
 
-//访客记录接口
+// 访客记录接口
 export const CONSUMER_RECORDS = '/mpCardBusiness/consumerRecords';
 // 底部消息tab，获取contact列表
 export const CHAT_CONTACT_LIST = '/chat/contactList';
@@ -34,3 +37,10 @@ export const CARD_FIRST_EDIT = '/mpCardBusiness/editCard';
 // 新建名片
 export const CARD_CREATE_NEW_CARD = '/mpCardBusiness/saveCard';
 
+export const CONSUMER_INFO = '/mpCardBusiness/consumerInfo'; // 访客信息
+
+export const GET_GROUP_MSG_LIST = '/mplogic//mplogic/getgroupmsglist'; // 订单消息列表
+export const READ_GROUND_MSG = '/mplogic/readgroupmsg'; // 消息设置已读
+export const CONSUMERS = '/mpCardBusiness/consumers'; // 通知消息列表
+export const PUSN_SET_UP = '/mpCardBusiness/pushSetup'; // 提醒设置
+export const TO_PUSN_SET_UP = '/mpCardBusiness/toPushSetup'; // 获取当前提醒设置

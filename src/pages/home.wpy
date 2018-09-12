@@ -28,7 +28,7 @@
                 <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">小程序切换</view>
                 <image  class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
                 <view class="index-block-body index-item">
-                    <view class="index-loaded-item" :class="{new-msg: item.text === '通知' && business.unread}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
+                    <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
                         <image src="{{item.iconPath}}" class="item-img"></image>
                         <view class="item-text">{{item.text}}</view>
                     </view>
@@ -105,7 +105,7 @@ import { post, get } from '../utils/ajax';
 import { globalData, setTabBar } from '../utils/globalData';
 import { getUid, SendClickLog } from '../utils/maidian';
 
-import { CHAT_LOGIN } from '../utils/url';
+import { CHAT_LOGIN, MY_MPLIST, SESSION, INSERT_SESSION, GET_EXT_JSON, GET_ASSIST_AUTH } from '../utils/url';
 
 import { sdkLogin, onMsgNotify } from '../utils/IM/IM';
 
@@ -237,7 +237,7 @@ export default class Home extends wepy.page {
             this.business = Object.assign({}, this.business, {
                 changeMP: true,
             });
-            const { data } = await post('/mplogic/mymplist');
+            const { data } = await post(MY_MPLIST);
             const { mpinfos } = data;
             this.business = Object.assign({}, this.business, {
                 mps: mpinfos,
@@ -334,7 +334,7 @@ export default class Home extends wepy.page {
             mp.headImg = `https://pic1.58cdn.com.cn${mp.headImg}`;
         }
         return mp;
-    }
+    };
     /**
      * 用户点击右上角分享
      */
@@ -353,11 +353,11 @@ export default class Home extends wepy.page {
                 console.log(err);
             },
         };
-    }
+    };
     async getAssistAuth() {
         const that = this;
         try {
-            const { data } = await get('/wechat/bizAssistAuth/get');
+            const { data } = await get(GET_ASSIST_AUTH);
             const { isFollow, assistInfo } = data;
             if (!isFollow && assistInfo === null) {
                 // 既没有授权也没有关注公众号
@@ -371,13 +371,13 @@ export default class Home extends wepy.page {
         } catch (e) {
             console.log(e);
         }
-    }
+    };
     // 获取授权数据
     async loadSession() {
         try {
-            const { data } = await get('/wechat/bizAssistAuth/session', { code: this.code });
+            const { data } = await get(SESSION, { code: this.code });
             const { sessionKey } = data;
-            const { state, msg } = await get('/wechat/bizAssistAuth/insert', { encryptedData: this.encryptedData, iv: this.iv, session: sessionKey });
+            const { state, msg } = await get(INSERT_SESSION, { encryptedData: this.encryptedData, iv: this.iv, session: sessionKey });
             if (state === 100) {
                 wx.navigateTo({
                     url: '/pages/followPublic',
@@ -424,8 +424,7 @@ export default class Home extends wepy.page {
     }
     // 获取当前小程序的extjson
     async loadExtJson() {
-        const url = '/mpBusinessRelease/getExtJson';
-        const { data } = await get(url, { sceneKey: wx.getStorageSync('current_mpid') });
+        const { data } = await get(GET_EXT_JSON, { sceneKey: wx.getStorageSync('current_mpid') });
         globalData.extConfig = data;
     }
     async loadData () {
@@ -501,11 +500,19 @@ export default class Home extends wepy.page {
                 });
                 break;
             case '小程序制作':
+                if (this.business.selected.app_type === 3) {
+                    alert('请升级到优享或企业小程序后使用', '提示');
+                    return;
+                }
                 wepy.navigateTo({
                     url: 'templateList',
                 });
                 break;
             case '素材管理':
+                if (this.business.selected.app_type === 3) {
+                    alert('请升级到优享或企业小程序后使用', '提示');
+                    return;
+                }
                 wepy.navigateTo({
                     url: 'resourceManage',
                 });
@@ -515,11 +522,6 @@ export default class Home extends wepy.page {
                     url: 'OpenPay',
                 });
                 break;
-            // case '店铺装修':
-            //     wepy.navigateTo({
-            //         url: 'templateList',
-            //     });
-            //     break;
             case '服务':
                 wepy.navigateTo({
                     url: 'orderComponentGroup',
@@ -549,6 +551,10 @@ export default class Home extends wepy.page {
             case '注册小程序':
                 if (this.business.selected.app_type === 1) {
                     alert('当前小程序为优享小程序，不用提交注册信息', '提示');
+                    return;
+                }
+                if (this.business.selected.app_type === 3) {
+                    alert('请升级到优享或企业小程序后使用', '提示');
                     return;
                 }
                 if (this.business.selected.sign === 1) {
@@ -836,7 +842,7 @@ scroll-view {
                     position:absolute;
                     left:-30rpx;
                     top:50%;
-                    margin-top:-8rpx;
+                    margin-top:-9rpx;
                 }
             }
         }
@@ -868,7 +874,7 @@ scroll-view {
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                width: 560rpx;
+                width: 470rpx;
             }
             .item-title,
             .item-switch {
