@@ -14,7 +14,7 @@
                     <view class="realName">{{realName}}</view>
                     <view class="position">{{position}}</view>
                     <view class="mobile">{{mobile}}</view>
-                    <view class="picImg" style="background:url({{picImg}}) no-repeat center">
+                    <view class="picImg" style="background:url(http://pic1.58cdn.com.cn{{picImg}}) no-repeat center">
                         <view class="empty_bg"></view>
                     </view>
                     <view class="other_entery">
@@ -36,10 +36,14 @@
                 </view>
                 <view class="btns">
                     <repeat for="{{myCardItems}}" key="index" index="index" item="item">
-                        <view class="item_box">
+                        <view class="item_box" wx:if="{{item.type == 'innerJump'}}"  @tap="toinnerJump({{item.path}})">
                             <view class="img" style="background:url({{item.src}}) no-repeat center;"></view>
                             <view class="text">{{item.name}}</view>
                         </view>
+                        <navigator class="item_box" wx:if="{{item.type == 'mpJump'}}">
+                            <view class="img" style="background:url({{item.src}}) no-repeat center;"></view>
+                            <view class="text">{{item.name}}</view>
+                        </navigator>
                     </repeat>
                 </view>
             </view>
@@ -76,7 +80,20 @@ export default class myBizCard extends wepy.page {
         vote: '',
         myCardItems,
     }
-    methods = {};
+    methods = {
+        toinnerJump(path) {
+            console.log('&&&&&&', path);
+            if (path === 'chatMessages') {
+                wepy.switchTab({
+                    url: path,
+                });
+                return;
+            }
+            wepy.navigateTo({
+                url: path,
+            });
+        },
+    };
     onLoad () {
         console.log('onload');
     }

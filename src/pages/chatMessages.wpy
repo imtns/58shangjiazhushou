@@ -2,7 +2,7 @@
     <view class="chatMessages">
         <repeat wx:if="{{contactList.length > 0}}" for="{{contactList}}" key="index" index="index" item="item">
             <view class="message_box"  @tap="toChat({{item.id}}, {{item.nickName}})">
-                <view class="message_header" style="background:url(http://pic1.58cdn.com.cn{{item.portrait}}?=690'}}) no-repeat center">
+                <view class="message_header" style="background:url({{item.portrait}}) no-repeat center">
                     <view class="message_tips" wx:if="{{item.unReadCount > 0}}">{{item.unReadCount}}</view>
                 </view>
                 <view class="message_info">

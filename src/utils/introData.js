@@ -52,22 +52,34 @@ export const advantage = [{
 export const myCardItems = [{
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_visitor_logs.png',
     name: '访客记录',
+    type: 'innerJump',
+    path: 'visitorLogs',
 },{
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_chat_msg.png',
     name: '消息',
+    type: 'innerJump',
+    path: 'chatMessages',
 },{
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_go_share.png',
     name: '去分享',
+    type: 'mpJump',
 },{
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_edit_card.png',
     name: '编辑名片',
+    type: 'innerJump',
+    path: 'visitorLogs',
 },{
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_go_pay.png',
     name: '开通支付',
+    type: 'innerJump',
+    path: 'OpenPay',
 },{
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_go_pics.png',
     name: '线下物料',
+    type: 'mpJump',
 },{
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_go_notice.png',
     name: '通知设置',
+    type: 'innerJump',
+    path: 'noticeSet',
 }];

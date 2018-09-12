@@ -3,7 +3,7 @@
 import wepy from 'wepy';
 import { toast } from '../utils';
 
-const host = 'http://yaofa.58.com';
+const host = 'https://yaofa.58.com';
 
 const http = (method, ...props) => new Promise((resolve, reject) => {
     let [url, data, callback, loadingControl] = props;
