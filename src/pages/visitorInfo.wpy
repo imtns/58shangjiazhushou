@@ -18,21 +18,23 @@
                         <view class="title">转发次数</view>
                     </view>
                     <view class="action">
-                        <view class="num">{{visitInfo.vote > 0 ? '+' + visitInfo.vote : visitInfo.vote}}</view>
+                        <view class="num">{{visitInfo.vote !== '0' ? '+' + visitInfo.vote : visitInfo.vote}}</view>
                         <view class="title">点赞</view>
                     </view>    
                 </view>
             </view>
         </view>
+        <view class="visitor-action">
+            <view class="has-mobile" wx:if="{{visitInfo.mobile}}" @tap="bindPhoneCall({{visitInfo.mobile}})">拨打电话</view>
+            <view class="call" wx:else>拨打电话</view>
+            <navigator url="wechat/chat/chat?contact={{visitInfo.chatToken}}&nickName={{visitInfo.nickName}}" class="send-msg" open-type="navigate" hover-class="none">发送信息</navigator>
+        </view>
+        <view class="visitor-log">当前访客的行为记录</view>
         <view class="visitor-list" wx:for="{{visitInfo.actions}}">
             <view class="item">
                 <text class="time">{{item.createTime}}</text>
                 <text class="action">{{item.action}}</text>
             </view>
-        </view>
-        <view class="visitor-action">
-            <view class="call">拨打电话</view>
-            <view class="send-msg">发送信息</view>
         </view>
     </view>
 </template>
@@ -40,6 +42,7 @@
 <script>
 import wepy from 'wepy';
 import { get } from '../utils/ajax';
+import { toast } from '../utils';
 import { CONSUMER_INFO } from '../utils/url';
 
 export default class visitorInfo extends wepy.page {
@@ -65,7 +68,18 @@ export default class visitorInfo extends wepy.page {
             vote: 0,
         },
     }
-    methods = {}
+    methods = {
+        async bindPhoneCall (mobile) {
+            const userid = this.data.consumerId;
+            const sendParams = { sign: `${userid}#${mobile}`, from: 'visitorInfo' };
+            const [e, phoneNumber] = await get('/other/encrypt/phone', sendParams);
+            if (e) {
+                toast(e);
+                return;
+            }
+            wepy.makePhoneCall({ phoneNumber });
+        },
+    }
     onLoad (option) {
         const { cardId, consumerId } = option;
         this.cardId = cardId;
@@ -126,7 +140,7 @@ page {
     }
 }
 .visitor-card{
-    margin:50rpx 10rpx 30rpx 10rpx;
+    margin:50rpx 10rpx 0 10rpx;
     padding:75rpx 0;
     position:relative;
     z-index:9;
@@ -155,7 +169,7 @@ page {
         padding: 10rpx 30rpx;
         background: #F5F9FF;
         margin: 0 auto;
-        border-radius: 4rpx;
+        border-radius: 30rpx;
     }
     .location{
         padding-right: 22rpx;
@@ -231,25 +245,33 @@ page {
         }
     }
 }
+.visitor-log{
+    font-size: 26rpx;
+    color: #999;
+    text-indent: 30rpx;
+    line-height: 80rpx;
+    background: #F6F6F6;
+}
 .visitor-action{
     font-size: 34rpx;
     line-height: 102rpx;
     text-align: center;
-    width: 100%;
+    padding: 0 30rpx 30rpx 30rpx;
     display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    box-shadow: 0 -1px 17px -1px rgba(202,202,202,0.50);
-    view{
+    .send-msg,
+    .has-mobile{
         flex: 1;
-    }
-    .call {
-        color: #4E88FF; 
-    }
-    .send-msg {
         color: #fff;
         background: #4E88FF;
+    }
+    .has-mobile{
+        margin-right: 30rpx;
+    }
+    .call {
+        flex: 1;
+        color: #666;
+        background: #f6f6f6;
+        margin-right: 30rpx;
     }
 }
 </style>
