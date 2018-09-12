@@ -323,6 +323,7 @@ export default class Home extends wepy.page {
         const { isLoagin } = globalData.chat;
         if (!isLoagin) {
             this.chatLogin();
+        }
         if (!this.isFollow && wepy.getStorageSync('ppu')) {
             this.showModal = true;
         }
