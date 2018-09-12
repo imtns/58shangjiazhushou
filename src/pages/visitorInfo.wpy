@@ -18,7 +18,7 @@
                         <view class="title">转发次数</view>
                     </view>
                     <view class="action">
-                        <view class="num">{{visitInfo.vote}}</view>
+                        <view class="num">{{visitInfo.vote > 0 ? '+' + visitInfo.vote : visitInfo.vote}}</view>
                         <view class="title">点赞</view>
                     </view>    
                 </view>
@@ -40,6 +40,7 @@
 <script>
 import wepy from 'wepy';
 import { get } from '../utils/ajax';
+import { CONSUMER_INFO } from '../utils/url';
 
 export default class visitorInfo extends wepy.page {
     config = {
@@ -81,7 +82,7 @@ export default class visitorInfo extends wepy.page {
                 cardId: this.cardId,
                 consumerId: this.consumerId,
             };
-            const { data } = await get('/mpCardBusiness/consumerInfo', sendData);
+            const { data } = await get(CONSUMER_INFO, sendData);
             const {
                 actions, chatToken, mobile, nickName, otherInfo, portrait, share, visit, vote,
             } = data;

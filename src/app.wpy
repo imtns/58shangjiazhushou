@@ -1,7 +1,6 @@
 <script>
 import wepy from 'wepy';
 import 'wepy-async-function';
-// import { alert } from './utils';
 import DoMiniProgramBack from './utils/scene';
 
 // 回调小程序类型
@@ -103,7 +102,6 @@ export default class extends wepy.app {
 
             'pages/wechat/chat/chat', // 聊天
             'pages/chatMessages', // 消息tab 消息列表
-            'pages/orderAll', // 订单tab 订单页面
 
             'pages/visitorLogs', // 访客记录页面
             'pages/visitorInfo', // 访客信息页面
@@ -130,7 +128,7 @@ export default class extends wepy.app {
                 iconPath: 'pages/assets/tabbar/tabbar_message.png',
                 selectedIconPath: 'pages/assets/tabbar/tabbar_message_selected.png',
             }, {
-                pagePath: 'pages/orderAll',
+                pagePath: 'pages/OrderList',
                 text: '订单',
                 iconPath: 'pages/assets/tabbar/tabbar_order.png',
                 selectedIconPath: 'pages/assets/tabbar/tabbar_order_selected.png',

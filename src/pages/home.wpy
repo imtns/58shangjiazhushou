@@ -500,11 +500,19 @@ export default class Home extends wepy.page {
                 });
                 break;
             case '小程序制作':
+                if (this.business.selected.app_type === 3) {
+                    alert('请升级到优享或企业小程序后使用', '提示');
+                    return;
+                }
                 wepy.navigateTo({
                     url: 'templateList',
                 });
                 break;
             case '素材管理':
+                if (this.business.selected.app_type === 3) {
+                    alert('请升级到优享或企业小程序后使用', '提示');
+                    return;
+                }
                 wepy.navigateTo({
                     url: 'resourceManage',
                 });
@@ -514,11 +522,6 @@ export default class Home extends wepy.page {
                     url: 'OpenPay',
                 });
                 break;
-            // case '店铺装修':
-            //     wepy.navigateTo({
-            //         url: 'templateList',
-            //     });
-            //     break;
             case '服务':
                 wepy.navigateTo({
                     url: 'orderComponentGroup',
@@ -548,6 +551,10 @@ export default class Home extends wepy.page {
             case '注册小程序':
                 if (this.business.selected.app_type === 1) {
                     alert('当前小程序为优享小程序，不用提交注册信息', '提示');
+                    return;
+                }
+                if (this.business.selected.app_type === 3) {
+                    alert('请升级到优享或企业小程序后使用', '提示');
                     return;
                 }
                 if (this.business.selected.sign === 1) {
@@ -867,7 +874,7 @@ scroll-view {
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                width: 560rpx;
+                width: 470rpx;
             }
             .item-title,
             .item-switch {

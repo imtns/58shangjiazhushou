@@ -33,10 +33,10 @@ export const CHAT_CONTACT_LIST = '/chat/contactList';
 export const CARD_HAS_CARD = '/mpCardBusiness/toMyCard';
 export const CARD_HAS_DETAIL = '/mpCardBusiness/myCard';
 
+export const CONSUMER_INFO = '/mpCardBusiness/consumerInfo'; // 访客信息
 
 export const GET_GROUP_MSG_LIST = '/mplogic//mplogic/getgroupmsglist'; // 订单消息列表
 export const READ_GROUND_MSG = '/mplogic/readgroupmsg'; // 消息设置已读
 export const CONSUMERS = '/mpCardBusiness/consumers'; // 通知消息列表
 export const PUSN_SET_UP = '/mpCardBusiness/pushSetup'; // 提醒设置
 export const TO_PUSN_SET_UP = '/mpCardBusiness/toPushSetup'; // 获取当前提醒设置
-
