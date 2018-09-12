@@ -109,6 +109,8 @@ export default class extends wepy.app {
             'pages/visitorInfo', // 访客信息页面
             'pages/myBizCard', // 我的名片页面
             'pages/articleComponentGroup', // 文章分组页面
+            'pages/newBizCard', // 新建名片页面
+            'pages/choseStyle', // 名片样式选择
         ],
         window: {
             backgroundTextStyle: 'light',
@@ -140,7 +142,7 @@ export default class extends wepy.app {
         console.log('onlaunch');
         // wx.setStorageSync('ppu', 'UID=31755938744583&UN=huhy02&TT=b28ea41cef5861bea9331750993644a4&PBODY=LIbxOLdwSBO_HZKchfZw3KFwFO23PWqIZlLGC5vqitqpLHds2HIOidPNM_mUQoZ72mrX21sc7fBe40HW4lggeyKEa1RJn_ehL_yUTs4QPg7U5_Qwe0spRo8447xAWSwgXW4-wuTKyvDp51fpw9LXqkrTcDPrz3EGrGGkU9-JIWQ&VER=1');
         // wx.setStorageSync('ppu', 'UID=53182521946894&UN=v55kara1u&TT=477ee0a09336e8da5f02f938b8ea1824&PBODY=a-wMsHWdBqOFQ7vp2s195NhWq2-BTSaWLDlh4Dxgl7DdJz4oD2Kjn0yO8CTfTomVbA9Ro2fK5ik29-6-Q4DDQqkAp1BAJWQEMtu5lBVRanfc6uMaiakz6nNvOfMwBuGtC4vA_NysRqNtueTjMLnUdNSWg-43X0UEUFvHEGTvAHQ&VER=1');
-        // wx.setStorageSync('ppu', 'UID=48917864286479&UN=zf3e85&TT=2de55ae4fc4dae0bf0fd4d689c34643e&PBODY=jAPyieEpdos8gNyqMqUTG1ieqh6ekU4Hvf2TSVrNbplU07D8ciX7rVDk-3LD_vJvQv07Wel1_uizTmoW8_vaR5alMpPFXRues2ISmGX5bFeS6SJxvxqRMX6IF3RNV8KGa12VWDnqcPvo6XSmklphaH8TxO4Cjft-HcCwqfdXwG4&VER=1'); // lqq 测试
+        wx.setStorageSync('ppu', 'UID=48917864286479&UN=zf3e85&TT=2de55ae4fc4dae0bf0fd4d689c34643e&PBODY=jAPyieEpdos8gNyqMqUTG1ieqh6ekU4Hvf2TSVrNbplU07D8ciX7rVDk-3LD_vJvQv07Wel1_uizTmoW8_vaR5alMpPFXRues2ISmGX5bFeS6SJxvxqRMX6IF3RNV8KGa12VWDnqcPvo6XSmklphaH8TxO4Cjft-HcCwqfdXwG4&VER=1'); // lqq 测试
         // wx.setStorageSync( // yxd 正式环境
         //     'ppu',
         //     'UID=47350441209367&UN=%E8%A2%81%E7%AD%B1%E4%B8%B90803&TT=b1ce9a3bf0dbe2fda2da594405532c38&PBODY=BPap2Dvi_m5L2imfEcj-FU_MDPTuQq26GBasfK-ItJHahjEy_bWyGsg39BqTSmck89_XCeUyHZ8sXnIN2FhO8hTveC4zvNGzJB_Z9MHGxAlCjSgUHCw3cMoMVxMfvj_bVe0PbGyyS2Q5EaUt--KqqpHJv569rteEzsnBFGtf3xI&VER=1',

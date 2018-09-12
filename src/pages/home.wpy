@@ -330,7 +330,7 @@ export default class Home extends wepy.page {
     };
     formatedMp (item) {
         const mp = item;
-        if (mp.headImg && mp.headImg.indexOf('http') === -1) {
+        if (mp && mp.headImg && mp.headImg.indexOf('http') === -1) {
             mp.headImg = `https://pic1.58cdn.com.cn${mp.headImg}`;
         }
         return mp;

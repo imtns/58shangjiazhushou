@@ -4,7 +4,7 @@
             <view class="empty_box">
                 <view class="empty_header"></view>
                 <view class="empty_tips">您还没有名片，赶快创建名片吧</view>
-                <view class="empty_goto_neww">创建名片</view>
+                <view class="empty_goto_neww" @tap="createCard()">创建名片</view>
             </view>
         </view>
         <view class="mycard_box" wx:else>
@@ -82,7 +82,6 @@ export default class myBizCard extends wepy.page {
     }
     methods = {
         toinnerJump(path) {
-            console.log('&&&&&&', path);
             if (path === 'chatMessages') {
                 wepy.switchTab({
                     url: path,
@@ -91,6 +90,11 @@ export default class myBizCard extends wepy.page {
             }
             wepy.navigateTo({
                 url: path,
+            });
+        },
+        createCard() {
+            wepy.navigateTo({
+                url: 'newBizCard',
             });
         },
     };
