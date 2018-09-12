@@ -5,9 +5,9 @@
             <view class="successTip">保存名片成功</view>
             <view class="openTip">系统检查到您还未开通支付功能，开通后顾客可通过名片给您支付哦</view>
         </view>
-        <navigator url="myBizCard" hover-class="none" class="checkBizCard">查看名片</navigator>
-        <navigator url="OpenPay" hover-class="none" class="openPay">开通支付</navigator>
-        <navigator url="home" hover-class="none" class="returnHome">返回首页</navigator>
+        <navigator url="myBizCard" open-type="navigate" hover-class="none" class="checkBizCard">查看名片</navigator>
+        <navigator url="OpenPay" open-type="navigate" hover-class="none" class="openPay">开通支付</navigator>
+        <navigator url="home" open-type="navigate" hover-class="none" class="returnHome">返回首页</navigator>
     </view>
 </template>
 

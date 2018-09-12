@@ -105,7 +105,7 @@ import { post, get } from '../utils/ajax';
 import { globalData, setTabBar } from '../utils/globalData';
 import { getUid, SendClickLog } from '../utils/maidian';
 
-import { CHAT_LOGIN } from '../utils/url';
+import { CHAT_LOGIN, MY_MPLIST, SESSION, INSERT_SESSION, GET_EXT_JSON, GET_ASSIST_AUTH } from '../utils/url';
 
 import { sdkLogin, onMsgNotify } from '../utils/IM/IM';
 
@@ -237,7 +237,7 @@ export default class Home extends wepy.page {
             this.business = Object.assign({}, this.business, {
                 changeMP: true,
             });
-            const { data } = await post('/mplogic/mymplist');
+            const { data } = await post(MY_MPLIST);
             const { mpinfos } = data;
             this.business = Object.assign({}, this.business, {
                 mps: mpinfos,
@@ -334,7 +334,7 @@ export default class Home extends wepy.page {
             mp.headImg = `https://pic1.58cdn.com.cn${mp.headImg}`;
         }
         return mp;
-    }
+    };
     /**
      * 用户点击右上角分享
      */
@@ -353,11 +353,11 @@ export default class Home extends wepy.page {
                 console.log(err);
             },
         };
-    }
+    };
     async getAssistAuth() {
         const that = this;
         try {
-            const { data } = await get('/wechat/bizAssistAuth/get');
+            const { data } = await get(GET_ASSIST_AUTH);
             const { isFollow, assistInfo } = data;
             if (!isFollow && assistInfo === null) {
                 // 既没有授权也没有关注公众号
@@ -371,13 +371,13 @@ export default class Home extends wepy.page {
         } catch (e) {
             console.log(e);
         }
-    }
+    };
     // 获取授权数据
     async loadSession() {
         try {
-            const { data } = await get('/wechat/bizAssistAuth/session', { code: this.code });
+            const { data } = await get(SESSION, { code: this.code });
             const { sessionKey } = data;
-            const { state, msg } = await get('/wechat/bizAssistAuth/insert', { encryptedData: this.encryptedData, iv: this.iv, session: sessionKey });
+            const { state, msg } = await get(INSERT_SESSION, { encryptedData: this.encryptedData, iv: this.iv, session: sessionKey });
             if (state === 100) {
                 wx.navigateTo({
                     url: '/pages/followPublic',
@@ -424,8 +424,7 @@ export default class Home extends wepy.page {
     }
     // 获取当前小程序的extjson
     async loadExtJson() {
-        const url = '/mpBusinessRelease/getExtJson';
-        const { data } = await get(url, { sceneKey: wx.getStorageSync('current_mpid') });
+        const { data } = await get(GET_EXT_JSON, { sceneKey: wx.getStorageSync('current_mpid') });
         globalData.extConfig = data;
     }
     async loadData () {

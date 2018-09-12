@@ -43,6 +43,7 @@
 import wepy from 'wepy';
 
 import { get } from '../utils/ajax';
+import { READ_GROUND_MSG, CONSUMERS } from '../utils/url';
 
 export default class cardList extends wepy.page {
     config = {
@@ -80,7 +81,7 @@ export default class cardList extends wepy.page {
             return;
         }
         try {
-            await get('/mplogic/readgroupmsg', { group: 1 });
+            await get(READ_GROUND_MSG, { group: 1 });
         } catch (e) {
             console.log(e);
         }
@@ -89,7 +90,7 @@ export default class cardList extends wepy.page {
         try {
             const mpId = wepy.getStorageSync('current_mpid');
             this.sendParams = Object.assign(this.sendParams, { mpId: mpId });
-            const { data } = await get('/mpCardBusiness/consumers', this.sendParams);
+            const { data } = await get(CONSUMERS, this.sendParams);
             const {
                 msgVos, progressUnRead, recivMoneyUnRead, lastUnreadMoneyMsg, lastUnreadSystemMsg,
             } = data;
