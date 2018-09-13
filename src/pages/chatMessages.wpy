@@ -15,8 +15,9 @@
         </repeat>
         <view wx:if="{{contactList.length == 0}}">
             <view class="empty-wrap">
-                <image class="img-no-data" src="//img.58cdn.com.cn/lbg/jianzhan/images/empty.png"/>
-                <view class="txt-no-data">暂无消息记录</view>
+                <image class="img-no-data" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/chatMessages_empty.png"/>
+                <view class="txt-no-data">暂时没有聊天消息哦</view>
+                <view class="txt-no-data second">去分享名片可获得更多商机</view>
             </view>
         </view>  
     </view>
@@ -55,7 +56,7 @@ export default class chatMessages extends wepy.page {
         const { data } = await get(CHAT_CONTACT_LIST, {
             token,
         });
-        this.contactList = data;
+        this.contactList = [];
         this.$apply();
     }
 }
@@ -74,6 +75,9 @@ export default class chatMessages extends wepy.page {
         text-align: center;
         font-size: 30rpx;
         color: #ccc;
+    }
+    .second{
+        line-height: 10rpx;
     }
     .message_box{
         padding: 35rpx 30rpx;
