@@ -48,7 +48,7 @@
             </view>
             <view class="flex_box border_bottom" @tap="setLocation">
                 <view class="text must">联系地址</view>
-                <input type="text" class="flex_item text_right address" placeholder="选择联系地址" placeholder-style="font-size:30rpx;color:#CCCCCC" value="{{address}}"/>
+                <input type="text" class="flex_item text_right address" placeholder="选择联系地址" placeholder-style="font-size:30rpx;color:#CCCCCC" value="{{address}}" disabled/>
             </view>
         </view>
         <view class="btn" @tap="creatCard">下一步</view>
@@ -112,7 +112,12 @@ export default class newBizCard extends wepy.page {
         comfirmTag(e) {
             const { value } = e.detail;
             const len = this.serviceTagArr.length - 1;
-            this.serviceTagArr.splice(len, 1, value);
+            if (value.trim()) {
+                this.serviceTagArr.splice(len, 1, value);
+            } else {
+                this.toast('请完善添加的标签名称～');
+                this.serviceTagArr.splice(len, 1);
+            }
             this.serviceTag = this.serviceTagArr.join(',');
         },
         deleteTag(index) {
@@ -137,6 +142,16 @@ export default class newBizCard extends wepy.page {
                 addressLatitude: this.addressLatitude, // 地址纬度
                 mpId: currentMpid,
             };
+            if (!this.isFullyFilled(subData)) {
+                wepy.showModal({
+                    title: '提示',
+                    content: '需要先完善带有*号的必填项哦',
+                    confirmText: '知道了',
+                    confirmColor: '#4E88FF',
+                    showCancel: false,
+                });
+                return;
+            }
             const { data } = await post(CARD_CREATE_NEW_CARD, subData);
             if (data.mpCard.id) {
                 wepy.navigateTo({
@@ -151,6 +166,13 @@ export default class newBizCard extends wepy.page {
             this.addressLatitude = latitude;
             this.$apply();
         },
+    }
+    isFullyFilled(subData) {
+        let result = false;
+        if (subData.picImg && subData.realName && subData.mobile && subData.wxCode && subData.company && subData.address) {
+            result = true;
+        }
+        return result;
     }
     async onLoad () {
         await this.loadData();
@@ -192,7 +214,7 @@ export default class newBizCard extends wepy.page {
             const { state, msg, data } = res;
             if (state === 100) {
                 this.picImg = data.content;
-                this.headImg = `https://pic1.58cdn.com.cn${data.content}`;
+                this.headImg = data.content;
             } else {
                 this.toast(msg);
             }
@@ -239,7 +261,7 @@ export default class newBizCard extends wepy.page {
                         width: 44rpx;
                         height: 44rpx;
                         border-radius: 100%;
-                        background: #999999 url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_delete_tag.png') no-repeat center;
+                        background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_delete_tag.png') no-repeat center;
                         background-size: 44rpx 44rpx;
                         top: -22rpx;
                         right: -22rpx;
@@ -334,6 +356,8 @@ export default class newBizCard extends wepy.page {
             }
             .jiantou{
                 width: 44rpx;
+                background: url(https://static.58.com/lbg/mengchong/image/icon/arrow-right.png) no-repeat center;
+                background-size: 18rpx 32rpx;
             }
         }
         .sign{
