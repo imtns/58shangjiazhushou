@@ -32,6 +32,10 @@ export const CHAT_CONTACT_LIST = '/chat/contactList';
 // 我的名片页面——是否有名片
 export const CARD_HAS_CARD = '/mpCardBusiness/toMyCard';
 export const CARD_HAS_DETAIL = '/mpCardBusiness/myCard';
+export const CARD_FIRST_EDIT = '/mpCardBusiness/editCard';
+
+// 新建名片
+export const CARD_CREATE_NEW_CARD = '/mpCardBusiness/saveCard';
 
 export const CONSUMER_INFO = '/mpCardBusiness/consumerInfo'; // 访客信息
 
