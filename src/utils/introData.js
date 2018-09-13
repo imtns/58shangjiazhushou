@@ -67,7 +67,7 @@ export const myCardItems = [{
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_edit_card.png',
     name: '编辑名片',
     type: 'innerJump',
-    path: 'visitorLogs',
+    path: 'newBizCard',
 },{
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_go_pay.png',
     name: '开通支付',
