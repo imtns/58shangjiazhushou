@@ -120,7 +120,7 @@ export default class choseStyle extends wepy.page {
                 const { data } = await post(CARD_CREATE_NEW_CARD, subData);
                 if (data.mpCard.id) {
                     wepy.navigateTo({
-                        url: 'choseStyle', // 跳转到成功页面
+                        url: 'myBizCardSave', // 跳转到成功页面
                     });
                 }
             }
