@@ -3,7 +3,7 @@
         <view class="from">
             <view class="header flex_box" @tap="setLogo">
                 <view class="flex_item header_text">头像</view>
-                <view class="img" style="background:url(https://pic1.58cdn.com.cn{{headImg}}) no-repeat center"></view>
+                <view class="img" style="background:url(https://pic1.58cdn.com.cn{{headImg}}?w=400) no-repeat center"></view>
                 <view class="jiantou"></view>
             </view>
             <view class="flex_box border_bottom">
@@ -15,12 +15,12 @@
                 <input type="number" class="flex_item text_right" placeholder="请填写手机号码" placeholder-style="font-size:30rpx;color:#CCCCCC"  maxlength="11"  bindinput="bindKeyInput" data-option="mobile" value="{{mobile}}"/>
             </view>
             <view class="flex_box border_bottom">
-                <view class="text must">微信号</view>
+                <view class="text">微信号</view>
                 <input type="text" class="flex_item text_right" placeholder="请填写微信号" placeholder-style="font-size:30rpx;color:#CCCCCC" maxlength="20" bindinput="bindKeyInput" data-option="wxCode" value="{{wxCode}}"/>
             </view>
             <view class="marker">
                 <view class="flex_box border_bottom">
-                    <view class="text service_title">服务标签</view>
+                    <view class="text service_title must">服务标签</view>
                     <view class="flex_item text_right service_tip">服务概括</view>
                 </view>
                 <view class="marker_box">
@@ -102,7 +102,10 @@ export default class newBizCard extends wepy.page {
             }
         },
         addNewTag() {
-            this.serviceTagArr.push('');
+            const len = this.serviceTagArr.length;
+            if (len === 0 || this.serviceTagArr[len - 1]) {
+                this.serviceTagArr.push('');
+            }
         },
         bindKeyInput(e) {
             const { value } = e.detail;
@@ -116,7 +119,7 @@ export default class newBizCard extends wepy.page {
                 this.serviceTagArr.splice(len, 1, value);
             } else {
                 this.toast('请完善添加的标签名称～');
-                this.serviceTagArr.splice(len, 1);
+                return;
             }
             this.serviceTag = this.serviceTagArr.join(',');
         },
@@ -169,7 +172,7 @@ export default class newBizCard extends wepy.page {
     }
     isFullyFilled(subData) {
         let result = false;
-        if (subData.picImg && subData.realName && subData.mobile && subData.wxCode && subData.company && subData.address) {
+        if (subData.picImg && subData.realName && subData.mobile && subData.company && subData.address && subData.serviceTag) {
             result = true;
         }
         return result;
@@ -190,7 +193,9 @@ export default class newBizCard extends wepy.page {
             mpId: currentMpid,
         });
         Object.assign(this, data);
-        this.serviceTagArr = this.serviceTag.split(',');
+        if (this.serviceTag) {
+            this.serviceTagArr = this.serviceTag.split(',');
+        }
         this.headImg = this.picImg;
         console.log('data', data);
         this.$apply();
