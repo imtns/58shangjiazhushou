@@ -7,7 +7,7 @@
         </view>
         <navigator url="myBizCard" open-type="navigate" hover-class="none" class="checkBizCard">查看名片</navigator>
         <navigator url="OpenPay" open-type="navigate" hover-class="none" class="openPay">开通支付</navigator>
-        <navigator url="home" open-type="navigate" hover-class="none" class="returnHome">返回首页</navigator>
+        <navigator url="home" open-type="switchTab" hover-class="none" class="returnHome">返回首页</navigator>
     </view>
 </template>
 
