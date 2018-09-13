@@ -70,7 +70,7 @@
         </view>
         <view wx:if="{{!assistAuth && showModal}}">
             <view class="showModal_mask" bindtap="hideModal"></view>
-            <view class="showModal_modal">
+            <view class="showModal_modal auth_modal">
                 <view class="showModal_text">各位老板，您需要<text>授权</text>后商家助手才能给您提供更好的服务哦</view>
                 <button class="showModal_btn" open-type="getUserInfo" @tap="loadSession">去授权</button>
                 <button class="showModal_cancle" bindtap="hideModal"></button>
@@ -78,7 +78,7 @@
         </view>
         <view wx:if="{{assistAuth && !isFollow &&showModal}}">
             <view class="showModal_mask" bindtap="hideModal"></view>
-            <view class="showModal_modal">
+            <view class="showModal_modal follow_modal">
                 <view class="showModal_text">各位老板，您<text>关注公众号</text>后商家助手才能及时给您通知订单消息哦</view>
                 <navigator class="showModal_btn" url="/pages/followPublic">去关注</navigator>
                 <button class="showModal_cancle" bindtap="hideModal"></button>
@@ -317,8 +317,8 @@ export default class Home extends wepy.page {
     }
     async onShow () {
         await this.loadData();
-        await this.loadCode();
-        await this.getInfo();
+        this.loadCode();
+        this.getInfo();
         // 聊天登录，监控未读消息
         const { isLoagin } = globalData.chat;
         if (!isLoagin) {
@@ -360,10 +360,11 @@ export default class Home extends wepy.page {
         try {
             const { data } = await get(GET_ASSIST_AUTH);
             const { isFollow, assistInfo } = data;
-            if (!isFollow && assistInfo === null) {
+            if (!isFollow && !assistInfo.wechatUnionId) {
                 // 既没有授权也没有关注公众号
                 that.assistAuth = false;
-            } else if (!isFollow && JSON.stringify(assistInfo) !== '{}') {
+            // } else if (!isFollow && JSON.stringify(assistInfo) !== '{}') {
+            } else if (!isFollow && assistInfo.wechatUnionId) {
                 // 已授权但没有关注公众号
                 that.assistAuth = true;
             }
@@ -391,24 +392,24 @@ export default class Home extends wepy.page {
             console.log(e);
         }
     }
-    async loadCode() {
+    loadCode() {
+        const that = this;
         wx.login({
             success: (res) => {
                 if (res.code) {
-                    this.code = res.code;
+                    that.code = res.code;
                     // 查看是否授权
                 } else {
-                    console.log('denglishiba');
+                    console.log('获取code失败');
                 }
             },
         });
     }
-    async getInfo() {
+    getInfo() {
         const that = this;
         // 已经授权，可以调用getuseinfo获取头像昵称
         wx.getUserInfo({
             success: (res) => {
-                console.log(res);
                 const { iv, encryptedData } = res;
                 that.iv = iv;
                 that.encryptedData = encryptedData;
@@ -1153,8 +1154,14 @@ scroll-view {
     top:50%;
     left:50%;
     transform:translate3d(-50%,-50%,0);
-    text-align:center;  
+    text-align:center;
+ }
+ .auth_modal{
     background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/auth-pop.png) no-repeat;
+    background-size: 100% 100%;
+ }
+.follow_modal{
+    background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/public-pop.png) no-repeat;
     background-size: 100% 100%;
  }
  .showModal_title{

@@ -16,7 +16,7 @@
                         <view class="order-status cancel" wx:elif="{{item.status==3}}">{{statusSet[item.status]}}</view>
                         <view class="order-status active" wx:else>{{statusSet[item.status]}}</view>
                     </view>
-                    <view class="order-ul-li-row logo-row">
+                    <view class="order-ul-li-row logo-row unread">
                         <image class="order-mplogo" src="{{item.mpLogo}}"/>
                         <view class="order-mpname">{{item.mpName}}</view>
                     </view>
