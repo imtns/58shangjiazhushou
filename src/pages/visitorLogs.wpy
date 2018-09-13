@@ -3,9 +3,10 @@
         <view class="tips" wx:if="{{visitorList.length > 0}}">以下客户访问过您的名片，可联系他们哦</view>
         <view class="visitor_content" wx:if="{{visitorList.length > 0}}">
             <repeat for="{{visitorList}}" key="index" index="index" item="item">
-                <view class="visitor_box">
+                <view class="visitor_box" @tap="toVisitorInfo({{item.cardId}}, {{item.consumerId}})">
                     <view class="visitor_header" style="background:url({{item.portrait}}) no-repeat center"></view>
                     <view class="visitor_name">{{item.nickName}}</view>
+                    <view class="{{item.gender == 1 ? 'male' : 'female'}}"></view>
                     <view class="visitor_count">
                         访问您的名片
                         <text class="visitor_num">{{item.visitCount}}</text> 
@@ -35,7 +36,13 @@ export default class visitorLogs extends wepy.page {
     data = {
         visitorList: [],
     }
-    methods = {}
+    methods = {
+        toVisitorInfo(cardId, consumerId) {
+            wepy.navigateTo({
+                url: `visitorInfo?cardId=${cardId}&consumerId=${consumerId}`,
+            });
+        },
+    }
     onLoad () {
         console.log('onload');
     }
@@ -47,7 +54,12 @@ export default class visitorLogs extends wepy.page {
         const visitorList = await post(CONSUMER_RECORDS, {
             mpId: currentMpid,
         });
-        this.visitorList = visitorList.data;
+        this.visitorList = visitorList.data.map((item) => {
+            const visitor = item;
+            const info = JSON.parse(item.otherInfos);
+            visitor.gender = info.gender;
+            return visitor;
+        });
         this.$apply();
         console.log('onshow');
     }
@@ -82,8 +94,22 @@ export default class visitorLogs extends wepy.page {
                 line-height: 60rpx;
                 font-size: 30rpx;
                 color: #333333;
-                flex:1;
                 padding-left: 30rpx;
+            }
+            .male{
+                margin: 18rpx 10rpx;
+                width: 24rpx;
+                height: 24rpx;
+                background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_male.png) no-repeat center;
+                background-size: contain;
+                vertical-align: middle;
+            }
+            .female{
+                margin: 18rpx 10rpx;
+                width: 24rpx;
+                height: 24rpx;
+                background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_female.png) no-repeat center;
+                background-size: contain;
             }
             .visitor_count{
                 line-height: 60rpx;
@@ -91,6 +117,9 @@ export default class visitorLogs extends wepy.page {
                 color: #999999;
                 flex:1;
                 text-align: right;
+                background: url(https://static.58.com/lbg/mengchong/image/icon/arrow-right.png) no-repeat right;
+                background-size: 18rpx 32rpx;
+                padding-right: 30rpx;
                 .visitor_num{
                     font-size: 28rpx;
                     color: #151515;

@@ -17,14 +17,17 @@
                 </view>
                 <view class="card_info_box">
                     <view class="flex_box">
+                        <view class="card_mobile_icon icon"></view>
                         <view class="card_mobile text">手机号码</view>
                         <view class="flex_item value">{{mobile}}</view>
                     </view>
                     <view class="flex_box">
+                        <view class="card_wxcode_icon icon"></view>
                         <view class="card_wxcode text">微信号</view>
                         <view class="flex_item value">{{wxCode}}</view>
                     </view>
                     <view class="flex_box">
+                        <view class="card_address_icon icon"></view>
                         <view class="card_address text">联系地址</view>
                         <view class="flex_item value">{{address}}</view>
                     </view>
@@ -48,14 +51,17 @@
                 </view>
                 <view class="card_info_box">
                     <view class="flex_box">
+                        <view class="card_mobile_icon icon"></view>
                         <view class="card_mobile text">手机号码</view>
                         <view class="flex_item value">{{mobile}}</view>
                     </view>
                     <view class="flex_box">
+                        <view class="card_wxcode_icon icon"></view>
                         <view class="card_wxcode text">微信号</view>
                         <view class="flex_item value">{{wxCode}}</view>
                     </view>
                     <view class="flex_box">
+                        <view class="card_address_icon icon"></view>
                         <view class="card_address text">联系地址</view>
                         <view class="flex_item value">{{address}}</view>
                     </view>
@@ -172,7 +178,23 @@ export default class choseStyle extends wepy.page {
         }
     }
     .card_info_box{
-        padding: 70rpx 70rpx 0 70rpx;
+        padding: 50rpx 70rpx 0 70rpx;
+        .icon{
+            width: 36rpx;
+            height: 36rpx;
+        }
+        .card_mobile_icon{
+            background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/chosestyle_phone.png) no-repeat center;
+            background-size: contain;
+        }
+        .card_wxcode_icon{
+            background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/chosestyle_wechat.png) no-repeat center;
+            background-size: contain;
+        }
+        .card_address_icon{
+            background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/chosestyle_location.png) no-repeat center;
+            background-size: contain;
+        }
         .flex_box{
             display: flex;
             margin-bottom: 40rpx;
@@ -181,6 +203,7 @@ export default class choseStyle extends wepy.page {
             flex: 1;
         }
         .text{
+            padding-left: 10rpx;
             font-size: 26rpx;
             color: #999999;
             margin-right: 20rpx;
