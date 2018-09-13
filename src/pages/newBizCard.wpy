@@ -40,7 +40,7 @@
             </view>
             <view class="flex_box border_bottom">
                 <view class="text must">公司名称</view>
-                <input type="text" class="flex_item text_right" placeholder="请填写公司名称" placeholder-style="font-size:30rpx;color:#CCCCCC" maxlength="20" bindinput="bindKeyInput" data-option="company" value="{{company}}"/>
+                <input type="text" class="flex_item text_right" placeholder="请填写公司名称" placeholder-style="font-size:30rpx;color:#CCCCCC" maxlength="20" bindinput="bindKeyInput" data-option="company" value="{{company}}" disabled="{{hasCompany}}"/>
             </view>
             <view class="flex_box border_bottom">
                 <view class="text">职位</view>
@@ -82,6 +82,7 @@ export default class newBizCard extends wepy.page {
         addressLongitude: '', // 地址经度
         addressLatitude: '', // 地址纬度
         serviceTagArr: [], // 服务标签数组
+        hasCompany: false, // 页面有无公司名称，disable input 用
     }
     methods = {
         async setLogo () {
@@ -196,8 +197,10 @@ export default class newBizCard extends wepy.page {
         if (this.serviceTag) {
             this.serviceTagArr = this.serviceTag.split(',');
         }
+        if (this.company) {
+            this.hasCompany = true;
+        }
         this.headImg = this.picImg;
-        console.log('data', data);
         this.$apply();
     }
     toast (...params) {
