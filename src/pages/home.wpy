@@ -314,7 +314,7 @@ export default class Home extends wepy.page {
             this.showModal = true;
         }
         this.$apply();
-    };
+    }
     async onShow () {
         await this.loadData();
         await this.loadCode();
@@ -328,14 +328,14 @@ export default class Home extends wepy.page {
             this.showModal = true;
         }
         this.$apply();
-    };
+    }
     formatedMp (item) {
         const mp = item;
         if (mp && mp.headImg && mp.headImg.indexOf('http') === -1) {
             mp.headImg = `https://pic1.58cdn.com.cn${mp.headImg}`;
         }
         return mp;
-    };
+    }
     /**
      * 用户点击右上角分享
      */
@@ -354,7 +354,7 @@ export default class Home extends wepy.page {
                 console.log(err);
             },
         };
-    };
+    }
     async getAssistAuth() {
         const that = this;
         try {
@@ -372,7 +372,7 @@ export default class Home extends wepy.page {
         } catch (e) {
             console.log(e);
         }
-    };
+    }
     // 获取授权数据
     async loadSession() {
         try {
@@ -477,7 +477,7 @@ export default class Home extends wepy.page {
         switch (text) {
             case '名片管理':
                 wepy.navigateTo({
-                    url: '',
+                    url: 'myBizCard',
                 });
                 break;
             case '通知':
@@ -651,7 +651,9 @@ export default class Home extends wepy.page {
             if (Number(text) && Number(text) > 0) {
                 setTabBar(text);
             }
-            const { token, nickName, headImg, id } = myInfo;
+            const {
+                token, nickName, headImg, id,
+            } = myInfo;
             // 设置全局token
             Object.assign(globalData.chat, {
                 isLogin: true,
@@ -1045,8 +1047,8 @@ scroll-view {
                 background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/shangxin.png) no-repeat;
                 background-size: 100% 100%;
                 position: absolute;
-                right: 15rpx;
-                top: -5rpx;
+                right: 13rpx;
+                top: -10rpx;
                 z-index: 1;
             }
             &.new-margin{
