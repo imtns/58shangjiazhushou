@@ -28,6 +28,7 @@ import wepy from 'wepy';
 import { CHAT_CONTACT_LIST } from '../utils/url';
 import { get } from '../utils/ajax';
 import { globalData } from '../utils/globalData';
+import { getUid, SendClickLog } from '../utils/maidian';
 
 
 export default class chatMessages extends wepy.page {
@@ -39,6 +40,7 @@ export default class chatMessages extends wepy.page {
     }
     methods = {
         toChat(contact, chatWith) {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_chatMessages_toChat');
             console.log('*****', contact, chatWith);
             wepy.navigateTo({
                 url: `wechat/chat/chat?contact=${contact}&chatWith=${chatWith}`,
@@ -56,6 +58,7 @@ export default class chatMessages extends wepy.page {
         const { data } = await get(CHAT_CONTACT_LIST, {
             token,
         });
+        console.log(data);
         this.contactList = [];
         this.$apply();
     }

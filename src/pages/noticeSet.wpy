@@ -12,6 +12,7 @@ import { toast } from '../utils/index';
 
 import { get, post } from '../utils/ajax';
 import { PUSN_SET_UP, TO_PUSN_SET_UP } from '../utils/url';
+import { getUid, SendClickLog } from '../utils/maidian';
 
 export default class NoticeSet extends wepy.page {
     config = {
@@ -20,12 +21,13 @@ export default class NoticeSet extends wepy.page {
     data = {
         noticeSet: [
             { name: '通知推送提醒', value: 1 },
-            { name: '聊天推送提醒', value: 1 },
+            { name: '聊天消息推送提醒', value: 1 },
         ],
     }
     methods = {
         async switchchange(e) {
             const { index } = e.currentTarget.dataset;
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_noticeSet_${index}`);
             const { value } = e.detail;
             if (value) {
                 this.noticeSet[index].value = 1;
@@ -47,7 +49,6 @@ export default class NoticeSet extends wepy.page {
     }
     async onShow() {
         this.loadNoticeStatus();
-        console.log('===');
     }
     async loadNoticeStatus() {
         try {

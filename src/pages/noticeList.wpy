@@ -1,7 +1,7 @@
 <template>
     <view class="notice-container">
         <view class="notice-new">
-            <navigator class="notice-name" url="sysNoticeList" hover-class="none">
+            <navigator class="notice-name" url="sysNoticeList" hover-class="none" @tap="SystemMsg">
                 <view class="notice-system">
                     <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/system-icon.png" mode="aspectFit"/>
                     <view wx:if="{{progressUnRead > 0 }}" class="num">{{progressUnRead}}</view>
@@ -11,7 +11,7 @@
                     <view class="mp-txt">{{lastUnreadSystemMsg}}</view>
                 </view>
             </navigator>
-            <navigator class="notice-name" url="accountNoticeList" hover-class="none">
+            <navigator class="notice-name" url="accountNoticeList" hover-class="none" @tap="MoneyMsg">
                 <view class="notice-system">
                     <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/account-icon.png" mode="aspectFit"/>
                     <view wx:if="{{recivMoneyUnRead > 0 }}" class="num">{{recivMoneyUnRead}}</view>
@@ -26,7 +26,7 @@
             <view class="card-time">{{lastedTime}}</view>
             <block wx:for="{{cardList}}" wx:key="index">
                 <view class="card-list-item">
-                    <navigator class="card-item" url="visitorInfo?cardId={{item.cardId}}&consumerId={{item.consumerId}}"  hover-class="none">
+                    <navigator class="card-item" url="visitorInfo?cardId={{item.cardId}}&consumerId={{item.consumerId}}"  hover-class="none" @tap="consumerCard">
                         <image class="avator" src="{{item.headImg}}" mode="aspectFit"/>
                         <view class="info">
                             <view class="visitor">{{item.nickName}}查看了您的名片</view>
@@ -44,6 +44,7 @@ import wepy from 'wepy';
 
 import { get } from '../utils/ajax';
 import { READ_GROUND_MSG, CONSUMERS } from '../utils/url';
+import { getUid, SendClickLog } from '../utils/maidian';
 
 export default class cardList extends wepy.page {
     config = {
@@ -67,6 +68,15 @@ export default class cardList extends wepy.page {
             this.sendParams.page = this.sendParams.page + 1;
             this.sendParams = Object.assign({}, this.sendParams, this.sendParams.page);
             this.loadList();
+        },
+        SystemMsg() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_noticeList_SystemMsg');
+        },
+        MoneyMsg() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_noticeList_MoneyMsg');
+        },
+        consumerCard() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_noticeList_consumerCard');
         },
     }
     async onShow() {

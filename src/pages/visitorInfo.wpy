@@ -28,7 +28,7 @@
         <view class="visitor-action">
             <view class="has-mobile" wx:if="{{visitInfo.mobile}}" @tap="bindPhoneCall({{visitInfo.mobile}})">拨打电话</view>
             <view class="call" wx:else>拨打电话</view>
-            <navigator url="wechat/chat/chat?contact={{visitInfo.chatToken}}&nickName={{visitInfo.nickName}}" class="send-msg" open-type="navigate" hover-class="none">发送信息</navigator>
+            <navigator url="wechat/chat/chat?contact={{visitInfo.chatToken}}&nickName={{visitInfo.nickName}}" class="send-msg" open-type="navigate" hover-class="none" @tap="sendMsg">发送信息</navigator>
         </view>
         <view class="visitor-log">当前访客的行为记录</view>
         <scroll-view class="visitor-list" scroll-y style="height:100vh">
@@ -43,8 +43,8 @@
 <script>
 import wepy from 'wepy';
 import { get } from '../utils/ajax';
-import { toast } from '../utils';
 import { CONSUMER_INFO } from '../utils/url';
+import { getUid, SendClickLog } from '../utils/maidian';
 
 export default class visitorInfo extends wepy.page {
     config = {
@@ -70,8 +70,12 @@ export default class visitorInfo extends wepy.page {
         },
     }
     methods = {
-        async bindPhoneCall (mobile) {
+        bindPhoneCall (mobile) {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_visitorInfo_call');
             wepy.makePhoneCall({ phoneNumber: mobile });
+        },
+        sendMsg() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_visitorInfo_sendMsg');
         },
     }
     onLoad (option) {
