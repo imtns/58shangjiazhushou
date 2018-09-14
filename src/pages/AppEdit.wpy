@@ -195,7 +195,7 @@ export default class AppEdit extends wepy.page {
             this.updateForm({ telphone });
         },
         async setLocation () {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_editapp_location');
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_editapp_location');
             const { address, latitude, longitude } = await wepy.chooseLocation();
             this.updateForm({ address, addressLatitude: latitude, addressLongitude: longitude });
         },

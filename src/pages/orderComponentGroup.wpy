@@ -71,7 +71,7 @@ export default class OrderComponentGroup extends wepy.page {
     }
     methods = {
         showDialog(id = '', name = '') {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_orderComponentGroup_addGroup');
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderComponentGroup_addGroup');
             this.showDialog(id, name);
         },
         async addGroup(content) {
@@ -105,7 +105,7 @@ export default class OrderComponentGroup extends wepy.page {
             this.$apply();
         },
         edit(e) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_orderComponentGroup_editGroup');
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderComponentGroup_editGroup');
             const { status } = e.currentTarget.dataset;
             const dataList = this.groupList;
             if (status) {
@@ -123,7 +123,7 @@ export default class OrderComponentGroup extends wepy.page {
             this.$apply();
         },
         async deleteItem() {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_orderComponentGroup_deleteGroup');
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderComponentGroup_deleteGroup');
             try {
                 const { delList } = this;
                 if (delList.length === 0) {

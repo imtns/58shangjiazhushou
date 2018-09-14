@@ -70,13 +70,13 @@ export default class cardList extends wepy.page {
             this.loadList();
         },
         SystemMsg() {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_noticeList_SystemMsg');
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_noticeList_SystemMsg');
         },
         MoneyMsg() {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_noticeList_MoneyMsg');
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_noticeList_MoneyMsg');
         },
         consumerCard() {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_noticeList_consumerCard');
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_noticeList_consumerCard');
         },
     }
     async onShow() {

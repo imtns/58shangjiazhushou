@@ -126,7 +126,7 @@ export default class OrderDetail extends wepy.page {
     }
     methods = {
         async bindPhoneCall (mobile) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_orderDetail_phoneCall');
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderDetail_phoneCall');
             // const { userid } = this.order;
             // const sendParams = { sign: `${userid}#${mobile}`, from: 'OrderDetail' };
             // const [e, phoneNumber] = await get('/other/encrypt/phone', sendParams);
@@ -138,7 +138,7 @@ export default class OrderDetail extends wepy.page {
             wepy.makePhoneCall({ phoneNumber: mobile });
         },
         bindSubmitOrder () {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_orderDetail_submitOrder');
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderDetail_submitOrder');
             this.submitOrder();
         },
         async bindAgreeRefund (o) {

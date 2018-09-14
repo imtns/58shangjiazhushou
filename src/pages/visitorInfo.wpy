@@ -71,11 +71,11 @@ export default class visitorInfo extends wepy.page {
     }
     methods = {
         bindPhoneCall (mobile) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_visitorInfo_call');
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_visitorInfo_call');
             wepy.makePhoneCall({ phoneNumber: mobile });
         },
         sendMsg() {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_visitorInfo_sendMsg');
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_visitorInfo_sendMsg');
         },
     }
     onLoad (option) {

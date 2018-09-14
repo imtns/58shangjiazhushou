@@ -60,6 +60,7 @@ import wepy from 'wepy';
 import { CARD_FIRST_EDIT, CARD_CREATE_NEW_CARD } from '../utils/url';
 import { post } from '../utils/ajax';
 import { getNetStatus, toastSync } from '../utils';
+import { getUid, SendClickLog } from '../utils/maidian';
 
 const host = 'https://yaofa.58.com';
 const uploadApi = `${host}/fileUpload`;
@@ -86,6 +87,7 @@ export default class newBizCard extends wepy.page {
     }
     methods = {
         async setLogo () {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_setLogo');
             try {
                 const netStatus = await getNetStatus();
 
@@ -103,6 +105,7 @@ export default class newBizCard extends wepy.page {
             }
         },
         addNewTag() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_addNewTag');
             const len = this.serviceTagArr.length;
             if (len === 0 || this.serviceTagArr[len - 1]) {
                 this.serviceTagArr.push('');
@@ -125,9 +128,11 @@ export default class newBizCard extends wepy.page {
             this.serviceTag = this.serviceTagArr.join(',');
         },
         deleteTag(index) {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_deleteTag');
             this.serviceTagArr.splice(index, 1);
         },
         async creatCard() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_creatCard');
             const currentMpid = wepy.getStorageSync('current_mpid');
             if (!currentMpid) {
                 return;
@@ -164,6 +169,7 @@ export default class newBizCard extends wepy.page {
             }
         },
         async setLocation () {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_setLocation');
             const { address, latitude, longitude } = await wepy.chooseLocation();
             this.address = address;
             this.addressLongitude = longitude;

@@ -40,7 +40,7 @@ export default class chatMessages extends wepy.page {
     }
     methods = {
         toChat(contact, chatWith) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_chatMessages_toChat');
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chatMessages_toChat');
             console.log('*****', contact, chatWith);
             wepy.navigateTo({
                 url: `wechat/chat/chat?contact=${contact}&chatWith=${chatWith}`,

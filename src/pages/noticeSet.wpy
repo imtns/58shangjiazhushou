@@ -27,7 +27,7 @@ export default class NoticeSet extends wepy.page {
     methods = {
         async switchchange(e) {
             const { index } = e.currentTarget.dataset;
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_noticeSet_${index}`);
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_noticeSet_${index}`);
             const { value } = e.detail;
             if (value) {
                 this.noticeSet[index].value = 1;

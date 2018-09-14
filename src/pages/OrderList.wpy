@@ -79,7 +79,7 @@ export default class OrderList extends wepy.page {
     }
     methods = {
         bindClickTab (status) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_orderList_status_${status}`);
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_orderList_status_${status}`);
             const resetParams = {
                 pageNum: 1,
                 pageSize: 5,
