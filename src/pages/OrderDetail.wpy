@@ -252,9 +252,6 @@ export default class OrderDetail extends wepy.page {
                     color: #333333;
                     text-align: right;
                     max-width: 280rpx;
-                    overflow: hidden;
-                    white-space: nowrap;
-                    text-overflow: ellipsis;
                     &.servicetime {
                         font-family: PingFangSC-Semibold;
                     }
