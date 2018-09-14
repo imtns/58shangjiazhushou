@@ -1,6 +1,12 @@
 <template>
     <view class="notice-container">
-        <navigator class="notice-visitor" hover-class="none">
+        <navigator class="notice-visitor"
+            hover-class="none"
+            target="miniProgram"
+            open-type="navigate"
+            app-id="wx49b3af93cbcd737b"
+            path=""
+            version="release">
             更多帖子访客消息
             <text class="browse-btn">去浏览 ></text>
         </navigator>

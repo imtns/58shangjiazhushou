@@ -3,7 +3,7 @@
         <view class="notice-new">
             <navigator class="notice-name" url="sysNoticeList" hover-class="none">
                 <view class="notice-system">
-                    <image src="assets/system-icon.png"/>
+                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/system-icon.png" mode="aspectFit"/>
                     <view wx:if="{{progressUnRead > 0 }}" class="num">{{progressUnRead}}</view>
                 </view>
                 <view class="notice-txt">
@@ -13,7 +13,7 @@
             </navigator>
             <navigator class="notice-name" url="accountNoticeList" hover-class="none">
                 <view class="notice-system">
-                    <image src="assets/account-icon.png"/>
+                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/account-icon.png" mode="aspectFit"/>
                     <view wx:if="{{recivMoneyUnRead > 0 }}" class="num">{{recivMoneyUnRead}}</view>
                 </view>
                 <view class="notice-txt">
@@ -27,7 +27,7 @@
             <block wx:for="{{cardList}}" wx:key="index">
                 <view class="card-list-item">
                     <navigator class="card-item" url="visitorInfo?cardId={{item.cardId}}&consumerId={{item.consumerId}}"  hover-class="none">
-                        <image class="avator" src="{{item.headImg}}"/>
+                        <image class="avator" src="{{item.headImg}}" mode="aspectFit"/>
                         <view class="info">
                             <view class="visitor">{{item.nickName}}查看了您的名片</view>
                             <view class="contact">{{item.content}}</view>
@@ -157,7 +157,7 @@ view,scroll-view{
                 right: 30rpx;
             }
             .notice-system{
-                width: 100rpx;
+                width: 90rpx;
                 position: relative;
                 .num{
                     font-size:18rpx;
@@ -318,6 +318,7 @@ view,scroll-view{
         .avator{
             width: 60rpx;
             height: 60rpx;
+            border-radius: 100%;
             margin: 15rpx 40rpx 0 0;
             background: red;
         }

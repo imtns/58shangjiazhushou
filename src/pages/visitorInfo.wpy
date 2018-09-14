@@ -71,14 +71,7 @@ export default class visitorInfo extends wepy.page {
     }
     methods = {
         async bindPhoneCall (mobile) {
-            const userid = this.data.consumerId;
-            const sendParams = { sign: `${userid}#${mobile}`, from: 'visitorInfo' };
-            const [e, phoneNumber] = await get('/other/encrypt/phone', sendParams);
-            if (e) {
-                toast(e);
-                return;
-            }
-            wepy.makePhoneCall({ phoneNumber });
+            wepy.makePhoneCall({ phoneNumber: mobile });
         },
     }
     onLoad (option) {

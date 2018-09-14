@@ -76,7 +76,7 @@
                 <button class="showModal_cancle" bindtap="hideModal"></button>
             </view>
         </view>
-        <view wx:if="{{assistAuth && !isFollow &&showModal}}">
+        <view wx:if="{{assistAuth && !isFollow && showModal}}">
             <view class="showModal_mask" bindtap="hideModal"></view>
             <view class="showModal_modal follow_modal">
                 <view class="showModal_text">各位老板，您<text>关注公众号</text>后商家助手才能及时给您通知订单消息哦</view>
@@ -309,16 +309,15 @@ export default class Home extends wepy.page {
         await this.loadData();
         this.setGlobalMpId(this.business.selected.id);
         this.loadExtJson();
-        await this.getAssistAuth();
         if (!this.isFollow && wepy.getStorageSync('ppu')) {
             this.showModal = true;
         }
         this.$apply();
     }
     async onShow () {
-        await this.loadData();
         this.loadCode();
         this.getInfo();
+        await this.getAssistAuth();
         // 聊天登录，监控未读消息
         const { isLoagin } = globalData.chat;
         if (!isLoagin) {
@@ -360,15 +359,10 @@ export default class Home extends wepy.page {
         try {
             const { data } = await get(GET_ASSIST_AUTH);
             const { isFollow, assistInfo } = data;
-            if (!isFollow && !assistInfo.wechatUnionId) {
-                // 既没有授权也没有关注公众号
-                that.assistAuth = false;
-            // } else if (!isFollow && JSON.stringify(assistInfo) !== '{}') {
-            } else if (!isFollow && assistInfo.wechatUnionId) {
-                // 已授权但没有关注公众号
-                that.assistAuth = true;
-            }
+            // 9.13 王研需求修改
+            assistInfo.wechatUnionId ? that.assistAuth = true : that.assistAuth = false; // 是否授权
             that.isFollow = isFollow;
+            that.showModal = true;
             that.$apply();
         } catch (e) {
             console.log(e);
@@ -376,10 +370,11 @@ export default class Home extends wepy.page {
     }
     // 获取授权数据
     async loadSession() {
+        const that = this;
         try {
-            const { data } = await get(SESSION, { code: this.code });
+            const { data } = await get(SESSION, { code: that.code });
             const { sessionKey } = data;
-            const { state, msg } = await get(INSERT_SESSION, { encryptedData: this.encryptedData, iv: this.iv, session: sessionKey });
+            const { state, msg } = await get(INSERT_SESSION, { encryptedData: that.encryptedData, iv: that.iv, session: sessionKey });
             if (state === 100) {
                 wx.navigateTo({
                     url: '/pages/followPublic',
