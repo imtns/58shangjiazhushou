@@ -14,7 +14,7 @@
                     <view class="realName">{{realName}}</view>
                     <view class="position">{{position}}</view>
                     <view class="mobile">{{mobile}}</view>
-                    <view class="picImg" style="background:url(http://pic1.58cdn.com.cn{{picImg}}) no-repeat center">
+                    <view class="picImg" style="background:url(https://pic1.58cdn.com.cn{{picImg}}) no-repeat center">
                         <view class="empty_bg"></view>
                     </view>
                     <view class="other_entery">
@@ -240,8 +240,8 @@ export default class myBizCard extends wepy.page {
                     background-size: 100% 100% !important;
                     .empty_bg{
                         width: 281.2rpx;
-                        height: 245rpx;
-                        background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_white_empty.png') no-repeat center;
+                        height: 281.2rpx;
+                        background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_white_empty_02.png') no-repeat center;
                         background-size: 100% 100%;
                     }
                 }
