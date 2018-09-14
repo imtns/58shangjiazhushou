@@ -81,7 +81,7 @@ export default class cardList extends wepy.page {
             return;
         }
         try {
-            await get(READ_GROUND_MSG, { group: 1 });
+            await get(READ_GROUND_MSG, { group: 4 });
         } catch (e) {
             console.log(e);
         }

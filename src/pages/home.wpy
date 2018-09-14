@@ -129,6 +129,7 @@ export default class Home extends wepy.page {
             name: '您的姓名',
             miniProgramName: '您还没购买小程序',
             unread: 0,
+            unreadOrder: 0,
             mpCount: 0,
             progressText: '您还没有购买小程序',
             nexttask: 0,
@@ -306,7 +307,6 @@ export default class Home extends wepy.page {
     }
     async onLoad () {
         // globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
-        await this.loadData();
         this.setGlobalMpId(this.business.selected.id);
         this.loadExtJson();
         if (!this.isFollow && wepy.getStorageSync('ppu')) {
@@ -315,6 +315,7 @@ export default class Home extends wepy.page {
         this.$apply();
     }
     async onShow () {
+        await this.loadData();
         this.loadCode();
         this.getInfo();
         await this.getAssistAuth();
@@ -360,7 +361,11 @@ export default class Home extends wepy.page {
             const { data } = await get(GET_ASSIST_AUTH);
             const { isFollow, assistInfo } = data;
             // 9.13 王研需求修改
-            assistInfo.wechatUnionId ? that.assistAuth = true : that.assistAuth = false; // 是否授权
+            if (assistInfo.wechatUnionId) { // 是否授权
+                that.assistAuth = true;
+            } else {
+                that.assistAuth = false;
+            }
             that.isFollow = isFollow;
             that.showModal = true;
             that.$apply();
@@ -435,7 +440,8 @@ export default class Home extends wepy.page {
             const {
                 username = '',
                 mpinfo = {},
-                unread = '',
+                unread = 0,
+                unreadOrder = 0,
                 count = 0,
                 nexttask = '',
                 score,
@@ -445,6 +451,7 @@ export default class Home extends wepy.page {
                 name: username,
                 miniProgramName: mpinfo.nickName || '您还没购买小程序',
                 unread,
+                unreadOrder,
                 mpCount: count,
                 selected: {
                     ...formatedMpinfo,
@@ -454,8 +461,13 @@ export default class Home extends wepy.page {
             this.status.loading = false;
             this.status.first = false;
             nexttask && this.setNextTask(nexttask);
-            // console.log('this.business', this.business);
             this.$apply();
+            if (unreadOrder) { // 未读订单tab
+                wx.setTabBarBadge({
+                    index: 2,
+                    text: unreadOrder.toString(),
+                });
+            }
         } catch (e) {
             console.log('e', e);
         }
