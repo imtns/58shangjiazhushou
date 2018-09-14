@@ -177,8 +177,8 @@ var Page = {
                 temp = $('.zeditor-content').find('p'),
                 content = $('.zeditor-content').html(),
                 pics = $('#cover').attr('src') ? $('#cover').attr('src').split('.cn')[1].replace(/([/])\1+/g, '$1') : '';
-            if(Number(price)>999999){
-                Page.toast($errorPop, '商品价格不能大于99999');
+            if(Number(price)>10000000){
+                Page.toast($errorPop, '商品价格不能大于1000万');
                 return;
             }
             if(Number(stock)>999999){
