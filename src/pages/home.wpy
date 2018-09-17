@@ -313,6 +313,7 @@ export default class Home extends wepy.page {
         },
     }
     async onLoad () {
+        await this.loadData();
         // globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
         this.setGlobalMpId(this.business.selected.id);
         this.loadExtJson();
@@ -366,9 +367,9 @@ export default class Home extends wepy.page {
         const that = this;
         try {
             const { data } = await get(GET_ASSIST_AUTH);
-            const { isFollow, assistInfo } = data;
+            const { isFollow, assistInfo = null } = data;
             // 9.13 王研需求修改
-            if (assistInfo.wechatUnionId) { // 是否授权
+            if (assistInfo && assistInfo.wechatUnionId) { // 是否授权
                 that.assistAuth = true;
             } else {
                 that.assistAuth = false;

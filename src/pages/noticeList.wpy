@@ -4,7 +4,7 @@
             <navigator class="notice-name" url="sysNoticeList" hover-class="none" @tap="SystemMsg">
                 <view class="notice-system">
                     <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/system-icon.png" mode="aspectFit"/>
-                    <view wx:if="{{progressUnRead > 0 }}" class="num">{{progressUnRead}}</view>
+                    <view wx:if="{{progressUnRead > 0 }}" class="num">{{progressUnRead > 99 ? '99+' : progressUnRead}}</view>
                 </view>
                 <view class="notice-txt">
                     <view class="sys-txt">系统通知</view>
@@ -14,7 +14,7 @@
             <navigator class="notice-name" url="accountNoticeList" hover-class="none" @tap="MoneyMsg">
                 <view class="notice-system">
                     <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/account-icon.png" mode="aspectFit"/>
-                    <view wx:if="{{recivMoneyUnRead > 0 }}" class="num">{{recivMoneyUnRead}}</view>
+                    <view wx:if="{{recivMoneyUnRead > 0 }}" class="num">{{recivMoneyUnRead > 99 ? '99+' : recivMoneyUnRead}}</view>
                 </view>
                 <view class="notice-txt">
                     <view class="sys-txt">入账通知</view>

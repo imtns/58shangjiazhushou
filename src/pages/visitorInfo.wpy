@@ -11,11 +11,11 @@
                 </text>
                 <view class="actions">
                     <view class="action">
-                        <view class="num">{{visitInfo.visit}}</view>
+                        <view class="num">{{visitInfo.visit > 9999 ? '9999+' : visitInfo.visit}}</view>
                         <view class="title">访问次数</view>
                     </view>
                     <view class="action">
-                        <view class="num">{{visitInfo.share}}</view>
+                        <view class="num">{{visitInfo.share > 9999 ? '9999+' : visitInfo.share }}</view>
                         <view class="title">转发次数</view>
                     </view>
                     <view class="action">
@@ -30,8 +30,8 @@
             <view class="call" wx:else>拨打电话</view>
             <navigator url="wechat/chat/chat?contact={{visitInfo.chatToken}}&nickName={{visitInfo.nickName}}" class="send-msg" open-type="navigate" hover-class="none" @tap="sendMsg">发送信息</navigator>
         </view>
-        <view class="visitor-log">当前访客的行为记录</view>
-        <scroll-view class="visitor-list" scroll-y style="height:100vh">
+        <view class="visitor-log" wx:if="{{visitInfo.actions.length > 0}}">当前访客的行为记录</view>
+        <scroll-view class="visitor-list" scroll-y style="height:100vh" wx:if="{{visitInfo.actions.length > 0}}">
             <view class="item" wx:for="{{visitInfo.actions}}">
                 <text class="time">{{item.createTime}}</text>
                 <text class="action">{{item.action}}</text>
@@ -43,6 +43,7 @@
 <script>
 import wepy from 'wepy';
 import { get } from '../utils/ajax';
+import { toast } from '../utils/index';
 import { CONSUMER_INFO } from '../utils/url';
 import { getUid, SendClickLog } from '../utils/maidian';
 
@@ -70,9 +71,15 @@ export default class visitorInfo extends wepy.page {
         },
     }
     methods = {
-        bindPhoneCall (mobile) {
+        async bindPhoneCall (mobile) {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_visitorInfo_call');
-            wepy.makePhoneCall({ phoneNumber: mobile });
+            const sendParams = { sign: mobile, from: 'visitorInfo' };
+            const [e, phoneNumber] = await get('/other/encrypt/phone', sendParams);
+            if (e) {
+                toast(e);
+                return;
+            }
+            wepy.makePhoneCall({ phoneNumber });
         },
         sendMsg() {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_visitorInfo_sendMsg');
