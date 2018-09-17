@@ -13,7 +13,6 @@ const foos = {
 
 module.exports = {
     get(key) {
-
         if (data[key] === undefined) {
             return {};
         }

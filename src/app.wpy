@@ -52,6 +52,7 @@ export default class extends wepy.app {
             'pages/send', // 测试授权页面专用，勿删
             'pages/progress', // 完成度页面
             'pages/AppEdit', // 小程序编辑
+            'pages/app/businessInfo', // 营业信息编辑
             'pages/buy', // 购买页面
             'pages/index',
             'pages/noticeSet', // 消息通知设置页面
