@@ -21,8 +21,9 @@ export const globalData = {
         token: '', // 消息相关接口必传字段
         nickName: '',
         headImg: '',
-        currentContactId: 'OOC7ZFdxeDZpqLp7fgAbLzB3Ba4PuvNguU8UJ21dkzLxvC',
+        currentContactId: '',
         myId: '', // 当前登录者id
+        contactList: [],
     },
 }
 
@@ -160,10 +161,13 @@ export const getMappDetail = ({ userId, appId, releaseId } = {}) => {
 }
 
 export const setTabBar = (text) => {
-    wx.setTabBarBadge({
-        index: 1,
-        text: text > 99 ? '99+' : `${text}`,
-    });
+    if (Number(text) && Number(text) > 0) {
+        globalData.chat.unReadCount = text;
+        wx.setTabBarBadge({
+            index: 1,
+            text: text > 99 ? '99+' : `${text}`,
+        });
+    }
 }
 const utils = {
     globalData,

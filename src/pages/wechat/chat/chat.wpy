@@ -3,8 +3,10 @@
         <scroll-view
             class="chat-zone"
             scroll-y="{{true}}"
-            upper-threshold="100"
-            @scrolltoupper="loadMore">
+            upper-threshold="300"
+            @scrolltoupper="loadMore"
+            scroll-with-animation="{{true}}"
+            scroll-top="{{scrollTop}}">
             <view class="chat-msg-loading">加载中</view>
             <!-- <view class="chat-msg-body">
                 <image class="chat-msg-avatar" src="{{item.portrait}}"></image>
@@ -18,7 +20,7 @@
             <block wx:for="{{msgList}}" wx:key="index">
                 <view class="chat-msg-body {{item.senderId === myId ? 'chat-right' : ''}}">
                     <view class="chat-msg-time">{{item.sendTime}}</view>
-                    <image class="chat-msg-avatar" src="https://pic1.58cdn.com.cn{{item.senderPortrait}}"></image>
+                    <image class="chat-msg-avatar" src="{{item.senderPortrait}}"></image>
                     <view class="chat-msg-content" wx:if="{{item.type === '0' || item.type === 0}}">{{item.content}}</view>
                     <view class="chat-img-box" wx:else>
                         <image class="chat-msg-img" src="https://pic1.58cdn.com.cn{{item.content}}"></image>
@@ -36,7 +38,7 @@
                 cursor-spacing="30"
                 @input="input"
                 @focus="closepanel"
-                value="{{content}}"/>
+                value="{{content}}"></input>
             </view>
             <view class="chat-show-upload" @tap="showpanel" wx:if="{{!showpanel}}"></view>
             <view class="chat-show-upload close-upload" @tap="closepanel" wx:else></view>
@@ -73,7 +75,7 @@ import wepy from 'wepy';
 import { globalData } from '../../../utils/globalData';
 import { pubsub } from '../../../utils/IM/pubsub';
 import '../../../utils/date';
-import { toast } from '../../../utils';
+import { toast, withHttp } from '../../../utils';
 import { uploader } from '../../../utils/uploader';
 
 import { post } from '../../../utils/ajax';
@@ -85,27 +87,32 @@ let msgListToken = '';
 let isEnd = false;
 const pageSize = 20;
 export default class Chat extends wepy.page {
-    config = {
-        navigationBarTitleText: '贺燕珍',
-    }
     data = {
         height: '',
         showpanel: false,
         canIsend: false,
         contact: '',
+        nickName: '',
         msgList: [],
         content: '',
         token: '',
         progress: 0,
         myId: '',
+        scrollTop: 9999,
     }
     onLoad(options) {
         const { token, myId } = globalData.chat;
-        const { contact } = options;
+        const { contact, nickName } = options;
+        // console.error(options);
+
+        wepy.setNavigationBarTitle({
+            title: nickName,
+        });
 
         globalData.chat.currentContactId = contact;
 
         this.contact = contact;
+        this.nickName = nickName;
         this.token = token;
         this.myId = myId;
         this.$apply();
@@ -202,11 +209,8 @@ export default class Chat extends wepy.page {
             }, msg);
             if (type === 'TEXT') {
                 this.msgList.push(newMsg);
+                this.scrollTop = 9999999;
                 this.$apply();
-                wepy.pageScrollTo({
-                    scrollTop: 5000,
-                    duration: 300,
-                });
             }
             await post(SEND_MSG, msg);
             newMsg.status = 2; // 发送成功
@@ -224,8 +228,9 @@ export default class Chat extends wepy.page {
             });
             if (!data || data.length <= 0) return;
             isEnd = data.length < pageSize;
-            this.msgList = data;
+            this.msgList = withHttp(data);
             from = data[0].id;
+            this.scrollTop = 9999;
             this.$apply();
         } catch (e) {
             console.log(e);
@@ -243,7 +248,7 @@ export default class Chat extends wepy.page {
             isEnd = data.length < pageSize;
             from = data[0].id;
             const { msgList } = this;
-            this.msgList = data.concat(msgList);
+            this.msgList = withHttp(data).concat(msgList);
             this.$apply();
         }
     }
@@ -396,7 +401,6 @@ page{
             height:48rpx;
             border-radius:50%;
             background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/chat-msg-upload.png);
-            
             background-size:48rpx;
             &.close-upload{
                 background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/chat-close-panel.png);

@@ -4,6 +4,7 @@ import { globalData, setTabBar } from '../../utils/globalData';
 
 import { get } from '../../utils/ajax';
 import { CHAT_LOGIN } from '../../utils/url';
+import { chatContactList } from '../../store/index';
 
 export const sdkLogin = (userInfo, listeners, options, callBack) => {
     webim.login(userInfo, listeners, options, (resp) => {
@@ -18,7 +19,7 @@ export const sdkLogin = (userInfo, listeners, options, callBack) => {
 
 // 监听实时消息
 export const onMsgNotify = (newMsgList) => {
-    // console.error('list', newMsgList[0]);
+    console.error('list', newMsgList[0]);
 
     const { unReadCount, currentContactId = '' } = globalData.chat;
     globalData.chat.unReadCount = Number(unReadCount) + Number(newMsgList.length);
@@ -30,33 +31,24 @@ export const onMsgNotify = (newMsgList) => {
     newMsgList.forEach((newMsg) => {
         pushMsg(newMsg);
     });
-    // 发布未读消息
-    // for (let userId in obj) {
-    //     pubsub.publish(userId, obj[userId], +new Date());
-    // }
 }
 const pushMsg = (newMsg) => {
+    chatContactList();
     let ele, content;
     const eles = newMsg.getElems();
-    const {currentContactId = '' } = globalData.chat;
+    const {currentContactId = '', contactList } = globalData.chat;
+
+    const temp = {};
+    const contacts1 = [];
     for(let i in eles) {
         ele = eles[i];
         content = Object.prototype.toString.call(ele.getContent().data) ? JSON.parse(ele.getContent().data) : ele.getContent().data;
         const { contactId } = content;
-        console.log(content);
-        // if (!currentContactId) {
-        //     // 遍历
-        //     caontactList.forEach((item) => {
-        //         if (item.contact != contact) {
-        //             // 新建联系人，unshift,更新联系人列表
-        //         }
-        //     });
-        // }
-        // 当前聊天人的未读，发布
-        // console.error(currentContactId, contactId);
-        if (currentContactId && contactId === currentContactId) {
-            pubsub.publish(contactId, content, +new Date());
-        }
+        console.log(content, currentContactId, contactId);
+
+        // 发布当前聊天人的未读，
+
+        pubsub.publish(contactId, content, +new Date());
     }
 };
 
