@@ -7,7 +7,7 @@
             <navigator class="btn-login" target="miniProgram" open-type="navigate" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="develop">立即登录</navigator>
         </view>
         <view class="intro-content">
-            <text class="title">小程序四大价值</text>
+            <text class="title">小程序四大价·值</text>
             <view class="box part1">
                 <view class="textbox">
                     <text>重建入口</text>

@@ -1,0 +1,85 @@
+<template>
+    <view class="myBizCardSave">
+        <view class="successCon">
+            <image class="successIcon" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/success-icon.png"/>
+            <view class="successTip">保存名片成功</view>
+            <view class="openTip" wx:if="{{!isPayOpen}}">系统检查到您还未开通支付功能，开通后顾客可通过名片给您支付哦</view>
+        </view>
+        <navigator url="myBizCard" open-type="navigate" hover-class="none" class="checkBizCard" @tap="checkBizCard">查看名片</navigator>
+        <navigator url="OpenPay" wx:if="{{!isPayOpen}}" open-type="navigate" hover-class="none" class="openPay" @tap="openPay">开通支付</navigator>
+        <navigator url="home" open-type="switchTab" hover-class="none" class="returnHome" @tap="returnHome">返回首页</navigator>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { getUid, SendClickLog } from '../utils/maidian';
+
+export default class myBizCard extends wepy.page {
+    config = {
+        navigationBarTitleText: '选择样式',
+    }
+    data = {
+        isPayOpen: true,
+    }
+    method = {
+        checkBizCard() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_myBizCardSave_checkBizCard');
+        },
+        openPay() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_myBizCardSave_openPay');
+        },
+        returnHome() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_myBizCardSave_returnHome');
+        },
+    }
+    onLoad (option) {
+        const { isPayOpen } = option;
+        this.data.isPayOpen = isPayOpen;
+    }
+    async onShow () {
+        console.log('onShow');
+    }
+}
+</script>
+
+<style lang="scss">
+.myBizCardSave{
+    text-align: center;
+    .successCon{
+        padding: 60rpx 120rpx 46rpx;
+        background: #fff;
+        .successIcon{
+            width: 160rpx;
+            height: 160rpx;
+        }
+        .successTip{
+            font-size: 32rpx;
+            color: #333;
+            margin: 30rpx 0;
+        }
+        .openTip{
+            font-size: 26rpx;
+            color: #999;
+        }
+    }
+    .checkBizCard{
+        font-size: 32rpx;
+        color: #fff;
+        background: #4E88FF;
+        line-height: 94rpx;
+        margin: 70rpx 30rpx 30rpx;
+    }
+    .openPay{
+        font-size: 32rpx;
+        color: #333;
+        line-height: 94rpx;
+        background: #fff;
+        margin: 0 30rpx 50rpx;
+    }
+    .returnHome{
+        font-size: 26rpx;
+       color: #576B95;
+    }
+}
+</style>

@@ -16,7 +16,7 @@
                         <view class="order-status cancel" wx:elif="{{item.status==3}}">{{statusSet[item.status]}}</view>
                         <view class="order-status active" wx:else>{{statusSet[item.status]}}</view>
                     </view>
-                    <view class="order-ul-li-row logo-row">
+                    <view class="order-ul-li-row logo-row unread">
                         <image class="order-mplogo" src="{{item.mpLogo}}"/>
                         <view class="order-mpname">{{item.mpName}}</view>
                     </view>
@@ -69,7 +69,7 @@ export default class OrderList extends wepy.page {
         sendParams: {
             pageNum: 1,
             pageSize: 5,
-            status: '0',
+            status: '',
         },
         orderList: {
             data: [],
@@ -79,7 +79,7 @@ export default class OrderList extends wepy.page {
     }
     methods = {
         bindClickTab (status) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_orderList_status_${status}`);
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_orderList_status_${status}`);
             const resetParams = {
                 pageNum: 1,
                 pageSize: 5,
@@ -311,13 +311,6 @@ export default class OrderList extends wepy.page {
             text-align: center;
         }
     }
-    // .waitinglist-wrap {
-    //     display: block;
-    // }
-    // .orders-wrap .lists {
-    //     margin-bottom: -20rpx;
-    //     min-height: 20rpx;
-    // }
 
     .font-yellow {
         color: #ff552e;

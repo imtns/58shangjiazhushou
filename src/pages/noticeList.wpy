@@ -1,99 +1,86 @@
 <template>
     <view class="notice-container">
         <view class="notice-new">
-            <navigator class="notice-name" url="sysNoticeList" hover-class="none">
+            <navigator class="notice-name" url="sysNoticeList" hover-class="none" @tap="SystemMsg">
                 <view class="notice-system">
-                    <image src="assets/system-icon.png"/>
-                    <view class="num">16</view>
+                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/system-icon.png" mode="aspectFit"/>
+                    <view wx:if="{{progressUnRead > 0 }}" class="num">{{progressUnRead}}</view>
                 </view>
                 <view class="notice-txt">
                     <view class="sys-txt">系统通知</view>
-                    <view class="mp-txt">朝阳大药房上线了</view>
+                    <view class="mp-txt">{{lastUnreadSystemMsg}}</view>
                 </view>
             </navigator>
-            <navigator class="notice-name" url="accountNoticeList" hover-class="none">
+            <navigator class="notice-name" url="accountNoticeList" hover-class="none" @tap="MoneyMsg">
                 <view class="notice-system">
-                    <image src="assets/account-icon.png"/>
-                    <view class="num">9</view>
+                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/account-icon.png" mode="aspectFit"/>
+                    <view wx:if="{{recivMoneyUnRead > 0 }}" class="num">{{recivMoneyUnRead}}</view>
                 </view>
                 <view class="notice-txt">
                     <view class="sys-txt">入账通知</view>
-                    <view class="mp-txt">您有最新入帐600元</view>
+                    <view class="mp-txt">{{lastUnreadMoneyMsg}}</view>
                 </view>
             </navigator>
         </view>
-        <!-- <scroll-view class="notice-list" wx:if="{{noticeList.length>0}}" scroll-y="true" scroll-with-animation="true" lower-threshold="50" bindscrolltolower="noticeListMore" style="height: {{height}}">
-            <block wx:for="{{noticeList}}" wx:key="index">
-                <view class="notice-list-item">
-                    <view class="notice-item" bindtap="touploadInfo" data-item="{{item}}">
-                        <view class="notice-img {{item.status === 1 ? 'new-msg' : ''}}">
-                            <image src="{{item.mpLogo || 'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=120&h=120'}}"></image>
+        <scroll-view class="card-list" wx:if="{{cardList.length>0}}" scroll-y="true" scroll-with-animation="true" lower-threshold="50" style="height: 100vh">
+            <view class="card-time">{{lastedTime}}</view>
+            <block wx:for="{{cardList}}" wx:key="index">
+                <view class="card-list-item">
+                    <navigator class="card-item" url="visitorInfo?cardId={{item.cardId}}&consumerId={{item.consumerId}}"  hover-class="none" @tap="consumerCard">
+                        <image class="avator" src="{{item.headImg}}" mode="aspectFit"/>
+                        <view class="info">
+                            <view class="visitor">{{item.nickName}}查看了您的名片</view>
+                            <view class="contact">{{item.content}}</view>
                         </view>
-                        <view class="notice-content">
-                            <view class="notice-name">
-                                <view class="notice-weixin-type {{item.app_type === 1 ? 'youxiang' : ''}}">{{item.app_type === 1 ? '优享' : '微信'}}</view>
-                                <view class="notice-weixin-name">{{item.mpName}}</view>
-                                <view class="notice-status">{{item.title}}</view>
-                            </view>
-                            <view class="notice-more">
-                                <view class="notice-msg">{{item.content}}</view>
-                                <view class="notice-time">{{item.createTime}}</view>
-                            </view>
-                        </view>
-                    </view>
+                    </navigator>
                 </view>
             </block>
-        </scroll-view> -->
-        <scroll-view class="card-list" scroll-y="true" style="height: 100vh">
-            <view class="card-list-item">
-                <view class="card-time">2018年8月25日 21:45</view>
-                <navigator class="card-item">
-                    <image class="avator" src=""/>
-                    <view class="info">
-                        <view class="visitor">张艳查看了您的名片</view>
-                        <view class="contact">有可能对你感兴趣，快去联系ta吧</view>
-                    </view>
-                </navigator>
-            </view>
         </scroll-view>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
-import { sleep, toast } from '../utils/index';
 
 import { get } from '../utils/ajax';
+import { READ_GROUND_MSG, CONSUMERS } from '../utils/url';
+import { getUid, SendClickLog } from '../utils/maidian';
 
-export default class NoticeList extends wepy.page {
+export default class cardList extends wepy.page {
     config = {
         navigationBarTitleText: '通知',
         disableScroll: true,
     }
     data = {
-        noticeList: [],
-        orderUnRead: 0,
+        cardList: [],
+        progressUnRead: 0,
         recivMoneyUnRead: 0,
-        unreadcount: 0,
-        height: '',
+        lastUnreadMoneyMsg: '',
+        lastUnreadSystemMsg: '',
+        lastedTime: '',
         sendParams: {
-            group: 1,
-            page: 1,
+            pageNum: 1,
             pageSize: 10,
         },
     }
     methods = {
-        noticeListMore() {
+        cardListMore() {
             this.sendParams.page = this.sendParams.page + 1;
             this.sendParams = Object.assign({}, this.sendParams, this.sendParams.page);
-            this.loadNoticeList();
+            this.loadList();
+        },
+        SystemMsg() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_noticeList_SystemMsg');
+        },
+        MoneyMsg() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_noticeList_MoneyMsg');
+        },
+        consumerCard() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_noticeList_consumerCard');
         },
     }
     async onShow() {
         this.loadList();
-        const { screenHeight } = wepy.getSystemInfoSync();
-        this.height = screenHeight - 258;
-        this.$apply();
     }
     async onHide() {
         console.log('onHide');
@@ -104,20 +91,25 @@ export default class NoticeList extends wepy.page {
             return;
         }
         try {
-            await get('/mplogic/readgroupmsg', { group: 1 });
+            await get(READ_GROUND_MSG, { group: 4 });
         } catch (e) {
             console.log(e);
         }
     }
     async loadList() {
         try {
-            const { data } = await get('/mplogic/msglist');
+            const mpId = wepy.getStorageSync('current_mpid');
+            this.sendParams = Object.assign(this.sendParams, { mpId: mpId });
+            const { data } = await get(CONSUMERS, this.sendParams);
             const {
-                msglist, unreadcount, orderUnRead, recivMoneyUnRead,
+                msgVos, progressUnRead, recivMoneyUnRead, lastUnreadMoneyMsg, lastUnreadSystemMsg,
             } = data;
-            this.unreadcount = unreadcount;
-            this.orderUnRead = orderUnRead;
+            this.progressUnRead = progressUnRead;
             this.recivMoneyUnRead = recivMoneyUnRead;
+            this.lastUnreadMoneyMsg = lastUnreadMoneyMsg;
+            this.lastUnreadSystemMsg = lastUnreadSystemMsg;
+            const { msglist, lastedTime } = msgVos.data;
+            this.lastedTime = lastedTime;
             if (msglist && msglist.length > 0) {
                 const arr = [];
                 msglist.forEach((item) => {
@@ -127,59 +119,11 @@ export default class NoticeList extends wepy.page {
                     }
                     arr.push(ele);
                 });
-                this.noticeList = arr;
+                this.cardList = arr;
             } else {
-                this.noticeList = [];
+                this.cardList = [];
             }
             this.$apply();
-        } catch (e) {
-            console.log(e);
-        }
-    }
-    async loadNoticeList() {
-        try {
-            const { data } = await get('/mplogic/getgroupmsglist', this.sendParams);
-            const { msglist } = data;
-            if (msglist.length === 0) {
-                this.accountList = this.accountList;
-                toast('没有更多消息啦');
-                return;
-            }
-            const arr = [];
-            msglist.forEach((item) => {
-                const { content } = item;
-                const ele = Object.assign(
-                    {},
-                    item, { content: JSON.parse(content) },
-                );
-                if (ele.mpLogo && ele.mpLogo.indexOf('http') === -1) {
-                    ele.mpLogo = `https://pic1.58cdn.com.cn${ele.mpLogo}`;
-                }
-                arr.push(ele);
-            });
-            this.noticeList = this.noticeList.concat(arr);
-            this.$apply();
-        } catch (e) {
-            console.log(e);
-        }
-    }
-    touploadInfo(e) {
-        const { item } = e.currentTarget.dataset;
-        // 微信小程序，审核失败，进 上传素材页面
-        if (item.msgType !== 5 && item.app_type !== 1) return;
-        wepy.navigateTo({
-            url: '../uploadInfo',
-        });
-    }
-    async clearAll() {
-        try {
-            if (this.noticeList.length <= 0) {
-                toast('没有消息，无需清空~');
-                return;
-            }
-            await get('/mplogic/cleargroupmsg', { group: 1 });
-            sleep();
-            this.loadList();
         } catch (e) {
             console.log(e);
         }
@@ -223,7 +167,7 @@ view,scroll-view{
                 right: 30rpx;
             }
             .notice-system{
-                width: 100rpx;
+                width: 90rpx;
                 position: relative;
                 .num{
                     font-size:18rpx;
@@ -384,6 +328,7 @@ view,scroll-view{
         .avator{
             width: 60rpx;
             height: 60rpx;
+            border-radius: 100%;
             margin: 15rpx 40rpx 0 0;
             background: red;
         }

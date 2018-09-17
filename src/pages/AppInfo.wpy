@@ -141,7 +141,7 @@ export default class AppInfo extends wepy.page {
     }
     methods = {
         bindClickPreview (qrcodeUrl) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_appinfo_youxiang_code');
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_appinfo_youxiang_code');
             wepy.previewImage({
                 urls: [picSrcDomain() + qrcodeUrl],
             });

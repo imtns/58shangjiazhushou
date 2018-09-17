@@ -1,6 +1,12 @@
 <template>
     <view class="notice-container">
-        <navigator class="notice-visitor" hover-class="none">
+        <navigator class="notice-visitor"
+            hover-class="none"
+            target="miniProgram"
+            open-type="navigate"
+            app-id="wx49b3af93cbcd737b"
+            path=""
+            version="release">
             更多帖子访客消息
             <text class="browse-btn">去浏览 ></text>
         </navigator>
@@ -40,7 +46,7 @@
 <script>
 import wepy from 'wepy';
 
-import { sleep } from '../utils/index';
+import { sleep, toast } from '../utils/index';
 
 import { get } from '../utils/ajax';
 
@@ -107,6 +113,19 @@ export default class SysNoticeList extends wepy.page {
             console.log(e);
         }
     }
+    async clearAll() {
+        try {
+            if (this.noticeList.length <= 0) {
+                toast('没有消息，无需清空~');
+                return;
+            }
+            await get('/mplogic/cleargroupmsg', { group: 1 });
+            sleep();
+            this.loadList();
+        } catch (e) {
+            console.log(e);
+        }
+    }
 }
 </script>
 
@@ -134,13 +153,12 @@ scroll-view {
     &:before{
         display: inline-block;
         content: '';
-        width: 30rpx;
-        height: 30rpx;
-        background: red;
-        /* background: url(assets/sysnotice-icon.png) no-repeat; */
-        margin: 13rpx 15rpx 0 0;
-        float: left;
+        width: 35rpx;
+        height: 35rpx;
+        background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/sysnotice-icon.png) no-repeat;
         background-size: 100% 100%;
+        margin: 11rpx 15rpx 0 0;
+        float: left;
     }
     box-sizing: border-box;
     .browse-btn{

@@ -1,7 +1,6 @@
 <script>
 import wepy from 'wepy';
 import 'wepy-async-function';
-// import { alert } from './utils';
 import DoMiniProgramBack from './utils/scene';
 
 // 回调小程序类型
@@ -103,10 +102,14 @@ export default class extends wepy.app {
 
             'pages/wechat/chat/chat', // 聊天
             'pages/chatMessages', // 消息tab 消息列表
-            'pages/orderAll', // 订单tab 订单页面
 
             'pages/visitorLogs', // 访客记录页面
             'pages/visitorInfo', // 访客信息页面
+            'pages/myBizCard', // 我的名片页面
+            'pages/myBizCardSave', // 我的名片保存页面
+            'pages/articleComponentGroup', // 文章分组页面
+            'pages/newBizCard', // 新建名片页面
+            'pages/choseStyle', // 名片样式选择
         ],
         window: {
             backgroundTextStyle: 'light',
@@ -127,7 +130,7 @@ export default class extends wepy.app {
                 iconPath: 'pages/assets/tabbar/tabbar_message.png',
                 selectedIconPath: 'pages/assets/tabbar/tabbar_message_selected.png',
             }, {
-                pagePath: 'pages/orderAll',
+                pagePath: 'pages/OrderList',
                 text: '订单',
                 iconPath: 'pages/assets/tabbar/tabbar_order.png',
                 selectedIconPath: 'pages/assets/tabbar/tabbar_order_selected.png',
@@ -136,8 +139,7 @@ export default class extends wepy.app {
     }
     onLaunch () {
         console.log('onlaunch');
-        // wx.setStorageSync('ppu', 'UID=31755938744583&UN=huhy02&TT=b28ea41cef5861bea9331750993644a4&PBODY=LIbxOLdwSBO_HZKchfZw3KFwFO23PWqIZlLGC5vqitqpLHds2HIOidPNM_mUQoZ72mrX21sc7fBe40HW4lggeyKEa1RJn_ehL_yUTs4QPg7U5_Qwe0spRo8447xAWSwgXW4-wuTKyvDp51fpw9LXqkrTcDPrz3EGrGGkU9-JIWQ&VER=1');
-        // wx.setStorageSync('ppu', 'UID=53182521946894&UN=v55kara1u&TT=477ee0a09336e8da5f02f938b8ea1824&PBODY=a-wMsHWdBqOFQ7vp2s195NhWq2-BTSaWLDlh4Dxgl7DdJz4oD2Kjn0yO8CTfTomVbA9Ro2fK5ik29-6-Q4DDQqkAp1BAJWQEMtu5lBVRanfc6uMaiakz6nNvOfMwBuGtC4vA_NysRqNtueTjMLnUdNSWg-43X0UEUFvHEGTvAHQ&VER=1');
+        // wx.setStorageSync('ppu', 'UID=46160601&UN=myfdandelion&TT=2cc059576024b34ae24276be041993a3&PBODY=irL0-ueyvMZaDnImIvgXh7jP8CAZ4roIjlbunUutrSWR4OZl8vfxUqGLzIku1MyJ9UQapLsDiXfJcy30tdSevaeq4UvhVSI8ZCoO-vjtkRYgcwW1R28vG_r3_XEIVhPYWiLXfHc28cdRZteQbRbPTxf_VcSEZgZD2SPjLkfV2Zk&VER=1'); // myf
         // wx.setStorageSync('ppu', 'UID=48917864286479&UN=zf3e85&TT=2de55ae4fc4dae0bf0fd4d689c34643e&PBODY=jAPyieEpdos8gNyqMqUTG1ieqh6ekU4Hvf2TSVrNbplU07D8ciX7rVDk-3LD_vJvQv07Wel1_uizTmoW8_vaR5alMpPFXRues2ISmGX5bFeS6SJxvxqRMX6IF3RNV8KGa12VWDnqcPvo6XSmklphaH8TxO4Cjft-HcCwqfdXwG4&VER=1'); // lqq 测试
         // wx.setStorageSync( // yxd 正式环境
         //     'ppu',
