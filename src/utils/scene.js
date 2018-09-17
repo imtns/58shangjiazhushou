@@ -1,39 +1,38 @@
 import wepy from 'wepy';
+import { sleep } from '../utils';
 
 
 export default {
-    DoLogin(extraData) {
+    async DoLogin(extraData) {
         const extraDataJSON = (typeof extraData === 'object') ? { ...extraData } : JSON.parse(extraData);
         if (extraDataJSON.ppu !== undefined) { // 如果获取ppu成功
             console.log(`获取PPU成功！ ${extraDataJSON.ppu}`);
             wepy.setStorageSync('ppu', extraDataJSON.ppu);
             const query = wepy.getStorageSync('query');
-            const { toRedirect } = query;
-            if (query && JSON.stringify(query) !== '{}' && !query.ParamNames) { // 如果从公众号进来的消息
-                setTimeout(() => {
-                    wepy.redirectTo({
-                        url: toRedirect,
-                    });
-                }, 1000);
+            const { toRedirect, ParamNames = '' } = query;
+            if (query && JSON.stringify(query) !== '{}' && !ParamNames) { // 如果从公众号进来的消息
+                await sleep();
+                wepy.redirectTo({
+                    url: toRedirect,
+                });
                 wx.removeStorageSync('query');
                 return;
             }
-            if (query && JSON.stringify(query) !== '{}' && query.ParamNames) {
+            if (query && JSON.stringify(query) !== '{}' && ParamNames) {
                 let paramsStr = '';
-                if (query.ParamNames.split('|').length === 1) {
-                    paramsStr = `&${query.ParamNames}=${query.ParamValues}`;
+                if (ParamNames.split('|').length === 1) {
+                    paramsStr = `&${ParamNames}=${query.ParamValues}`;
                 } else {
-                    const keyArr = query.ParamNames.split('|');
+                    const keyArr = ParamNames.split('|');
                     const valueArr = query.ParamValues.split('|');
                     keyArr.forEach((item, index) => {
                         paramsStr += `&${keyArr[index]}=${valueArr[index]}`;
                     });
                 }
-                setTimeout(() => {
-                    wepy.redirectTo({
-                        url: `${toRedirect}?${paramsStr.substring(1)}`,
-                    });
-                }, 1000);
+                await sleep();
+                wepy.redirectTo({
+                    url: `${toRedirect}?${paramsStr.substring(1)}`,
+                });
                 wx.removeStorageSync('query');
                 return;
             }

@@ -335,7 +335,6 @@ export default class Home extends wepy.page {
         await this.getInfo();
         if (!this.isFollow && wepy.getStorageSync('ppu')) {
             this.showModal = true;
-            this.$apply();
         }
         this.$apply();
     }
@@ -373,14 +372,14 @@ export default class Home extends wepy.page {
             if (!isFollow && assistInfo === null) {
                 // 既没有授权也没有关注公众号
                 that.assistAuth = false;
-                this.$apply();
-            } else if (!isFollow && assistInfo !== null) {
+                that.$apply();
+            } else if (!isFollow && JSON.stringify(assistInfo) !== '{}') {
                 // 已授权但没有关注公众号
                 that.assistAuth = true;
-                this.$apply();
+                that.$apply();
             }
             that.isFollow = isFollow;
-            this.$apply();
+            that.$apply();
         } catch (e) {
             console.log(e);
         }
@@ -426,7 +425,7 @@ export default class Home extends wepy.page {
                 const { iv, encryptedData } = res;
                 that.iv = iv;
                 that.encryptedData = encryptedData;
-                this.$apply();
+                that.$apply();
             },
         });
     }

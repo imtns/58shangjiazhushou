@@ -37,7 +37,7 @@ var Page = {
         }
     },
     init() {
-        Page.ppu = decodeURIComponent(Page.getKey('ppu'));
+        Page.ppu = Page.getKey('ppu');
         Page.group = Page.getKey('group');
         Page.id = Page.getKey('id');
         Page.name = decodeURIComponent(Page.getKey('name'));

@@ -50,7 +50,7 @@ var Page = {
         return null;
     },
     init: function init() {
-        Page.ppu = decodeURIComponent(Page.getKey('ppu'));
+        Page.ppu = Page.getKey('ppu');
         Page.id = Page.getKey('id');
         Page.group = Page.getKey('group');
         Page.mpId = Page.getKey('mpId');
@@ -177,8 +177,8 @@ var Page = {
                 temp = $('.zeditor-content').find('p'),
                 content = $('.zeditor-content').html(),
                 pics = $('#cover').attr('src') ? $('#cover').attr('src').split('.cn')[1].replace(/([/])\1+/g, '$1') : '';
-            if(Number(price)>999999){
-                Page.toast($errorPop, '商品价格不能大于99999');
+            if(Number(price)>10000000){
+                Page.toast($errorPop, '商品价格不能大于1000万');
                 return;
             }
             if(Number(stock)>999999){
@@ -238,8 +238,8 @@ var Page = {
                 data: data,
                 headers: {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-                    PPU: Page.ppu || 'wanghongyue',
-                    reqfrom: 'biz_assistant'
+                    'PPU': Page.ppu || 'wanghongyue',
+                    'reqfrom': 'biz_assistant'
                 },
                 success: function success(res) {
                     var res = JSON.parse(res);

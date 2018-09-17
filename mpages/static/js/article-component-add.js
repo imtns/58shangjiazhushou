@@ -48,7 +48,7 @@ var Page = {
         return null;
     },
     init: function init() {
-        Page.ppu = decodeURIComponent(Page.getKey('ppu'));
+        Page.ppu = Page.getKey('ppu');
         Page.id = Page.getKey('id');
         $('.item-file-div').removeClass('none');
         Page.loadGroupData();
