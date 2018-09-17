@@ -3,7 +3,7 @@ const data = {
     multiSelector: {}, // 用于选择器
     cropperUrl: '',
     afterCrop: false, // 是否刚裁剪完，设为true后记得改回false
-    'app.businessHour': {},
+    'app.pickBusinessHour': {},
 };
 
 const foos = {

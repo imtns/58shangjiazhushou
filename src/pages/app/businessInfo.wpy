@@ -3,7 +3,7 @@
         <view class="form-group">
             <navigator
                 class="form-item"
-                url="{{ urlBusinessHours }}">
+                url="{{ urlPickBusinessHours }}">
                 <text class="form-label">营业时间</text>
                 <view class="form-value">
                     <text wx:if="{{ form.businessDays }}">已选择</text>
@@ -88,6 +88,7 @@ import wepy from 'wepy';
 import { alert } from '../../utils';
 import { post, get } from '../../utils/ajax';
 import { LOAD_BUSINESS_SETTING, SAVE_BUSINESS_SETTING } from '../../utils/url';
+import * as globalService from '../../utils/globalService';
 
 export default class AppEdit extends wepy.page {
     config = {
@@ -105,7 +106,7 @@ export default class AppEdit extends wepy.page {
             avgTime: 30, // 平均送达时长
             receiptType: '0', // 接单类型
             businessDays: '1，1，1，1，1，1，1，1',
-            startTime: '8:00',
+            startTime: '08:00',
             endTime: '21:00',
         },
         // 默认值、最大值
@@ -153,14 +154,22 @@ export default class AppEdit extends wepy.page {
             return result;
         },
 
-        urlBusinessHours() {
+        urlPickBusinessHours() {
             const { form } = this;
-            return `/pages/app/businessHours?businessDays=${form.businessDays}&startTime=${form.startTime}&endTime=${form.endTime}`;
+            return `/pages/app/pickBusinessHour?businessDays=${form.businessDays}&startTime=${form.startTime}&endTime=${form.endTime}`;
         },
     }
 
     onLoad() {
         this.loadData();
+    }
+
+    onShow() {
+        const businessHourData = globalService.get('app.pickBusinessHour');
+        // 有数据就同步
+        if (businessHourData.businessDays) {
+            Object.assign(this.form, businessHourData);
+        }
     }
 
     methods = {
@@ -224,6 +233,7 @@ export default class AppEdit extends wepy.page {
                 throw new Error('data is empty');
             }
             this.form = result;
+            this.$apply();
         } catch (err) {
             alert('获取数据失败');
             console.log(err);
