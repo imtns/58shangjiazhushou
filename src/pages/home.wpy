@@ -109,6 +109,8 @@ import { CHAT_LOGIN, MY_MPLIST, SESSION, INSERT_SESSION, GET_EXT_JSON, GET_ASSIS
 
 import { sdkLogin, onMsgNotify } from '../utils/IM/IM';
 
+import { chatContactList } from '../store/index';
+
 export default class Home extends wepy.page {
     mixins = [Mixin]
     config = {
@@ -334,8 +336,8 @@ export default class Home extends wepy.page {
         }
         if (!this.isFollow && wepy.getStorageSync('ppu')) {
             this.showModal = true;
+            this.$apply();
         }
-        this.$apply();
     }
     formatedMp (item) {
         const mp = item;
@@ -681,21 +683,26 @@ export default class Home extends wepy.page {
             const { tim, myInfo, unReadCount = 20 } = data;
             const { unReadCount: counts } = globalData.chat;
             const text = counts && counts > 0 ? (counts + Number(unReadCount)) : unReadCount;
-            if (Number(text) && Number(text) > 0) {
-                setTabBar(text);
-            }
+
+            setTabBar(text);
+
             const {
                 token, nickName, headImg, id,
             } = myInfo;
+
             // 设置全局token
+            let tempHeadImg = headImg;
+            if (headImg.indexOf('http') === -1) {
+                tempHeadImg = `https://pic1.58cdn.com.cn${headImg}`;
+            }
             Object.assign(globalData.chat, {
                 isLogin: true,
                 token,
                 nickName,
-                headImg,
+                headImg: tempHeadImg,
                 myId: id,
             });
-
+            await chatContactList();
             // IM 登录，获取实时消息
             this.initIM(tim);
         } catch (e) {
@@ -706,11 +713,8 @@ export default class Home extends wepy.page {
     initIM(tim) {
         console.log('initIM');
         // 当前用户身份
-        const loginInfo = {
-            accountType: 37611,
-        };
+        const loginInfo = {};
         Object.assign(loginInfo, tim);
-        console.log(loginInfo);
         // listeners
         const listeners = {
             onMsgNotify: onMsgNotify, // 监听新消息

@@ -1,15 +1,16 @@
 <template>
     <view class="chatMessages">
         <repeat wx:if="{{contactList.length > 0}}" for="{{contactList}}" key="index" index="index" item="item">
-            <view class="message_box"  @tap="toChat({{item.id}}, {{item.nickName}})">
-                <view class="message_header" style="background:url({{item.portrait}}) no-repeat center">
+            <view class="message_box"  @tap="toChat" data-item="{{item}}">
+                <view class="message_header" style="background:url(http://pic1.58cdn.com.cn{{item.portrait || 'http://pic1.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png'}}?=690'}}) no-repeat center">
                     <view class="message_tips" wx:if="{{item.unReadCount > 0}}">{{item.unReadCount}}</view>
                 </view>
                 <view class="message_info">
                     <view class="chat_name">{{item.nickName}}</view>
-                    <view class="chat_info" wx:if="{{item.recentMsgs[item.recentMsgs.length - 1].type == 0}}">{{item.recentMsgs[item.recentMsgs.length - 1].content}}</view>
-                    <view class="chat_info" wx:if="{{item.recentMsgs[item.recentMsgs.length - 1].type == 1}}">[图片]</view>
-                    <view class="chat_time">{{item.recentMsgs[item.recentMsgs.length - 1].sendTime}}</view>
+                    <view class="chat_info">{{item.content}}</view>
+                    <!-- <view class="chat_info" wx:if="{{item.recentMsgs[item.recentMsgs.length - 1].type == 0}}">{{item.recentMsgs[item.recentMsgs.length - 1].content}}</view>
+                    <view class="chat_info" wx:if="{{item.recentMsgs[item.recentMsgs.length - 1].type == 1}}">[图片]</view> -->
+                    <view class="chat_time">{{item.sendTime}}</view>
                 </view>
             </view>
         </repeat>
@@ -25,9 +26,13 @@
 
 <script>
 import wepy from 'wepy';
+// import { CHAT_CONTACT_LIST } from '../utils/url';
+// import { post } from '../utils/ajax';
+import { globalData, setTabBar } from '../utils/globalData';
+import { pubsub } from '../utils/IM/pubsub';
+import { formatDateTimeLocal } from '../utils/dateFomate';
 import { CHAT_CONTACT_LIST } from '../utils/url';
 import { get } from '../utils/ajax';
-import { globalData } from '../utils/globalData';
 import { getUid, SendClickLog } from '../utils/maidian';
 
 
@@ -39,11 +44,18 @@ export default class chatMessages extends wepy.page {
         contactList: [],
     }
     methods = {
+        toChat(e) {
+            const { contactId, nickName, unReadCount } = e.currentTarget.dataset.item;
+            const { unReadCount: totalCount } = globalData.chat;
+            if (unReadCount) {
+                const text = totalCount - unReadCount;
+                setTabBar(text);
+            }
         toChat(contact, chatWith) {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chatMessages_toChat');
             console.log('*****', contact, chatWith);
             wepy.navigateTo({
-                url: `wechat/chat/chat?contact=${contact}&chatWith=${chatWith}`,
+                url: `wechat/chat/chat?contact=${contactId}&nickName=${nickName}`,
             });
         },
     }
@@ -51,7 +63,8 @@ export default class chatMessages extends wepy.page {
         console.log('onload');
     }
     async onShow () {
-        const { token = '' } = globalData.chat;
+        const { token = '', contactList = [] } = globalData.chat;
+        console.error('contactList', contactList);
         if (!token) {
             return;
         }
@@ -59,8 +72,40 @@ export default class chatMessages extends wepy.page {
             token,
         });
         console.log(data);
-        this.contactList = [];
+        this.contactList = data;
         this.$apply();
+
+        this.unreadMsgs();
+    }
+
+    unreadMsgs() {
+        const { contactList } = this;
+        contactList.forEach((msg, index) => {
+            const { contactId } = msg;
+            pubsub.subscribe(contactId, (...props) => {
+                const { type, content, sendTime } = props[0];
+                const { unReadCount } = msg;
+                let count;
+                if (unReadCount === 0 || unReadCount === '0') {
+                    count = 1;
+                } else {
+                    count = Number(unReadCount) + 1;
+                }
+                console.error('msg', unReadCount, contactId, msg);
+                const newMsg = Object.assign(msg, {
+                    lastType: type,
+                    content: type === 1 ? '[图片]' : content,
+                    sendTime: formatDateTimeLocal(sendTime),
+                    unReadCount: count,
+                });
+                const { contactList: newList } = this;
+                newList.splice(index, 1);
+                newList.unshift(newMsg);
+                console.error('newMsg', newMsg, formatDateTimeLocal(sendTime));
+                this.contactList = newList;
+                this.$apply();
+            });
+        });
     }
 }
 </script>
