@@ -32,23 +32,52 @@ export const onMsgNotify = (newMsgList) => {
         pushMsg(newMsg);
     });
 }
-const pushMsg = (newMsg) => {
-    chatContactList();
+const pushMsg = async (newMsg) => {
+    await chatContactList();
+
     let ele, content;
     const eles = newMsg.getElems();
     const {currentContactId = '', contactList } = globalData.chat;
 
     const temp = {};
-    const contacts1 = [];
+    let contacts1 = [];
+    let contacts2 = [];
     for(let i in eles) {
         ele = eles[i];
         content = Object.prototype.toString.call(ele.getContent().data) ? JSON.parse(ele.getContent().data) : ele.getContent().data;
-        const { contactId } = content;
+        const { contactId, content: newContent, sendTime, contactNickName, contactPortrait, type  } = content;
         console.log(content, currentContactId, contactId);
 
         // 发布当前聊天人的未读，
+        if (temp[contactId]) {
+            if (temp[contactId].unReadCount !== 0) {
+                temp[contactId].unReadCount += 1;
+                temp[contactId].content = type == 1 ? '[图片]' : newContent;
+                temp[contactId].sendTime = sendTime;
+            }
+        } else {
+            // 如果最近联系人中没有此userId,新建添加至最近联系人
+            temp[contactId] = {
+                contactId,
+                nickName: contactNickName,
+                portrait,
+                sendTime,
+                content: type == 1 ? '[图片]' : newContent,
+                unReadCount: 1,
+            };
+        }
+        contacts1.push(temp[contactId]);
 
         pubsub.publish(contactId, content, +new Date());
     }
+
+    contactList.forEach((item) => {
+        if (temp[item.contactId]) {
+            temp[item.contactId].unReadCount += item.unReadCount
+        } else {
+            contacts2.push(item);
+        }
+    });
+    globalData.chat.contactList = contacts1.concat(contacts2);
 };
 

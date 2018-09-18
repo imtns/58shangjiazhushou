@@ -456,6 +456,7 @@ export default class Home extends wepy.page {
                 count = 0,
                 nexttask = '',
                 score,
+                cardId = '',
             } = data;
             const formatedMpinfo = this.formatedMp(mpinfo);
             this.business = Object.assign({}, this.business, {
@@ -467,6 +468,7 @@ export default class Home extends wepy.page {
                 selected: {
                     ...formatedMpinfo,
                     score,
+                    cardId,
                 },
             });
             this.status.loading = false;
@@ -484,9 +486,11 @@ export default class Home extends wepy.page {
         }
     }
     setGlobalMpId (id) {
+        const { cardId = '' } = this.business.selected;
         if (id) {
             wepy.setStorageSync('current_mpid', id);
         }
+        wepy.setStorageSync('current_cardId', cardId);
     }
     checkBeforeJump (text) {
         if (!this.business.mpCount) {
