@@ -45,18 +45,13 @@ export default class chatMessages extends wepy.page {
     }
     methods = {
         toChat(e) {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chatMessages_toChat');
             const { contactId, nickName, unReadCount } = e.currentTarget.dataset.item;
             const { unReadCount: totalCount } = globalData.chat;
             if (unReadCount) {
                 const text = totalCount - unReadCount;
                 setTabBar(text);
             }
-        toChat(contact, chatWith) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chatMessages_toChat');
-            console.log('*****', contact, chatWith);
-            wepy.navigateTo({
-                url: `wechat/chat/chat?contact=${contactId}&nickName=${nickName}`,
-            });
         },
     }
     onLoad () {
