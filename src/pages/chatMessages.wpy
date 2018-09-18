@@ -31,8 +31,9 @@ import wepy from 'wepy';
 import { globalData, setTabBar } from '../utils/globalData';
 import { pubsub } from '../utils/IM/pubsub';
 import { formatDateTimeLocal } from '../utils/dateFomate';
-import { CHAT_CONTACT_LIST } from '../utils/url';
-import { get } from '../utils/ajax';
+// import { CHAT_CONTACT_LIST } from '../utils/url';
+// import { get } from '../utils/ajax';
+import { chatContactList } from '../store/index';
 import { getUid, SendClickLog } from '../utils/maidian';
 
 
@@ -52,22 +53,20 @@ export default class chatMessages extends wepy.page {
                 const text = totalCount - unReadCount;
                 setTabBar(text);
             }
+            const url = `/pages/wechat/chat/chat?contact=${contactId}&nickName=${nickName}`;
+            wepy.navigateTo({
+                url,
+            });
         },
     }
     onLoad () {
         console.log('onload');
     }
     async onShow () {
-        const { token = '', contactList = [] } = globalData.chat;
+        await chatContactList();
+        const { contactList = [] } = globalData.chat;
         console.error('contactList', contactList);
-        if (!token) {
-            return;
-        }
-        const { data } = await get(CHAT_CONTACT_LIST, {
-            token,
-        });
-        console.log(data);
-        this.contactList = data;
+        this.contactList = contactList;
         this.$apply();
 
         this.unreadMsgs();

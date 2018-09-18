@@ -20,7 +20,7 @@
             <block wx:for="{{msgList}}" wx:key="index">
                 <view class="chat-msg-body {{item.senderId === myId ? 'chat-right' : ''}}">
                     <view class="chat-msg-time">{{item.sendTime}}</view>
-                    <image class="chat-msg-avatar" src="{{item.senderPortrait}}"></image>
+                    <image class="chat-msg-avatar" src="{{item.senderPortrait}}" bindtap="toDetail" data-item="{{item}}"></image>
                     <view class="chat-msg-content" wx:if="{{item.type === '0' || item.type === 0}}">{{item.content}}</view>
                     <view class="chat-img-box" wx:else>
                         <image class="chat-msg-img" src="https://pic1.58cdn.com.cn{{item.content}}"></image>
@@ -38,7 +38,7 @@
                 cursor-spacing="30"
                 @input="input"
                 @focus="closepanel"
-                value="{{content}}"></input>
+                value="{{content}}"/>
             </view>
             <view class="chat-show-upload" @tap="showpanel" wx:if="{{!showpanel}}"></view>
             <view class="chat-show-upload close-upload" @tap="closepanel" wx:else></view>
@@ -60,7 +60,7 @@
             <view class="chat-dialog-close">×</view>
             <view class="chat-dialog-body">
                 <view class="chat-dialog-body-title">填写完成后，我会尽快联系您</view>
-                <input type="number" placeholder="请输入电话号码…" class="chat-dialog-input">
+                <input type="number" placeholder="请输入电话号码…" class="chat-dialog-input"/>
             </view>
             <view class="chat-dialog-foot">
                 <!-- <view class="chat-btn">关闭</view> -->
@@ -269,6 +269,23 @@ export default class Chat extends wepy.page {
             });
         });
     }
+    toDetail(e) {
+        // 点击头像
+        const { senderId, id, senderConsumerId } = e.currentTarget.dataset.item;
+        const { myId } = this.data;
+        let url = '';
+        if (senderId === myId) {
+            // 当前商家,进商家名片页面
+            url = '/pages/myBizCard';
+        } else {
+            // 用户的，进访客详情页面
+            url = `/pages/visitorInfo?cardId=${id}&consumerId=${senderConsumerId}`;
+        }
+
+        wepy.navigateTo({
+            url,
+        });
+    }
 }
 </script>
 
@@ -302,7 +319,6 @@ page{
                 width:80rpx;
                 height:80rpx;
                 border-radius:50%;
-                background:pink;
                 float:left;
             }
             .chat-msg-content{
