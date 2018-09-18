@@ -23,7 +23,7 @@
                     <image class="chat-msg-avatar" src="{{item.senderPortrait}}" bindtap="toDetail" data-item="{{item}}"></image>
                     <view class="chat-msg-content" wx:if="{{item.type === '0' || item.type === 0}}">{{item.content}}</view>
                     <view class="chat-img-box" wx:else>
-                        <image class="chat-msg-img" src="https://pic1.58cdn.com.cn{{item.content}}"></image>
+                        <image class="chat-msg-img" src="https://pic1.58cdn.com.cn{{item.content}}" bindtap="previewImage" data-url="{{item.content}}"></image>
                         <view class="chat-img-mask" wx:if="{{item.status === 1}}">{{progress}}%</view>
                     </view>
                 </view>
@@ -284,6 +284,12 @@ export default class Chat extends wepy.page {
 
         wepy.navigateTo({
             url,
+        });
+    },
+    previewImage(e) {
+        const { url } = e.currentTarget.dataset;
+        wepy.previewImage({
+            urls: [`https://pic1.58cdn.com.cn${url}`],
         });
     }
 }

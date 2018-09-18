@@ -306,9 +306,9 @@ export default class Home extends wepy.page {
             const { cardId = '' } = this.business.selected;
             if (cardId) {
                 sdkLogout(() => {
-                    console.log('success');
-                },() => {
-                    console.log('error');
+                    console.log('logout success');
+                }, () => {
+                    console.log('logout error');
                 });
             }
 
