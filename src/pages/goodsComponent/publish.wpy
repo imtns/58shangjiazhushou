@@ -1,0 +1,103 @@
+<template>
+    <view class="container">
+        <view class="goods-container">
+            <scroll-view class="scroll-groups">
+                <view
+                    class="groups-item"
+                    wx:for="{{ groupList }}"
+                    wx:key="index">
+                    {{ item.data.name }}
+                </view>
+            </scroll-view>
+            <scroll-view class="scroll-list">
+                
+            </scroll-view>
+        </view>
+        <view class="btn-list">
+            <view
+                class="business-info">
+                <view class="icon-edit"></view>
+                <view>营业信息</view>
+            </view>
+            <button class="btn-item edit-group">编辑分类</button>
+            <button class="btn-item edit-goods">编辑商品</button>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+
+import { get } from '../../utils/ajax';
+import { LOAD_GOODS_GROUPS } from '../../utils/url';
+
+export default class extends wepy.page {
+    config = {
+        navigationBarTitleText: '发布商品',
+    }
+    data = {
+        groupList: [],
+    }
+    onLoad() {
+        this.loadGroups();
+    }
+
+    async loadGroups() {
+        try {
+            const mpId = wepy.getStorageSync('current_mpid');
+            const { data: groupList } = await get(LOAD_GOODS_GROUPS, {
+                mpId,
+            });
+
+            this.groupList = groupList;
+            this.$apply();
+        } catch (err) {
+            console.log(err);
+        }
+    }
+}
+</script>
+<style lang="scss">
+
+    $btnListHeight: 102rpx;
+    .btn-list {
+        height: $btnListHeight;
+        display: flex;
+
+        .business-info {
+            width: 160rpx;
+            padding: 17rpx 0 6rpx;
+            color: #666;
+            background-color: #fff;
+            font-size: 20rpx;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            .icon-edit {
+                margin-bottom: 11rpx;
+            }
+        }
+
+        .btn-item {
+            font-size: 32rpx;
+            color: #fff;
+            flex-grow: 1;
+            line-height: $btnListHeight;
+            border-radius: 0rpx;
+        }
+
+        .edit-group {
+            background-color: #83ABFF;
+        }
+
+        .edit-goods {
+            background-color: #4E88FF;
+        }
+    }
+
+    .icon-edit {
+        width: 42rpx;
+        height: 40rpx;
+    }
+</style>

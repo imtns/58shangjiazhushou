@@ -19,8 +19,9 @@ export default class extends wepy.app {
 
     config = {
         pages: [
-            'pages/app/pickBusinessHour',
             'pages/home',
+            'pages/app/pickBusinessHour',
+
             'pages/edit/textEdit',
             // 登陆之后的主页
             'pages/templateList',
@@ -77,6 +78,7 @@ export default class extends wepy.app {
             'pages/goodsComponentGroup', // 商品分组
             'pages/goodsComponentAdd', // 商品添加
             'pages/goodsComponentDetail', // 商品详情
+            'pages/goodsComponent/publish', // 商品发布
             'pages/articleComponentCreate', // 文章添加(不选分组)
             'pages/articleComponentAdd', // 文章添加(选分组)
             'pages/articleComponentlist', // 文章列表

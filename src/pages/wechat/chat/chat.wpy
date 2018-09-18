@@ -71,7 +71,7 @@
 import wepy from 'wepy';
 
 import { globalData } from '../../../utils/globalData';
-import { pubsub } from '../../../utils/IM/pubsub';
+// import { pubsub } from '../../../utils/IM/pubsub';
 import '../../../utils/date';
 import { toast } from '../../../utils';
 import { uploader } from '../../../utils/uploader';
