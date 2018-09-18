@@ -107,7 +107,7 @@ import { getUid, SendClickLog } from '../utils/maidian';
 
 import { CHAT_LOGIN, MY_MPLIST, SESSION, INSERT_SESSION, GET_EXT_JSON, GET_ASSIST_AUTH } from '../utils/url';
 
-import { sdkLogin, onMsgNotify } from '../utils/IM/IM';
+import { sdkLogin, onMsgNotify, sdkLogout } from '../utils/IM/IM';
 
 import { chatContactList } from '../store/index';
 
@@ -151,7 +151,6 @@ export default class Home extends wepy.page {
         },
         items,
         nItems,
-        cardId: '1037641283830616064',
     }
     methods = {
         link(text) {
@@ -302,12 +301,24 @@ export default class Home extends wepy.page {
             this.$apply();
         },
         // 切换小程序操作
-        confirmAction () {
+        async confirmAction () {
+            // 切换小程序，登出IM
+            const { cardId = '' } = this.business.selected;
+            if (cardId) {
+                sdkLogout(() => {
+                    console.log('success');
+                },() => {
+                    console.log('error');
+                });
+            }
+
             if (this.business.selected.id) {
-                this.setGlobalMpId(this.business.chosedId);
-                this.loadData();
-                this.loadExtJson();
-                this.hideMask();
+                await this.setGlobalMpId(this.business.chosedId);
+                await this.loadData();
+                await this.loadExtJson();
+                await this.hideMask();
+                // 切换小程序，重新登录IM
+                await this.chatLogin();
             }
         },
         hideModal() {
@@ -458,6 +469,7 @@ export default class Home extends wepy.page {
                 score,
                 cardId = '',
             } = data;
+            console.error('loadData cardID', cardId);
             const formatedMpinfo = this.formatedMp(mpinfo);
             this.business = Object.assign({}, this.business, {
                 name: username,
@@ -673,7 +685,8 @@ export default class Home extends wepy.page {
     // chatLogin 聊天登录
     async chatLogin() {
         try {
-            const { cardId } = this.data;
+            const { cardId = '' } = this.business.selected;
+            if (!cardId) return;
             /**
                 tim 包含 sdkAppID identifier userSig
                 myInfo 包含 token nickName headImg
