@@ -40,7 +40,7 @@
                             <view class="img" style="background:url({{item.src}}) no-repeat center;"></view>
                             <view class="text">{{item.name}}</view>
                         </view>
-                        <navigator class="item_box" wx:if="{{item.type == 'mpJump'}}">
+                        <navigator class="item_box" wx:if="{{item.type == 'mpJump'}}" hover-class="none">
                             <view class="img" style="background:url({{item.src}}) no-repeat center;"></view>
                             <view class="text">{{item.name}}</view>
                         </navigator>

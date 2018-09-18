@@ -21,6 +21,7 @@
 import wepy from 'wepy';
 import { get } from '../utils/ajax';
 import globalService from '../utils/globalService';
+import { getUid, SendClickLog } from '../utils/maidian';
 
 const selectorConfig = {
     region: {
@@ -159,6 +160,9 @@ export default class Index extends wepy.page {
          * conIndex 当前选中的item
          */
         async selectItem(colIdx, conIdx) {
+            console.log(colIdx);
+            console.log(conIdx);
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_multiSelector_${colIdx}`);
             const colIndex = +colIdx;
             const conIndex = +conIdx;
             const column = this.contentList[colIndex] || [];
