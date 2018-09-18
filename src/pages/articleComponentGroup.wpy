@@ -107,6 +107,7 @@ export default class Index extends wepy.page {
         name: '',
         id: '',
         delList: [],
+        title: '没有文章分组~',
         mpId: '',
 
         // 素材选择模式

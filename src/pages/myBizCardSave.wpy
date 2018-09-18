@@ -20,7 +20,7 @@ export default class myBizCard extends wepy.page {
         navigationBarTitleText: '选择样式',
     }
     data = {
-        isPayOpen: true,
+        isPayOpen: '',
     }
     method = {
         checkBizCard() {
@@ -36,6 +36,7 @@ export default class myBizCard extends wepy.page {
     onLoad (option) {
         const { isPayOpen } = option;
         this.data.isPayOpen = isPayOpen;
+        this.$apply();
     }
     async onShow () {
         console.log('onShow');
