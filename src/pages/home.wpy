@@ -20,7 +20,7 @@
                         <view class="star-list"
                         style="width:{{ 30 * (~~(business.selected.score / 1)) + 22 * (business.selected.score % 1) }}rpx">
                             <view class="icon-star" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
-                        </view>
+                        </view>      
                         <navigator class="star-box-title" url="/pages/shopScore" @tap="shopScore">店铺评分</navigator>
                     </view>
                     <view wx:else>可上传素材、提交注册信息到当前小程序</view>
