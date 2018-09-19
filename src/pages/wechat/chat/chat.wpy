@@ -285,7 +285,7 @@ export default class Chat extends wepy.page {
         wepy.navigateTo({
             url,
         });
-    },
+    }
     previewImage(e) {
         const { url } = e.currentTarget.dataset;
         wepy.previewImage({
