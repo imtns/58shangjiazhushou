@@ -2,11 +2,21 @@
     <view class="goods-thumb"><image mode="aspectFill"  src="{{pics}}"></image></view>
     <view class="containe">
         <view class="goods-intro">
-            <view class="goods-detail-flex">
+             <view class="goods-detail-flex">
                 <view class="goods-base">{{title}}</view>
+                <view class="base-text red">{{price}}元</view>
             </view>
+        </view>
+         <view class="goods-intro">
             <view class="goods-detail-flex">
-                <view class="base-text"><text class="priceTag">￥</text>{{price}}</view>
+                <view class="goods-base">配送费</view>
+                <view class="base-text">12元</view>
+            </view>
+        </view>
+        <view class="goods-intro">
+            <view class="goods-detail-flex">
+                <view class="goods-base">配送方式</view>
+                <view class="base-text">商家配送</view>
             </view>
         </view>
         <view class="content-wrapper">
@@ -21,8 +31,11 @@
         <!-- <rich-text class="goods-content" nodes="{{content}}"></rich-text> -->
     </view>
     <view class="block"></view>
-    <view class="button goods-edit-btn" @tap="toEdit">编辑</view>
-</template>
+    <view class="buttons">   
+        <view class="button goods-edit-btn" @tap="toEdit">编辑</view>
+        <view class="button goods-public-btn" @tap="toPublic">上架</view>
+    </view>
+</template>          
 
 <script>
 import wepy from 'wepy';
@@ -30,163 +43,188 @@ import wepy from 'wepy';
 import { get } from '../utils/ajax';
 
 export default class goodsComponentDetail extends wepy.page {
-    config = {
-        navigationBarTitleText: '商品详情',
-    }
-    data = {
-        id: '',
-        group: '',
-        name: '',
-        title: '',
-        price: '',
-        description: '',
-        pics: '',
-    }
-    async onLoad(option) {
-        console.log('detail', option);
-        const { group = '', id = '', name = '' } = option;
-        this.group = group;
-        this.id = id;
-        this.name = name;
-        this.$apply();
-    }
-    onShow() {
-        this.loadData();
-    }
-    async loadData() {
-        const { id } = this;
-        console.log(id);
-        const { data } = await get('/goods/get', {
-            goodId: id,
-        });
-        console.log(data);
-        let { pics } = data;
-        if (pics.indexOf('?') > -1) { pics = `${pics.substr(0, pics.indexOf('?'))}?w=750`; } else { pics += '?w=750'; }
-        const {
-            title,
-            price,
-            description,
-        } = data;
-        const ps = description.split('</p>')
-            .filter(p => p)
-            .map(p => {
-                const result = /<img src="([^<>]+)"/g.exec(p);
-                if (result) {
-                    const src = result[1].replace(/^http:/i, '').split('?');
+  config = {
+      navigationBarTitleText: '商品详情',
+  };
+  data = {
+      id: '',
+      group: '',
+      name: '',
+      title: '',
+      price: '',
+      description: '',
+      pics: '',
+  };
+  async onLoad(option) {
+      console.log('detail', option);
+      const { group = '', id = '', name = '' } = option;
+      this.group = group;
+      this.id = id;
+      this.name = name;
+      this.$apply();
+  }
+  onShow() {
+      this.loadData();
+  }
+  async loadData() {
+      const { id } = this;
+      console.log(id);
+      const { data } = await get('/goods/get', {
+          goodId: id,
+      });
+      console.log(data);
+      let { pics } = data;
+      if (pics.indexOf('?') > -1) {
+          pics = `${pics.substr(0, pics.indexOf('?'))}?w=750`;
+      } else {
+          pics += '?w=750';
+      }
+      const { title, price, description } = data;
+      const ps = description
+          .split('</p>')
+          .filter(p => p)
+          .map(p => {
+              const result = /<img src="([^<>]+)"/g.exec(p);
+              if (result) {
+                  const src = result[1].replace(/^http:/i, '').split('?');
 
-                    return {
-                        type: 'img',
-                        src: `${src[0]}?w=750`,
-                    };
-                }
-                return {
-                    type: 'text',
-                    content: `${p}</p>`,
-                };
-            });
-        Object.assign(this, {
-            title,
-            price,
-            description: ps,
-            pics,
-        });
-        this.$apply();
-    }
-    toEdit() {
-        wepy.navigateTo({
-            url: `goodsComponentAdd?group=${this.group}&id=${this.id}&name=${this.name}`,
-        });
-    }
+                  return {
+                      type: 'img',
+                      src: `${src[0]}?w=750`,
+                  };
+              }
+              return {
+                  type: 'text',
+                  content: `${p}</p>`,
+              };
+          });
+      Object.assign(this, {
+          title,
+          price,
+          description: ps,
+          pics,
+      });
+      this.$apply();
+  }
+  toEdit() {
+      wepy.navigateTo({
+          url: `goodsComponentAdd?group=${this.group}&id=${this.id}&name=${
+              this.name
+          }`,
+      });
+  }
 }
 </script>
 
 <style lang="scss">
-    @import '../css/btn.scss';
-    page{
-        width:100%;
-        height:100%;
-        // display:flex;
-        // flex-direction:column;
-        position:relative;
+.buttons {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 102rpx;
+  .button {
+    flex: 1;
+    height: 102rpx;
+    font-size: 34rpx;
+    letter-spacing: 0;
+    text-align: center;
+    line-height: 102rpx;
+    &.goods-edit-btn {
+      color: #4e88ff;
+      background: #fff;
     }
-    .goods-thumb{
-            width:100%;
-            height:562rpx;
-            image{
-                width:100%;
-                height:100%;
-            }
+    &.goods-public-btn {
+      background: #4e88ff;
+      color: #ffffff;
+    }
+  }
+}
+.goods-detail-flex {
+  width: 100%;
+}
+page {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.goods-thumb {
+  width: 100%;
+  height: 562rpx;
+  image {
+    width: 100%;
+    height: 100%;
+  }
+}
+.containe {
+  box-sizing: border-box;
+  .goods-intro {
+    &:nth-child(3) {
+      .goods-detail-flex {
+        border: none;
+      }
+    }
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    height: 88rpx;
+    align-items: center;
+    padding: 0rpx 30rpx 0;
+    background: white;
+    .goods-detail-flex {
+      width: 100%;
+      height: 88rpx;
+      line-height: 88rpx;
+      border-bottom: 1rpx solid #f3f3f3;
+      .goods-base {
+        float: left;
+        color: #333;
+        font-size: 28rpx;
+      }
+      .base-text {
+        float: right;
+        color: #333;
+        font-size: 28rpx;
+        &.red {
+          color: #ff552e;
         }
-    .containe{
-        // flex:1;
-        // display:flex;
-        // flex-direction:column;
-        box-sizing:border-box;
-        .goods-intro{
-            width:100%;
-            height: 100rpx;
-            line-height: 100rpx;
-            background:#fff;
-            padding: 0rpx 30rpx 0;
-            .goods-detail-flex{
-                .goods-base{
-                    float:left;
-                    color:#333;
-                    font-family: PingFangSC-Regular;
-                    font-size: 32rpx;
-                    letter-spacing: 0;
-                    font-weight: bold;
-                }
-                .base-text{
-                    float: right;
-                    color:#ff552e;
-                    font-size: 36rpx;
-                    .priceTag{
-                        font-size:24rpx;
-                    }
-                }
-                .base-over.base-text{
-                    max-width:156rpx;
-                    white-space:nowrap;
-                    overflow:hidden;
-                    text-overflow:ellipsis;
-                }
-            }
-            .goods-detail-flex.middle{
-                margin:0 130rpx 0 40rpx;
-            }
-        }
-        .content-wrapper{
-             background:#fff;
-             padding: 0rpx 30rpx 0;
-             margin-top:20rpx;
-             .tag{
-                 padding:30rpx 0;
-                 color:#333;
-                 font-size:32rpx;
-                 font-weight: bold;
-             }
-            .goods-content{
-                flex:1;
-                justify-content: center;
-                font-family: PingFangSC-Regular;
-                font-size: 28rpx;
-                color: #666666;
-            }
-            .rich-text-img{
-                width:100%;
-                margin:20rpx 0;
-                border-radius:6rpx;
-            }
-         }       
+      }
     }
-    .block{
-        width:100%;
-        height:102rpx;
+    .base-over.base-text {
+      max-width: 156rpx;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .goods-edit-btn{
-        position:fixed;
-        left:0;
-        bottom:0;
+    .goods-detail-flex.middle {
+      margin: 0 130rpx 0 40rpx;
     }
+  }
+  .content-wrapper {
+    background: #fff;
+    padding: 0rpx 30rpx 30rpx;
+    margin-top: 20rpx;
+    .tag {
+      padding: 30rpx 0;
+      color: #333;
+      font-size: 32rpx;
+    }
+    .goods-content {
+      flex: 1;
+      justify-content: center;
+      font-family: PingFangSC-Regular;
+      font-size: 28rpx;
+      color: #999;
+    }
+    .rich-text-img {
+      width: 100%;
+      margin: 20rpx 0;
+      border-radius: 6rpx;
+    }
+  }
+}
+.block {
+  width: 100%;
+  height: 102rpx;
+}
 </style>
