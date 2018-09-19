@@ -75,7 +75,7 @@ export default class visitorInfo extends wepy.page {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_visitorInfo_call');
             const sendData = { sign: mobile, from: 'visitorInfo' };
             const { data, msg, state } = await get('/other/encrypt/phone', sendData);
-            if (state != 100) {
+            if (state !== 100) {
                 toast(msg);
                 return;
             }
@@ -246,8 +246,6 @@ view,scroll-view{
     }
 }
 .visitor-list{
-    position: absolute;
-    top: 
     padding: 0 30rpx;
     .item{
         line-height: 88rpx;
