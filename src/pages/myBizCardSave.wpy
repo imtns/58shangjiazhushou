@@ -37,7 +37,6 @@ export default class myBizCard extends wepy.page {
         const { isPayOpen } = option;
         this.isPayOpen = isPayOpen;
         this.$apply();
-
     }
     async onShow () {
         console.log('onShow');
