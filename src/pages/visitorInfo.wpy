@@ -1,5 +1,5 @@
 <template>
-    <view class="visitor-container">
+    <scroll-view class="visitor-container" scroll-y bindscrolltolower="loadMore" style="height:100vh" >
         <view class="visitor-card">
             <view class="visitor-info">
                 <image class="avator" wx:if="{{visitInfo.portrait}}" src="{{visitInfo.portrait}}" />
@@ -31,13 +31,13 @@
             <navigator url="wechat/chat/chat?contact={{visitInfo.chatToken}}&nickName={{visitInfo.nickName}}" class="send-msg" open-type="navigate" hover-class="none" @tap="sendMsg">发送信息</navigator>
         </view>
         <view class="visitor-log" wx:if="{{visitInfo.actions.length > 0}}">当前访客的行为记录</view>
-        <scroll-view class="visitor-list" scroll-y style="height:100vh" wx:if="{{visitInfo.actions.length > 0}}">
+        <view class="visitor-list" wx:if="{{visitInfo.actions.length > 0}}">
             <view class="item" wx:for="{{visitInfo.actions}}">
                 <text class="time">{{item.createTime}}</text>
                 <text class="action">{{item.action}}</text>
             </view>
-        </scroll-view>
-    </view>
+        </view>
+    </scroll-view>
 </template>
 
 <script>
@@ -73,13 +73,13 @@ export default class visitorInfo extends wepy.page {
     methods = {
         async bindPhoneCall (mobile) {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_visitorInfo_call');
-            const sendParams = { sign: mobile, from: 'visitorInfo' };
-            const [e, phoneNumber] = await get('/other/encrypt/phone', sendParams);
-            if (e) {
-                toast(e);
+            const sendData = { sign: mobile, from: 'visitorInfo' };
+            const { data, msg, state } = await get('/other/encrypt/phone', sendData);
+            if (state != 100) {
+                toast(msg);
                 return;
             }
-            wepy.makePhoneCall({ phoneNumber });
+            wepy.makePhoneCall({ phoneNumber: data });
         },
         sendMsg() {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_visitorInfo_sendMsg');
@@ -95,17 +95,24 @@ export default class visitorInfo extends wepy.page {
         console.log('onshow');
         this.loadInfo();
     }
+    loadMore() {
+        this.sendParams.pageNum = this.sendParams.pageNum + 1;
+        this.sendParams = Object.assign({}, this.sendParams, this.sendParams.pageNum);
+        this.loadInfo();
+    }
     async loadInfo() {
         try {
-            const sendData = {
-                cardId: this.cardId,
-                consumerId: this.consumerId,
-            };
-            const { data } = await get(CONSUMER_INFO, sendData);
+            this.sendParams = Object.assign(this.sendParams, { cardId: this.cardId, consumerId: this.consumerId });
+            const { data } = await get(CONSUMER_INFO, this.sendParams);
             const {
                 actions, chatToken, mobile, nickName, otherInfo, portrait, share, visit, vote,
             } = data;
-            this.visitInfo.actions = actions;
+            if (actions.length === 0) {
+                this.visitInfo.actions = this.visitInfo.actions;
+                toast('没有更多访客信息啦');
+                return;
+            }
+            this.visitInfo.actions = this.visitInfo.actions.concat(actions);
             this.visitInfo.chatToken = chatToken;
             this.visitInfo.mobile = mobile;
             this.visitInfo.nickName = nickName;
@@ -239,6 +246,8 @@ view,scroll-view{
     }
 }
 .visitor-list{
+    position: absolute;
+    top: 
     padding: 0 30rpx;
     .item{
         line-height: 88rpx;
