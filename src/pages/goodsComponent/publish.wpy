@@ -1,34 +1,122 @@
 <template>
     <view class="container">
         <view class="goods-container">
-            <scroll-view class="scroll-groups">
-                <view
-                    class="groups-item"
-                    wx:for="{{ groupList }}"
-                    wx:key="index">
-                    {{ item.data.name }}
-                </view>
-            </scroll-view>
-            <scroll-view class="scroll-list">
-                
-            </scroll-view>
+            <view class="group-list">
+                <scroll-view class="scroll scroll-groups" scroll-y>
+                    <block wx:if="{{ groupList.length }}">
+                        <view
+                            class="groups-item overflow-ellipsis"
+                            :class="{ selected: index === curGroupIndex }"
+                            wx:for="{{ groupList }}"
+                            wx:key="index"
+                            @tap="handleSelectGroup({{ index }})">
+                            {{ item.data.name }}
+                        </view>
+                    </block>
+                    <view
+                        class="groups-item overflow-ellipsis selected"
+                        wx:else>
+                        暂无分类
+                    </view>
+                </scroll-view>
+            </view>
+
+            <view class="goods-list">
+                <scroll-view
+                    class="scroll scroll-goods"
+                    wx:if="{{ !isLoadingGoods }}"
+                    scroll-y>
+                    <view
+                        class="goods-item"
+                        :class="{ 'is-editing': isEditing }"
+                        wx:for="{{ goodsList }}"
+                        wx:key="id">
+                        <view
+                            class="icon-checkbox"
+                            :class="{ 'selected': selectedGoods[item.id] }"
+                        ></view>
+                        <view class="goods-box"
+                            @tap="handleSelectGoods({{ item.id }})">
+                            <image
+                                class="goods-img"
+                                mode="aspectFill"
+                                src="{{ item.pics + '?w=86' }}"/>
+                            <view class="goods-info">
+                                <view class="title">{{ item.title }}</view>
+                                <view class="goods-data">
+                                    <view>销量{{ item.salesVolume }}</view>
+                                    <view>库存{{ item.stock }}</view>
+                                </view>
+                                <view class="price">
+                                    ￥<text class="bold">{{ item.price }}</text>
+                                </view>
+                            </view>
+                        </view>
+                        <view
+                            class="goods-options {{ isEditing ? 'hidden' :'' }}">
+                            <navigator
+                                class="options-item"
+                                url="{{ item.editPath }}">
+                                编辑
+                            </navigator>
+                            <view class="options-item">上架</view>
+                        </view>
+                    </view>
+                    <view
+                        class="empty-box"
+                        wx:if="{{ !goodsList.length }}">
+                        <image
+                            mode="aspectFill"
+                            src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/emptyIcon.png"/>
+                        <view class="title">没有商品哦</view>
+                        <view class="sub-title">点击下方加号即可添加商品</view>
+                    </view>
+                </scroll-view>
+            </view>
         </view>
         <view class="btn-list">
-            <view
-                class="business-info">
+            <navigator
+                class="business-info"
+                url="/pages/app/businessInfo">
                 <view class="icon-edit"></view>
                 <view>营业信息</view>
-            </view>
-            <button class="btn-item edit-group">编辑分类</button>
-            <button class="btn-item edit-goods">编辑商品</button>
+            </navigator>
+            <button
+                class="btn-item edit-group"
+                @tap="handleCancel"
+                wx:if="{{ isEditing }}">取消</button>
+            <button
+                class="btn-item edit-group"
+                @tap="handleEditGroup"
+                wx:else>编辑分类</button>
+            <button
+                class="btn-item edit-goods"
+                @tap="handleDeleteGoods"
+                wx:if="{{ isEditing }}">删除</button>
+            <button
+                class="btn-item edit-goods"
+                @tap="handleEditGoods"
+                wx:else>编辑商品</button>
         </view>
+        <navigator
+            class="add-goods"
+            url="/pages/goodsComponentAdd">
+            <image
+            class="icon-add-goods"
+            mode="aspectFill"
+            src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-goods.png"/>
+        </navigator>
     </view>
 </template>
 <script>
 import wepy from 'wepy';
 
+import { alert } from '../../utils';
+import * as globalService from '../../utils/globalService';
 import { get } from '../../utils/ajax';
-import { LOAD_GOODS_GROUPS } from '../../utils/url';
+import { LOAD_GOODS_GROUPS, LOAD_GOODS_LIST, DELETE_GOODS } from '../../utils/url';
+
+let mpId = '';
 
 export default class extends wepy.page {
     config = {
@@ -36,32 +124,277 @@ export default class extends wepy.page {
     }
     data = {
         groupList: [],
+        goodsList: [],
+        curGroupIndex: 0, // 默认选中第一个
+        isEditing: false,
+        isLoadingGoods: false,
+        selectedGoods: {}, // 通过map记录已选元素
     }
     onLoad() {
-        this.loadGroups();
+        mpId = wepy.getStorageSync('current_mpid');
+        this.loadData();
+    }
+    onShow() {
+        if (globalService.get('refresh')) {
+            globalService.set('refresh', false);
+            this.loadData();
+        }
+    }
+
+    methods = {
+        handleEditGroup() {
+            wepy.navigateTo({
+                url: '/pages/goodsComponentGroup',
+            });
+        },
+        async handleDeleteGoods() {
+            try {
+                const ids = Object.keys(this.selectedGoods);
+
+                if (!ids.length) {
+                    return;
+                }
+
+                await get(DELETE_GOODS, {
+                    goodIds: ids.join(','),
+                });
+            } catch (err) {
+                alert('删除失败，请稍后再试~');
+                console.log(err);
+            }
+
+            this.selectedGoods = {};
+            this.isEditing = false;
+            this.$apply();
+
+            this.loadGoods();
+        },
+        handleSelectGoods(id) {
+            if (!this.isEditing) {
+                return;
+            }
+
+            this.selectedGoods[id] = !this.selectedGoods[id];
+        },
+        handleCancel() {
+            this.isEditing = false;
+        },
+        handleSelectGroup(index) {
+            index = +index;
+
+            this.curGroupIndex = index;
+            const curGroup = this.groupList[index];
+            const { data: { id: groupId } = {} } = curGroup;
+
+            this.loadGoods(groupId);
+        },
+        handleEditGoods() {
+            this.isEditing = true;
+        },
+    }
+
+    async loadData() {
+        try {
+            await this.loadGroups();
+            // 加载完分组后，加载商品
+
+            this.loadGoods();
+        } catch (err) {
+            alert('出了点小差错，请稍后再试~');
+            console.log(err);
+        }
+    }
+
+    /**
+     * @ param groupId 如果groupId不传默认取当前分组id
+     */
+    async loadGoods(groupId) {
+        if (groupId === undefined) {
+            const curGroup = this.groupList[this.curGroupIndex];
+            ({ data: { id: groupId } = {} } = curGroup);
+        }
+
+        if (!groupId) {
+            throw new Error('id 不存在');
+        }
+
+        this.isLoadingGoods = true;
+        this.$apply();
+
+        let { data: { data: goodsList } = {} } = await get(LOAD_GOODS_LIST, {
+            pageSize: 100,
+            pageNum: 1,
+            mpId,
+            groupId,
+        });
+
+        if (!goodsList) {
+            throw new Error('获取商品列表失败');
+        }
+
+        goodsList = goodsList.map((v) => {
+            const goods = v;
+            goods.editPath = `/pages/goodsComponentAdd?group=${groupId}&id=${goods.id}`;
+            return goods;
+        });
+
+        this.goodsList = goodsList;
+        this.isLoadingGoods = false;
+        this.$apply();
     }
 
     async loadGroups() {
-        try {
-            const mpId = wepy.getStorageSync('current_mpid');
-            const { data: groupList } = await get(LOAD_GOODS_GROUPS, {
-                mpId,
-            });
+        let { data: groupList } = await get(LOAD_GOODS_GROUPS, {
+            mpId,
+        });
 
-            this.groupList = groupList;
-            this.$apply();
-        } catch (err) {
-            console.log(err);
+        if (!groupList) {
+            groupList = [];
         }
+
+        this.groupList = groupList;
+        this.$apply();
     }
 }
 </script>
 <style lang="scss">
-
-    $btnListHeight: 102rpx;
-    .btn-list {
-        height: $btnListHeight;
+    .container {
+        border-top: 1rpx solid #f3f3f3;
+    }
+    .goods-container {
         display: flex;
+
+        .group-list {
+            width: 160rpx;
+            min-width: 160rpx;
+        }
+        .goods-list {
+            flex-grow: 1;
+        }
+    }
+
+    .scroll {
+        height: calc(100vh - 102rpx);
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .scroll-groups {
+        color: #666;
+        font-size: 24rpx;
+    }
+
+    .groups-item {
+        width: 100%;
+        height: 88rpx;
+        padding: 25rpx 18rpx;
+
+        &.selected {
+            color: #333;
+            background-color: #fff;
+            font-weight: bold;
+        }
+    }
+
+    .scroll-goods {
+        background-color: #fff;
+    }
+
+    .goods-item {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10rpx;
+        padding: 30rpx 30rpx 0 20rpx;
+        position: relative;
+        transition: margin .5s ease-out;
+
+        &.is-editing {
+            margin-left: 96rpx;
+        }
+
+        .icon-checkbox {
+            width: 46rpx;
+            height: 46rpx;
+            background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png') no-repeat;
+            background-size: 100%;
+            position: absolute;
+            top: 96rpx;
+            left: -66rpx;
+
+            &.selected {
+                background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/selected-icon.png');
+            }
+        }
+
+        .goods-box {
+            display: flex;
+            margin-bottom: 30rpx;
+            .goods-img {
+                width: 176rpx;
+                height: 176rpx;
+                background-color: #f3f3f3;
+                margin-right: 20rpx;
+                border-radius: 4rpx;
+            }
+
+            .goods-info {
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+
+                .title {
+                    width: 334rpx;
+                    font-size: 30rpx;
+                    color: #333;
+                    line-height: 38rpx;
+                    margin-bottom: 10rpx;
+                    font-weight: bold;
+                }
+
+                .goods-data {
+                    flex-grow: 1;
+                    display: flex;
+                    color: #999;
+                    font-size: 22rpx;
+                    line-height: 30rpx;
+                }
+
+                .price {
+                    font-size: 28rpx;
+                    color: #FF552E;
+                    line-height: 40rpx;
+                    .bold {
+                        font-size: 38rpx;
+                        line-height: 52rpx;
+                    }
+                }
+            }
+        }
+
+        .goods-options {
+            display: flex;
+            justify-content: flex-end;
+            .options-item {
+                width: 132rpx;
+                height: 52rpx;
+                border-radius: 4rpx;
+                border: 1rpx solid #4E88FF;
+                background-color: #fff;
+                margin: 0 0 0 20rpx;
+                font-size: 26rpx;
+                color: #4E88FF;
+                line-height: 52rpx;
+                text-align: center;
+            }
+        }
+    }
+
+    .btn-list {
+        height: 102rpx;
+        display: flex;
+        box-shadow: 0 -5rpx 12rpx 0 rgba(217,226,233,0.50);
 
         .business-info {
             width: 160rpx;
@@ -83,7 +416,7 @@ export default class extends wepy.page {
             font-size: 32rpx;
             color: #fff;
             flex-grow: 1;
-            line-height: $btnListHeight;
+            line-height: 102rpx;
             border-radius: 0rpx;
         }
 
@@ -95,9 +428,55 @@ export default class extends wepy.page {
             background-color: #4E88FF;
         }
     }
+    .add-goods {
+        width: 102rpx;
+        height: 102rpx;
+        position: fixed;
+        right: 30rpx;
+        bottom: 182rpx;
+        border-radius: 100%;
+
+        .icon-add-goods {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    .empty-box {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        image {
+            width: 209rpx;
+            height: 187rpx;
+            margin-top: 300rpx;
+        }
+        .title {
+            font-size: 32rpx;
+            color: #999;
+            margin-top: 52rpx;
+        }
+        .sub-title {
+            font-size: 26rpx;
+            color: #bdbdbd;
+            margin-top: 10rpx;
+        }
+    }
 
     .icon-edit {
         width: 42rpx;
         height: 40rpx;
+        background: url('/icon-edit.png') no-repeat;
+        background-size: 100%;
+    }
+
+    .overflow-ellipsis {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .hidden {
+        display: none !important;
     }
 </style>

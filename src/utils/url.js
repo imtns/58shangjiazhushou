@@ -14,8 +14,10 @@ export const LOAD_SERVICE = '/businessService/get/'; // 获取预约服务组件
 export const INSERT_SERVICE = '/businessService/insert'; // 新增
 export const SAVE_SERVICE = '/businessService/update'; // 更新
 
-// 商品
+// 商品相关
 export const LOAD_GOODS_GROUPS = '/goods/groups/specail';
+export const LOAD_GOODS_LIST = '/goods/list';
+export const DELETE_GOODS = '/goods/del';
 
 // 营业信息设置
 export const SAVE_BUSINESS_SETTING = '/businessSetting/save';

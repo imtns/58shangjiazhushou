@@ -1,5 +1,5 @@
 <template>
-    <scroll-view class="home" scroll-y style="height:100vh" wx:if="{{ !status.loading || !status.first }}">
+    <scroll-view class="home" scroll-y style="height:100vh" wx:if="{{ !status.loading }}">
         <view class="follow-public" wx:if="{{!isFollow}}">
             <text>关注公众号接收通知</text>
             <navigator class="follow-action" wx:if="{{assistAuth}}" url="/pages/followPublic">马上关注</navigator>
@@ -143,9 +143,6 @@ export default class Home extends wepy.page {
         // 将状态属性收敛到status
         status: {
             loading: true,
-            // 是否第一次进入小程序
-            // 优化页面跳转体验
-            first: true,
         },
         items,
         nItems,
@@ -438,7 +435,6 @@ export default class Home extends wepy.page {
         globalData.extConfig = data;
     }
     async loadData () {
-        this.status.loading = true;
         this.$apply();
         try {
             const subData = {
@@ -466,8 +462,10 @@ export default class Home extends wepy.page {
                     score,
                 },
             });
-            this.status.loading = false;
-            this.status.first = false;
+            // wepy在链式更改属性时，在手机预览会出现不生效的情况。
+            this.setData({
+                'status.loading': false,
+            })
             nexttask && this.setNextTask(nexttask);
             this.$apply();
             if (unreadOrder) { // 未读订单tab

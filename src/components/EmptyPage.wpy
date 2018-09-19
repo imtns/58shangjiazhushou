@@ -1,7 +1,8 @@
 <template lang="wxml">
     <view class="empty-box">
         <image class="empty-icon" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/emptyIcon.png"></image>
-        <view class="empty-text">{{title}}</view>
+        <view class="empty-text" wx:if="{{ title }}">{{title}}</view>
+        <slot name="content"></slot>
     </view>
 </template>
 
