@@ -7,7 +7,7 @@
             @scrolltoupper="loadMore"
             scroll-with-animation="{{true}}"
             scroll-top="{{scrollTop}}">
-            <view class="chat-msg-loading">加载中</view>
+            <!-- <view class="chat-msg-loading">加载中</view> -->
             <!-- <view class="chat-msg-body">
                 <image class="chat-msg-avatar" src="{{item.portrait}}"></image>
                 <view class="chat-msg-content">
