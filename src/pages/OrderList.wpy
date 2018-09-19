@@ -127,6 +127,7 @@ export default class OrderList extends wepy.page {
         this.$apply();
     }
     async onLoad () {
+        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderList_onload');
         await this.getOrderList();
     }
 }
