@@ -14,7 +14,7 @@ export default class Purchase extends wepy.page {
     }
     data = {
         platform: '',
-        src: '123123123123123',
+        src: '',
     }
     async onLoad(options) {
         const that = this;
