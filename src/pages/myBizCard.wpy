@@ -40,7 +40,11 @@
                             <view class="img" style="background:url({{item.src}}) no-repeat center;"></view>
                             <view class="text">{{item.name}}</view>
                         </view>
-                        <navigator class="item_box" wx:if="{{item.type == 'mpJump'}}" hover-class="none">
+                        <navigator class="item_box" wx:if="{{item.type == 'mpJump' && item.name === '去分享'}}" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="{{item.path + cardId }}" extra-data="" version="develop">
+                            <view class="img" style="background:url({{item.src}}) no-repeat center;"></view>
+                            <view class="text">{{item.name}}</view>
+                        </navigator>
+                        <navigator class="item_box" wx:if="{{item.type == 'mpJump' && item.name === '线下物料'}}" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="{{}}" extra-data="" version="develop">
                             <view class="img" style="background:url({{item.src}}) no-repeat center;"></view>
                             <view class="text">{{item.name}}</view>
                         </navigator>
@@ -80,6 +84,7 @@ export default class myBizCard extends wepy.page {
         visit: '',
         vote: '',
         myCardItems,
+        cardId: '',
     }
     methods = {
         toinnerJump(path) {
@@ -137,6 +142,7 @@ export default class myBizCard extends wepy.page {
             share,
             visit,
             vote,
+            cardId,
         } = data;
         Object.assign(this, {
             company,
@@ -147,6 +153,7 @@ export default class myBizCard extends wepy.page {
             share,
             visit,
             vote,
+            cardId,
         });
         this.$apply();
     }
