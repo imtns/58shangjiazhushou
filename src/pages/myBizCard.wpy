@@ -230,6 +230,7 @@ export default class myBizCard extends wepy.page {
                     font-size: 42rpx;
                     color: #333333;
                     margin-bottom: 50rpx;
+                    width: 56%;
                 }
                 .position{
                     padding-left: 50rpx;
