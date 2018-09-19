@@ -142,7 +142,7 @@ export default class Chat extends wepy.page {
         this.$apply();
         try {
             const that = this;
-            const { type } = target.currentTarget.dataset.type;
+            const { type } = target.currentTarget.dataset;
             const { contact } = this;
             const { headImg } = globalData.chat;
             const msg = {

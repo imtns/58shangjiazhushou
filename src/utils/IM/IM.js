@@ -68,7 +68,7 @@ const pushMsg = async (newMsg) => {
             temp[contactId] = {
                 contactId,
                 nickName: contactNickName,
-                portrait,
+                portrait: contactPortrait,
                 sendTime,
                 content: type == 1 ? '[图片]' : newContent,
                 unReadCount: 1,
