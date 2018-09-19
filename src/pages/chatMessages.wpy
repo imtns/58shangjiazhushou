@@ -60,6 +60,7 @@ export default class chatMessages extends wepy.page {
         },
     }
     onLoad () {
+        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chatMessages_onload');
         console.log('onload');
     }
     async onShow () {
