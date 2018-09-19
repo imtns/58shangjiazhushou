@@ -286,6 +286,7 @@ export default class Index extends wepy.page {
         },
 
         async setLocation () {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderComponentEdit_setLocation');
             try {
                 const {
                     address,
