@@ -469,7 +469,6 @@ export default class Home extends wepy.page {
                 score,
                 cardId = '',
             } = data;
-            console.error('loadData cardID', cardId);
             const formatedMpinfo = this.formatedMp(mpinfo);
             this.business = Object.assign({}, this.business, {
                 name: username,
