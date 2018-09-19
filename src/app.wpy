@@ -20,7 +20,7 @@ export default class extends wepy.app {
     config = {
         pages: [
             'pages/home',
-            // 'pages/app/pickBusinessHour',
+            'pages/app/pickBusinessHour',
 
             'pages/edit/textEdit',
             // 登陆之后的主页
