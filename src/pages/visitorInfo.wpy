@@ -109,7 +109,7 @@ export default class visitorInfo extends wepy.page {
             } = data;
             if (actions.length === 0) {
                 this.visitInfo.actions = this.visitInfo.actions;
-                toast('没有更多访客信息啦');
+                toast('没有更多行为记录啦');
                 return;
             }
             this.visitInfo.actions = this.visitInfo.actions.concat(actions);
