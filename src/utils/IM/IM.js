@@ -17,6 +17,14 @@ export const sdkLogin = (userInfo, listeners, options, callBack) => {
     });
 };
 
+export const sdkLogout = (success, error) => {
+    webim.logout(() => {
+        success && success();
+    }, () => {
+        error && error();
+    });
+};
+
 // 监听实时消息
 export const onMsgNotify = (newMsgList) => {
     console.error('list', newMsgList[0]);

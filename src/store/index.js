@@ -29,7 +29,7 @@ export const chatContactList = async () => {
         const _unReadCountMsg = `${unReadCount>=100?'...':''}${unReadCount>0&&unReadCount<100?unReadCount:''}`;
         const _item = {
             contactId: id || '', // 联系人Id
-            portrait: portrait || '', // 联系人头像
+            portrait: `${portrait.indexOf('http') === -1?'https://pic1.58cdn.com.cn':''}${portrait}`, // 联系人头像
             nickName: nickName || '', // 联系人昵称
             unReadCount: _unReadCountMsg, // 未读消息数，超过两位数显示...
             sendTime: formatDateTimeLocal(lastSendTime), // 最后发送时间，格式化: 当天只展示时分，非当天且在当年 显示月天，非当年 显示年月日；
