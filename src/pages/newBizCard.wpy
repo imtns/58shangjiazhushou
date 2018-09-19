@@ -130,6 +130,7 @@ export default class newBizCard extends wepy.page {
         deleteTag(index) {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_deleteTag');
             this.serviceTagArr.splice(index, 1);
+            this.serviceTag = this.serviceTagArr.join(',');
         },
         async creatCard() {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_creatCard');
