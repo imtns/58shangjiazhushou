@@ -6,7 +6,7 @@
             upper-threshold="300"
             @scrolltoupper="loadMore"
             scroll-with-animation="{{true}}"
-            scroll-top="{{scrollTop}}">
+            scroll-into-view="{{toView}}">
             <!-- <view class="chat-msg-loading">加载中</view> -->
             <!-- <view class="chat-msg-body">
                 <image class="chat-msg-avatar" src="{{item.portrait}}"></image>
@@ -18,7 +18,7 @@
                 </view>
             </view> -->
             <block wx:for="{{msgList}}" wx:key="index">
-                <view class="chat-msg-body {{item.senderId === myId ? 'chat-right' : ''}}">
+                <view class="chat-msg-body {{item.senderId === myId ? 'chat-right' : ''}}" id="toview-{{index}}">
                     <view class="chat-msg-time">{{item.sendTime}}</view>
                     <image class="chat-msg-avatar" src="{{item.senderPortrait}}" bindtap="toDetail" data-item="{{item}}"></image>
                     <view class="chat-msg-content" wx:if="{{item.type === '0' || item.type === 0}}">{{item.content}}</view>
@@ -98,7 +98,7 @@ export default class Chat extends wepy.page {
         token: '',
         progress: 0,
         myId: '',
-        scrollTop: 9999,
+        toView: '',
     }
     onLoad(options) {
         const { token, myId } = globalData.chat;
@@ -209,9 +209,9 @@ export default class Chat extends wepy.page {
             }, msg);
             if (type === 'TEXT') {
                 this.msgList.push(newMsg);
-                this.scrollTop = 9999999;
                 this.$apply();
             }
+            this.toView = `toview-${this.msgList.length - 1}`;
             await post(SEND_MSG, msg);
             newMsg.status = 2; // 发送成功
             this.$apply();
@@ -230,7 +230,7 @@ export default class Chat extends wepy.page {
             isEnd = data.length < pageSize;
             this.msgList = withHttp(data);
             from = data[0].id;
-            this.scrollTop = 9999;
+            this.toView = `toview-${data.length - 1}`;
             this.$apply();
         } catch (e) {
             console.log(e);
