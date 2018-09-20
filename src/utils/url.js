@@ -14,6 +14,13 @@ export const LOAD_SERVICE = '/businessService/get/'; // 获取预约服务组件
 export const INSERT_SERVICE = '/businessService/insert'; // 新增
 export const SAVE_SERVICE = '/businessService/update'; // 更新
 
+// 商品
+export const LOAD_GOODS_GROUPS = '/goods/groups/specail';
+
+// 营业信息设置
+export const SAVE_BUSINESS_SETTING = '/businessSetting/save';
+export const LOAD_BUSINESS_SETTING = '/businessSetting/getByMpId/';
+
 // 聊天对应的接口
 export const CHAT_LOGIN = '/chat/login'; // 聊天登录接口
 export const MSG_LIST = '/chat/msgList'; // 聊天记录

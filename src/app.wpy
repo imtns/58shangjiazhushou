@@ -54,6 +54,7 @@ export default class extends wepy.app {
             'pages/send', // 测试授权页面专用，勿删
             'pages/progress', // 完成度页面
             'pages/AppEdit', // 小程序编辑
+            'pages/app/businessInfo', // 营业信息编辑
             'pages/buy', // 购买页面
             'pages/index',
             'pages/noticeSet', // 消息通知设置页面
@@ -77,6 +78,7 @@ export default class extends wepy.app {
             'pages/goodsComponentGroup', // 商品分组
             'pages/goodsComponentAdd', // 商品添加
             'pages/goodsComponentDetail', // 商品详情
+            'pages/goodsComponent/publish', // 商品发布
             'pages/articleComponentCreate', // 文章添加(不选分组)
             'pages/articleComponentAdd', // 文章添加(选分组)
             'pages/articleComponentlist', // 文章列表

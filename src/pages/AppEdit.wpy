@@ -55,18 +55,31 @@
                     </view>
                 </view>
             </picker>
-            <view class="appedit-content-list-item appedit-content-list-item-noborder">
+            <view class="appedit-content-list-item appedit-content-list-item-noborder" @tap="setLocation">
                 <text class="appedit-form-label-address">小程序具体地点</text>
-                <view class="appedit-form-btn-location" @tap="setLocation">定位</view>
+                <view class="appedit-form-cate address">
+                    <text class="appedit-form-placeholder" wx:if="{{ !form.address }}">请选择</text>
+                </view>
+                <text class="appedit-form-arrow address"></text>
             </view>
-            <view class="appedit-content-list-item appedit-content-list-item-noborder">
-                <textarea name="" id="" cols="30" rows="10" class="appedit-form-input-addressdetail"  placeholder="请输入" placeholder-class="appedit-form-placeholder" @input="setDetailAdress" value="{{form.address}}"></textarea>
+            <view class="appedit-content-list-item appedit-content-list-item-noborder address-detail" wx:if="{{ form.address }}">
+                <textarea
+                    name=""
+                    id=""
+                    cols="30"
+                    rows="10"
+                    class="appedit-form-input-addressdetail"
+                    placeholder="请输入"
+                    placeholder-class="appedit-form-placeholder"
+                    @input="setDetailAdress"
+                    value="{{form.address}}">
+                </textarea>
             </view>
         </view>
-        <view class="appedit-map">
+        <!-- <view class="appedit-map">
             <map id="map"  class="appedit-map-in" longitude="{{longitude}}" latitude="{{latitude}}"
              scale="14" markers="{{markers}}"></map>
-        </view>
+        </view> -->
         <view class="appedit-submit submit-enable" @tap="bindSave" wx:if="{{enableSave}}">保存</view>
         <view class="appedit-submit" @tap="bindSave" wx:else>保存</view>
     </view>
@@ -506,7 +519,7 @@ export default class AppEdit extends wepy.page {
         }
     }
     .appedit-content-list {
-        padding: 0 30rpx 40rpx;
+        padding: 0 30rpx;
         background: #fff;
         .appedit-content-list-item {
             height: 90rpx;
@@ -555,6 +568,10 @@ export default class AppEdit extends wepy.page {
                 text-align: right;
                 vertical-align: middle;
             }
+            .appedit-form-cate.address {
+                width: 392rpx;
+                margin-left: 52rpx;
+            }
             .appedit-form-arrow {
                 display: inline-block;
                 content: '';
@@ -565,6 +582,9 @@ export default class AppEdit extends wepy.page {
                 background: url('https://static.58.com/lbg/mengchong/image/icon/arrow-right.png')
                     no-repeat;
                 background-size: 100%;
+            }
+            .appedit-form-arrow.address {
+                margin-left: 20rpx;
             }
             .appedit-form-appname {
                 overflow: hidden;
@@ -599,13 +619,16 @@ export default class AppEdit extends wepy.page {
             .appedit-form-input-addressdetail {
                 display: block;
                 width: 100%;
-                height: 88rpx;
+                height: 137rpx;
                 padding-left: 0;
                 text-indent: 0;
                 font-family: PingFangSC-Regular;
                 font-size: 30rpx;
                 color: #333333;
             }
+        }
+        .appedit-content-list-item.address-detail {
+            height: 137rpx;
         }
         .appedit-content-list-item-noborder {
             border: none;
@@ -623,13 +646,15 @@ export default class AppEdit extends wepy.page {
     .appedit-submit {
         width: 690rpx;
         line-height: 94rpx;
-        margin: 60rpx auto 0;
         background: #cccccc;
         border-radius: 4rpx;
         font-family: PingFangSC-Regular;
-        font-size: 3r2px;
+        font-size: 32rpx;
         color: #ffffff;
         text-align: center;
+        position: fixed;
+        bottom: 65rpx;
+        left: 30rpx;
     }
     .submit-enable {
         background: #4e88ff;

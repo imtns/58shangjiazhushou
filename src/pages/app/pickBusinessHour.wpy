@@ -96,9 +96,10 @@ export default class PickBusinessHour extends wepy.page {
           this.businessDays[i] = item.selected === true ? '1' : '0';
       });
   }
-  onHide() {
+  onUnload() {
       this.businessDays = this.businessDays.join(',');
-      globalService.set('app.businessHour', this.data);
+      const { businessDays, startTime, endTime } = this;
+      globalService.set('app.pickBusinessHour', { businessDays, startTime, endTime });
   }
   checkTime(a, b) {
       const s = a.replace(':', '');
