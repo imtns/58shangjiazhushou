@@ -203,6 +203,10 @@ export default class newBizCard extends wepy.page {
         Object.assign(this, data);
         if (this.serviceTag) {
             this.serviceTagArr = this.serviceTag.split(',');
+            if (this.serviceTagArr.length > 4) {
+                this.serviceTagArr.length = 4;
+                this.serviceTag = this.serviceTagArr.join(',');
+            }
         }
         if (this.company) {
             this.hasCompany = true;
