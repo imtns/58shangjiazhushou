@@ -31,7 +31,7 @@
                         </view>
                        <input wx:else type="text" value="{{item}}" class="tagNew" auto-focus="true" bindconfirm="comfirmTag" bindblur="comfirmTag" maxlength="6"/>
                     </repeat>
-                    <view wx:if="{{serviceTagArr.length < 6}}" class="addTag" @tap="addNewTag">+ 添加</view>
+                    <view wx:if="{{serviceTagArr.length < 4}}" class="addTag" @tap="addNewTag">+ 添加</view>
                 </view>
             </view>
             <view class="flex_box sign">
