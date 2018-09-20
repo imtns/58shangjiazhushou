@@ -119,9 +119,12 @@ export default class SysNoticeList extends wepy.page {
                 toast('没有消息，无需清空~');
                 return;
             }
-            await get('/mplogic/cleargroupmsg', { group: 1 });
-            sleep();
-            this.loadList();
+            const { state } = await get('/mplogic/cleargroupmsg', { group: 1 });
+            if (state === 100) {
+                sleep();
+                this.sysList = [];
+                this.loadList();
+            }
         } catch (e) {
             console.log(e);
         }
