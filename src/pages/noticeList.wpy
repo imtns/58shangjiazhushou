@@ -3,7 +3,7 @@
         <view class="notice-new">
             <view class="notice-name" @tap="SystemMsg">
                 <view class="notice-system">
-                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/system-icon.png" mode="aspectFit"/>
+                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/system-icon2.png"/>
                     <view wx:if="{{progressUnRead > 0 }}" class="num">{{progressUnRead > 99 ? '99+' : progressUnRead}}</view>
                 </view>
                 <view class="notice-txt">
@@ -13,7 +13,7 @@
             </view>
             <view class="notice-name" @tap="MoneyMsg">
                 <view class="notice-system">
-                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/account-icon.png" mode="aspectFit"/>
+                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/account-icon2.png"/>
                     <view wx:if="{{recivMoneyUnRead > 0 }}" class="num">{{recivMoneyUnRead > 99 ? '99+' : recivMoneyUnRead}}</view>
                 </view>
                 <view class="notice-txt">
@@ -165,7 +165,6 @@ view,scroll-view{
             border-bottom: 1rpx solid #F3F3F3;
             box-sizing: border-box;
             position: relative;
-            height: 140rpx;
             &:after{
                 content:'';
                 display:block;
@@ -178,7 +177,7 @@ view,scroll-view{
                 right: 30rpx;
             }
             .notice-system{
-                width: 90rpx;
+                width: 100rpx;
                 position: relative;
                 .num{
                     font-size:18rpx;
@@ -212,9 +211,9 @@ view,scroll-view{
                 }
             }
             image{
-                width: 60rpx;
-                height: 60rpx;
-                margin-top:12rpx;
+                width: 80rpx;
+                height: 80rpx;
+                margin-top: 5rpx;
             }
         }
     }
