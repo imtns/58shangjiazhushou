@@ -1,5 +1,6 @@
 <template>
     <scroll-view class="visitor-container" scroll-y bindscrolltolower="loadMore" style="height:100vh" >
+        <image class="visitor-bg" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor-bg.png" mode="aspectFit"/>
         <view class="visitor-card">
             <view class="visitor-info">
                 <image class="avator" wx:if="{{visitInfo.portrait}}" src="{{visitInfo.portrait}}" />
@@ -144,7 +145,7 @@ view,scroll-view{
     height:100%;
     position: relative;
     overflow: hidden;
-    &:before{
+    /* &:before{
         display: block;
         content: '';
         width: 100%;
@@ -154,7 +155,14 @@ view,scroll-view{
         left: 0;
         background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor-bg.png) no-repeat;
         background-size: 100% 100%;
-    }
+    } */
+}
+.visitor-bg{
+    width: 100%;
+    height: 300rpx;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 .visitor-card{
     margin:50rpx 10rpx 0 10rpx;
@@ -270,10 +278,12 @@ view,scroll-view{
 }
 .visitor-action{
     font-size: 34rpx;
-    line-height: 102rpx;
+    line-height: 88rpx;
     text-align: center;
     padding: 0 30rpx 30rpx 30rpx;
     display: flex;
+    position: relative;
+    z-index: 9;
     .send-msg,
     .has-mobile{
         flex: 1;
