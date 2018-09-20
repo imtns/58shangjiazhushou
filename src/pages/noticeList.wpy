@@ -351,6 +351,7 @@ view,scroll-view{
         .avator{
             width: 60rpx;
             height: 60rpx;
+            border-radius:100%;
             margin: 15rpx 40rpx 0 0;
         }
         .info{

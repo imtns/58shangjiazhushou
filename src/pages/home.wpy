@@ -8,7 +8,7 @@
         <view class="index-loaded-header">
             <view class="welcome-block">
                 <view class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
-                <view @tap="changeIdentity" wx:if="{{business.mpCount >= 2}}" class="item-switch">账号切换</view>
+                <view @tap="changeIdentity" class="item-switch">账号切换</view>
             </view>
             <view class="item-detail">
                 <view class="item-name" :class="{logoPadding : business.mpCount > 0 }">{{ business.miniProgramName }}</view>

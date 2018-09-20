@@ -3,7 +3,7 @@
         <view class="visitor-card">
             <view class="visitor-info">
                 <image class="avator" wx:if="{{visitInfo.portrait}}" src="{{visitInfo.portrait}}" />
-                <image class="avator" wx:if="{{!visitInfo.portrait}}" src="{{visitInfo.otherInfo.gender === 1 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/portrait-man.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/portrait-woman.png'}} " />
+                <!-- <image class="avator" wx:if="{{!visitInfo.portrait}}" src="{{visitInfo.otherInfo.gender === 1 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/portrait-man.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/portrait-woman.png'}} " /> -->
                 <view class="name">{{visitInfo.nickName}}</view>
                 <text class="other">
                     <text class="location">{{visitInfo.otherInfo.city}}</text>
@@ -19,7 +19,7 @@
                         <view class="title">转发次数</view>
                     </view>
                     <view class="action">
-                        <view class="num">{{visitInfo.vote !== '0' ? '+' + visitInfo.vote : visitInfo.vote}}</view>
+                        <view class="num">{{visitInfo.vote === '0' ? visitInfo.vote : '+' + visitInfo.vote }}</view>
                         <view class="title">点赞</view>
                     </view>
                 </view>
@@ -92,8 +92,8 @@ export default class visitorInfo extends wepy.page {
         this.$apply();
     }
     onShow () {
-        console.log('onshow');
         this.loadInfo();
+        console.log('onshow');
     }
     loadMore() {
         this.sendParams.pageNum = this.sendParams.pageNum + 1;
@@ -107,12 +107,6 @@ export default class visitorInfo extends wepy.page {
             const {
                 actions, chatToken, mobile, nickName, otherInfo, portrait, share, visit, vote,
             } = data;
-            if (actions.length === 0) {
-                this.visitInfo.actions = this.visitInfo.actions;
-                toast('没有更多行为记录啦');
-                return;
-            }
-            this.visitInfo.actions = this.visitInfo.actions.concat(actions);
             this.visitInfo.chatToken = chatToken;
             this.visitInfo.mobile = mobile;
             this.visitInfo.nickName = nickName;
@@ -121,8 +115,14 @@ export default class visitorInfo extends wepy.page {
             this.visitInfo.share = share;
             this.visitInfo.visit = visit;
             this.visitInfo.vote = vote;
-            this.$apply();
+            // if (actions.length === 0) {
+            //     this.visitInfo.actions = this.visitInfo.actions;
+            //     toast('没有更多行为记录啦');
+            //     return;
+            // }
+            this.visitInfo.actions = this.visitInfo.actions.concat(actions);
             console.log(data);
+            this.$apply();
         } catch (e) {
             console.log(e);
         }
