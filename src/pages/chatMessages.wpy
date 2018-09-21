@@ -1,6 +1,6 @@
 <template>
     <view class="chatMessages">
-        <repeat wx:if="{{contactList.length > 0}}" for="{{contactList}}" key="index" index="index" item="item">
+        <repeat wx:if="{{contactList.length > 0}}" for="{{contactList}}" key="{{index}}" index="index" item="item">
             <view class="message_box"  @tap="toChat" data-item="{{item}}">
                 <view class="message_header" style="background:url({{item.portrait || 'http://pic1.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?=690'}}) no-repeat center">
                     <view class="message_tips" wx:if="{{item.unReadCount > 0}}">{{item.unReadCount}}</view>
@@ -8,8 +8,6 @@
                 <view class="message_info">
                     <view class="chat_name">{{item.nickName}}</view>
                     <view class="chat_info">{{item.content}}</view>
-                    <!-- <view class="chat_info" wx:if="{{item.recentMsgs[item.recentMsgs.length - 1].type == 0}}">{{item.recentMsgs[item.recentMsgs.length - 1].content}}</view>
-                    <view class="chat_info" wx:if="{{item.recentMsgs[item.recentMsgs.length - 1].type == 1}}">[图片]</view> -->
                     <view class="chat_time">{{item.sendTime}}</view>
                 </view>
             </view>
@@ -36,7 +34,7 @@ import { formatDateTimeLocal } from '../utils/dateFomate';
 import { chatContactList } from '../store/index';
 import { getUid, SendClickLog } from '../utils/maidian';
 
-
+const newMsgToken = [];
 export default class chatMessages extends wepy.page {
     config = {
         navigationBarTitleText: '消息',
@@ -65,19 +63,25 @@ export default class chatMessages extends wepy.page {
     }
     async onShow () {
         await chatContactList();
-        const { contactList = [] } = globalData.chat;
-        console.error('contactList', contactList);
-        this.contactList = contactList;
-        this.$apply();
-
-        this.unreadMsgs();
+        await this.unreadMsgs();
+    }
+    onHide() {
+        newMsgToken.map((tempToken) => {
+            pubsub.unsubscribe(tempToken);
+            return tempToken;
+        });
     }
 
     unreadMsgs() {
-        const { contactList } = this;
-        contactList.forEach((msg, index) => {
+        const { contactList = [] } = globalData.chat;
+        this.contactList = contactList;
+        this.$apply();
+        const contactList1 = contactList;
+        contactList1.map((msg, index) => {
             const { contactId } = msg;
-            pubsub.subscribe(contactId, (...props) => {
+            const tempToken = pubsub.subscribe(contactId, (...props) => {
+                newMsgToken.push(tempToken);
+
                 const { type, content, sendTime } = props[0];
                 const { unReadCount } = msg;
                 let count;
@@ -86,20 +90,21 @@ export default class chatMessages extends wepy.page {
                 } else {
                     count = Number(unReadCount) + 1;
                 }
-                console.error('msg', unReadCount, contactId, msg);
+                const unReadCountMsg = `${count >= 100 ? '...' : ''}${count > 0 && count < 100 ? count : ''}`;
+
                 const newMsg = Object.assign(msg, {
                     lastType: type,
                     content: type === 1 ? '[图片]' : content,
                     sendTime: formatDateTimeLocal(sendTime),
-                    unReadCount: count,
+                    unReadCount: unReadCountMsg,
                 });
                 const { contactList: newList } = this;
                 newList.splice(index, 1);
                 newList.unshift(newMsg);
-                console.error('newMsg', newMsg, formatDateTimeLocal(sendTime));
                 this.contactList = newList;
                 this.$apply();
             });
+            return msg;
         });
     }
 }

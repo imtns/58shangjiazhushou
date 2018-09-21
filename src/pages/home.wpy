@@ -341,8 +341,8 @@ export default class Home extends wepy.page {
         this.getInfo();
         await this.getAssistAuth();
         // 聊天登录，监控未读消息
-        const { isLoagin } = globalData.chat;
-        if (!isLoagin) {
+        const { token } = globalData.chat;
+        if (!token) {
             this.chatLogin();
         }
         if (!this.isFollow && wepy.getStorageSync('ppu')) {
@@ -684,6 +684,18 @@ export default class Home extends wepy.page {
     // chatLogin 聊天登录
     async chatLogin() {
         try {
+            // 清空全局的聊天数据
+            const chat = {
+                unReadCount: 0, // 未读消息总数
+                token: '', // 消息相关接口必传字段
+                nickName: '',
+                headImg: '',
+                currentContactId: '',
+                myId: '', // 当前登录者id
+                contactList: [],
+            };
+            Object.assign(globalData.chat, chat);
+
             const { cardId = '' } = this.business.selected;
             if (!cardId) return;
             /**
