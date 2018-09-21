@@ -1,13 +1,14 @@
 <template>
     <scroll-view class="visitor-container" scroll-y bindscrolltolower="loadMore" style="height:100vh" >
+        <image class="visitor-bg" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor-bg.png" mode="aspectFit"/>
         <view class="visitor-card">
             <view class="visitor-info">
                 <image class="avator" wx:if="{{visitInfo.portrait}}" src="{{visitInfo.portrait}}" />
-                <image class="avator" wx:if="{{!visitInfo.portrait}}" src="{{visitInfo.otherInfo.gender === 1 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/portrait-man.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/portrait-woman.png'}} " />
+                <!-- <image class="avator" wx:if="{{!visitInfo.portrait}}" src="{{visitInfo.otherInfo.gender === 1 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/portrait-man.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/portrait-woman.png'}} " /> -->
                 <view class="name">{{visitInfo.nickName}}</view>
                 <text class="other">
                     <text class="location">{{visitInfo.otherInfo.city}}</text>
-                    <text class="sex">{{visitInfo.otherInfo.gender === 1 ? '男' : '女'}}</text>
+                    <text class="sex {{ visitInfo.otherInfo.gender === 1 ? 'man' : 'woman' }}">{{visitInfo.otherInfo.gender === 1 ? '男' : '女'}}</text>
                 </text>
                 <view class="actions">
                     <view class="action">
@@ -19,7 +20,7 @@
                         <view class="title">转发次数</view>
                     </view>
                     <view class="action">
-                        <view class="num">{{visitInfo.vote !== '0' ? '+' + visitInfo.vote : visitInfo.vote}}</view>
+                        <view class="num">{{visitInfo.vote === '0' ? visitInfo.vote : '+' + visitInfo.vote }}</view>
                         <view class="title">点赞</view>
                     </view>
                 </view>
@@ -92,8 +93,8 @@ export default class visitorInfo extends wepy.page {
         this.$apply();
     }
     onShow () {
-        console.log('onshow');
         this.loadInfo();
+        console.log('onshow');
     }
     loadMore() {
         this.sendParams.pageNum = this.sendParams.pageNum + 1;
@@ -107,12 +108,6 @@ export default class visitorInfo extends wepy.page {
             const {
                 actions, chatToken, mobile, nickName, otherInfo, portrait, share, visit, vote,
             } = data;
-            if (actions.length === 0) {
-                this.visitInfo.actions = this.visitInfo.actions;
-                toast('没有更多行为记录啦');
-                return;
-            }
-            this.visitInfo.actions = this.visitInfo.actions.concat(actions);
             this.visitInfo.chatToken = chatToken;
             this.visitInfo.mobile = mobile;
             this.visitInfo.nickName = nickName;
@@ -122,7 +117,13 @@ export default class visitorInfo extends wepy.page {
             this.visitInfo.visit = visit;
             this.visitInfo.vote = vote;
             this.$apply();
-            console.log(data);
+            if (actions.length === 0) {
+                this.visitInfo.actions = this.visitInfo.actions;
+                toast('没有更多行为记录啦');
+                return;
+            }
+            this.visitInfo.actions = this.visitInfo.actions.concat(actions);
+            this.$apply();
         } catch (e) {
             console.log(e);
         }
@@ -144,17 +145,13 @@ view,scroll-view{
     height:100%;
     position: relative;
     overflow: hidden;
-    &:before{
-        display: block;
-        content: '';
-        width: 100%;
-        height: 300rpx;
-        position: absolute;
-        top: 0;
-        left: 0;
-        background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor-bg.png) no-repeat;
-        background-size: 100% 100%;
-    }
+}
+.visitor-bg{
+    width: 100%;
+    height: 300rpx;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 .visitor-card{
     margin:50rpx 10rpx 0 10rpx;
@@ -194,8 +191,8 @@ view,scroll-view{
         &:before{
             display: inline-block;
             content: '';
-            width: 18rpx;
-            height: 22rpx;
+            width: 21rpx;
+            height: 26rpx;
             margin:0 8rpx -3rpx 0;
             background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/location-icon.png) no-repeat;
             background-size: 100% 100%;
@@ -203,15 +200,24 @@ view,scroll-view{
     }
     .sex{
         padding-left: 22rpx;
-        &:before{
-            display: inline-block;
-            content: '';
-            width: 25rpx;
-            height: 22rpx;
-            margin: 0 8rpx -3rpx 0;
-            background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/sex-icon.png) no-repeat;
-            background-size: 100% 100%;
-        }
+    }
+    .man:before{
+        display: inline-block;
+        content: '';
+        width: 26rpx;
+        height: 26rpx;
+        margin: 0 8rpx -3rpx 0;
+        background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/man-icon.png) no-repeat;
+        background-size: 100% 100%;
+    }
+    .woman:before{
+        display: inline-block;
+        content: '';
+        width:15rpx;
+        height: 26rpx;
+        margin: 0 8rpx -3rpx 0;
+        background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/woman-icon.png) no-repeat;
+        background-size: 100% 100%;
     }
     .actions{
         display: flex;
@@ -270,10 +276,12 @@ view,scroll-view{
 }
 .visitor-action{
     font-size: 34rpx;
-    line-height: 102rpx;
+    line-height: 88rpx;
     text-align: center;
     padding: 0 30rpx 30rpx 30rpx;
     display: flex;
+    position: relative;
+    z-index: 9;
     .send-msg,
     .has-mobile{
         flex: 1;

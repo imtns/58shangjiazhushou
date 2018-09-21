@@ -1,14 +1,13 @@
 <template>
     <scroll-view class="home" scroll-y style="height:100vh" wx:if="{{ !status.loading || !status.first }}">
-        <view class="follow-public" wx:if="{{!isFollow}}">
+        <view class="follow-public" wx:if="{{!isFollow && assistAuth}}">
             <text>关注公众号接收通知</text>
-            <navigator class="follow-action" wx:if="{{assistAuth}}" url="/pages/followPublic">马上关注</navigator>
-            <button class="follow-action" wx:elif="{{!assistAuth}}" open-type="getUserInfo" @tap="loadSession">马上关注</button>
+            <navigator class="follow-action" url="/pages/followPublic">马上关注</navigator>
         </view>
         <view class="index-loaded-header">
             <view class="welcome-block">
                 <view class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
-                <view @tap="changeIdentity" wx:if="{{business.mpCount >= 2}}" class="item-switch">账号切换</view>
+                <view @tap="changeIdentity" class="item-switch">账号切换</view>
             </view>
             <view class="item-detail">
                 <view class="item-name" :class="{logoPadding : business.mpCount > 0 }">{{ business.miniProgramName }}</view>
@@ -21,7 +20,7 @@
                         style="width:{{ 30 * (~~(business.selected.score / 1)) + 22 * (business.selected.score % 1) }}rpx">
                             <view class="icon-star" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
                         </view>      
-                        <navigator class="star-box-title" url="/pages/shopScore" @tap="shopScore">店铺评分</navigator>
+                        <view class="star-box-title" @tap="shopScore">店铺评分</view>
                     </view>
                     <view wx:else>可上传素材、提交注册信息到当前小程序</view>
                 </view>
@@ -172,6 +171,9 @@ export default class Home extends wepy.page {
         },
         shopScore() {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_shopScore');
+            wepy.navigateTo({
+                url: '/pages/shopScore',
+            });
         },
         progressText() {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_progressText');
@@ -259,12 +261,6 @@ export default class Home extends wepy.page {
                     chosedId: 0,
                     canConfirm: false,
                 });
-                // this.business.mps.map((appinfo, index) => {
-                //     if (appinfo.id === this.business.selected.id) {
-                //         this.business.mps.splice(index, 1);
-                //     }
-                //     return '';
-                // });
             }
             this.$apply();
         },
@@ -468,6 +464,7 @@ export default class Home extends wepy.page {
                 nexttask = '',
                 score,
                 cardId = '',
+                productType,
             } = data;
             const formatedMpinfo = this.formatedMp(mpinfo);
             this.business = Object.assign({}, this.business, {
@@ -475,6 +472,7 @@ export default class Home extends wepy.page {
                 miniProgramName: mpinfo.nickName || '您还没购买小程序',
                 unread,
                 unreadOrder,
+                productType,
                 mpCount: count,
                 selected: {
                     ...formatedMpinfo,
@@ -511,6 +509,10 @@ export default class Home extends wepy.page {
         switch (text) {
             case '名片管理':
                 SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_myBizCard');
+                if (this.business.productType !== '20001') {
+                    alert('您暂无权限使用该功能', '提示');
+                    return;
+                }
                 wepy.navigateTo({
                     url: 'myBizCard',
                 });
@@ -523,6 +525,10 @@ export default class Home extends wepy.page {
                 break;
             case '访客记录':
                 SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_visitorLogs');
+                if (this.business.productType !== '20001') {
+                    alert('您暂无权限使用该功能', '提示');
+                    return;
+                }
                 wepy.navigateTo({
                     url: 'visitorLogs',
                 });

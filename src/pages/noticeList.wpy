@@ -1,26 +1,26 @@
 <template>
     <view class="notice-container">
         <view class="notice-new">
-            <navigator class="notice-name" url="sysNoticeList" hover-class="none" @tap="SystemMsg">
+            <view class="notice-name" @tap="SystemMsg">
                 <view class="notice-system">
-                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/system-icon.png" mode="aspectFit"/>
+                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/system-icon2.png"/>
                     <view wx:if="{{progressUnRead > 0 }}" class="num">{{progressUnRead > 99 ? '99+' : progressUnRead}}</view>
                 </view>
                 <view class="notice-txt">
                     <view class="sys-txt">系统通知</view>
                     <view class="mp-txt">{{lastUnreadSystemMsg || '您暂无系统通知'}}</view>
                 </view>
-            </navigator>
-            <navigator class="notice-name" url="accountNoticeList" hover-class="none" @tap="MoneyMsg">
+            </view>
+            <view class="notice-name" @tap="MoneyMsg">
                 <view class="notice-system">
-                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/account-icon.png" mode="aspectFit"/>
+                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/account-icon2.png"/>
                     <view wx:if="{{recivMoneyUnRead > 0 }}" class="num">{{recivMoneyUnRead > 99 ? '99+' : recivMoneyUnRead}}</view>
                 </view>
                 <view class="notice-txt">
                     <view class="sys-txt">入账通知</view>
                     <view class="mp-txt">{{lastUnreadMoneyMsg || '您暂无入账通知'}}</view>
                 </view>
-            </navigator>
+            </view>
         </view>
         <scroll-view class="card-list" wx:if="{{cardList.length>0}}" scroll-y="true" scroll-with-animation="true"  bindscrolltolower="cardListMore" lower-threshold="50" style="height: 100vh">
             <view class="card-time">{{lastedTime}}</view>
@@ -72,9 +72,15 @@ export default class cardList extends wepy.page {
         },
         SystemMsg() {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_noticeList_SystemMsg');
+            wepy.navigateTo({
+                url: 'sysNoticeList',
+            });
         },
         MoneyMsg() {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_noticeList_MoneyMsg');
+            wepy.navigateTo({
+                url: 'accountNoticeList',
+            });
         },
         consumerCard() {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_noticeList_consumerCard');
@@ -147,6 +153,8 @@ view,scroll-view{
     height:100%;
     .notice-new{
         width:100%;
+        position: relative;
+        z-index:2;
         .notice-name{
             display:flex;
             font-size: 28rpx;
@@ -157,7 +165,6 @@ view,scroll-view{
             border-bottom: 1rpx solid #F3F3F3;
             box-sizing: border-box;
             position: relative;
-            height: 140rpx;
             &:after{
                 content:'';
                 display:block;
@@ -170,7 +177,7 @@ view,scroll-view{
                 right: 30rpx;
             }
             .notice-system{
-                width: 90rpx;
+                width: 100rpx;
                 position: relative;
                 .num{
                     font-size:18rpx;
@@ -204,9 +211,9 @@ view,scroll-view{
                 }
             }
             image{
-                width: 60rpx;
-                height: 60rpx;
-                margin-top:12rpx;
+                width: 80rpx;
+                height: 80rpx;
+                margin-top: 5rpx;
             }
         }
     }
@@ -343,6 +350,7 @@ view,scroll-view{
         .avator{
             width: 60rpx;
             height: 60rpx;
+            border-radius:100%;
             margin: 15rpx 40rpx 0 0;
         }
         .info{
