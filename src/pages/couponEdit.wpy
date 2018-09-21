@@ -61,12 +61,22 @@
             </view>
         </view>
         <view class="section">
+            <view class="item">
+                <text>快速买单</text>
+                <switch
+                    checked="{{ form.mdStatus == 1 ? true : false }}"
+                    @change="setFormData('mdStatus')"
+                    color="#4E88FF"></switch>
+            </view>
+        </view>
+        <view class="section">
             <view class="item required">
                 <text>优惠券使用产品</text>
-                <navigator :class="{ placeholder: applyType === '' }"
-                url="/pages/couponService">
-                    {{ applyType && (applyType === 1 ? '全部产品' : '指定产品') || '去选择' }}<view class="icon more"></view>
-                </navigator>
+                <view
+                    :class="{ placeholder: form.applyType === '' }"
+                    @tap="handleChooseApplyType">
+                    {{ applyTypeMap[form.applyType] || '去选择' }}<view class="icon more"></view>
+                </view>
             </view>
         </view>
 
@@ -79,7 +89,7 @@ import wepy from 'wepy';
 import Mixin from '../mixin';
 import { get, post } from '../utils/ajax';
 import { LOAD_COUPON, SAVE_COUPON } from '../utils/url';
-import { alert, isEmpty, toast } from '../utils';
+import { alert, isEmpty, toast, formatTime } from '../utils';
 
 import globalService from '../utils/globalService';
 
@@ -89,27 +99,35 @@ export default class Index extends wepy.page {
     }
 
     data = {
-        couponType: '',
-        validType: '',
-        applyType: '',
+        first: true,
+        couponType: 1,
+        validType: 1,
+        applyType: 1,
+        applyTypeMap: {
+            1: '所有预约服务',
+            2: '指定预约服务',
+            3: '所有商品和预约服务',
+            4: '所有商品',
+        },
         form: {
             id: '',
             mpId: '',
-            title: '',
-            subTitle: '',
-            couponType: '',
-            totalCount: '', // 库存
+            title: '满20减4元',
+            subTitle: '满20减4元优惠券',
+            couponType: 1,
+            totalCount: 100, // 库存
             limitCount: '', // 每人限领
-            validType: '', // 1 固定时间，2 领取后生效
+            validType: 1, // 1 固定时间，2 领取后生效
             validDays: null,
             validAfterDays: null,
-            validStarttime: '',
-            validEndtime: '',
-            applyType: '',
+            validStarttime: formatTime(new Date()),
+            validEndtime: formatTime(new Date(Date.now() + (30 * 24 * 60 * 60 * 1000))),
+            applyType: 1,
             serviceIds: '',
-            limitAmount: '', // 满多少使用
-            reliefAmount: '', // 满减
+            limitAmount: 20, // 满多少使用
+            reliefAmount: 4, // 满减
             couponDiscard: '', // 打几折，需要，50表示5折
+            mdStatus: 1, // 是否支持快速买单
         },
         canSubmit: false,
     }
@@ -140,7 +158,7 @@ export default class Index extends wepy.page {
             }
 
             // 选择适用产品，选择全部产品时，serviceIds不填
-            if (applyType !== 1) {
+            if (applyType === 2) {
                 requiredFields.push('serviceIds');
             }
 
@@ -157,6 +175,27 @@ export default class Index extends wepy.page {
     mixins = [Mixin]
 
     methods = {
+        async handleChooseApplyType() {
+            const { applyTypeMap } = this;
+
+            try {
+                const { tapIndex } = await wepy.showActionSheet({
+                    itemList: Object.keys(applyTypeMap).map(key => applyTypeMap[key]),
+                });
+                const index = tapIndex + 1;
+
+                if (index === 2) {
+                    wepy.navigateTo({
+                        url: '/pages/couponService',
+                    });
+                } else {
+                    this.form.applyType = index;
+                    this.$apply();
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        },
         async save() {
             if (!this.canSubmit) {
                 return;
@@ -191,6 +230,10 @@ export default class Index extends wepy.page {
                     toast('只能输入10个字');
                     value = value.slice(0, 10);
                 }
+            }
+
+            if (prop === 'mdStatus') {
+                value = value ? 1 : 0;
             }
 
             this.form[prop] = value;
@@ -250,15 +293,19 @@ export default class Index extends wepy.page {
 
         if (id) {
             await this.loadData(id);
-            this.updateData();
         }
 
         const mpId = wepy.getStorageSync('current_mpid');
         this.form.mpId = mpId;
+        this.updateData();
         this.$apply();
     }
 
     onShow() {
+        if (this.first) {
+            this.first = false;
+            return;
+        }
         // 每次onShow同步数据
         // 只同步跳转到编辑页修改的字段
         const {
@@ -392,6 +439,7 @@ view {
     .item {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         padding: 23rpx 0;
         margin: 0 30rpx;
         position: relative;

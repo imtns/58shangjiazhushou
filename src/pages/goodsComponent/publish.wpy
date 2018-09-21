@@ -33,8 +33,8 @@
                         wx:key="id">
                         <view
                             class="icon-checkbox"
-                            :class="{ 'selected': selectedGoods[item.id] }"
-                        ></view>
+                            :class="{ 'selected': selectedGoods[item.id] }">
+                        </view>
                         <view class="goods-box"
                             @tap="handleSelectGoods({{ item.id }})">
                             <image
@@ -59,7 +59,18 @@
                                 url="{{ item.editPath }}">
                                 编辑
                             </navigator>
-                            <view class="options-item">上架</view>
+                            <view
+                                class="options-item"
+                                wx:if="{{ item.statusDesc === '下架' }}"
+                                @tap="handleGoodsOnShow({{ item.id }})">
+                                上架
+                            </view>
+                            <view
+                                class="options-item"
+                                @tap="handleGoodsUnder({{ item.id }})"
+                                wx:else>
+                                下架
+                            </view>
                         </view>
                     </view>
                     <view
@@ -113,8 +124,14 @@ import wepy from 'wepy';
 
 import { alert } from '../../utils';
 import * as globalService from '../../utils/globalService';
-import { get } from '../../utils/ajax';
-import { LOAD_GOODS_GROUPS, LOAD_GOODS_LIST, DELETE_GOODS } from '../../utils/url';
+import { get, post } from '../../utils/ajax';
+import {
+    LOAD_GOODS_GROUPS,
+    LOAD_GOODS_LIST,
+    DELETE_GOODS,
+    GOODS_ON_SHOW,
+    GOODS_UNDER,
+} from '../../utils/url';
 
 let mpId = '';
 
@@ -142,6 +159,26 @@ export default class extends wepy.page {
     }
 
     methods = {
+        async handleGoodsOnShow(id) {
+            try {
+                await post(GOODS_ON_SHOW, {
+                    goodIds: id,
+                });
+                this.loadGoods();
+            } catch (err) {
+                alert('出了点差错，请稍后再试~');
+            }
+        },
+        async handleGoodsUnder(id) {
+            try {
+                await post(GOODS_UNDER, {
+                    goodIds: id,
+                });
+                this.loadGoods();
+            } catch (err) {
+                alert('出了点差错，请稍后再试~');
+            }
+        },
         handleEditGroup() {
             wepy.navigateTo({
                 url: '/pages/goodsComponentGroup',
@@ -269,6 +306,7 @@ export default class extends wepy.page {
             min-width: 160rpx;
         }
         .goods-list {
+            background-color: #FFF;
             flex-grow: 1;
         }
     }

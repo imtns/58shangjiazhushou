@@ -18,6 +18,8 @@ export const SAVE_SERVICE = '/businessService/update'; // 更新
 export const LOAD_GOODS_GROUPS = '/goods/groups/specail';
 export const LOAD_GOODS_LIST = '/goods/list';
 export const DELETE_GOODS = '/goods/del';
+export const GOODS_ON_SHOW = '/goods/onshow';
+export const GOODS_UNDER = '/goods/under'; // 下架商品
 
 // 营业信息设置
 export const SAVE_BUSINESS_SETTING = '/businessSetting/save';

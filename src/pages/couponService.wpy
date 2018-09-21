@@ -110,13 +110,15 @@ export default class Index extends wepy.page {
                 return service;
             });
 
-            if (this.currentGroup === '所有产品') {
-                this.applyType = 1;
-                this.selectedServices = this.allServices.concat();
-            } else {
-                this.applyType = 2;
-                this.selectedServices = this.services.map(v => v.id);
-            }
+            // if (this.currentGroup === '所有产品') {
+            //     this.applyType = 1;
+            //     this.selectedServices = this.allServices.concat();
+            // } else {
+            //     this.applyType = 2;
+            //     this.selectedServices = this.services.map(v => v.id);
+            // }
+            this.applyType = 2;
+            this.selectedServices = this.services.map(v => v.id);
         },
 
         confirm() {
@@ -142,10 +144,10 @@ export default class Index extends wepy.page {
         }
 
         // 全部产品选择
-        if (selectedServices.length === this.allServices.length) {
-            this.applyType = 1;
-            this.$apply();
-        }
+        // if (selectedServices.length === this.allServices.length) {
+        //     this.applyType = 1;
+        //     this.$apply();
+        // }
     }
 
     async onLoad() {
