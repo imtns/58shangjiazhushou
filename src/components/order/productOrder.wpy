@@ -1,0 +1,265 @@
+<template lang="wxml">
+<view class="order-view">
+     <scroll-view  lower-threshold="70" scroll-top="{{scrollValue}}" bindscrolltolower="reachBottom" style="height:82vh" scroll-y="true"> 
+        <view class="mod-view mod-order">
+            <view data-item="{{item}}" bindtap="toOrderDetail">
+                <view class="order-orderNo">
+                    <view class="order-No">订单号: 23232323</view>
+                    <view class="order-status {{item.status==3?'order-status-grey':''}}">退款中{{orderStatus[item.status]}}</view>
+                </view>
+                <view class="order-line"></view>
+                <view class="order-info">
+                    <view class="order-info-detail">
+                        <image class="icon" src="../../pages/assets/black.png"></image><text class="name">杨国福麻辣烫</text>
+                    </view> 
+                    <view class="order-info-detail"><text class="item">服务名称：</text> 小面</view>
+                    <view class="order-info-detail order-info-detail-address"><text class="item">服务地址：</text> 北京市朝阳区酒仙桥798园区</view>
+                    <view class="order-info-detail"><text class="item">服务时间：</text> 2018-04-22 21:00</view>
+                 </view>
+                <view class="order-price">
+                    <text class="order-price-name">共计费用</text>
+                    <text class="order-price-value">￥<text class="price">22</text></text>
+                </view>
+                <view class="order-line"></view>
+                <view class="order-buttons">
+                    <view class="button">立刻接单</view>
+                </view>
+            </view>
+        </view>
+        <view class="mod-view mod-order">
+            <view data-item="{{item}}" bindtap="toOrderDetail">
+                <view class="order-orderNo">
+                    <view class="order-No">订单号: 23232323</view>
+                    <view class="order-status {{item.status==3?'order-status-grey':''}}">退款中{{orderStatus[item.status]}}</view>
+                </view>
+                <view class="order-line"></view>
+                <view class="order-info">
+                    <view class="order-info-detail">
+                        <image class="icon" src="../../pages/assets/black.png"></image><text class="name">杨国福麻辣烫</text>
+                    </view> 
+                    <view class="order-info-detail"><text class="item">服务名称：</text> 小面</view>
+                    <view class="order-info-detail order-info-detail-address"><text class="item">服务地址：</text> 北京市朝阳区酒仙桥798园区</view>
+                    <view class="order-info-detail"><text class="item">服务时间：</text> 2018-04-22 21:00</view>
+                 </view>
+                <view class="order-price">
+                    <text class="order-price-name">共计费用</text>
+                    <text class="order-price-value">￥<text class="price">22</text></text>
+                </view>
+                 <view class="order-line"></view>
+                <view class="order-buttons">
+                    <view class="button">立刻接单</view> <view class="button">同意</view>
+                </view>
+            </view>
+        </view>
+        <view class="mod-view mod-order">
+            <view data-item="{{item}}" bindtap="toOrderDetail">
+                <view class="order-orderNo">
+                    <view class="order-No">订单号: 23232323</view>
+                    <view class="order-status {{item.status==3?'order-status-grey':''}}">退款中{{orderStatus[item.status]}}</view>
+                </view>
+                <view class="order-line"></view>
+                <view class="order-info">
+                    <view class="order-info-detail">
+                        <image class="icon" src="../../pages/assets/black.png"></image><text class="name">杨国福麻辣烫</text>
+                    </view> 
+                    <view class="order-info-detail"><text class="item">服务名称：</text> 小面</view>
+                    <view class="order-info-detail order-info-detail-address"><text class="item">服务地址：</text> 北京市朝阳区酒仙桥798园区</view>
+                    <view class="order-info-detail"><text class="item">服务时间：</text> 2018-04-22 21:00</view>
+                 </view>
+                <view class="order-price">
+                    <text class="order-price-name">共计费用</text>
+                    <text class="order-price-value">￥<text class="price">22</text></text>
+                </view>
+            </view>
+        </view>
+    </scroll-view>
+    <!-- <view class="empty-wrap">
+            <image class="img-no-data" src="//img.58cdn.com.cn/lbg/jianzhan/images/empty.png"/>
+            <view class="txt-no-data">暂无订单信息</view>
+        </view> -->
+</view>
+</template>
+<script>
+import wepy from 'wepy';
+import mixin from './mixin';
+
+export default class ProductOrder extends wepy.component {
+ mixins = [mixin];
+}
+</script>
+<style lang="scss">
+.order-view {
+  z-index: 1;
+  position: relative;
+}
+
+.order-tabs {
+  z-index: 99;
+}
+
+.mod-order {
+  background: white;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+
+.order-orderNo {
+  font-size: 30rpx;
+  float: left;
+  width: 100%;
+}
+
+.order-No {
+  float: left;
+  /* text-indent:30rpx; */
+}
+
+.order-status,
+.order-status-cancel {
+  color: #ff552e;
+  float: right;
+}
+.order-status-grey {
+  color: #666666;
+}
+
+.order-line {
+  position: relative;
+  width: 110%;
+  display: inline-block;
+  background: rgb(236, 236, 236);
+  height: 1rpx;
+  margin: 30rpx -30rpx 1rpx;
+}
+
+.order-info {
+  padding-top: 20rpx;
+  width: 100%;
+}
+.order-info-detail {
+  width: 100%;
+  display: inline-block;
+  font-size: 28rpx;
+  margin-top: 10rpx;
+  color: #333;
+  &:first-child {
+    padding-bottom: 15rpx;
+  }
+  .icon {
+    width: 58rpx;
+    height: 58rpx;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 20rpx;
+  }
+  .name {
+    font-size: 32rpx;
+    color: #333;
+    font-weight: bold;
+  }
+}
+.order-info-detail .item {
+  color: #999 !important;
+}
+.order-info-detail-address {
+  width: 600rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.order-price {
+  font-size: 28rpx;
+  display: flex;
+  width: 100%;
+  padding: 30rpx 0;
+  align-items: center;
+}
+
+.order-price-name {
+  flex: 1;
+  text-align: left;
+}
+
+.order-price-value {
+  flex: 1;
+  text-align: right;
+  .price {
+    font-size: 34rpx;
+  }
+}
+.order-buttons{
+    display:flex;
+    align-items: center;
+    padding:30rpx 0;
+    width:100%;
+    height:100rpx;
+    justify-content: flex-end;
+    font-size:28rpx; 
+    .button{
+        width:177rpx;
+        height:60rpx;
+        line-height: 60rpx;
+        text-align: center;
+        color:#4e88ff;
+        border:1rpx solid #4e88ff;
+        border-radius: 4rpx;
+        margin-left:30rpx;
+    }
+}
+.order-empty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  margin-top: 200rpx;
+  font-size: 30rpx;
+  color: #ccc;
+  justify-content: center;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+}
+.order-empty-icon {
+  width: 260rpx;
+  height: 260rpx;
+}
+/*  加载更多   */
+
+.weui-loading {
+  margin: 0 5px;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  vertical-align: middle;
+  -webkit-animation: weuiLoading 1s steps(12, end) infinite;
+  animation: weuiLoading 1s steps(12, end) infinite;
+  background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggZmlsbD0ibm9uZSIgZD0iTTAgMGgxMDB2MTAwSDB6Ii8+PHJlY3Qgd2lkdGg9IjciIGhlaWdodD0iMjAiIHg9IjQ2LjUiIHk9IjQwIiBmaWxsPSIjRTlFOUU5IiByeD0iNSIgcnk9IjUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgLTMwKSIvPjxyZWN0IHdpZHRoPSI3IiBoZWlnaHQ9IjIwIiB4PSI0Ni41IiB5PSI0MCIgZmlsbD0iIzk4OTY5NyIgcng9IjUiIHJ5PSI1IiB0cmFuc2Zvcm09InJvdGF0ZSgzMCAxMDUuOTggNjUpIi8+PHJlY3Qgd2lkdGg9IjciIGhlaWdodD0iMjAiIHg9IjQ2LjUiIHk9IjQwIiBmaWxsPSIjOUI5OTlBIiByeD0iNSIgcnk9IjUiIHRyYW5zZm9ybT0icm90YXRlKDYwIDc1Ljk4IDY1KSIvPjxyZWN0IHdpZHRoPSI3IiBoZWlnaHQ9IjIwIiB4PSI0Ni41IiB5PSI0MCIgZmlsbD0iI0EzQTFBMiIgcng9IjUiIHJ5PSI1IiB0cmFuc2Zvcm09InJvdGF0ZSg5MCA2NSA2NSkiLz48cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSIyMCIgeD0iNDYuNSIgeT0iNDAiIGZpbGw9IiNBQkE5QUEiIHJ4PSI1IiByeT0iNSIgdHJhbnNmb3JtPSJyb3RhdGUoMTIwIDU4LjY2IDY1KSIvPjxyZWN0IHdpZHRoPSI3IiBoZWlnaHQ9IjIwIiB4PSI0Ni41IiB5PSI0MCIgZmlsbD0iI0IyQjJCMiIgcng9IjUiIHJ5PSI1IiB0cmFuc2Zvcm09InJvdGF0ZSgxNTAgNTQuMDIgNjUpIi8+PHJlY3Qgd2lkdGg9IjciIGhlaWdodD0iMjAiIHg9IjQ2LjUiIHk9IjQwIiBmaWxsPSIjQkFCOEI5IiByeD0iNSIgcnk9IjUiIHRyYW5zZm9ybT0icm90YXRlKDE4MCA1MCA2NSkiLz48cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSIyMCIgeD0iNDYuNSIgeT0iNDAiIGZpbGw9IiNDMkMwQzEiIHJ4PSI1IiByeT0iNSIgdHJhbnNmb3JtPSJyb3RhdGUoLTE1MCA0NS45OCA2NSkiLz48cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSIyMCIgeD0iNDYuNSIgeT0iNDAiIGZpbGw9IiNDQkNCQ0IiIHJ4PSI1IiByeT0iNSIgdHJhbnNmb3JtPSJyb3RhdGUoLTEyMCA0MS4zNCA2NSkiLz48cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSIyMCIgeD0iNDYuNSIgeT0iNDAiIGZpbGw9IiNEMkQyRDIiIHJ4PSI1IiByeT0iNSIgdHJhbnNmb3JtPSJyb3RhdGUoLTkwIDM1IDY1KSIvPjxyZWN0IHdpZHRoPSI3IiBoZWlnaHQ9IjIwIiB4PSI0Ni41IiB5PSI0MCIgZmlsbD0iI0RBREFEQSIgcng9IjUiIHJ5PSI1IiB0cmFuc2Zvcm09InJvdGF0ZSgtNjAgMjQuMDIgNjUpIi8+PHJlY3Qgd2lkdGg9IjciIGhlaWdodD0iMjAiIHg9IjQ2LjUiIHk9IjQwIiBmaWxsPSIjRTJFMkUyIiByeD0iNSIgcnk9IjUiIHRyYW5zZm9ybT0icm90YXRlKC0zMCAtNS45OCA2NSkiLz48L3N2Zz4=);
+  background-size: 100%;
+}
+
+.weui-loadmore {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  font-size: 26rpx;
+  text-align: center;
+  padding: 6rpx 0;
+  background: rgb(238, 238, 238);
+}
+
+.weui-loadmore__tips {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.order-mplogo {
+  width: 58rpx;
+  height: 58rpx;
+  border-radius: 100%;
+  margin: 21rpx 20rpx 21rpx 0;
+}
+.order-mpname {
+  font-size: 32rpx;
+  color: #333;
+}
+</style>

@@ -156,6 +156,7 @@ import { LOAD_SERVICE, INSERT_SERVICE, SAVE_SERVICE } from '../utils/url';
 import { alert, picSrcDomain, isEmpty } from '../utils';
 import imageUploader from '../components/UploadFile';
 import globalService from '../utils/globalService';
+import { getUid, SendClickLog } from '../utils/maidian';
 
 export default class Index extends wepy.page {
     config = {
@@ -218,6 +219,7 @@ export default class Index extends wepy.page {
 
     methods = {
         setImages({ images }) {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderComponentEdit_setImages');
             if (images.length) {
                 [this.form.pics] = images;
             }
@@ -284,6 +286,7 @@ export default class Index extends wepy.page {
         },
 
         async setLocation () {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderComponentEdit_setLocation');
             try {
                 const {
                     address,

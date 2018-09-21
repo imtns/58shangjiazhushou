@@ -4,33 +4,33 @@
             <navigator class="notice-name" url="sysNoticeList" hover-class="none" @tap="SystemMsg">
                 <view class="notice-system">
                     <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/system-icon.png" mode="aspectFit"/>
-                    <view wx:if="{{progressUnRead > 0 }}" class="num">{{progressUnRead}}</view>
+                    <view wx:if="{{progressUnRead > 0 }}" class="num">{{progressUnRead > 99 ? '99+' : progressUnRead}}</view>
                 </view>
                 <view class="notice-txt">
                     <view class="sys-txt">系统通知</view>
-                    <view class="mp-txt">{{lastUnreadSystemMsg}}</view>
+                    <view class="mp-txt">{{lastUnreadSystemMsg || '您暂无系统通知'}}</view>
                 </view>
             </navigator>
             <navigator class="notice-name" url="accountNoticeList" hover-class="none" @tap="MoneyMsg">
                 <view class="notice-system">
                     <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/account-icon.png" mode="aspectFit"/>
-                    <view wx:if="{{recivMoneyUnRead > 0 }}" class="num">{{recivMoneyUnRead}}</view>
+                    <view wx:if="{{recivMoneyUnRead > 0 }}" class="num">{{recivMoneyUnRead > 99 ? '99+' : recivMoneyUnRead}}</view>
                 </view>
                 <view class="notice-txt">
                     <view class="sys-txt">入账通知</view>
-                    <view class="mp-txt">{{lastUnreadMoneyMsg}}</view>
+                    <view class="mp-txt">{{lastUnreadMoneyMsg || '您暂无入账通知'}}</view>
                 </view>
             </navigator>
         </view>
-        <scroll-view class="card-list" wx:if="{{cardList.length>0}}" scroll-y="true" scroll-with-animation="true" lower-threshold="50" style="height: 100vh">
+        <scroll-view class="card-list" wx:if="{{cardList.length>0}}" scroll-y="true" scroll-with-animation="true"  bindscrolltolower="cardListMore" lower-threshold="50" style="height: 100vh">
             <view class="card-time">{{lastedTime}}</view>
             <block wx:for="{{cardList}}" wx:key="index">
                 <view class="card-list-item">
                     <navigator class="card-item" url="visitorInfo?cardId={{item.cardId}}&consumerId={{item.consumerId}}"  hover-class="none" @tap="consumerCard">
                         <image class="avator" src="{{item.headImg}}" mode="aspectFit"/>
                         <view class="info">
-                            <view class="visitor">{{item.nickName}}查看了您的名片</view>
-                            <view class="contact">{{item.content}}</view>
+                            <view class="visitor">{{item.nickName}}{{item.content}}</view>
+                            <view class="contact">有可能对你感兴趣，快去联系ta吧</view>
                         </view>
                     </navigator>
                 </view>
@@ -43,6 +43,7 @@
 import wepy from 'wepy';
 
 import { get } from '../utils/ajax';
+import { toast } from '../utils/index';
 import { READ_GROUND_MSG, CONSUMERS } from '../utils/url';
 import { getUid, SendClickLog } from '../utils/maidian';
 
@@ -65,8 +66,8 @@ export default class cardList extends wepy.page {
     }
     methods = {
         cardListMore() {
-            this.sendParams.page = this.sendParams.page + 1;
-            this.sendParams = Object.assign({}, this.sendParams, this.sendParams.page);
+            this.sendParams.pageNum = this.sendParams.pageNum + 1;
+            this.sendParams = Object.assign({}, this.sendParams, this.sendParams.pageNum);
             this.loadList();
         },
         SystemMsg() {
@@ -110,19 +111,20 @@ export default class cardList extends wepy.page {
             this.lastUnreadSystemMsg = lastUnreadSystemMsg;
             const { msglist, lastedTime } = msgVos.data;
             this.lastedTime = lastedTime;
-            if (msglist && msglist.length > 0) {
-                const arr = [];
-                msglist.forEach((item) => {
-                    const ele = item;
-                    if (ele.mpLogo && ele.mpLogo.indexOf('http') === -1) {
-                        ele.mpLogo = `https://pic1.58cdn.com.cn${ele.mpLogo}`;
-                    }
-                    arr.push(ele);
-                });
-                this.cardList = arr;
-            } else {
-                this.cardList = [];
+            const arr = [];
+            if (msglist.length === 0) {
+                this.cardList = this.cardList;
+                toast('没有更多访客信息啦');
+                return;
             }
+            msglist.forEach((item) => {
+                const ele = item;
+                if (ele.mpLogo && ele.mpLogo.indexOf('http') === -1) {
+                    ele.mpLogo = `https://pic1.58cdn.com.cn${ele.mpLogo}`;
+                }
+                arr.push(ele);
+            });
+            this.cardList = this.cardList.concat(arr);
             this.$apply();
         } catch (e) {
             console.log(e);
@@ -155,6 +157,7 @@ view,scroll-view{
             border-bottom: 1rpx solid #F3F3F3;
             box-sizing: border-box;
             position: relative;
+            height: 140rpx;
             &:after{
                 content:'';
                 display:block;
@@ -194,17 +197,25 @@ view,scroll-view{
                     font-size: 26rpx;
                     color: #666;
                     margin-top: 10rpx;
+                    width:90%;
+                    overflow:hidden;
+                    white-space:nowrap;
+                    text-overflow:ellipsis;
                 }
             }
             image{
                 width: 60rpx;
                 height: 60rpx;
-                margin-top:15rpx;
+                margin-top:12rpx;
             }
         }
     }
     .notice-list{
+        position: absolute;
         width:100%;
+        top: 281rpx;
+        left: 0;
+        bottom: 0;
         .notice-list-item{
             padding:0 30rpx;
             background:#fff;
@@ -301,6 +312,10 @@ view,scroll-view{
     }
     .card-list{
         width:100%;
+        position:fixed;
+        top:0;
+        bottom:0;
+        padding-top:281rpx;
         .card-time{
             font-size: 28rpx;
             color: #999;
@@ -328,9 +343,7 @@ view,scroll-view{
         .avator{
             width: 60rpx;
             height: 60rpx;
-            border-radius: 100%;
             margin: 15rpx 40rpx 0 0;
-            background: red;
         }
         .info{
             flex: 1;
@@ -338,6 +351,10 @@ view,scroll-view{
         }
         .visitor{
             font-size: 32rpx;
+            width:90%;
+            overflow:hidden;
+            white-space:nowrap;
+            text-overflow:ellipsis;
         }
         .contact{
             font-size: 26rpx;

@@ -14,7 +14,7 @@
             <view>全部通知</view>
             <view class="clear-notice attach-notice" bindtap="clearAll">清空</view>
         </view>
-        <scroll-view class="notice-list" wx:if="{{sysList.length>0}}" scroll-y="true" scroll-with-animation="true" lower-threshold="50" bindscrolltolower="sysListMore" style="height: 100vh">
+        <scroll-view class="notice-list" wx:if="{{sysList.length>0}}" scroll-y="true" scroll-with-animation="true" lower-threshold="50" bindscrolltolower="sysListMore" style="height: 100vh">  
             <block wx:for="{{sysList}}" wx:key="index">
                 <view class="notice-list-item">
                     <view class="notice-item" bindtap="touploadInfo" data-item="{{item}}">
