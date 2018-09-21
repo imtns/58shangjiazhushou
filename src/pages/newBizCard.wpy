@@ -44,7 +44,7 @@
             </view>
             <view class="flex_box border_bottom">
                 <view class="text">职位</view>
-                <input type="text" class="flex_item text_right" placeholder="请填写您的职位" placeholder-style="font-size:30rpx;color:#CCCCCC" maxlength="10" bindinput="bindKeyInput" data-option="position"  value="{{position}}"/>
+                <input type="text" class="flex_item text_right" placeholder="默认为公司职员" placeholder-style="font-size:30rpx;color:#CCCCCC" maxlength="10" bindinput="bindKeyInput" data-option="position"  value="{{position}}"/>
             </view>
             <view class="flex_box border_bottom" @tap="setLocation">
                 <view class="text must">联系地址</view>
@@ -130,6 +130,7 @@ export default class newBizCard extends wepy.page {
         deleteTag(index) {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_deleteTag');
             this.serviceTagArr.splice(index, 1);
+            this.serviceTag = this.serviceTagArr.join(',');
         },
         async creatCard() {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_creatCard');
@@ -145,7 +146,7 @@ export default class newBizCard extends wepy.page {
                 serviceTag: this.serviceTag, // 服务标签
                 sign: this.sign, // 个性签名
                 company: this.company, // 公司名称
-                position: this.position, // 职位
+                position: this.position || '公司职员', // 职位
                 address: this.address, // 联系地址
                 addressLongitude: this.addressLongitude, // 地址经度
                 addressLatitude: this.addressLatitude, // 地址纬度

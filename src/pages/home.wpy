@@ -20,7 +20,7 @@
                         <view class="star-list"
                         style="width:{{ 30 * (~~(business.selected.score / 1)) + 22 * (business.selected.score % 1) }}rpx">
                             <view class="icon-star" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
-                        </view>
+                        </view>      
                         <navigator class="star-box-title" url="/pages/shopScore" @tap="shopScore">店铺评分</navigator>
                     </view>
                     <view wx:else>可上传素材、提交注册信息到当前小程序</view>
@@ -108,7 +108,13 @@ import { getUid, SendClickLog } from '../utils/maidian';
 
 import { CHAT_LOGIN, MY_MPLIST, SESSION, INSERT_SESSION, GET_EXT_JSON, GET_ASSIST_AUTH } from '../utils/url';
 
+<<<<<<< HEAD
+import { sdkLogin, onMsgNotify, sdkLogout } from '../utils/IM/IM';
+
+import { chatContactList } from '../store/index';
+=======
 // import { sdkLogin, onMsgNotify } from '../utils/IM/IM';
+>>>>>>> dev1.8
 
 export default class Home extends wepy.page {
     mixins = [Mixin]
@@ -147,7 +153,6 @@ export default class Home extends wepy.page {
         },
         items,
         nItems,
-        cardId: '1037641283830616064',
     }
     methods = {
         link(text) {
@@ -298,12 +303,24 @@ export default class Home extends wepy.page {
             this.$apply();
         },
         // 切换小程序操作
-        confirmAction () {
+        async confirmAction () {
+            // 切换小程序，登出IM
+            const { cardId = '' } = this.business.selected;
+            if (cardId) {
+                sdkLogout(() => {
+                    console.log('logout success');
+                }, () => {
+                    console.log('logout error');
+                });
+            }
+
             if (this.business.selected.id) {
-                this.setGlobalMpId(this.business.chosedId);
-                this.loadData();
-                this.loadExtJson();
-                this.hideMask();
+                await this.setGlobalMpId(this.business.chosedId);
+                await this.loadData();
+                await this.loadExtJson();
+                await this.hideMask();
+                // 切换小程序，重新登录IM
+                await this.chatLogin();
             }
         },
         hideModal() {
@@ -311,6 +328,7 @@ export default class Home extends wepy.page {
         },
     }
     async onLoad () {
+        await this.loadData();
         // globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
         this.setGlobalMpId(this.business.selected.id);
         this.loadExtJson();
@@ -331,8 +349,8 @@ export default class Home extends wepy.page {
         }
         if (!this.isFollow && wepy.getStorageSync('ppu')) {
             this.showModal = true;
+            this.$apply();
         }
-        this.$apply();
     }
     formatedMp (item) {
         const mp = item;
@@ -364,9 +382,9 @@ export default class Home extends wepy.page {
         const that = this;
         try {
             const { data } = await get(GET_ASSIST_AUTH);
-            const { isFollow, assistInfo } = data;
+            const { isFollow, assistInfo = null } = data;
             // 9.13 王研需求修改
-            if (assistInfo.wechatUnionId) { // 是否授权
+            if (assistInfo && assistInfo.wechatUnionId) { // 是否授权
                 that.assistAuth = true;
             } else {
                 that.assistAuth = false;
@@ -450,6 +468,7 @@ export default class Home extends wepy.page {
                 count = 0,
                 nexttask = '',
                 score,
+                cardId = '',
             } = data;
             const formatedMpinfo = this.formatedMp(mpinfo);
             this.business = Object.assign({}, this.business, {
@@ -461,6 +480,7 @@ export default class Home extends wepy.page {
                 selected: {
                     ...formatedMpinfo,
                     score,
+                    cardId,
                 },
             });
             // wepy在链式更改属性时，在手机预览会出现不生效的情况。
@@ -480,9 +500,11 @@ export default class Home extends wepy.page {
         }
     }
     setGlobalMpId (id) {
+        const { cardId = '' } = this.business.selected;
         if (id) {
             wepy.setStorageSync('current_mpid', id);
         }
+        wepy.setStorageSync('current_cardId', cardId);
     }
     checkBeforeJump (text) {
         if (!this.business.mpCount) {
@@ -665,7 +687,8 @@ export default class Home extends wepy.page {
     // chatLogin 聊天登录
     async chatLogin() {
         try {
-            const { cardId } = this.data;
+            const { cardId = '' } = this.business.selected;
+            if (!cardId) return;
             /**
                 tim 包含 sdkAppID identifier userSig
                 myInfo 包含 token nickName headImg
@@ -679,21 +702,26 @@ export default class Home extends wepy.page {
             const { tim, myInfo, unReadCount = 20 } = data;
             const { unReadCount: counts } = globalData.chat;
             const text = counts && counts > 0 ? (counts + Number(unReadCount)) : unReadCount;
-            if (Number(text) && Number(text) > 0) {
-                setTabBar(text);
-            }
+
+            setTabBar(text);
+
             const {
                 token, nickName, headImg, id,
             } = myInfo;
+
             // 设置全局token
+            let tempHeadImg = headImg;
+            if (headImg.indexOf('http') === -1) {
+                tempHeadImg = `https://pic1.58cdn.com.cn${headImg}`;
+            }
             Object.assign(globalData.chat, {
                 isLogin: true,
                 token,
                 nickName,
-                headImg,
+                headImg: tempHeadImg,
                 myId: id,
             });
-
+            await chatContactList();
             // IM 登录，获取实时消息
             // this.initIM(tim);
         } catch (e) {
@@ -701,6 +729,19 @@ export default class Home extends wepy.page {
         }
     }
 
+<<<<<<< HEAD
+    initIM(tim) {
+        console.log('initIM');
+        // 当前用户身份
+        const loginInfo = {};
+        Object.assign(loginInfo, tim);
+        // listeners
+        const listeners = {
+            onMsgNotify: onMsgNotify, // 监听新消息
+        };
+        sdkLogin(loginInfo, listeners, {});
+    }
+=======
     // initIM(tim) {
     //     console.log('initIM');
     //     // 当前用户身份
@@ -715,6 +756,7 @@ export default class Home extends wepy.page {
     //     };
     //     sdkLogin(loginInfo, listeners, {});
     // }
+>>>>>>> dev1.8
 }
 </script>
 

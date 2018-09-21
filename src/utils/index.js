@@ -139,3 +139,15 @@ export const formatTime = (date) => {
     return [year, month, day].map(formatNumber).join('-');
 };
 
+
+export const withHttp = (list) => {
+    list.forEach((item) => {
+        let ele = item;
+        if (ele.headImg && ele.headImg.indexOf('http') === -1) {
+            ele.headImg = `https://pic1.58cdn.com.cn${headImg}`;
+        } else if (ele.senderPortrait && ele.senderPortrait.indexOf('http') === -1) {
+            ele.senderPortrait = `https://pic1.58cdn.com.cn${ele.senderPortrait}`;
+        }
+    });
+    return list;
+}

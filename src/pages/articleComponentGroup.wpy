@@ -79,6 +79,7 @@ import { toast, alert, alertP, sleep, getNetStatus } from '../utils';
 import { globalData } from '../utils/globalData';
 import EmptyPage from '../components/EmptyPage';
 import Pop from '../components/Dialog';
+import { getUid, SendClickLog } from '../utils/maidian';
 
 let selectedIds = []; // 已选择作品
 
@@ -107,6 +108,7 @@ export default class Index extends wepy.page {
         name: '',
         id: '',
         delList: [],
+        title: '没有文章分组~',
         mpId: '',
 
         // 素材选择模式
@@ -145,6 +147,7 @@ export default class Index extends wepy.page {
          */
 
         edit(e) {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_articleComponentGroup_edit');
             const { status } = e.currentTarget.dataset;
             const dataList = this.groupList;
             if (status) {
@@ -249,6 +252,7 @@ export default class Index extends wepy.page {
             }
         },
         async addGroup(content) {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_articleComponentGroup_addGroup');
             try {
                 let url = '';
                 if (this.name) {
@@ -328,6 +332,7 @@ export default class Index extends wepy.page {
         }
     }
     showDialog(id = '', name = '') {
+        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_articleComponentGroup_showDialog');
         console.log(name, id);
         const { groupList } = this;
         if (!name && groupList && groupList.length >= 10) {
