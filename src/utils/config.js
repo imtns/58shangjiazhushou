@@ -39,4 +39,64 @@ module.exports = {
             'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/progress50.png',
         ],
     },
+    'order/goodsDetail': {
+        statusDesc: {
+            0: {
+                title: '待接单',
+                subtitle: '用户已下单，请您尽快接单，超过15分钟不接单，系统将自动取消订单',
+            },
+            1: {
+                title: '待配送',
+                subtitle: '您已接单，请在预计送达时间前送达，配送开始时请点击开始配送按钮进行确认',
+            },
+            // 商家拒绝接单
+            15: {
+                title: '已完成',
+                subtitle: '您已拒绝接单',
+            },
+            // 已取消
+            3: {
+                title: '退款中',
+                subtitle: '顾客已在您接单前取消订单，系统将自动退款给顾客',
+            },
+            4: {
+                title: '已删除',
+                subtitle: '系统已删除订单',
+            },
+            // ****这个有没有
+            5: {
+                title: '已下单，待支付',
+                subtitle: '顾客已下单，还未支付订单',
+            },
+            // 退款成功
+            6: {
+                title: '已下单，未支付',
+                subtitle: '',
+            },
+            5: {
+                title: '配送中',
+                subtitle: '',
+            },
+            6: {
+                title: '用户申请退款，退款中',
+                subtitle: '',
+            },
+            7: {
+                title: '已配送',
+                subtitle: '',
+            },
+            8: {
+                title: '已完成',
+                subtitle: '',
+            },
+            9: {
+                title: '退款中',
+                subtitle: '',
+            },
+            10: {
+                title: '退款成功',
+                subtitle: '',
+            },
+        },
+    },
 };

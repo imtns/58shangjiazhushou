@@ -1,0 +1,246 @@
+<template>
+    <view class="container">
+        <view class="status">
+            <view class="status-title">退款失败</view>
+            <view class="status-subtitle">顾客已在您接单前取消订单，系统退款失败，请回到首页联系我们</view>
+        </view>
+        <view class="order-info">
+            <view class="user-info">
+                <view class="user-name">李先生</view>
+                <view class="user-phone">18588888888</view>
+                <view class="icon-phone"></view>
+            </view>
+            <view class="order-wrap">
+                <view class="order-detail">
+                    <view class="order-detail-item">
+                        <view class="order-detail-label">下单时间</view>
+                        <view class="order-detail-value">{{ order.createTime || '08-16 21:12' }}</view>
+                    </view>
+                    <view class="order-detail-item">
+                        <view class="order-detail-label">配送地址</view>
+                        <view class="order-detail-value">北京市朝阳区酒仙桥产业园</view>
+                    </view>
+                    <view class="order-detail-item">
+                        <view class="order-detail-label">预计送达时间</view>
+                        <view class="order-detail-value">08-16 21:12</view>
+                    </view>
+                    <view class="order-detail-item">
+                        <view class="order-detail-label">配送方式</view>
+                        <view class="order-detail-value">商家配送</view>
+                    </view>
+                </view>
+            </view>
+        </view>
+        <view class="goods-info">
+            <view class="goods-title">杨国福麻辣烫</view>
+            <view class="goods-list">
+                <view class="goods-item">
+                    <image src="" class="goods-img"/>
+                    <view class="goods-detail-info">
+                        <view class="goods-name">小面套餐</view>
+                        <view class="goods-amount">x 4</view>
+                    </view>
+                    <view class="goods-price">￥16</view>
+                </view>
+                <view class="goods-item">
+                    <image src="" class="goods-img"/>
+                    <view class="goods-detail-info">
+                        <view class="goods-name">老婆饼（大份）</view>
+                        <view class="goods-amount">x 3</view>
+                    </view>
+                    <view class="goods-price">￥18.9</view>
+                </view>
+            </view>
+            <view class="order-detail">
+                <view class="order-detail-item">
+                    <view class="order-detail-label">包装费</view>
+                    <view class="order-detail-value">￥{{ order.packingFee || 3 }}</view>
+                </view>
+                <view class="order-detail-item">
+                    <view class="order-detail-label">配送费</view>
+                    <view class="order-detail-value">￥{{ order.distributionFee || 10 }}</view>
+                </view>
+                <view class="order-detail-item">
+                    <view class="order-detail-label">优惠券</view>
+                    <view class="order-detail-value">-￥{{ order.couponAmount || 20 }}</view>
+                </view>
+            </view>
+            <view class="goods-total">
+                总计<text class="bold">￥{{ order.realAmount || 89.8 }}</text>
+            </view>
+        </view>
+        <view class="extra-info">
+            <view class="order-detail" style="border-top: none;">
+                <view class="order-detail-item">
+                    <view class="order-detail-label">订单编号</view>
+                    <view class="order-detail-value">{{ order.serviceId || 'XC039293823923' }}</view>
+                </view>
+            </view>
+            <view class="order-detail">
+                <view class="order-detail-item">
+                    <view class="order-detail-label">支付方式</view>
+                    <view class="order-detail-value">{{ order.payType || '线上支付' }}</view>
+                </view>
+            </view>
+            <view class="order-detail">
+                <view class="order-detail-item">
+                    <view class="order-detail-label">备注</view>
+                    <view class="order-detail-value"></view>
+                </view>
+                <view class="order-textarea-value">多方香葱，不要辣椒，谢谢</view>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+/**
+ * 商品订单详情
+ */
+import wepy from 'wepy';
+
+export default class Index extends wepy.component {
+    config = {
+        navigationBarTitleText: '订单详情',
+    }
+    data = {
+        order: {},
+    }
+    onLoad() {
+        console.log('onLoad');
+    }
+}
+</script>
+
+<style lang="scss">
+.container {
+    width: 100%;
+    background: url('https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/order-goods-detail-rectangle.png') no-repeat;
+    background-size: 750rpx 348rpx;
+    overflow: hidden;
+    padding-bottom: 41rpx;
+}
+.status {
+    width: 690rpx;
+    margin: 30rpx auto 20rpx;
+    color: #fff;
+    .status-title {
+        font-size: 38rpx;
+        font-weight: bold;
+        line-height: 53rpx;
+        margin-bottom: 10rpx;
+    }
+    .status-subtitle {
+        font-size: 26rpx;
+        line-height: 37rpx;
+    }
+}
+
+.order-info {
+    width: 720rpx;
+    margin: 0 auto 20rpx;
+    background-color: #fff;
+    border-radius: 10rpx;
+    box-shadow: 0 4rpx 20rpx 0 rgba(200,218,255,0.50);
+    font-size: 30rpx;
+    color: #333;
+    overflow: hidden;
+    .user-info {
+        padding: 0 30rpx;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 102rpx;
+        .user-name {
+            font-weight: bold;
+        }
+        .user-phone {
+            flex-grow: 1;
+            margin-left: 20rpx;
+        }
+        .icon-phone {
+            width: 40rpx;
+            height: 40rpx;
+            background: url('/icon-call.png') no-repeat;
+            background-size: 100%
+        }
+    }
+    .order-wrap {
+        padding: 0 20rpx;
+    }
+}
+
+.goods-info {
+    padding: 0 30rpx;
+    background-color: #fff;
+    font-size: 30rpx;
+    color: #333;
+    .goods-title {
+        font-weight: bold;
+        height: 85rpx;
+        line-height: 85rpx;
+    }
+    .goods-list {
+        padding-top: 30rpx;
+        border-top: 1rpx solid #f3f3f3;
+    }
+    .goods-item {
+        display: flex;
+        margin-bottom: 30rpx;
+        line-height: 42rpx;
+        .goods-img {
+            width: 94rpx;
+            height: 94rpx;
+            background-color: #f3f3f3;
+        }
+        .goods-detail-info {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin-left: 20rpx;
+            .goods-name {
+                margin-bottom: 10rpx;
+            }
+        }
+    }
+    .goods-total {
+        font-size: 26rpx;
+        line-height: 100rpx;
+        text-align: right;
+        .bold {
+            display: inline-block;
+            font-size: 34rpx;
+            color: #ff552e;
+            margin-left: 20rpx;
+        }
+    }
+}
+
+.extra-info {
+    background-color: #fff;
+    padding: 0 30rpx;
+    margin-top: 20rpx;
+}
+
+.order-detail {
+    padding: 30rpx 0 0;
+    border-top: 1rpx solid #f3f3f3;
+    font-size: 30rpx;
+    color: #333;
+    overflow: hidden;
+    .order-detail-item {
+        margin-bottom: 30rpx;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .order-detail-label {
+            color: #999;
+        }
+    }
+    .order-textarea-value {
+        height: 198rpx;
+        margin-bottom: 30rpx;
+    }
+}
+</style>
