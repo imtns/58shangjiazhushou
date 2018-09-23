@@ -153,6 +153,7 @@ export default class Chat extends wepy.page {
                 senderPortrait: headImg,
             };
             const { tempFilePaths } = await wepy.chooseImage({
+                count: 1,
                 sourceType: [type],
             });
             this.msgList.push(Object.assign(msg, {
@@ -262,7 +263,7 @@ export default class Chat extends wepy.page {
         // 订阅当前联系人的未读消息
         msgListToken = pubsub.subscribe(contact, (...props) => {
             const newMsgs = props[0];
-            console.log(newMsgs);
+            // console.log(newMsgs);
             [newMsgs].forEach((msg) => {
                 this.msgList.push(msg);
                 this.$apply();
