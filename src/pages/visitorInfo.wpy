@@ -125,6 +125,7 @@ export default class visitorInfo extends wepy.page {
             this.visitInfo.actions = this.visitInfo.actions.concat(actions);
             this.$apply();
         } catch (e) {
+            toast(e);
             console.log(e);
         }
     }
