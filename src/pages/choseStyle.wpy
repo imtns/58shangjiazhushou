@@ -255,7 +255,7 @@ export default class choseStyle extends wepy.page {
                 .style_tag{
                     display: inline-block;
                     border: 1rpx solid #F5A623;
-                    border-radius: 4px;
+                    border-radius: .04rpx;
                     font-size: 24rpx;
                     color: #F5A623;
                     height: 46rpx;
@@ -325,7 +325,7 @@ export default class choseStyle extends wepy.page {
                 .style_tag{
                     display: inline-block;
                     border: 1rpx solid #F5A623;
-                    border-radius: 4px;
+                    border-radius: .04rpx;
                     font-size: 24rpx;
                     color: #F5A623;
                     height: 46rpx;
