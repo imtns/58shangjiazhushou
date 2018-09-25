@@ -272,15 +272,17 @@ export default class Chat extends wepy.page {
     }
     toDetail(e) {
         // 点击头像
-        const { senderId, id, senderConsumerId } = e.currentTarget.dataset.item;
+        const { senderId, senderConsumerId } = e.currentTarget.dataset.item;
+        console.log(e.currentTarget.dataset.item);
         const { myId } = this.data;
         let url = '';
         if (senderId === myId) {
             // 当前商家,进商家名片页面
             url = '/pages/myBizCard';
         } else {
+            const cardId = wepy.getStorageSync('current_cardId');
             // 用户的，进访客详情页面
-            url = `/pages/visitorInfo?cardId=${id}&consumerId=${senderConsumerId}`;
+            url = `/pages/visitorInfo?cardId=${cardId}&consumerId=${senderConsumerId}`;
         }
 
         wepy.navigateTo({
