@@ -1,9 +1,5 @@
 <template>
     <scroll-view class="home" scroll-y style="height:100vh" wx:if="{{ !status.loading || !status.first }}">
-        <view class="follow-public" wx:if="{{!isFollow && assistAuth}}">
-            <text>关注公众号接收通知</text>
-            <navigator class="follow-action" url="/pages/followPublic">马上关注</navigator>
-        </view>
         <view class="index-loaded-header">
             <view class="welcome-block">
                 <view class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
@@ -71,7 +67,7 @@
             <view class="showModal_mask" bindtap="hideModal"></view>
             <view class="showModal_modal auth_modal">
                 <view class="showModal_text">各位老板，您需要<text>授权</text>后商家助手才能给您提供更好的服务哦</view>
-                <button class="showModal_btn" open-type="getUserInfo" @tap="loadSession">去授权</button>
+                <button class="showModal_btn" open-type="getUserInfo" bindgetuserinfo="loadSession">去授权</button>
                 <button class="showModal_cancle" bindtap="hideModal"></button>
             </view>
         </view>
@@ -391,23 +387,32 @@ export default class Home extends wepy.page {
         }
     }
     // 获取授权数据
-    async loadSession() {
-        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_follow');
+    async loadSession(e) {
+        console.log(e.detail);
         const that = this;
-        try {
-            const { data } = await get(SESSION, { code: that.code });
-            const { sessionKey } = data;
-            const { state, msg } = await get(INSERT_SESSION, { encryptedData: that.encryptedData, iv: that.iv, session: sessionKey });
-            if (state === 100) {
-                wx.navigateTo({
-                    url: '/pages/followPublic',
-                });
+        if (e.detail.errMsg === 'getUserInfo:ok') {
+            const { iv, encryptedData } = e.detail;
+            that.iv = iv;
+            that.encryptedData = encryptedData;
+            that.$apply();
+            console.log(that.iv);
+            console.log(that.encryptedData);
+            try {
+                const { data } = await get(SESSION, { code: that.code });
+                const { sessionKey } = data;
+                const { state, msg } = await get(INSERT_SESSION, { encryptedData: that.encryptedData, iv: that.iv, session: sessionKey });
+                if (state === 100) {
+                    that.onLoad();
+                }
+                if (state === 0) {
+                    alert(msg);
+                }
+            } catch (error) {
+                console.log(error);
             }
-            if (state === 0) {
-                alert(msg);
-            }
-        } catch (e) {
-            console.log(e);
+        } else {
+            console.log(e.detail.errMsg);
+            alert('由于您拒绝了授权，后续功能不能使用。');
         }
     }
     loadCode() {
@@ -416,6 +421,7 @@ export default class Home extends wepy.page {
             success: (res) => {
                 if (res.code) {
                     that.code = res.code;
+                    console.log(that.code);
                     // 查看是否授权
                 } else {
                     console.log('获取code失败');

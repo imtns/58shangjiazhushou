@@ -28,6 +28,7 @@
 import wepy from 'wepy';
 import { CONSUMER_RECORDS } from '../utils/url';
 import { post } from '../utils/ajax';
+import { alert } from '../utils';
 import { getUid, SendClickLog } from '../utils/maidian';
 
 export default class visitorLogs extends wepy.page {
@@ -53,17 +54,22 @@ export default class visitorLogs extends wepy.page {
         if (!currentMpid) {
             return;
         }
-        const visitorList = await post(CONSUMER_RECORDS, {
-            mpId: currentMpid,
-        });
-        this.visitorList = visitorList.data.map((item) => {
-            const visitor = item;
-            const info = JSON.parse(item.otherInfos);
-            visitor.gender = info.gender;
-            return visitor;
-        });
-        this.$apply();
-        console.log('onshow');
+        try {
+            const visitorList = await post(CONSUMER_RECORDS, {
+                mpId: currentMpid,
+            });
+            this.visitorList = visitorList.data.map((item) => {
+                const visitor = item;
+                const info = JSON.parse(item.otherInfos);
+                visitor.gender = info.gender;
+                return visitor;
+            });
+            this.$apply();
+            console.log('onshow');
+        } catch (e) {
+            alert(e);
+        }
+        
     }
 }
 </script>
