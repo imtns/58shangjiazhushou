@@ -108,13 +108,7 @@ import { getUid, SendClickLog } from '../utils/maidian';
 
 import { CHAT_LOGIN, MY_MPLIST, SESSION, INSERT_SESSION, GET_EXT_JSON, GET_ASSIST_AUTH } from '../utils/url';
 
-<<<<<<< HEAD
-import { sdkLogin, onMsgNotify, sdkLogout } from '../utils/IM/IM';
-
-import { chatContactList } from '../store/index';
-=======
 // import { sdkLogin, onMsgNotify } from '../utils/IM/IM';
->>>>>>> dev1.8
 
 export default class Home extends wepy.page {
     mixins = [Mixin]
@@ -729,19 +723,6 @@ export default class Home extends wepy.page {
         }
     }
 
-<<<<<<< HEAD
-    initIM(tim) {
-        console.log('initIM');
-        // 当前用户身份
-        const loginInfo = {};
-        Object.assign(loginInfo, tim);
-        // listeners
-        const listeners = {
-            onMsgNotify: onMsgNotify, // 监听新消息
-        };
-        sdkLogin(loginInfo, listeners, {});
-    }
-=======
     // initIM(tim) {
     //     console.log('initIM');
     //     // 当前用户身份
@@ -756,7 +737,6 @@ export default class Home extends wepy.page {
     //     };
     //     sdkLogin(loginInfo, listeners, {});
     // }
->>>>>>> dev1.8
 }
 </script>
 

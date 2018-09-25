@@ -90,6 +90,40 @@
                 <view class="order-textarea-value">多方香葱，不要辣椒，谢谢</view>
             </view>
         </view>
+        <view class="options">
+            <block wx:if="{{ order.status === 0 }}">
+                <button
+                    class="button cancel"
+                    @tap="handleCancelOrder"
+                >取消订单</button>
+                <button
+                    class="button primary accept"
+                    @tap="handleAcceptOrder"
+                >立即接单</button>
+            </block>
+            <block wx:elif="{{ order.status === 1 }}">
+                <button
+                    class="button primary"
+                    @tap="handleStartDeliver"
+                >开始配送</button>
+            </block>
+            <block wx:elif="{{ order.status === 10 }}">
+                <button
+                    class="button"
+                    @tap="handlePlatformIn"
+                >申请平台介入</button>
+                <button
+                    class="button primary"
+                    @tap="handleAcceptRefund"
+                >同意退款</button>
+            </block>
+            <block wx:elif="{{ order.status === 13 }}">
+                <button
+                    class="button primary"
+                    @tap="handleConfirm"
+                >确认配送到达</button>
+            </block>
+        </view>
     </view>
 </template>
 
@@ -98,16 +132,43 @@
  * 商品订单详情
  */
 import wepy from 'wepy';
+import * as globalConfig from '../../utils/config';
 
-export default class Index extends wepy.component {
+export default class Index extends wepy.page {
     config = {
         navigationBarTitleText: '订单详情',
     }
     data = {
         order: {},
+        statusDesc: {},
     }
     onLoad() {
-        console.log('onLoad');
+        const { statusDesc } = globalConfig['order/goodsDetail'];
+        this.statusDesc = statusDesc;
+        this.loadData();
+    }
+    loadData() {
+
+    }
+    methods = {
+        handleCancelOrder() {
+
+        },
+        handleAcceptOrder() {
+
+        },
+        handleStartDeliver() {
+
+        },
+        handlePlatformIn() {
+
+        },
+        handleAcceptRefund() {
+
+        },
+        handleConfirm() {
+
+        },
     }
 }
 </script>
@@ -118,7 +179,6 @@ export default class Index extends wepy.component {
     background: url('https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/order-goods-detail-rectangle.png') no-repeat;
     background-size: 750rpx 348rpx;
     overflow: hidden;
-    padding-bottom: 41rpx;
 }
 .status {
     width: 690rpx;
@@ -220,7 +280,7 @@ export default class Index extends wepy.component {
 .extra-info {
     background-color: #fff;
     padding: 0 30rpx;
-    margin-top: 20rpx;
+    margin: 20rpx 0 40rpx;
 }
 
 .order-detail {
@@ -241,6 +301,39 @@ export default class Index extends wepy.component {
     .order-textarea-value {
         height: 198rpx;
         margin-bottom: 30rpx;
+    }
+}
+
+.options {
+    display: flex;
+    font-size: 34rpx;
+    letter-spacing: 0.51px;
+    width: 100%;
+    box-shadow: 0 -1px 17px -1px rgba(202,202,202,0.50);
+
+    .button {
+        flex-grow: 1;
+        height:102rpx;
+        font-size: 34rpx;
+        line-height: 102rpx;
+        border-radius: 0;
+        background-color: #fff;
+        color: #4E88FF;
+
+        &.primary {
+            background-color: #4E88FF;
+            color: #fff;
+        }
+
+        &::after {
+            content: none;
+        }
+
+        &.cancel {
+            flex-grow: 0;
+            width: 240rpx;
+            color: #666;
+        }
     }
 }
 </style>
