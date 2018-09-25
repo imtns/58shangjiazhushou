@@ -258,8 +258,6 @@ export default class choseStyle extends wepy.page {
                     border-radius: .04rpx;
                     font-size: 24rpx;
                     color: #F5A623;
-                    height: 46rpx;
-                    line-height: 46rpx;
                     padding: 0 15rpx;
                     margin: 10rpx;
                 }
@@ -328,8 +326,6 @@ export default class choseStyle extends wepy.page {
                     border-radius: .04rpx;
                     font-size: 24rpx;
                     color: #F5A623;
-                    height: 46rpx;
-                    line-height: 46rpx;
                     padding: 0 15rpx;
                     margin: 10rpx;
                 }
