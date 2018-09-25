@@ -402,7 +402,7 @@ export default class Home extends wepy.page {
                 const { sessionKey } = data;
                 const { state, msg } = await get(INSERT_SESSION, { encryptedData: that.encryptedData, iv: that.iv, session: sessionKey });
                 if (state === 100) {
-                    that.onLoad();
+                    that.getAssistAuth();
                 }
                 if (state === 0) {
                     alert(msg);
