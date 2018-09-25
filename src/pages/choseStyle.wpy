@@ -363,6 +363,8 @@ export default class choseStyle extends wepy.page {
                     font-size: 46rpx;
                     color: #333333;
                     margin-bottom: 26rpx;
+                    width: 60%;
+                    white-space: normal !important;
                 }
                 .style2_zhiwei{
                     height: 44rpx;
