@@ -69,7 +69,6 @@ export default class visitorLogs extends wepy.page {
         } catch (e) {
             alert(e);
         }
-        
     }
 }
 </script>

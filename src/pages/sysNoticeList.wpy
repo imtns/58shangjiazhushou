@@ -100,7 +100,7 @@ export default class SysNoticeList extends wepy.page {
                 toast('没有更多系统通知啦');
                 return;
             }
-            let arr = [];
+            const arr = [];
             msglist.forEach((item) => {
                 const ele = item;
                 if (ele.mpLogo && ele.mpLogo.indexOf('http') === -1) {
