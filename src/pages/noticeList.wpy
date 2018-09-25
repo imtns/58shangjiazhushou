@@ -27,7 +27,9 @@
             <block wx:for="{{cardList}}" wx:key="index">
                 <view class="card-list-item">
                     <navigator class="card-item" url="visitorInfo?cardId={{item.cardId}}&consumerId={{item.consumerId}}"  hover-class="none" @tap="consumerCard">
-                        <image class="avator" src="{{item.headImg}}" mode="aspectFit"/>
+                        <view class="avator {{item.status === 1 ? 'unread' : ''}}">
+                            <image src="{{item.headImg}}" mode="aspectFit"/>
+                        </view>
                         <view class="info">
                             <view class="visitor">{{item.nickName}}{{item.content}}</view>
                             <view class="contact">有可能对你感兴趣，快去联系ta吧</view>
@@ -348,10 +350,28 @@ view,scroll-view{
             }
         }
         .avator{
-            width: 60rpx;
-            height: 60rpx;
-            border-radius:100%;
-            margin: 15rpx 40rpx 0 0;
+            width:100rpx;
+            position: relative;
+            image{
+                width: 60rpx;
+                height: 60rpx;
+                border-radius:100%;
+                margin: 15rpx 40rpx 0 0;
+            }
+        }
+        .avator.unread{
+            &:after{
+                display: block;
+                content: '';
+                width: 20rpx;
+                height: 20rpx;
+                background: red;
+                border-radius: 50%;
+                position: absolute;
+                right: 35rpx;
+                top: 15rpx;
+                z-index: 9;
+            }
         }
         .info{
             flex: 1;
