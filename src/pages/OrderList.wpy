@@ -16,7 +16,7 @@
                         <view class="order-status cancel" wx:elif="{{item.status==3}}">{{statusSet[item.status]}}</view>
                         <view class="order-status active" wx:else>{{statusSet[item.status]}}</view>
                     </view>
-                    <view class="order-ul-li-row logo-row unread">
+                    <view class="order-ul-li-row logo-row {{item.read === false ? 'unread' : ''}}">
                         <image class="order-mplogo" src="{{item.mpLogo}}"/>
                         <view class="order-mpname">{{item.mpName}}</view>
                     </view>
@@ -211,6 +211,7 @@ export default class OrderList extends wepy.page {
                 &.logo-row {
                     padding: 24rpx 30rpx 20rpx;
                     display: flex;
+                    position: relative;
                     .order-mplogo {
                         width: 58rpx;
                         height: 58rpx;
@@ -229,6 +230,18 @@ export default class OrderList extends wepy.page {
                         overflow: hidden;
                         text-overflow: ellipsis;
                     }
+                }
+                &.logo-row.unread::after {
+                    display: block;
+                    content: '';
+                    width: 20rpx;
+                    height: 20rpx;
+                    background: red;
+                    border-radius: 50%;
+                    position: absolute;
+                    left: 75rpx;
+                    top: 25rpx;
+                    z-index: 1;
                 }
                 &.order-servicename {
                     font-size: 32rpx;
