@@ -155,10 +155,6 @@ export default class Home extends wepy.page {
                     url: 'feedback',
                 });
             } else if (text === '购买小程序') {
-                // 购买小程序页面
-                // wepy.navigateTo({
-                //     url: 'purchase',
-                // });
                 SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_buy_app');
                 this.buyMiniProgram();
             } else {
