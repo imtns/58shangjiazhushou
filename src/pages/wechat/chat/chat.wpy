@@ -23,7 +23,7 @@
                     <image class="chat-msg-avatar" src="{{item.senderPortrait}}" bindtap="toDetail" data-item="{{item}}"></image>
                     <view class="chat-msg-content" wx:if="{{item.type === '0' || item.type === 0}}">{{item.content}}</view>
                     <view class="chat-img-box" wx:else>
-                        <image class="chat-msg-img" src="https://pic1.58cdn.com.cn{{item.content}}" bindtap="previewImage" data-url="{{item.content}}"></image>
+                        <image class="chat-msg-img" mode="aspectFill" src="https://pic1.58cdn.com.cn{{item.content}}" bindtap="previewImage" data-url="{{item.content}}"></image>
                         <view class="chat-img-mask" wx:if="{{item.status === 1}}">{{progress}}%</view>
                     </view>
                 </view>
@@ -376,7 +376,6 @@ page{
             }
             .chat-img-box,.chat-msg-img{
                 width:400rpx;
-                height:300rpx;
                 border-radius:0 20rpx 20rpx 20rpx;
                 float:left;
             }
@@ -399,6 +398,10 @@ page{
                 color: #FFFFFF;
             }
             &.chat-right .chat-img-box{
+                border-radius:20rpx 0 20rpx 20rpx;
+                float:right;
+            }
+            &.chat-right .chat-img-box .chat-msg-img{
                 border-radius:20rpx 0 20rpx 20rpx;
                 float:right;
             }
