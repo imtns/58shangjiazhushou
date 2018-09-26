@@ -318,7 +318,7 @@ export default class Home extends wepy.page {
         },
     }
     async onLoad () {
-        await this.loadData();
+        // await this.loadData();
         // 聊天登录，监控未读消息
         const { token } = globalData.chat;
         if (!token) {
@@ -501,7 +501,7 @@ export default class Home extends wepy.page {
             } else {
                 wx.removeTabBarBadge({
                     index: 2,
-                })
+                });
             }
         } catch (e) {
             console.log('e', e);
