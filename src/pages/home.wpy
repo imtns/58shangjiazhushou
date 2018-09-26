@@ -63,7 +63,7 @@
                 <view class="confirm" :class="{ 'active' : business.canConfirm}" bindtap="confirmAction">确定</view>
             </view>
         </view>
-        <view wx:if="{{!assistAuth && showModal}}">
+        <view wx:if="{{!assistAuth && showModal && storageShowmodal}}">
             <view class="showModal_mask" bindtap="hideModal"></view>
             <view class="showModal_modal auth_modal">
                 <view class="showModal_text">各位老板，您需要<text>授权</text>后商家助手才能给您提供更好的服务哦</view>
@@ -71,7 +71,7 @@
                 <button class="showModal_cancle" bindtap="hideModal"></button>
             </view>
         </view>
-        <view wx:if="{{assistAuth && !isFollow && showModal}}">
+        <view wx:if="{{assistAuth && !isFollow && showModal && storageShowmodal}}">
             <view class="showModal_mask" bindtap="hideModal"></view>
             <view class="showModal_modal follow_modal">
                 <view class="showModal_text">各位老板，您<text>关注公众号</text>后商家助手才能及时给您通知订单消息哦</view>
@@ -121,6 +121,7 @@ export default class Home extends wepy.page {
         showModal: false, // 是否授权或者关注弹框
         showIdentity: false, // 是否显示切换账号弹框
         height: '',
+        storageShowmodal: false,
         business: {
             mps: [],
             name: '您的姓名',
@@ -311,10 +312,13 @@ export default class Home extends wepy.page {
         },
         hideModal() {
             this.showModal = false;
+            wepy.setStorageSync('showmodal', false);
+            this.storageShowmodal = wepy.getStorageSync('showmodal');
+            this.$apply();
         },
     }
     async onLoad () {
-        await this.loadData();
+        // await this.loadData();
         // 聊天登录，监控未读消息
         const { token } = globalData.chat;
         if (!token) {
@@ -323,6 +327,8 @@ export default class Home extends wepy.page {
         // globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
         this.setGlobalMpId(this.business.selected.id);
         this.loadExtJson();
+        wepy.setStorageSync('showmodal', true);
+        this.storageShowmodal = wepy.getStorageSync('showmodal');
         if (!this.isFollow && wepy.getStorageSync('ppu')) {
             this.showModal = true;
         }
@@ -491,6 +497,10 @@ export default class Home extends wepy.page {
                 wx.setTabBarBadge({
                     index: 2,
                     text: unreadOrder.toString(),
+                });
+            } else {
+                wx.removeTabBarBadge({
+                    index: 2,
                 });
             }
         } catch (e) {
