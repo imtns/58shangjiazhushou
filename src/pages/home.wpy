@@ -498,6 +498,10 @@ export default class Home extends wepy.page {
                     index: 2,
                     text: unreadOrder.toString(),
                 });
+            } else {
+                wx.removeTabBarBadge({
+                    index: 2,
+                })
             }
         } catch (e) {
             console.log('e', e);
