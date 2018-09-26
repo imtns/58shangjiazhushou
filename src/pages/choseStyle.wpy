@@ -2,7 +2,7 @@
     <view class="choseStyle">
         <view class="blank_box"></view>
         <scroll-view class="scroll_view" scroll-x="{{scroll}}" style="width:100%;">
-            <view class="card style1">
+            <view class="card style1" data-style="1" @tap="selectStyle">
                 <view class="style1_box">
                     <view class="style1_header" style="background:url({{headImg}}) no-repeat center"></view>
                     <view class="style1_name">{{realName}}</view>
@@ -32,9 +32,9 @@
                         <view class="flex_item value">{{address}}</view>
                     </view>
                 </view>
-                <view class="{{selected1 ? 'selected' : 'select'}}" data-style="1" @tap="selectStyle"></view>
+                <view class="{{selected1 ? 'selected' : 'select'}}"></view>
             </view>
-            <view class="card style2">
+            <view class="card style2" data-style="2" @tap="selectStyle">
                 <view class="style2_box">
                     <view class="style2_header" style="background:url({{headImg}}) no-repeat center">
                         <view class="empty_bg"></view>
