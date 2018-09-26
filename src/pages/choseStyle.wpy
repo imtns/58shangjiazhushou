@@ -254,7 +254,7 @@ export default class choseStyle extends wepy.page {
                 align-items: center;
                 .style_tag{
                     display: inline-block;
-                    border: 1rpx solid #F5A623;
+                    border: 1px solid #F5A623;
                     border-radius: .04rpx;
                     font-size: 24rpx;
                     color: #F5A623;
@@ -322,7 +322,7 @@ export default class choseStyle extends wepy.page {
                 align-content: center;
                 .style_tag{
                     display: inline-block;
-                    border: 1rpx solid #F5A623;
+                    border: 1px solid #F5A623;
                     border-radius: .04rpx;
                     font-size: 24rpx;
                     color: #F5A623;
