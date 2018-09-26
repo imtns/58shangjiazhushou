@@ -1,6 +1,6 @@
 import wepy from 'wepy';
 
-const test = 'test';
+const test = '';
 const host = 'https://yaofa.58.com';
 const http = (method, ...props) => {
     const [url, param, showLoading = true] = props;
