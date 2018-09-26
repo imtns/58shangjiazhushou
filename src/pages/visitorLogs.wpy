@@ -5,8 +5,8 @@
             <repeat for="{{visitorList}}" key="index" index="index" item="item">
                 <view class="visitor_box" @tap="toVisitorInfo({{item.cardId}}, {{item.consumerId}})">
                     <view class="visitor_header" style="background:url({{item.portrait}}) no-repeat center"></view>
-                    <view class="visitor_name">{{item.nickName}}</view>
-                    <view class="{{item.gender == 1 ? 'male' : 'female'}}"></view>
+                    <view class="visitor_name">{{item.nickName || ''}}</view>
+                    <view wx:if="{{item.gender}}" class="{{item.gender == 1 ? 'male' : 'female'}}"></view>
                     <view class="visitor_count">
                         访问您的名片
                         <text class="visitor_num">{{item.visitCount}}</text> 
@@ -60,8 +60,12 @@ export default class visitorLogs extends wepy.page {
             });
             this.visitorList = visitorList.data.map((item) => {
                 const visitor = item;
-                const info = JSON.parse(item.otherInfos);
-                visitor.gender = info.gender;
+                let info = '';
+                if (item.otherInfos) {
+                    info = JSON.parse(item.otherInfos) || '';
+                }
+                console.log('-asdadadadas', info);
+                visitor.gender = info.gender || '';
                 return visitor;
             });
             this.$apply();
