@@ -74,14 +74,13 @@ export default class visitorInfo extends wepy.page {
     methods = {
         async bindPhoneCall (mobile) {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_visitorInfo_call');
-            // const sendData = { sign: mobile, from: 'visitorInfo' };
-            // const { data, msg, state } = await get('/other/encrypt/phone', sendData);
-            // if (state !== 100) {
-            //     toast(msg);
-            //     return;
-            // }
-            // wepy.makePhoneCall({ phoneNumber: data });
-            wepy.makePhoneCall({ phoneNumber: mobile });
+            const sendData = { mobile: mobile, cardid: this.cardId };
+            const { data, msg, state } = await get('/other/encrypt/phone', sendData);
+            if (state !== 100) {
+                toast(msg);
+                return;
+            }
+            wepy.makePhoneCall({ phoneNumber: data });
         },
         sendMsg() {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_visitorInfo_sendMsg');

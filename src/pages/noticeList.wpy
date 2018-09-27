@@ -179,8 +179,9 @@ view,scroll-view{
                 right: 30rpx;
             }
             .notice-system{
-                width: 100rpx;
+                width: 80rpx;
                 position: relative;
+                margin-right: 20rpx;
                 .num{
                     font-size:18rpx;
                     color:#fff;
@@ -193,7 +194,7 @@ view,scroll-view{
                     position:absolute;
                     border:3rpx solid #fff;
                     top:10rpx;
-                    right:30rpx;
+                    right:0;
                 }
             }
             .notice-txt{
