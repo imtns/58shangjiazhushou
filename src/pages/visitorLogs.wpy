@@ -37,6 +37,9 @@ export default class visitorLogs extends wepy.page {
     }
     data = {
         visitorList: [],
+        pageSize: 10,
+        pageNum: 1,
+        allowLoadMore: true,
     }
     methods = {
         toVisitorInfo(cardId, consumerId) {
@@ -47,27 +50,41 @@ export default class visitorLogs extends wepy.page {
         },
     }
     onLoad () {
-        console.log('onload');
+        this.loadData();
     }
-    async onShow () {
+    onShow () {
+        console.log('onshow');
+    }
+    onReachBottom() {
+        this.loadData();
+    }
+    async loadData() {
         const currentMpid = wepy.getStorageSync('current_mpid');
-        if (!currentMpid) {
+        console.log('this.allowLoadMore', this.allowLoadMore);
+        if (!currentMpid || !this.allowLoadMore) {
             return;
         }
         try {
             const visitorList = await post(CONSUMER_RECORDS, {
                 mpId: currentMpid,
+                pageNum: this.pageNum,
+                pageSize: this.pageSize,
             });
-            this.visitorList = visitorList.data.map((item) => {
+            const formatedList = visitorList.data.map((item) => {
                 const visitor = item;
                 let info = '';
                 if (item.otherInfos) {
                     info = JSON.parse(item.otherInfos) || '';
                 }
-                console.log('-asdadadadas', info);
                 visitor.gender = info.gender || '';
                 return visitor;
             });
+            if (this.pageSize === formatedList.length) {
+                this.pageNum += this.pageNum;
+            } else {
+                this.allowLoadMore = false;
+            }
+            this.visitorList = this.visitorList.concat(formatedList);
             this.$apply();
             console.log('onshow');
         } catch (e) {
