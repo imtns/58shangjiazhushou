@@ -26,7 +26,7 @@ const pubsub = (function() {
                 let topic = topics[key];
                 if (!topic) continue;
                 for (let i = 0, len = topic.length; i < len; i++) {
-                    if (token === topic[i].token) {
+                    if (topic[i] && token === topic[i].token) {
                         topic.splice(i, 1);
                     }
                 }
