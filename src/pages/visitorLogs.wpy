@@ -37,7 +37,7 @@ export default class visitorLogs extends wepy.page {
     }
     data = {
         visitorList: [],
-        pageSize: 10,
+        pageSize: 12,
         pageNum: 1,
         allowLoadMore: true,
     }
@@ -56,6 +56,7 @@ export default class visitorLogs extends wepy.page {
         console.log('onshow');
     }
     onReachBottom() {
+        console.log('onReachBottom');
         this.loadData();
     }
     async loadData() {
@@ -80,7 +81,7 @@ export default class visitorLogs extends wepy.page {
                 return visitor;
             });
             if (this.pageSize === formatedList.length) {
-                this.pageNum += this.pageNum;
+                this.pageNum = this.pageNum + 1;
             } else {
                 this.allowLoadMore = false;
             }
