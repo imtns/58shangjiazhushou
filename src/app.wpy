@@ -158,6 +158,7 @@ export default class extends wepy.app {
         const fromAppId = appId;
         // action:通过fromAppId和scene返回当前小程序处理
         console.log('referrerInfo', referrerInfo);
+        console.log(path);
         // const path = '/pages/home?toRedirect=/pages/OrderDetail&ParamNames=orderId&ParamValues=123456';
         let action = scene === 1038 || scene === '1038' ? CALLBACKAPPS[fromAppId] : '';
 
@@ -174,7 +175,7 @@ export default class extends wepy.app {
             wepy.setStorageSync('query', query);
             if (wepy.getStorageSync('ppu') && !query.ParamNames) {
                 setTimeout(() => {
-                    wepy.redirectTo({
+                    wepy.navigateTo({
                         url: toRedirect,
                     });
                 }, 1000);
@@ -191,8 +192,7 @@ export default class extends wepy.app {
                     });
                 }
                 setTimeout(() => {
-                    wepy.redirectTo({
-                        // url: toRedirectArr[0] + '?' + paramsStr.split('&')[1],
+                    wepy.navigateTo({
                         url: `${toRedirect}?${paramsStr.substring(1)}`,
                     });
                 }, 1000);

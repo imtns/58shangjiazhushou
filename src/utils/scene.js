@@ -15,7 +15,7 @@ export default {
             const { toRedirect, ParamNames = '' } = query;
             if (query && JSON.stringify() !== '{}' && !ParamNames) { // 如果从公众号进来的消息
                 await sleep();
-                wepy.redirectTo({
+                wepy.navigateTo({
                     url: toRedirect,
                 });
                 wx.removeStorageSync('query');
@@ -33,7 +33,7 @@ export default {
                     });
                 }
                 await sleep();
-                wepy.redirectTo({
+                wepy.navigateTo({
                     url: `${toRedirect}?${paramsStr.substring(1)}`,
                 });
                 wx.removeStorageSync('query');
