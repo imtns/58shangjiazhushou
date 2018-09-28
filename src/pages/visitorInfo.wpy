@@ -46,6 +46,7 @@ import wepy from 'wepy';
 import { get } from '../utils/ajax';
 import { toast } from '../utils/index';
 import { CONSUMER_INFO } from '../utils/url';
+import { globalData } from '../utils/globalData';
 import { getUid, SendClickLog } from '../utils/maidian';
 
 export default class visitorInfo extends wepy.page {
@@ -103,7 +104,8 @@ export default class visitorInfo extends wepy.page {
     }
     async loadInfo() {
         try {
-            this.sendParams = Object.assign(this.sendParams, { cardId: this.cardId, consumerId: this.consumerId });
+            const { token } = globalData.chat;
+            this.sendParams = Object.assign(this.sendParams, { cardId: this.cardId, consumerId: this.consumerId, token });
             const { data } = await get(CONSUMER_INFO, this.sendParams);
             const {
                 actions, chatToken, mobile, nickName, otherInfo, portrait, share, visit, vote,

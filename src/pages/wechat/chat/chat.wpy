@@ -2,6 +2,7 @@
     <view class="chat-container">
         <scroll-view
             class="chat-zone"
+            id="chat-zone"
             scroll-y="{{true}}"
             upper-threshold="300"
             @scrolltoupper="loadMore"
@@ -101,6 +102,7 @@ export default class Chat extends wepy.page {
         progress: 0,
         myId: '',
         toView: '',
+        viewPortHeight: '',
     }
     onLoad(options) {
         const { token, myId } = globalData.chat;
@@ -112,6 +114,7 @@ export default class Chat extends wepy.page {
         });
 
         globalData.chat.currentContactId = contact;
+        const that = this;
 
         this.contact = contact;
         this.nickName = nickName;
@@ -120,12 +123,17 @@ export default class Chat extends wepy.page {
         this.$apply();
         this.loadData();
         this.newMsgs();
+        wx.createSelectorQuery().select('#chat-zone').boundingClientRect((res) => {
+            that.viewPortHeight = res.height;
+            that.$apply();
+        }).exec();
     }
     async onUnload() {
         try {
             // 取消订阅
             pubsub.unsubscribe(msgListToken);
             globalData.chat.currentContactId = '';
+            msgListToken = '';
             // 更改未读消息状态为已读
             const {
                 contact,
@@ -281,14 +289,23 @@ export default class Chat extends wepy.page {
     }
     newMsgs() {
         const { contact } = this;
+        const that = this;
         // 订阅当前联系人的未读消息
         msgListToken = pubsub.subscribe(contact, (...props) => {
             const newMsgs = props[0];
             // console.log(newMsgs);
             [newMsgs].forEach((msg) => {
                 this.msgList.push(msg);
-                this.toView = `toview-${this.msgList.length - 1}`;
+                // this.toView = `toview-${this.msgList.length - 1}`;
                 this.$apply();
+                const query = wx.createSelectorQuery().select('#chat-zone');
+                query.scrollOffset((res) => {
+                    const { viewPortHeight } = that;
+                    if ((res.scrollTop - viewPortHeight) > 400) {
+                        that.toView = `toview-${that.msgList.length - 1}`;
+                        that.$apply();
+                    }
+                }).exec();
             });
         });
     }
