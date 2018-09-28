@@ -276,7 +276,7 @@ export default class choseStyle extends wepy.page {
                 .style1_header{
                     width: 178rpx;
                     height: 178rpx;
-                    background-size: cover !important;
+                    background-size: 178rpx 178rpx !important;
                     border-radius: 100%;
                     position: absolute;
                     top: -30rpx;
@@ -344,7 +344,7 @@ export default class choseStyle extends wepy.page {
                 .style2_header{
                     width: 195rpx;
                     height: 180rpx;
-                    background-size: cover !important;
+                    background-size: 195rpx 180rpx !important;
                     position: absolute;
                     top: 0rpx;
                     right: 0rpx;

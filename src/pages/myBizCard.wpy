@@ -247,7 +247,7 @@ export default class myBizCard extends wepy.page {
                     position: absolute;
                     top: 0;
                     right: 0;
-                    background-size: cover !important;
+                    background-size: 100% 100% !important;
                     .empty_bg{
                         width: 281.2rpx;
                         height: 281.2rpx;
