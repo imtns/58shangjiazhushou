@@ -115,16 +115,22 @@ export default class OrderList extends wepy.page {
         this.orderList = this.orderList.concat(data);
         this.$apply();
     }
-    onTabItemTap () {
-        this.getOrderList();
-    }
+    // onLoad () {
+    //     this.orderList = [];
+    //     this.getOrderList();
+    // }
     onShow () {
         SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderList_onload');
         this.getOrderList();
     }
-    onUnload() {
-        // 清空订单数据
+    onHide () {
+        this.sendParams = {
+            pageNum: 1,
+            pageSize: 10,
+            status: '',
+        };
         this.orderList = [];
+        console.log('====');
     }
 }
 </script>
