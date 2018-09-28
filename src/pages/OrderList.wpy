@@ -136,6 +136,10 @@ export default class OrderList extends wepy.page {
         SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderList_onload');
         this.getOrderList();
     }
+    onUnload() {
+        // 清空订单数据
+        this.orderList.data = [];
+    }
 }
 </script>
 <style lang="scss">
