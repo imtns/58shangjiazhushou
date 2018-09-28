@@ -31,8 +31,9 @@ export const onMsgNotify = (newMsgList) => {
 
     const { unReadCount, currentContactId = '' } = globalData.chat;
     const text = Number(unReadCount) + Number(newMsgList.length);
-    setTabBar(text);
-
+    if (!currentContactId) {
+        setTabBar(text);
+    }
     newMsgList.forEach((newMsg) => {
         pushMsg(newMsg);
     });
@@ -42,7 +43,7 @@ const pushMsg = async (newMsg) => {
 
     let ele, content;
     const eles = newMsg.getElems();
-    const {currentContactId = '', contactList } = globalData.chat;
+    const { contactList } = globalData.chat;
 
     const temp = {};
     let contacts1 = [];

@@ -78,7 +78,7 @@ import '../../../utils/date';
 import { toast, withHttp } from '../../../utils';
 import { uploader } from '../../../utils/uploader';
 
-import { post } from '../../../utils/ajax';
+import { post, get } from '../../../utils/ajax';
 
 import { getUid, SendClickLog } from '../../../utils/maidian';
 import { MSG_LIST, SEND_MSG } from '../../../utils/url';
@@ -121,9 +121,24 @@ export default class Chat extends wepy.page {
         this.loadData();
         this.newMsgs();
     }
-    onUnload() {
-        // 取消订阅
-        pubsub.unsubscribe(msgListToken);
+    async onUnload() {
+        try {
+            // 取消订阅
+            pubsub.unsubscribe(msgListToken);
+            globalData.chat.currentContactId = '';
+            // 更改未读消息状态为已读
+            const {
+                contact,
+                token,
+            } = this;
+            await get(MSG_LIST, {
+                contact,
+                token,
+                from: 1, // 更改未读消息状态为已读
+            });
+        } catch (e) {
+            console.log(e);
+        }
     }
     showpanel() {
         this.showpanel = true;
@@ -272,6 +287,7 @@ export default class Chat extends wepy.page {
             // console.log(newMsgs);
             [newMsgs].forEach((msg) => {
                 this.msgList.push(msg);
+                this.toView = `toview-${this.msgList.length - 1}`;
                 this.$apply();
             });
         });
