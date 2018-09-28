@@ -15,9 +15,16 @@ export default {
             const { toRedirect, ParamNames = '' } = query;
             if (query && JSON.stringify() !== '{}' && !ParamNames) { // 如果从公众号进来的消息
                 await sleep();
-                wepy.navigateTo({
-                    url: toRedirect,
-                });
+                if (toRedirect === '/pages/chatMessages') {
+                    // 跳转到消息列表页
+                    wepy.switchTab({
+                        url: toRedirect,
+                    });
+                } else {
+                    wepy.navigateTo({
+                        url: toRedirect,
+                    });
+                }
                 wx.removeStorageSync('query');
                 return;
             }

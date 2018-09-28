@@ -174,11 +174,20 @@ export default class extends wepy.app {
             const { toRedirect } = query;
             wepy.setStorageSync('query', query);
             if (wepy.getStorageSync('ppu') && !query.ParamNames) {
-                setTimeout(() => {
-                    wepy.navigateTo({
-                        url: toRedirect,
-                    });
-                }, 1000);
+                if (toRedirect === '/pages/chatMessages') {
+                    // 跳转到消息列表页
+                    setTimeout(() => {
+                        wepy.switchTab({
+                            url: toRedirect,
+                        });
+                    }, 1000);
+                } else {
+                    setTimeout(() => {
+                        wepy.navigateTo({
+                            url: toRedirect,
+                        });
+                    }, 1000);
+                }
             }
             if (wepy.getStorageSync('ppu') && query.ParamNames) {
                 let paramsStr = '';
@@ -204,23 +213,23 @@ export default class extends wepy.app {
 }
 </script>
 
-<style lang="scss">   
-@import "css/common.scss"; 
-@import "components/mod/information/information.wxss"; 
+<style lang="scss">
+@import "css/common.scss";
+@import "components/mod/information/information.wxss";
 @import "components/mod/imageSwiper/imageSwiper.wxss";
 @import "components/mod/images/images.wxss";
 @import "components/mod/me/me.wxss";
 @import "components/mod/goods/goods.wxss";
-@import "components/mod/text/text.wxss";   
-@import "components/mod/title/title.wxss";   
-@import "components/mod/video/video.wxss";   
+@import "components/mod/text/text.wxss";
+@import "components/mod/title/title.wxss";
+@import "components/mod/video/video.wxss";
 @import "components/mod/call/call.wxss";
-@import "components/mod/services/services.wxss"; 
+@import "components/mod/services/services.wxss";
 @import "components/mod/article/article.wxss";
-@import "components/mod/evaluation/evaluation.wxss"; 
-@import "components/mod/reserve/reserve.wxss";  
-@import "components/mod/coupon/coupon.wxss";    
-@import "components/mod/pay/pay.wxss";   
-@import "components/mod/branch/branch.wxss";   
+@import "components/mod/evaluation/evaluation.wxss";
+@import "components/mod/reserve/reserve.wxss";
+@import "components/mod/coupon/coupon.wxss";
+@import "components/mod/pay/pay.wxss";
+@import "components/mod/branch/branch.wxss";
 @import "components/mod/tabBar/tabBar.wxss";
 </style>
