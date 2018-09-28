@@ -39,7 +39,7 @@
                         <view class="order-fee active" wx:else>￥<view class="order-fee-txt">{{item.realAmount}}</view></view>
                     </view>
                 </view>
-                
+
             </navigator>
             <view class="order-list-nomore" wx:if="{{orderList.recordsTotal>0 && orderList.data.length===orderList.recordsTotal}}">
                 ╮(￣▽￣)╭已经到底了
@@ -125,6 +125,12 @@ export default class OrderList extends wepy.page {
             data: [].concat(this.orderList.data, data),
         });
         this.$apply();
+    }
+    onLoad () {
+        this.getOrderList();
+    }
+    onTabItemTap () {
+        this.getOrderList();
     }
     onShow () {
         SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderList_onload');
