@@ -74,34 +74,35 @@ export default class chatMessages extends wepy.page {
     unreadMsgs() {
         this.contactList.map((msg) => {
             const { contactId } = msg;
-            const tempToken = pubsub.subscribe(contactId, (...props) => {
+            const tempToken = pubsub.subscribe(contactId, () => {
                 newMsgToken.push(tempToken);
-                const contacts = this.contactList;
-                contacts.map((item, index) => {
-                    if (item.contactId === contactId) {
-                        const { type, content, sendTime } = props[0];
-                        const { unReadCount } = item;
-                        let count;
-                        if (unReadCount === 0 || unReadCount === '0') {
-                            count = 1;
-                        } else {
-                            count = Number(unReadCount) + 1;
-                        }
-                        const unReadCountMsg = `${count >= 100 ? '...' : ''}${count > 0 && count < 100 ? count : ''}`;
+                this.requestContactList();
+                // const contacts = this.contactList;
+                // contacts.map((item, index) => {
+                //     if (item.contactId === contactId) {
+                //         const { type, content, sendTime } = props[0];
+                //         const { unReadCount } = item;
+                //         let count;
+                //         if (unReadCount === 0 || unReadCount === '0') {
+                //             count = 1;
+                //         } else {
+                //             count = Number(unReadCount) + 1;
+                //         }
+                //         const unReadCountMsg = `${count >= 100 ? '...' : ''}${count > 0 && count < 100 ? count : ''}`;
 
-                        const newMsg = Object.assign(msg, {
-                            lastType: type,
-                            content: type === 1 ? '[图片]' : content,
-                            sendTime: formatDateTimeLocal(sendTime),
-                            unReadCount: unReadCountMsg,
-                        });
-                        contacts.splice(index, 1);
-                        contacts.unshift(newMsg);
-                        this.contactList = contacts;
-                        this.$apply();
-                    }
-                    return item;
-                });
+                //         const newMsg = Object.assign(msg, {
+                //             lastType: type,
+                //             content: type === 1 ? '[图片]' : content,
+                //             sendTime: formatDateTimeLocal(sendTime),
+                //             unReadCount: unReadCountMsg,
+                //         });
+                //         contacts.splice(index, 1);
+                //         contacts.unshift(newMsg);
+                //         this.contactList = contacts;
+                //         this.$apply();
+                //     }
+                //     return item;
+                // });
             });
             return msg;
         });
