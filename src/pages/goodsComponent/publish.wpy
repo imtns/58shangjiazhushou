@@ -44,7 +44,7 @@
                             <view class="goods-info">
                                 <view class="title">{{ item.title }}</view>
                                 <view class="goods-data">
-                                    <view>销量{{ item.salesVolume }}</view>
+                                    <view>销量{{ item.salesVolume || 0 }}</view>
                                     <view>库存{{ item.stock }}</view>
                                 </view>
                                 <view class="price">

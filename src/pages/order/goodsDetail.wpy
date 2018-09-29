@@ -32,8 +32,8 @@
             </view>
         </view>
         <view class="goods-info">
-            <view class="goods-title">杨国福麻辣烫</view>
-            <view class="goods-list">
+            <view class="goods-title {{ showGoodsList ? '' : 'hide-goods-list' }}" @tap="handleTriggerShowGoodsList">杨国福麻辣烫</view>
+            <view class="goods-list {{ showGoodsList ? '' : 'hidden' }}">
                 <view class="goods-item">
                     <image src="" class="goods-img"/>
                     <view class="goods-detail-info">
@@ -141,6 +141,7 @@ export default class Index extends wepy.page {
     data = {
         order: {},
         statusDesc: {},
+        showGoodsList: true,
     }
     onLoad() {
         const { statusDesc } = globalConfig['order/goodsDetail'];
@@ -151,6 +152,9 @@ export default class Index extends wepy.page {
 
     }
     methods = {
+        handleTriggerShowGoodsList() {
+            this.showGoodsList = !this.showGoodsList;
+        },
         handleCancelOrder() {
 
         },
@@ -239,6 +243,21 @@ export default class Index extends wepy.page {
         font-weight: bold;
         height: 85rpx;
         line-height: 85rpx;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        &::after {
+            display: block;
+            content: '';
+            width: 15rpx;
+            height: 26rpx;
+            background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png') no-repeat center;
+            background-size: 100%;
+            transform: rotate(270deg);
+        }
+        &.hide-goods-list::after {
+            transform: rotate(90deg);
+        }
     }
     .goods-list {
         padding-top: 30rpx;
@@ -335,5 +354,9 @@ export default class Index extends wepy.page {
             color: #666;
         }
     }
+}
+
+.hidden {
+    display: none;
 }
 </style>
