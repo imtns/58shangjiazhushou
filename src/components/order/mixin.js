@@ -3,7 +3,7 @@ import { toast, picSrcDomain } from '../../utils';
 import { get } from '../../utils/ajaxOrder';
 import { getUid, SendClickLog } from '../../utils/maidian';
 
-export default class TestMixin extends wepy.mixin {
+export default class OrderMixin extends wepy.mixin {
   data = {
       statusSet: [
           '已支付，待接单',
@@ -25,11 +25,8 @@ export default class TestMixin extends wepy.mixin {
           pageSize: 5,
           status: '',
       },
-      orderList: {
-          data: [],
-          pageNum: 1,
-          pageSize: 5,
-      },
+      serviceOrderList: [],
+      productOrderList: [],
   };
   methods = {
       bindClickTab(status) {
@@ -69,16 +66,17 @@ export default class TestMixin extends wepy.mixin {
       return orders.map(item => {
           const ret = item;
           ret.mpLogo = picSrcDomain() + item.mpLogo;
-          ret.createTime = item.createTime.replace(regDateTime, '$2.$3 $4:$5');
-          ret.startTime = item.startTime.replace(regDateTime, '$2.$3 $4:$5');
-          ret.endTime = item.endTime.replace(regDateTime, '$2.$3 $4:$5');
+          if (ret.createTime) { ret.createTime = item.createTime.replace(regDateTime, '$2.$3 $4:$5'); }
+          if (ret.startTime) { ret.startTime = item.startTime.replace(regDateTime, '$2.$3 $4:$5'); }
+          if (ret.endTime) { ret.endTime = item.endTime.replace(regDateTime, '$2.$3 $4:$5'); }
           return ret;
       });
   }
-  async getOrderList() {
+  async getOrderList(id = '') {
       const mpId = wepy.getStorageSync('current_mpid');
       this.sendParams = Object.assign({}, this.sendParams, {
           mpId,
+          status: id,
       });
       const [e, res] = await get(
           '/consumerAppointment/queryPageForUser',
@@ -89,18 +87,11 @@ export default class TestMixin extends wepy.mixin {
           return;
       }
       const data = this.parseOrderList(res.data);
-      this.orderList = Object.assign({}, res, {
-          data: [].concat(this.orderList.data, data),
+      this.productOrderList = data.filter((item) => item.orderType === 4);
+      this.productOrderList.forEach((item) => {
+          item.consumerAddressJson = JSON.parse(item.consumerAddressJson);
       });
+      this.serviceOrderList = data.filter((item) => item.orderType === 1);
       this.$apply();
-  }
-  async onLoad() {
-      SendClickLog(
-          'wxf03e52adc4b13448',
-          getUid(),
-          '{}',
-          'sjzh_click_orderList_onload',
-      );
-      await this.getOrderList();
   }
 }

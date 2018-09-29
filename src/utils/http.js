@@ -32,7 +32,7 @@ const http = (method, ...props) => {
         method: method,
         dataType: 'json',
         header: {
-            "content-type": method === "GET" ? "application/json" : "application/x-www-form-urlencoded;charset=utf-8"
+            "content-type": method === "GET" ? "application/json" : "application/x-www-form-urlencoded;charset=utf-8",
         },
         success(response) {
             console.log('response:',response);
