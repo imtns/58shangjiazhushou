@@ -67,7 +67,7 @@ export default class Tabs extends wepy.component {
               left: 347,
           },
           {
-              id: '',
+              id: '3',
               name: '已完成',
               selected: false,
               left: 495,
@@ -100,6 +100,7 @@ export default class Tabs extends wepy.component {
           if (index === this.currentTab) return;
           console.log(id);
           this.currentTab = index;
+          this.$emit('getStatus', id);
       },
       switch(num, type) {
           if (this.currentSwitch === num) return;
@@ -118,6 +119,7 @@ export default class Tabs extends wepy.component {
   background: white;
   position: fixed;
   top: 0;
+  z-index: 100;
   .switch-bar {
     border-top: 1px solid rgb(236, 236, 236);
     display: flex;
