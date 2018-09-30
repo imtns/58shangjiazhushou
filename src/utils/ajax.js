@@ -39,6 +39,7 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
             PPU: ppu || 'wanghongyue',
             // 'YkuYdY8rk5As4T2QaJ7v': '45797966958100',
             reqfrom: 'biz_assistant',
+            // 'YkuYdY8rk5As4T2QaJ7v': 33433383496455,
         },
         success(response) {
             console.log('response', response);

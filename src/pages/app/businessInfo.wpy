@@ -146,7 +146,7 @@ export default class AppEdit extends wepy.page {
 
             // 每一个属性都必填
             requireFields.forEach((field) => {
-                if (!form[field]) {
+                if (form[field] === '') {
                     result = false;
                 }
             });
@@ -227,15 +227,22 @@ export default class AppEdit extends wepy.page {
     async loadData() {
         try {
             const mpid = wepy.getStorageSync('current_mpid');
-            const { data: result } = get(LOAD_BUSINESS_SETTING + mpid);
+            const [{ data: result }, { latitude: addressLatitude, longitude: addressLongitude }] = await Promise.all([
+                get(LOAD_BUSINESS_SETTING + mpid), wepy.getLocation(),
+            ]);
 
             if (!result) {
                 throw new Error('data is empty');
             }
-            this.form = result;
+
+            this.form = {
+                ...result,
+                addressLatitude,
+                addressLongitude,
+            };
             this.$apply();
         } catch (err) {
-            alert('获取数据失败');
+            alert('数据加载错误，请稍后再试~');
             console.log(err);
         }
     }

@@ -49,10 +49,10 @@ export default class PickBusinessHour extends wepy.page {
           { value: '周三', selected: true },
           { value: '周四', selected: true },
           { value: '周五', selected: true },
-          { value: '周六', selected: false },
-          { value: '周日', selected: false },
+          { value: '周六', selected: true },
+          { value: '周日', selected: true },
       ],
-      businessDays: [0, 0, 0, 0, 0, 0, 0],
+      businessDays: [1, 1, 1, 1, 1, 1, 1],
 
   };
   onLoad(options) {
@@ -64,7 +64,7 @@ export default class PickBusinessHour extends wepy.page {
           this.endTime = endTime;
       }
       if (businessDays) {
-          businessDays.split(',').forEach((item, index) => {
+          businessDays.split('').forEach((item, index) => {
               this.days[index].selected = item !== '0';
           });
           this.getDaysPicked();
@@ -97,7 +97,7 @@ export default class PickBusinessHour extends wepy.page {
       });
   }
   onUnload() {
-      this.businessDays = this.businessDays.join(',');
+      this.businessDays = this.businessDays.join('');
       const { businessDays, startTime, endTime } = this;
       globalService.set('app.pickBusinessHour', { businessDays, startTime, endTime });
   }

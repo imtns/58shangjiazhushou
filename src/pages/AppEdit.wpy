@@ -88,7 +88,7 @@
 <script>
 import wepy from 'wepy';
 import { picSrcDomain, filteremoji, toastSync, globalService, alertP, getNetStatus } from '../utils';
-import { get } from '../utils/ajaxP';
+import { get } from '../utils/ajax';
 import { getUid, SendClickLog } from '../utils/maidian';
 
 const host = 'https://yaofa.58.com';
@@ -146,14 +146,14 @@ export default class AppEdit extends wepy.page {
             if (column === 1) {
                 return;
             }
-            const { dispLocalID } = this.areas[0][value];
-            const [err, data] = await get(cityApi + dispLocalID);
-            if (err) {
-                this.toast(err);
-                return;
+            try {
+                const { dispLocalID } = this.areas[0][value];
+                const { data } = await get(cityApi + dispLocalID);
+                this.areas = [this.areas[0], data];
+                this.$apply();
+            } catch (err) {
+                this.toast(err.message);
             }
-            this.areas = [this.areas[0], data];
-            this.$apply();
         },
         setCity (e) {
             const arr = e.detail.value;
@@ -239,12 +239,11 @@ export default class AppEdit extends wepy.page {
                 cate3: form.cate3, // 所属行业第三级
             };
             console.log(sendData);
-            const [e, res] = await get(saveAppApi, sendData);
-            if (e) {
-                this.toast(res.msg);
-            } else {
-                console.log(res);
+            try {
+                await get(saveAppApi, sendData);
                 wepy.navigateBack();
+            } catch (err) {
+                this.toast(err.message);
             }
         },
     }
@@ -395,21 +394,17 @@ export default class AppEdit extends wepy.page {
         this.$apply();
     }
     async getProvinces () {
-        const [e1, data1] = await get(provinceApi);
-        if (e1) {
-            this.toast(e1);
-            return;
+        try {
+            const { data: data1 } = await get(provinceApi);
+            const province = this.form.province || '5001';
+            const { data: data2 } = await get(cityApi + province);
+            console.log('provinces', data1, 'citys', data2);
+            this.areas = [data1, data2];
+            this.loading = false;
+            this.$apply();
+        } catch (err) {
+            this.toast(err.message);
         }
-        const province = this.form.province || '5001';
-        const [e2, data2] = await get(cityApi + province);
-        if (e2) {
-            this.toast(e2);
-            return;
-        }
-        console.log('provinces', data1, 'citys', data2);
-        this.areas = [data1, data2];
-        this.loading = false;
-        this.$apply();
     }
     async getLocation () {
         const { latitude, longitude } = await wepy.getLocation({ type: 'wgs84' });
@@ -417,12 +412,12 @@ export default class AppEdit extends wepy.page {
         this.updateForm({ addressLatitude: latitude, addressLongitude: longitude });
     }
     async getAppInfo (mpid) {
-        const [e, data] = await get(`${appinfoApi}/${mpid}`);
-        if (e) {
-            this.toast(e);
-            return;
+        try {
+            const { data } = await get(`${appinfoApi}/${mpid}`);
+            this.updateForm({ ...data });
+        } catch (err) {
+            this.toast(err.message);
         }
-        this.updateForm({ ...data });
     }
     toast (...params) {
         const [title, duration = 2000] = params;

@@ -571,7 +571,7 @@ export default class Home extends wepy.page {
             case '商品':
                 SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_goodsComponentGroup');
                 wepy.navigateTo({
-                    url: 'goodsComponentGroup',
+                    url: '/pages/goodsComponent/publish',
                 });
                 break;
             case '文章':
