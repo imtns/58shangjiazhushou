@@ -35,8 +35,9 @@
                             class="icon-checkbox"
                             :class="{ 'selected': selectedGoods[item.id] }">
                         </view>
-                        <view class="goods-box"
-                            @tap="handleSelectGoods({{ item.id }})">
+                        <navigator class="goods-box"
+                            @tap="handleSelectGoods({{ item.id }})"
+                            url="/pages/goodsComponentDetail?id={{item.id}}&group={{groupList[curGroupIndex].data.id}}&name={{item.title}}">
                             <image
                                 class="goods-img"
                                 mode="aspectFill"
@@ -51,7 +52,7 @@
                                     ￥<text class="bold">{{ item.price }}</text>
                                 </view>
                             </view>
-                        </view>
+                        </navigator>
                         <view
                             class="goods-options {{ isEditing ? 'hidden' :'' }}">
                             <navigator
