@@ -1,6 +1,6 @@
 <template lang="wxml">
 <block wx:if="{{orderList && orderList.length > 0}}">
-    <scroll-view class="orders-ul" scroll-y @scrolltolower="bindLoadDown( {{sendParams.pageNum+1}} )" >
+    <scroll-view class="orders-ul"  style="height:82vh" scroll-y @scrolltolower="bindLoadDown" >
         <navigator wx:for="{{orderList}}" wx:for-index="idx" wx:key="item.id" url="/pages/OrderDetail?id={{item.id}}">
             <view class="order-ul-li" data-orderid="{{item.id}}">
                 <view class="order-ul-li-row header-row">
@@ -33,7 +33,7 @@
                 </view>
             </view>
         </navigator>
-        <view class="order-list-nomore" wx:if="{{orderList.recordsTotal>0 && orderList.length===orderList.recordsTotal}}">
+        <view class="order-list-nomore" wx:if="{{noMore}}">
             ╮(￣▽￣)╭已经到底了
         </view>
     </scroll-view>
@@ -50,7 +50,13 @@ export default class ServiceOrder extends wepy.component {
     props = {
         orderList: Object,
         statusSet: Array,
+        noMore: Boolean,
     }
+  methods = {
+      bindLoadDown() {
+          this.$emit('bindLoadDown');
+      },
+  }
 }
 </script>
 <style lang="scss">
@@ -184,12 +190,7 @@ export default class ServiceOrder extends wepy.component {
       }
     }
   }
-  .order-list-nomore {
-    margin-bottom: 20rpx;
-    font-size: 28rpx;
-    color: #999999;
-    text-align: center;
-  }
+
 }
 
 .font-yellow {
