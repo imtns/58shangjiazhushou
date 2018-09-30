@@ -152,6 +152,8 @@ export default class extends wepy.app {
         //     'ppu',
         //     'UID=47350441209367&UN=%E8%A2%81%E7%AD%B1%E4%B8%B90803&TT=b1ce9a3bf0dbe2fda2da594405532c38&PBODY=BPap2Dvi_m5L2imfEcj-FU_MDPTuQq26GBasfK-ItJHahjEy_bWyGsg39BqTSmck89_XCeUyHZ8sXnIN2FhO8hTveC4zvNGzJB_Z9MHGxAlCjSgUHCw3cMoMVxMfvj_bVe0PbGyyS2Q5EaUt--KqqpHJv569rteEzsnBFGtf3xI&VER=1',
         // );
+        // 学强的ppu
+        // wx.setStorageSync('ppu', 'UID=33433383496455&UN=ydvzv_p7&TT=7f6196408107d1efae4b46f4176a5922&PBODY=M_5BTzt29G2FRuEF1AgmnH4wteNcXaRX4PzJKOGipizKV2fazyLpD6Tj-cYXUmzCF0iXDDscuHy_oOvBg8D2iv1mU1TEAFXmsIZiDxLVZnKREZ4n4qe6Gi_mxyC9MXCKvLaLIgvldvXN8vojQLwo8nLmf2yHAL4Z0I0YssJVOQg&VER=1');
     }
     onShow (options) {
         // 赋值场景值、referrer信息
