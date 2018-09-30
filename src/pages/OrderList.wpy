@@ -9,10 +9,10 @@
         </view> -->
         <view class="listWrapper">
             <block wx:if="{{orderType === 'product'}}">
-                <productOrder :orderList.sync="productOrderList" :statusSet="statusSet"></productOrder>
+                <productOrder :orderList.sync="productOrderList" :statusSet="statusSet" :noMore.sync="noMore"></productOrder>
             </block>
             <block wx:if="{{orderType === 'service'}}">
-                <serviceOrder :orderList.sync="serviceOrderList" :statusSet="statusSet"></serviceOrder>
+                <serviceOrder :orderList.sync="serviceOrderList" :statusSet="statusSet" :noMore.sync="noMore"></serviceOrder>
             </block>
         </view>
     </view>
@@ -41,10 +41,11 @@ export default class OrderList extends wepy.page {
   events = {
       switchType: type => {
           this.orderType = type;
-          this.getOrderList();
+          //   this.getOrderList();
+          this.filterOrder('');
       },
       getStatus(id) {
-          this.getOrderList(id);
+          this.filterOrder(id);
       },
   };
   async onShow() {
@@ -76,4 +77,10 @@ export default class OrderList extends wepy.page {
     z-index: 99;
   }
 }
+  .order-list-nomore {
+    margin-bottom: 20rpx;
+    font-size: 28rpx;
+    color: #999999;
+    text-align: center;
+  }
 </style>

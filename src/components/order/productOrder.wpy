@@ -1,7 +1,7 @@
 <template lang="wxml">
 <view class="order-view">
     <block wx:if="{{orderList && orderList.length > 0}}">
-     <scroll-view  lower-threshold="70" scroll-top="{{scrollValue}}" bindscrolltolower="reachBottom" style="height:82vh" scroll-y="true"> 
+     <scroll-view  lower-threshold="70" scroll-top="{{scrollValue}}"  @scrolltolower="bindLoadDown" style="height:82vh" scroll-y="true"> 
          <navigator wx:for="{{orderList}}" wx:for-index="idx" wx:key="item.id" url="/pages/OrderDetail?id={{item.id}}">
         <view class="mod-view mod-order">
             <view data-item="{{item}}" bindtap="toOrderDetail">
@@ -29,9 +29,12 @@
             </view>
         </view>
        </navigator>
+               <view class="order-list-nomore" wx:if="{{noMore}}">
+            ╮(￣▽￣)╭已经到底了
+        </view>
     </scroll-view>
     </block>
-    <view class="empty-wrap" wx:else>
+     <view class="empty-wrap" wx:else>
         <image class="img-no-data" src="//img.58cdn.com.cn/lbg/jianzhan/images/empty.png"/>
         <view class="txt-no-data">暂无订单信息</view>
     </view>
@@ -44,7 +47,13 @@ export default class ProductOrder extends wepy.component {
   props = {
       orderList: Object,
       statusSet: Array,
+      noMore: Boolean,
   };
+  methods = {
+      bindLoadDown() {
+          this.$emit('bindLoadDown');
+      },
+  }
 }
 </script>
 <style lang="scss">
