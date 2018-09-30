@@ -1,7 +1,7 @@
 <template lang="wxml">
-<block wx:if="{{orderList.data && orderList.data.length > 0}}">
-    <scroll-view class="orders-ul" scroll-y @scrolltolower="bindLoadDown( {{sendParams.pageNum+1}} )">
-        <navigator wx:for="{{orderList.data}}" wx:for-index="idx" wx:key="item.id" url="/pages/OrderDetail?id={{item.id}}">
+<block wx:if="{{orderList && orderList.length > 0}}">
+    <scroll-view class="orders-ul" scroll-y @scrolltolower="bindLoadDown( {{sendParams.pageNum+1}} )" >
+        <navigator wx:for="{{orderList}}" wx:for-index="idx" wx:key="item.id" url="/pages/OrderDetail?id={{item.id}}">
             <view class="order-ul-li" data-orderid="{{item.id}}">
                 <view class="order-ul-li-row header-row">
                     <view class="order-number">订单号：{{item.id}}</view>
@@ -33,24 +33,24 @@
                 </view>
             </view>
         </navigator>
-        <view class="order-list-nomore" wx:if="{{orderList.recordsTotal>0 && orderList.data.length===orderList.recordsTotal}}">
+        <view class="order-list-nomore" wx:if="{{orderList.recordsTotal>0 && orderList.length===orderList.recordsTotal}}">
             ╮(￣▽￣)╭已经到底了
         </view>
     </scroll-view>
     </block>
-    <block wx:else>
-        <view class="empty-wrap">
-            <image class="img-no-data" src="//img.58cdn.com.cn/lbg/jianzhan/images/empty.png"/>
-            <view class="txt-no-data">暂无订单信息</view>
-        </view>
-    </block>
+    <view class="empty-wrap" wx:else>
+        <image class="img-no-data" src="//img.58cdn.com.cn/lbg/jianzhan/images/empty.png"/>
+        <view class="txt-no-data">暂无订单信息</view>
+    </view>
 </template>
 <script>
 import wepy from 'wepy';
-import mixin from './mixin';
 
 export default class ServiceOrder extends wepy.component {
-  mixins = [mixin];
+    props = {
+        orderList: Object,
+        statusSet: Array,
+    }
 }
 </script>
 <style lang="scss">
@@ -65,15 +65,13 @@ export default class ServiceOrder extends wepy.component {
       color: #333333;
       &.header-row {
         line-height: 88rpx;
-        display: table;
+        display: flex;
+        justify-content: space-between;
         box-sizing: border-box;
         width: 100%;
         border-bottom: 2rpx solid #f3f3f3;
-        .order-number,
-        .order-status {
-          white-space: nowrap;
-          overflow: hidden;
-          display: table-cell;
+        .order-number{
+            width:500rpx;
         }
         .order-status {
           text-align: right;
