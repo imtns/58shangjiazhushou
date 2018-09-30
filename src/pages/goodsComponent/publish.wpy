@@ -272,7 +272,7 @@ export default class extends wepy.page {
 
         goodsList = goodsList.map((v) => {
             const goods = v;
-            goods.editPath = `/pages/goodsComponentAdd?group=${groupId}&id=${goods.id}`;
+            goods.editPath = `/pages/goodsComponentAdd?group=${groupId}&id=${goods.id}&name=${goods.title}`;
             return goods;
         });
 
