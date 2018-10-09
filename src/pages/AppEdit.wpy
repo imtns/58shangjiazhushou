@@ -87,7 +87,7 @@
 
 <script>
 import wepy from 'wepy';
-import { picSrcDomain, filteremoji, toastSync, globalService, alertP, getNetStatus } from '../utils';
+import { picSrcDomain, filteremoji, toast, globalService, alertP, getNetStatus } from '../utils';
 import { get } from '../utils/ajax';
 import { getUid, SendClickLog } from '../utils/maidian';
 
@@ -173,7 +173,7 @@ export default class AppEdit extends wepy.page {
                 const netStatus = await getNetStatus();
 
                 if (netStatus === 0) {
-                    toastSync('无网络');
+                    toast('无网络');
                     return;
                 }
 
@@ -447,7 +447,7 @@ export default class AppEdit extends wepy.page {
             return false;
         }
         if (form.telphone.length < 11 && !regPhone.test(form.telphone)) {
-            await toastSync('手机号不正确');
+            await toast('手机号不正确');
             return false;
         }
         if (!form.city) {

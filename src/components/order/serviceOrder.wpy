@@ -77,7 +77,7 @@ export default class ServiceOrder extends wepy.component {
         width: 100%;
         border-bottom: 2rpx solid #f3f3f3;
         .order-number{
-            width:500rpx;
+            width:480rpx;
         }
         .order-status {
           text-align: right;

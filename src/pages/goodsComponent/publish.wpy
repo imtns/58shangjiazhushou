@@ -167,6 +167,7 @@ export default class extends wepy.page {
                 });
                 this.loadGoods();
             } catch (err) {
+                console.log(err);
                 alert('出了点差错，请稍后再试~');
             }
         },
@@ -247,38 +248,46 @@ export default class extends wepy.page {
      * @ param groupId 如果groupId不传默认取当前分组id
      */
     async loadGoods(groupId) {
-        if (groupId === undefined) {
-            const curGroup = this.groupList[this.curGroupIndex];
-            ({ data: { id: groupId } = {} } = curGroup);
+        try {
+            if (groupId === undefined) {
+                const curGroup = this.groupList[this.curGroupIndex];
+                ({ data: { id: groupId } = {} } = curGroup);
+            }
+
+            if (!groupId) {
+                throw new Error('id 不存在');
+            }
+
+            this.isLoadingGoods = true;
+            this.$apply();
+
+            let { data: { data: goodsList } = {} } = await get(LOAD_GOODS_LIST, {
+                pageSize: 100,
+                pageNum: 1,
+                mpId,
+                groupId,
+            });
+
+            if (!goodsList) {
+                throw new Error('获取商品列表失败');
+            }
+
+            goodsList = goodsList.map((v) => {
+                const goods = v;
+                goods.editPath = `/pages/goodsComponentAdd?group=${groupId}&id=${goods.id}&name=${goods.title}`;
+                return goods;
+            });
+
+            this.goodsList = goodsList;
+            this.$apply();
+        } catch (err) {
+            console.log(err);
+            this.goodsList = [];
+            this.$apply();
+        } finally {
+            this.isLoadingGoods = false;
+            this.$apply();
         }
-
-        if (!groupId) {
-            throw new Error('id 不存在');
-        }
-
-        this.isLoadingGoods = true;
-        this.$apply();
-
-        let { data: { data: goodsList } = {} } = await get(LOAD_GOODS_LIST, {
-            pageSize: 100,
-            pageNum: 1,
-            mpId,
-            groupId,
-        });
-
-        if (!goodsList) {
-            throw new Error('获取商品列表失败');
-        }
-
-        goodsList = goodsList.map((v) => {
-            const goods = v;
-            goods.editPath = `/pages/goodsComponentAdd?group=${groupId}&id=${goods.id}&name=${goods.title}`;
-            return goods;
-        });
-
-        this.goodsList = goodsList;
-        this.isLoadingGoods = false;
-        this.$apply();
     }
 
     async loadGroups() {

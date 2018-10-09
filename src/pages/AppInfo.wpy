@@ -70,7 +70,7 @@
 
 <script>
 import wepy from 'wepy';
-import { picSrcDomain, toastSync } from '../utils';
+import { picSrcDomain, toast } from '../utils';
 import { get } from '../utils/ajax';
 import { getUid, SendClickLog } from '../utils/maidian';
 
@@ -161,7 +161,7 @@ export default class AppInfo extends wepy.page {
             this.loading = false;
             this.updateAppInfo(data);
         } catch (err) {
-            toastSync(err.message);
+            toast(err.message);
         }
     }
     async onLoad (options) {

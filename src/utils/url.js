@@ -21,6 +21,14 @@ export const DELETE_GOODS = '/goods/del';
 export const GOODS_ON_SHOW = '/goods/onshow';
 export const GOODS_UNDER = '/goods/under'; // 下架商品
 
+// 订单
+export const LOAD_ORDER_DETAIL = '/consumerAppointment/get/'; // 订单详情
+export const ACCEPT_ORDER = '/consumerAppointment/accept/'; // 接单
+export const DELIVER_ORDER = '/consumerAppointment/deliverOrder/'; // 配送
+export const REFUSE_ORDER = '/consumerAppointment/arriveOrder/'; // 拒绝接单
+export const WHETHER_ACCEPT_REFUND = '/consumerAppointment/optRefund/'; // 是否统一退款，action: agree, action: refuse
+export const ARRIVE_ORDER = '/consumerAppointment/arriveOrder/'; // 订单送达
+
 // 营业信息设置
 export const SAVE_BUSINESS_SETTING = '/businessSetting/save';
 export const LOAD_BUSINESS_SETTING = '/businessSetting/getByMpId/';

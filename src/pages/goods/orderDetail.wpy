@@ -1,28 +1,28 @@
 <template>
     <view class="container">
         <view class="status">
-            <view class="status-title">退款失败</view>
-            <view class="status-subtitle">顾客已在您接单前取消订单，系统退款失败，请回到首页联系我们</view>
+            <view class="status-title">{{ statusDesc[order.status][0] }}</view>
+            <view class="status-subtitle">{{ statusDesc[order.status][1] }}</view>
         </view>
         <view class="order-info">
             <view class="user-info">
-                <view class="user-name">李先生</view>
-                <view class="user-phone">18588888888</view>
+                <view class="user-name">{{ order.name }}</view>
+                <view class="user-phone">{{ order.telephone }}</view>
                 <view class="icon-phone"></view>
             </view>
             <view class="order-wrap">
                 <view class="order-detail">
                     <view class="order-detail-item">
                         <view class="order-detail-label">下单时间</view>
-                        <view class="order-detail-value">{{ order.createTime || '08-16 21:12' }}</view>
+                        <view class="order-detail-value">{{ order.createTime }}</view>
                     </view>
                     <view class="order-detail-item">
                         <view class="order-detail-label">配送地址</view>
-                        <view class="order-detail-value">北京市朝阳区酒仙桥产业园</view>
+                        <view class="order-detail-value">{{ order.fullAddress }}</view>
                     </view>
                     <view class="order-detail-item">
                         <view class="order-detail-label">预计送达时间</view>
-                        <view class="order-detail-value">08-16 21:12</view>
+                        <view class="order-detail-value">{{ order.arriveTime }}</view>
                     </view>
                     <view class="order-detail-item">
                         <view class="order-detail-label">配送方式</view>
@@ -32,23 +32,15 @@
             </view>
         </view>
         <view class="goods-info">
-            <view class="goods-title {{ showGoodsList ? '' : 'hide-goods-list' }}" @tap="handleTriggerShowGoodsList">杨国福麻辣烫</view>
+            <view class="goods-title {{ showGoodsList ? '' : 'hide-goods-list' }}" @tap="handleTriggerShowGoodsList">{{ order.mpName }}</view>
             <view class="goods-list {{ showGoodsList ? '' : 'hidden' }}">
-                <view class="goods-item">
-                    <image src="" class="goods-img"/>
+                <view class="goods-item" wx:for="{{ goodsList }}" wx:key="index">
+                    <image src="{{ item.pics }}" class="goods-img"/>
                     <view class="goods-detail-info">
-                        <view class="goods-name">小面套餐</view>
-                        <view class="goods-amount">x 4</view>
+                        <view class="goods-name">{{ item.title }}</view>
+                        <view class="goods-amount">x {{ item.total }}</view>
                     </view>
-                    <view class="goods-price">￥16</view>
-                </view>
-                <view class="goods-item">
-                    <image src="" class="goods-img"/>
-                    <view class="goods-detail-info">
-                        <view class="goods-name">老婆饼（大份）</view>
-                        <view class="goods-amount">x 3</view>
-                    </view>
-                    <view class="goods-price">￥18.9</view>
+                    <view class="goods-price">￥{{ item.price }}</view>
                 </view>
             </view>
             <view class="order-detail">
@@ -73,7 +65,7 @@
             <view class="order-detail" style="border-top: none;">
                 <view class="order-detail-item">
                     <view class="order-detail-label">订单编号</view>
-                    <view class="order-detail-value">{{ order.serviceId || 'XC039293823923' }}</view>
+                    <view class="order-detail-value">{{ orderId }}</view>
                 </view>
             </view>
             <view class="order-detail">
@@ -87,41 +79,41 @@
                     <view class="order-detail-label">备注</view>
                     <view class="order-detail-value"></view>
                 </view>
-                <view class="order-textarea-value">多方香葱，不要辣椒，谢谢</view>
+                <view class="order-textarea-value">{{ order.remark }}</view>
             </view>
         </view>
         <view class="options">
             <block wx:if="{{ order.status === 0 }}">
                 <button
                     class="button cancel"
-                    @tap="handleCancelOrder"
-                >取消订单</button>
+                    @tap="handleRefuseOrder"
+                    >取消订单</button>
                 <button
                     class="button primary accept"
                     @tap="handleAcceptOrder"
-                >立即接单</button>
+                    >立即接单</button>
             </block>
             <block wx:elif="{{ order.status === 1 }}">
                 <button
                     class="button primary"
                     @tap="handleStartDeliver"
-                >开始配送</button>
+                    >开始配送</button>
             </block>
             <block wx:elif="{{ order.status === 10 }}">
                 <button
                     class="button"
                     @tap="handlePlatformIn"
-                >申请平台介入</button>
+                    >申请平台介入</button>
                 <button
                     class="button primary"
                     @tap="handleAcceptRefund"
-                >同意退款</button>
+                    >同意退款</button>
             </block>
             <block wx:elif="{{ order.status === 13 }}">
                 <button
                     class="button primary"
                     @tap="handleConfirm"
-                >确认配送到达</button>
+                    >确认配送到达</button>
             </block>
         </view>
     </view>
@@ -132,46 +124,213 @@
  * 商品订单详情
  */
 import wepy from 'wepy';
-import * as globalConfig from '../../utils/config';
+import { goodsOrderDetail as goodsOrderDetailConfig } from '../../utils/config';
+import { get, post } from '../../utils/ajax';
+import { alert, toast } from '../../utils';
+import {
+    LOAD_ORDER_DETAIL,
+    ACCEPT_ORDER,
+    DELIVER_ORDER,
+    REFUSE_ORDER,
+    WHETHER_ACCEPT_REFUND,
+    ARRIVE_ORDER,
+} from '../../utils/url';
 
 export default class Index extends wepy.page {
     config = {
         navigationBarTitleText: '订单详情',
     }
     data = {
-        order: {},
-        statusDesc: {},
+        order: {
+            status: 0, // 订单状态
+            mpLogo: '', // 小程序Logo
+            mpName: '', // 小程序名称
+            mpId: '',
+            packingFee: 0, // 打包费
+            distributionFee: 0, // 配送费
+            couponAmount: 0, // 优惠券金额
+            realAmount: 0, // 实际支付价格
+            createTime: '', // 下单时间
+            arriveTime: '', // 送达时间
+            remark: '', // 订单备注
+
+            name: '', // 收货人
+            telephone: '', // 收货人电话
+            fullAddress: '', // 收货人地址
+        },
+        statusDesc: [],
         showGoodsList: true,
+        goodsList: [],
     }
-    onLoad() {
-        const { statusDesc } = globalConfig['order/goodsDetail'];
-        this.statusDesc = statusDesc;
+    onLoad({ orderId }) {
+        this.statusDesc = goodsOrderDetailConfig.statusDesc;
+        this.orderId = orderId;
         this.loadData();
     }
     loadData() {
+        this.getOrderDetail();
+        this.getGoodsList();
+    }
+    async getGoodsList() {
+        try {
+            const { orderId } = this;
+            const { data } = await get(`/consumerAppointment/getGoodsSnapshots/${orderId}`);
+            this.goodsList = data;
+            this.$apply();
+        } catch (err) {
+            alert('数据加载失败，请稍后再试~');
+            console.log('获取商品列表失败', err);
+        }
+    }
+    async getOrderDetail() {
+        try {
+            const { orderId } = this;
+            const { data } = await get(`${LOAD_ORDER_DETAIL}${orderId}`);
 
+            const {
+                status,
+                mpLogo,
+                mpName,
+                mpId,
+                packingFee,
+                distributionFee,
+                couponAmount = 0,
+                realAmount,
+
+                consumerAddressJson,
+
+                createTime,
+                arriveTime,
+                remark,
+            } = data;
+
+            const {
+                name,
+                telephone,
+                fullAddress,
+            } = consumerAddressJson ? JSON.parse(consumerAddressJson) : {};
+
+            this.order = {
+                status,
+                mpLogo,
+                mpName,
+                mpId,
+                packingFee,
+                distributionFee,
+                couponAmount,
+                realAmount,
+                createTime,
+                arriveTime,
+                remark,
+                name,
+                telephone,
+                fullAddress,
+            };
+            this.$apply();
+        } catch (err) {
+            console.log(err);
+            alert('加载数据失败，请你稍后再试');
+        }
     }
     methods = {
         handleTriggerShowGoodsList() {
             this.showGoodsList = !this.showGoodsList;
         },
-        handleCancelOrder() {
+        async handleRefuseOrder() {
+            try {
+                const { orderId } = this;
+                const { state } = await post(`${REFUSE_ORDER}${orderId}`);
 
+                if (state !== 100) {
+                    throw new Error('取消订单失败');
+                }
+
+                await toast('取消订单成功');
+                this.loadData();
+            } catch (err) {
+                console.log(err);
+                toast('取消订单失败，请稍后再试');
+            }
         },
-        handleAcceptOrder() {
+        async handleAcceptOrder() {
+            try {
+                const { orderId } = this;
+                const { state } = await post(`${ACCEPT_ORDER}${orderId}`);
 
+                if (state !== 100) {
+                    throw new Error('接单失败');
+                }
+
+                await toast('接单成功');
+                this.loadData();
+            } catch (err) {
+                console.log(err);
+                toast('接单失败，请稍后再试');
+            }
         },
-        handleStartDeliver() {
+        async handleStartDeliver() {
+            try {
+                const { orderId } = this;
+                const { state } = await post(`${DELIVER_ORDER}${orderId}`);
 
+                if (state !== 100) {
+                    throw new Error('开始配送失败');
+                }
+
+                await toast('开始配送成功');
+                this.loadData();
+            } catch (err) {
+                console.log(err);
+                toast('开始配送失败，请稍后再试');
+            }
         },
-        handlePlatformIn() {
+        async handlePlatformIn() {
+            try {
+                const { orderId } = this;
+                const { state } = await post(`${WHETHER_ACCEPT_REFUND}${orderId}`, { action: 'refuse' });
 
+                if (state !== 100) {
+                    throw new Error('平台介入失败');
+                }
+
+                await toast('平台介入成功');
+                this.loadData();
+            } catch (err) {
+                console.log(err);
+                toast('平台介入失败');
+            }
         },
-        handleAcceptRefund() {
+        async handleAcceptRefund() {
+            try {
+                const { orderId } = this;
+                const { state } = await post(`${WHETHER_ACCEPT_REFUND}${orderId}`, { action: 'agree' });
 
+                if (state !== 100) {
+                    throw new Error('退款失败');
+                }
+
+                await toast('退款成功');
+                this.loadData();
+            } catch (err) {
+                console.log(err);
+                toast('退款失败');
+            }
         },
-        handleConfirm() {
+        async handleConfirm() {
+            try {
+                const { orderId } = this;
+                const { state } = await post(`${ARRIVE_ORDER}${orderId}`);
 
+                if (state !== 100) {
+                    throw new Error('');
+                }
+
+                await toast('操作成功');
+                this.loadData();
+            } catch (err) {
+                console.log(err);
+                toast('操作失败');
+            }
         },
     }
 }

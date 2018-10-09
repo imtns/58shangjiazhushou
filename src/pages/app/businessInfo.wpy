@@ -85,7 +85,7 @@
 
 <script>
 import wepy from 'wepy';
-import { alert } from '../../utils';
+import { alert, toast } from '../../utils';
 import { post, get } from '../../utils/ajax';
 import { LOAD_BUSINESS_SETTING, SAVE_BUSINESS_SETTING } from '../../utils/url';
 import * as globalService from '../../utils/globalService';
@@ -195,6 +195,7 @@ export default class AppEdit extends wepy.page {
                 }
 
                 await post(SAVE_BUSINESS_SETTING, postData);
+                wepy.navigateBack();
             } catch (err) {
                 alert('保存失败');
                 console.log(err);

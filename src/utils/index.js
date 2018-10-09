@@ -77,13 +77,11 @@ export const alertP = (...props) => {
 };
 
 // toast
-export const toast = (title, duration = 1500) => {
-    wepy.showToast({
-        title,
-        icon: 'none',
-        duration,
-    });
-};
+export const toast = (title, duration = 1500) => wepy.showToast({
+    title,
+    icon: 'none',
+    duration,
+});
     // 不支持提示
 export const notSupportTips = () => {
     wx.showModal({
@@ -142,7 +140,7 @@ export const formatTime = (date) => {
 
 export const withHttp = (list) => {
     list.forEach((item) => {
-        let ele = item;
+        const ele = item;
         if (ele.headImg && ele.headImg.indexOf('http') === -1) {
             ele.headImg = `https://pic1.58cdn.com.cn${headImg}`;
         } else if (ele.senderPortrait && ele.senderPortrait.indexOf('http') === -1) {
@@ -150,4 +148,4 @@ export const withHttp = (list) => {
         }
     });
     return list;
-}
+};

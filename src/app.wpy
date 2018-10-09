@@ -80,7 +80,7 @@ export default class extends wepy.app {
             'pages/goodsComponentAdd', // 商品添加
             'pages/goodsComponentDetail', // 商品详情
             'pages/goodsComponent/publish', // 商品发布
-            'pages/order/goodsDetail', // 商品订单
+            'pages/goods/orderDetail', // 商品订单
 
             'pages/articleComponentCreate', // 文章添加(不选分组)
             'pages/articleComponentAdd', // 文章添加(选分组)

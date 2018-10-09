@@ -59,7 +59,7 @@
 import wepy from 'wepy';
 import { CARD_FIRST_EDIT, CARD_CREATE_NEW_CARD } from '../utils/url';
 import { post } from '../utils/ajax';
-import { getNetStatus, toastSync } from '../utils';
+import { getNetStatus, toast } from '../utils';
 import { getUid, SendClickLog } from '../utils/maidian';
 
 const host = 'https://yaofa.58.com';
@@ -92,7 +92,7 @@ export default class newBizCard extends wepy.page {
                 const netStatus = await getNetStatus();
 
                 if (netStatus === 0) {
-                    toastSync('无网络');
+                    toast('无网络');
                     return;
                 }
                 const { tempFilePaths } = await wepy.chooseImage({
