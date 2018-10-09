@@ -490,7 +490,7 @@ export default class Home extends wepy.page {
             // wepy在链式更改属性时，在手机预览会出现不生效的情况。
             this.setData({
                 'status.loading': false,
-            })
+            });
             wepy.setStorageSync('current_cardId', cardId);
             nexttask && this.setNextTask(nexttask);
             this.$apply();

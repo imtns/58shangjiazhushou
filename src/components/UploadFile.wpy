@@ -25,7 +25,7 @@
 </template>
 <script>
 import wepy from 'wepy';
-import { toast, getNetStatus, toast } from '../utils';
+import { toast, getNetStatus } from '../utils';
 
 const host = 'https://yaofa.58.com';
 export default class Uploader extends wepy.component {
