@@ -5,6 +5,7 @@
             target="miniProgram"
             open-type="navigate"
             app-id="wx49b3af93cbcd737b"
+            url=""
             path=""
             version="release">
             更多帖子访客消息
@@ -59,14 +60,13 @@ export default class SysNoticeList extends wepy.page {
         sysList: [],
         sendParams: {
             group: 2,
-            page: 1,
+            pageNum: 1,
             pageSize: 10,
         },
     }
     methods = {
         sysListMore () {
-            this.sendParams.page = this.sendParams.page + 1;
-            this.sendParams = Object.assign({}, this.sendParams, this.sendParams.page);
+            this.sendParams = Object.assign({}, this.sendParams, this.sendParams.pageNum + 1);
             this.loadList();
         },
     }
@@ -95,19 +95,20 @@ export default class SysNoticeList extends wepy.page {
         try {
             const { data } = await get('/mplogic/msglist');
             const { msglist } = data;
-            if (msglist && msglist.length > 0) {
-                const arr = [];
-                msglist.forEach((item) => {
-                    const ele = item;
-                    if (ele.mpLogo && ele.mpLogo.indexOf('http') === -1) {
-                        ele.mpLogo = `https://pic1.58cdn.com.cn${ele.mpLogo}`;
-                    }
-                    arr.push(ele);
-                });
-                this.sysList = arr;
-            } else {
-                this.sysList = [];
+            if (msglist.length === 0) {
+                this.sysList = this.sysList;
+                toast('没有更多系统通知啦');
+                return;
             }
+            const arr = [];
+            msglist.forEach((item) => {
+                const ele = item;
+                if (ele.mpLogo && ele.mpLogo.indexOf('http') === -1) {
+                    ele.mpLogo = `https://pic1.58cdn.com.cn${ele.mpLogo}`;
+                }
+                arr.push(ele);
+            });
+            this.sysList = this.sysList.concat(arr);
             this.$apply();
         } catch (e) {
             console.log(e);
@@ -115,13 +116,16 @@ export default class SysNoticeList extends wepy.page {
     }
     async clearAll() {
         try {
-            if (this.noticeList.length <= 0) {
+            if (this.sysList.length <= 0) {
                 toast('没有消息，无需清空~');
                 return;
             }
-            await get('/mplogic/cleargroupmsg', { group: 1 });
-            sleep();
-            this.loadList();
+            const { state } = await get('/mplogic/cleargroupmsg', { group: 1 });
+            if (state === 100) {
+                sleep();
+                this.sysList = [];
+                this.loadList();
+            }
         } catch (e) {
             console.log(e);
         }
@@ -294,10 +298,10 @@ scroll-view {
     }
 }
 .emptyBox{
-    width:100%;
-    height:50%;
+    width: 100%;
+    position: fixed;
+    top: 280rpx;
     text-align:center;
-    margin: auto;
     .emptyIcon{
         width:209rpx;
         height:187rpx;

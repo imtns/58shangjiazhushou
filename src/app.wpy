@@ -154,22 +154,19 @@ export default class extends wepy.app {
         // );
         // 学强的ppu
         // wx.setStorageSync('ppu', 'UID=33433383496455&UN=ydvzv_p7&TT=7f6196408107d1efae4b46f4176a5922&PBODY=M_5BTzt29G2FRuEF1AgmnH4wteNcXaRX4PzJKOGipizKV2fazyLpD6Tj-cYXUmzCF0iXDDscuHy_oOvBg8D2iv1mU1TEAFXmsIZiDxLVZnKREZ4n4qe6Gi_mxyC9MXCKvLaLIgvldvXN8vojQLwo8nLmf2yHAL4Z0I0YssJVOQg&VER=1');
+        // wx.setStorageSync('ppu', 'UID=48738323270929&UN=h34xb9&TT=790cd18a7dc07c6c47dd4430561ebe49&PBODY=KxccExLLZL2FwQdhfyCRtfhIXBEY44p0bw8ZrBCn4RtLTpTZh6m_7mdLWlcUP2VkbFI2QrpmszFtZgkuYfta9nFLRbfx1svpxcb0IiDzLQREz_2Z6XwZ5VROQg6X5mFYtIEqmdphcP3q6No3bGp65lRg-TGePKaYq0-BGoov3Lc&VER=1');
     }
     onShow (options) {
         // 赋值场景值、referrer信息
         const {
             scene, referrerInfo = {}, path,
         } = options;
-        // console.log(options.query);
         const { appId } = referrerInfo;
         const fromAppId = appId;
         // action:通过fromAppId和scene返回当前小程序处理
         console.log('referrerInfo', referrerInfo);
-        console.log(scene);
         console.log(path);
-        console.log(options.query);
         // const path = '/pages/home?toRedirect=/pages/OrderDetail&ParamNames=orderId&ParamValues=123456';
-        // console.log(valueArr);
         let action = scene === 1038 || scene === '1038' ? CALLBACKAPPS[fromAppId] : '';
 
         // 1037进入 从别的小程序进入
@@ -183,13 +180,21 @@ export default class extends wepy.app {
             const { query } = options;
             const { toRedirect } = query;
             wepy.setStorageSync('query', query);
-            console.log(wepy.getStorageSync('query'));
             if (wepy.getStorageSync('ppu') && !query.ParamNames) {
-                setTimeout(() => {
-                    wepy.redirectTo({
-                        url: toRedirect,
-                    });
-                }, 1000);
+                if (toRedirect === '/pages/chatMessages') {
+                    // 跳转到消息列表页
+                    setTimeout(() => {
+                        wepy.switchTab({
+                            url: toRedirect,
+                        });
+                    }, 1000);
+                } else {
+                    setTimeout(() => {
+                        wepy.navigateTo({
+                            url: toRedirect,
+                        });
+                    }, 1000);
+                }
             }
             if (wepy.getStorageSync('ppu') && query.ParamNames) {
                 let paramsStr = '';
@@ -202,10 +207,8 @@ export default class extends wepy.app {
                         paramsStr += `&${keyArr[index]}=${valueArr[index]}`;
                     });
                 }
-                console.log(`${toRedirect}?${paramsStr.substring(1)}`);
                 setTimeout(() => {
-                    wepy.redirectTo({
-                        // url: toRedirectArr[0] + '?' + paramsStr.split('&')[1],
+                    wepy.navigateTo({
                         url: `${toRedirect}?${paramsStr.substring(1)}`,
                     });
                 }, 1000);
@@ -217,23 +220,23 @@ export default class extends wepy.app {
 }
 </script>
 
-<style lang="scss">   
-@import "css/common.scss"; 
-@import "components/mod/information/information.wxss"; 
+<style lang="scss">
+@import "css/common.scss";
+@import "components/mod/information/information.wxss";
 @import "components/mod/imageSwiper/imageSwiper.wxss";
 @import "components/mod/images/images.wxss";
 @import "components/mod/me/me.wxss";
 @import "components/mod/goods/goods.wxss";
-@import "components/mod/text/text.wxss";   
-@import "components/mod/title/title.wxss";   
-@import "components/mod/video/video.wxss";   
+@import "components/mod/text/text.wxss";
+@import "components/mod/title/title.wxss";
+@import "components/mod/video/video.wxss";
 @import "components/mod/call/call.wxss";
-@import "components/mod/services/services.wxss"; 
+@import "components/mod/services/services.wxss";
 @import "components/mod/article/article.wxss";
-@import "components/mod/evaluation/evaluation.wxss"; 
-@import "components/mod/reserve/reserve.wxss";  
-@import "components/mod/coupon/coupon.wxss";    
-@import "components/mod/pay/pay.wxss";   
-@import "components/mod/branch/branch.wxss";   
+@import "components/mod/evaluation/evaluation.wxss";
+@import "components/mod/reserve/reserve.wxss";
+@import "components/mod/coupon/coupon.wxss";
+@import "components/mod/pay/pay.wxss";
+@import "components/mod/branch/branch.wxss";
 @import "components/mod/tabBar/tabBar.wxss";
 </style>

@@ -162,12 +162,13 @@ export const getMappDetail = ({ userId, appId, releaseId } = {}) => {
 
 export const setTabBar = (text) => {
     globalData.chat.unReadCount = text;
-    console.error(text);
+
     if (Number(text) && Number(text) > 0) {
         wx.setTabBarBadge({
             index: 1,
             text: text > 99 ? '99+' : `${text}`,
         });
+        console.log(text);
     } else {
         wx.removeTabBarBadge({
             index: 1

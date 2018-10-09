@@ -7,18 +7,18 @@
                 <view class="base-text red">{{price}}元</view>
             </view>
         </view>
-         <view class="goods-intro">
+         <!-- <view class="goods-intro">
             <view class="goods-detail-flex">
                 <view class="goods-base">配送费</view>
                 <view class="base-text">12元</view>
             </view>
-        </view>
-        <view class="goods-intro">
+        </view> -->
+        <!-- <view class="goods-intro">
             <view class="goods-detail-flex">
                 <view class="goods-base">配送方式</view>
                 <view class="base-text">商家配送</view>
             </view>
-        </view>
+        </view> -->
         <view class="content-wrapper">
             <view class="tag">服务详情</view>
             <block wx:for="{{description}}" wx:for-index="idx" wx:for-item="p" wx:key="idx">
@@ -33,7 +33,7 @@
     <view class="block"></view>
     <view class="buttons">   
         <view class="button goods-edit-btn" @tap="toEdit">编辑</view>
-        <view class="button goods-public-btn" @tap="toPublic">上架</view>
+        <!-- <view class="button goods-public-btn" @tap="toPublic">上架</view> -->
     </view>
 </template>          
 
@@ -131,13 +131,13 @@ export default class goodsComponentDetail extends wepy.page {
     text-align: center;
     line-height: 102rpx;
     &.goods-edit-btn {
-      color: #4e88ff;
-      background: #fff;
-    }
-    &.goods-public-btn {
       background: #4e88ff;
       color: #ffffff;
     }
+    // &.goods-public-btn {
+    //   background: #4e88ff;
+    //   color: #ffffff;
+    // }
   }
 }
 .goods-detail-flex {

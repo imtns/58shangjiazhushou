@@ -30,12 +30,10 @@ export const onMsgNotify = (newMsgList) => {
     console.error('list', newMsgList[0]);
 
     const { unReadCount, currentContactId = '' } = globalData.chat;
-    globalData.chat.unReadCount = Number(unReadCount) + Number(newMsgList.length);
-    if (globalData.chat.unReadCount > 0) {
-        setTabBar(globalData.chat.unReadCount);
+    const text = Number(unReadCount) + Number(newMsgList.length);
+    if (!currentContactId) {
+        setTabBar(text);
     }
-
-
     newMsgList.forEach((newMsg) => {
         pushMsg(newMsg);
     });
@@ -45,7 +43,7 @@ const pushMsg = async (newMsg) => {
 
     let ele, content;
     const eles = newMsg.getElems();
-    const {currentContactId = '', contactList } = globalData.chat;
+    const { contactList } = globalData.chat;
 
     const temp = {};
     let contacts1 = [];
@@ -54,7 +52,7 @@ const pushMsg = async (newMsg) => {
         ele = eles[i];
         content = Object.prototype.toString.call(ele.getContent().data) ? JSON.parse(ele.getContent().data) : ele.getContent().data;
         const { contactId, content: newContent, sendTime, contactNickName, contactPortrait, type  } = content;
-        console.log(content, currentContactId, contactId);
+        // console.log(content, currentContactId, contactId);
 
         // 发布当前聊天人的未读，
         if (temp[contactId]) {

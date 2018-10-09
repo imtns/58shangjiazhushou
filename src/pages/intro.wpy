@@ -4,7 +4,7 @@
             <text selectable="false" class="welcome">欢迎登录</text>
             <text selectable="false" class="text">58商家程序助手</text>
             <!-- <button class="btn-login"  bindtap="callPassport">立即登录</button> -->
-            <navigator class="btn-login" target="miniProgram" open-type="navigate" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release">立即登录</navigator>
+            <navigator class="btn-login" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release">立即登录</navigator>
         </view>
         <view class="intro-content">
             <text class="title">小程序四大价·值</text>
@@ -42,7 +42,7 @@
             </view>
             <!-- <view class="login" bindtap="callPassport">立即登录</view> -->
             <!-- <navigator class="login" target="miniProgram" open-type="navigate" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="develop">立即登录</navigator> -->
-             <navigator class="login" target="miniProgram" open-type="navigate" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release">立即登录</navigator>
+             <navigator class="login" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release">立即登录</navigator>
         </view>
     </view>
 </template>

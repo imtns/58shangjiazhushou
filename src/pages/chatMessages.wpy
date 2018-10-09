@@ -1,6 +1,6 @@
 <template>
     <view class="chatMessages">
-        <repeat wx:if="{{contactList.length > 0}}" for="{{contactList}}" key="index" index="index" item="item">
+        <repeat wx:if="{{contactList.length > 0}}" for="{{contactList}}" key="{{index}}" index="index" item="item">
             <view class="message_box"  @tap="toChat" data-item="{{item}}">
                 <view class="message_header" style="background:url({{item.portrait || 'http://pic1.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?=690'}}) no-repeat center">
                     <view class="message_tips" wx:if="{{item.unReadCount > 0}}">{{item.unReadCount}}</view>
@@ -8,8 +8,6 @@
                 <view class="message_info">
                     <view class="chat_name">{{item.nickName}}</view>
                     <view class="chat_info">{{item.content}}</view>
-                    <!-- <view class="chat_info" wx:if="{{item.recentMsgs[item.recentMsgs.length - 1].type == 0}}">{{item.recentMsgs[item.recentMsgs.length - 1].content}}</view>
-                    <view class="chat_info" wx:if="{{item.recentMsgs[item.recentMsgs.length - 1].type == 1}}">[图片]</view> -->
                     <view class="chat_time">{{item.sendTime}}</view>
                 </view>
             </view>
@@ -26,17 +24,14 @@
 
 <script>
 import wepy from 'wepy';
-// import { CHAT_CONTACT_LIST } from '../utils/url';
-// import { post } from '../utils/ajax';
+import { post } from '../utils/ajax';
 import { globalData, setTabBar } from '../utils/globalData';
 import { pubsub } from '../utils/IM/pubsub';
 import { formatDateTimeLocal } from '../utils/dateFomate';
-// import { CHAT_CONTACT_LIST } from '../utils/url';
-// import { get } from '../utils/ajax';
-import { chatContactList } from '../store/index';
+import { CHAT_CONTACT_LIST } from '../utils/url';
 import { getUid, SendClickLog } from '../utils/maidian';
 
-
+const newMsgToken = [];
 export default class chatMessages extends wepy.page {
     config = {
         navigationBarTitleText: '消息',
@@ -64,43 +59,88 @@ export default class chatMessages extends wepy.page {
         console.log('onload');
     }
     async onShow () {
-        await chatContactList();
-        const { contactList = [] } = globalData.chat;
-        console.error('contactList', contactList);
-        this.contactList = contactList;
-        this.$apply();
-
-        this.unreadMsgs();
+        await this.requestContactList();
+        await this.unreadMsgs();
+        const { unReadCount } = globalData.chat;
+        setTabBar(unReadCount);
     }
-
-    unreadMsgs() {
+    onHide() {
+        newMsgToken.map((tempToken) => {
+            pubsub.unsubscribe(tempToken);
+            return tempToken;
+        });
+    }
+    unreadMsgs () {
         const { contactList } = this;
-        contactList.forEach((msg, index) => {
-            const { contactId } = msg;
-            pubsub.subscribe(contactId, (...props) => {
-                const { type, content, sendTime } = props[0];
-                const { unReadCount } = msg;
+        contactList.forEach((item) => {
+            const tempToken = pubsub.subscribe(item.contactId, (...props) => {
+                const {
+                    type,
+                    content,
+                    sendTime: lastSendTime = '',
+                } = props[0];
                 let count;
+                const {
+                    unReadCount,
+                } = item;
                 if (unReadCount === 0 || unReadCount === '0') {
                     count = 1;
                 } else {
                     count = Number(unReadCount) + 1;
                 }
-                console.error('msg', unReadCount, contactId, msg);
-                const newMsg = Object.assign(msg, {
-                    lastType: type,
-                    content: type === 1 ? '[图片]' : content,
-                    sendTime: formatDateTimeLocal(sendTime),
-                    unReadCount: count,
+                const unReadCountMsg = `${count >= 100 ? '...' : ''}${count > 0 && count < 100 ? count : ''}`;
+                console.log(unReadCount, unReadCountMsg);
+                item.type = type;
+                item.content = type === 1 ? '[图片]' : content;
+                item.sendTime = lastSendTime;
+                item.unReadCount = unReadCountMsg;
+                item.unReadCountMsg = unReadCountMsg;
+                contactList.forEach((msg, j) => {
+                    if (msg.contactId === item.contactId) {
+                        // i = j;
+                        contactList.splice(j, 1);
+                        contactList.unshift(item);
+                        this.contactList = contactList;
+                        this.$apply();
+                    }
+                    return msg;
                 });
-                const { contactList: newList } = this;
-                newList.splice(index, 1);
-                newList.unshift(newMsg);
-                console.error('newMsg', newMsg, formatDateTimeLocal(sendTime));
-                this.contactList = newList;
-                this.$apply();
+                return item;
             });
+            newMsgToken.push(tempToken);
         });
+    }
+    async requestContactList() {
+        const { token } = globalData.chat;
+        const { data } = await post(CHAT_CONTACT_LIST, { token });
+        const contactList = data.map((item) => {
+            const {
+                unReadCount,
+                recentMsgs,
+                id,
+                portrait,
+                nickName,
+            } = item;
+            const lastMsg = recentMsgs && recentMsgs.length > 0 ? recentMsgs[recentMsgs.length - 1] : {};
+            const {
+                content: lastContent = '',
+                type: lastType = '',
+                sendTime: lastSendTime = '',
+            } = lastMsg;
+            // 未读消息数特殊处理：超过两位数显示...
+            const unReadCountMsg = `${unReadCount >= 100 ? '...' : ''}${unReadCount > 0 && unReadCount < 100 ? unReadCount : ''}`;
+            const nItem = {
+                contactId: id || '', // 联系人Id
+                portrait: `${portrait.indexOf('http') === -1 ? 'https://pic1.58cdn.com.cn' : ''}${portrait}`, // 联系人头像
+                nickName: nickName || '', // 联系人昵称
+                unReadCount: unReadCountMsg, // 未读消息数，超过两位数显示...
+                sendTime: formatDateTimeLocal(lastSendTime), // 最后发送时间，格式化: 当天只展示时分，非当天且在当年 显示月天，非当年 显示年月日；
+                content: lastType === 1 ? '[图片]' : lastContent, // 最后发送内容 ,type =0 文本 type=1图片
+            };
+            return nItem;
+        });
+        this.contactList = contactList;
+        this.$apply();
     }
 }
 </script>
