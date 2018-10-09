@@ -4,6 +4,7 @@
 
 
 var $errorPop = $('div.tips-error');
+var skuRemoved = [];
 var Page = {
   ppu: '',
   id: '',
@@ -130,24 +131,28 @@ var Page = {
       }
     });
     $(".add-size").on("click", function () {
-      var insertContent = `<div class="size-info-wrapper">
-        <div class="size-info"><div class="info-line">
-        <span>规格名称</span>
-        <input type="text" value="" placeholder="例/大份">
-          </div>
-          <div class="info-line">
-            <span>价格</span>
-            <input type="text" value="" placeholder="请输入"><span>件</span>
-          </div>
-          <div class="info-line">
-            <span>库存</span>
-            <input type="text" value="" placeholder="请输入"><span>件</span>
-          </div>
-        </div>
-        <div class="delete"></div>
-      </div>`;
+      var insertContent = '<div class="size-info-wrapper">' +
+        '<div class="size-info"><div class="info-line">' +
+        '<span>规格名称</span>' +
+        '<input type="text" class="size-name" value="" placeholder="例/大份">' +
+        '</div>' +
+        '<div class="info-line">' +
+        '<span>价格</span>' +
+        '<input type="text" class="size-price" value="" placeholder="请输入"><span>元</span>' +
+        '</div>' +
+        '<div class="info-line">' +
+        '<span>库存</span>' +
+        '<input type="text" class="size-stock" value="" placeholder="请输入"><span>件</span>' +
+        '</div>' +
+        '</div>' +
+        '<div class="delete"></div>' +
+        '</div>';
       $(insertContent).insertBefore($(this));
-    })
+      $(".size-info-wrapper .delete").on("click", function () {
+        $(this).parent().remove();
+      })
+    });
+
     // 上传头图
     $('#item-file-btn').on('change', function () {
       var self = this,
@@ -202,11 +207,12 @@ var Page = {
       var group = Page.group,
         title = $('._title').val().trim(),
         description = $('.zeditor-content').html(),
-        stock = $('._source').val(),
-        price = $('.item-input._author').val(),
+        stock = $('._source').val() || 0,
+        price = $('.item-input._author').val() || 0,
         temp = $('.zeditor-content').find('p'),
         content = $('.zeditor-content').html(),
-        pics = $('#cover').attr('src') ? $('#cover').attr('src').split('.cn')[1].replace(/([/])\1+/g, '$1') : '';
+        pics = $('#cover').attr('src') ? $('#cover').attr('src').split('.cn')[1].replace(/([/])\1+/g, '$1') : '',
+        sku = [];
       if (Number(price) > 999999) {
         Page.toast($errorPop, '商品价格不能大于99999');
         return;
@@ -219,11 +225,15 @@ var Page = {
         Page.toast($errorPop, '请填写商品标题');
         return;
       }
+      if ($('input[name=size]:checked').val() == 'multi' && $(".size-info-wrapper").length < 1) {
+        Page.toast($errorPop, '请添加规格');
+        return;
+      }
       if (!pics) {
         Page.toast($errorPop, '请上传商品头图');
         return;
       }
-      if (!Page.group) {
+      if (!Page.group || Page.group == 'undefined') {
         Page.toast($errorPop, '请选择所属分组');
         return;
       }
@@ -239,7 +249,36 @@ var Page = {
         Page.toast($errorPop, '商品内容不得大于20000个字符');
         return;
       }
-
+      if ($('input[name=size]:checked').val() == 'multi') {
+        $(".size-info-wrapper").forEach(function (item) {
+          var skuObj = {
+            id: $(item).attr("id"),
+            price: $(item).find(".size-price").val(),
+            skuName: $(item).find(".size-name").val(),
+            stock: $(item).find(".size-stock").val()
+          }
+          sku.push(skuObj);
+          skuRemoved.forEach(function (item) {
+            $.ajax({
+              url: '/goods/sku/del',
+              type: 'POST',
+              data: {
+                id: item
+              },
+              headers: {
+                'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
+                PPU: Page.ppu || 'wanghongyue',
+                reqfrom: 'biz_assistant'
+              },
+              success: function success(res) {
+                console.log(res);
+              }
+            })
+          })
+        })
+      } else {
+        sku = null;
+      }
       var url = "";
       if (Page.id && Page.id != 'undefined') {
         url = '/goods/modify';
@@ -256,10 +295,15 @@ var Page = {
         test: Page.test || '',
         mpId: Page.mpId
       };
-
-      if (Page.id) {
+      console.log(data);
+      if (Page.id && Page.id != 'undefined') {
         Object.assign(data, {
           goodId: Page.id
+        });
+      }
+      if ($('input[name=size]:checked').val() == 'multi') {
+        Object.assign(data, {
+          skuParams: JSON.stringify(sku),
         });
       }
       $.ajax({
@@ -287,40 +331,40 @@ var Page = {
       });
     });
     $('._sure-create').on('click', function () {
-        var name = $('.dialog-content-input').val();
-        if (!name) {
-            Page.toast($errorPop, '请输入分组名称！', true);
-            return;
+      var name = $('.dialog-content-input').val();
+      if (!name) {
+        Page.toast($errorPop, '请输入分组名称！', true);
+        return;
+      }
+      if (name.length > 15) {
+        Page.toast($errorPop, '分组名称不得超过15个字！', true);
+        return;
+      }
+      $.ajax({
+        url: '/goods/addGroup',
+        data: {
+          name: name,
+          test: Page.test,
+          mpId: Page.mpId
+        },
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
+          PPU: Page.ppu || 'wanghongyue',
+          reqfrom: 'biz_assistant'
+        },
+        success: function success(res) {
+          var res = JSON.parse(res);
+          if (res.state == 100) {
+            $('.mask,.group-dialog').removeClass('none');
+            // location.reload();
+            Page.getGroup();
+          } else {
+            Page.toast($errorPop, res.msg);
+          }
         }
-        if (name.length > 15) {
-            Page.toast($errorPop, '分组名称不得超过15个字！', true);
-            return;
-        }
-        $.ajax({
-            url: '/goods/addGroup',
-            data: {
-                name: name,
-                test: Page.test,
-                mpId:Page.mpId
-            },
-            headers: {
-                'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-                PPU: Page.ppu || 'wanghongyue',
-                reqfrom: 'biz_assistant'
-            },
-            success: function success(res) {
-                var res = JSON.parse(res);
-                if (res.state == 100) {
-                    $('.mask,.group-dialog').removeClass('none');
-                    // location.reload();
-                    Page.getGroup();
-                } else {
-                    Page.toast($errorPop, res.msg);
-                }
-            }
-        });
-        $('.mask,.dialog-create-group').addClass('none');
-        $('.dialog-content-input').val('');
+      });
+      $('.mask,.dialog-create-group').addClass('none');
+      $('.dialog-content-input').val('');
     });
     $('._cancel-btn').on('click', function () {
       $('.mask,._dialog,.dialog-create-group').addClass('none');
@@ -339,29 +383,30 @@ var Page = {
       $('.dialog-create-group').removeClass('none');
     });
     $('.group-dialog-list').attr('cursor', 'pointer').on('touchstart', '.group-dialog-item', function () {
-        var flag = $(this).hasClass('selected');
-        if (!flag) {
-            var name = $(this).data('name'),
-                group = $(this).data('id');
-            $(this).addClass('selected').siblings('.group-dialog-item').removeClass('selected');
-            $('._chose-btn').data('name', name).data('group', group);
-        } else {
-            $(this).removeClass('selected');
-        }
+      var flag = $(this).hasClass('selected');
+      if (!flag) {
+        var name = $(this).data('name'),
+          group = $(this).data('id');
+        Page.group = group;
+        $(this).addClass('selected').siblings('.group-dialog-item').removeClass('selected');
+        $('._chose-btn').data('name', name).data('group', group);
+      } else {
+        $(this).removeClass('selected');
+      }
     });
     $('._chose-btn').on('click', function () {
-        var name = $(this).data('name'),
-            group = $(this).data('group');
-        if (!name) {
-            Page.toast($errorPop, '请选择商品分组！');
-            return;
-        }
-        $('.item-chose').text(name);
-        Page.name = name;
-        Page.group = group;
-        $('.mask,.group-dialog').addClass('none');
-        $(this).data(name, '');
-        $(this).data(group, '');
+      var name = $(this).data('name'),
+        group = $(this).data('group');
+      if (!name) {
+        Page.toast($errorPop, '请选择商品分组！');
+        return;
+      }
+      $('.item-chose').text(name);
+      Page.name = name;
+      Page.group = group;
+      $('.mask,.group-dialog').addClass('none');
+      $(this).data(name, '');
+      $(this).data(group, '');
     });
   },
   getGroup: function getGroup() {
@@ -381,17 +426,48 @@ var Page = {
         console.log(res);
         $('.group-dialog-list').html('');
         if (res.state == 100) {
-            var data = res.data,
-                html = '';
-            for (var i = 0; i < data.length; i++) {
-                html += '<div class="group-dialog-item" data-id="' + data[i].data.id + '" data-name="' + data[i].data.name + '">' + data[i].data.name + '</div>';
+          var data = res.data,
+            html = '';
+          for (var i = 0; i < data.length; i++) {
+            if (Page.group && Page.group == data[i].data.id) {
+              $('.item-chose').text(data[i].data.name);
             }
-            $('.group-dialog-list').html(html);
+            html += '<div class="group-dialog-item" data-id="' + data[i].data.id + '" data-name="' + data[i].data.name + '">' + data[i].data.name + '</div>';
+          }
+          $('.group-dialog-list').html(html);
         } else {
-            Page.toast($errorPop, res.msg);
+          Page.toast($errorPop, res.msg);
         }
       }
     });
+  },
+  sizeWrap: function (sku) {
+    var html = '';
+    sku.forEach(function (item) {
+      html += '<div class="size-info-wrapper" id="' + item.id + '">' +
+        '<div class="size-info">' +
+        '<div class="info-line">' +
+        '<span>规格名称</span>' +
+        '<input type="text" class="size-name" value="' + item.skuName + '">' +
+        '</div>' +
+        '<div class="info-line">' +
+        '<span>价格</span>' +
+        '<input type="text" class="size-price" value="' + item.price + '">' +
+        '</div>' +
+        '<div class="info-line">' +
+        '<span>库存</span>' +
+        '<input type="text" class="size-stock" value="' + item.stock + '">' +
+        '</div>' +
+        '</div>' +
+        '<div class="delete"></div>' +
+        '</div>'
+    })
+    $(html).insertAfter($("#size-text"));
+    $(".size-info-wrapper .delete").on("click", function () {
+      console.log($(this).parent().attr("id"));
+      skuRemoved.push($(this).parent().attr("id"))
+      $(this).parent().remove();
+    })
   },
   loadGoodData: function loadGoodData() {
     $.ajax({
@@ -409,6 +485,16 @@ var Page = {
         var res = JSON.parse(res);
         console.log(res);
         $('.group-dialog-list').html('');
+        if (res.data.sku && res.data.sku.length > 0) {
+          Page.sizeWrap(res.data.sku);
+          $("#radio-1").attr('checked', 'checked');
+          $(".item-flex-s").show();
+          $(".item-price").hide();
+        } else {
+          $("#radio-2").attr('checked', 'checked');
+          $(".item-flex-s").hide();
+          $(".item-price").show();
+        }
         if (res.state == 100) {
           $('._title').val(res.data.title);
           window.editor.appendFromParent(res.data.description);
