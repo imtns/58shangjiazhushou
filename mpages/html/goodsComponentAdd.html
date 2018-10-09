@@ -129,7 +129,7 @@
                    name="size"
                    type="radio"
                    value="multi"
-                   checked>
+                   >
             <label for="radio-1"
                    class="radio-label">多规格</label>
           </div>
@@ -138,15 +138,15 @@
             <input id="radio-2"
                    name="size"
                    value="single"
-                   type="radio">
+                   type="radio" checked>
             <label for="radio-2"
                    class="radio-label">单规格</label>
           </div>
         </div>
       </div>
-      <div class="item-flex-s size">
-        <div class="item-text full required">商品规格</div>
-        <div class="size-info-wrapper">
+      <div class="item-flex-s size" style="display:none;">
+        <div class="item-text full required" id="size-text">商品规格</div>
+        <!-- <div class="size-info-wrapper">
           <div class="size-info">
             <div class="info-line">
               <span>规格名称</span>
@@ -165,27 +165,7 @@
             </div>
           </div>
           <div class="delete"></div>
-        </div>
-        <div class="size-info-wrapper">
-          <div class="size-info">
-            <div class="info-line">
-              <span>规格名称</span>
-              <input type="text"
-                     value="热辣辣大份">
-            </div>
-            <div class="info-line">
-              <span>价格</span>
-              <input type="text"
-                     value="热辣辣大份"><span>元</span>
-            </div>
-            <div class="info-line">
-              <span>库存</span>
-              <input type="text"
-                     value="热辣辣大份"><span>件</span>
-            </div>
-          </div>
-          <div class="delete"></div>
-        </div>
+        </div> -->
         <div class="item-text add-size">+增加商品规格</div>
       </div>
       <div class="item-flex item-price">
