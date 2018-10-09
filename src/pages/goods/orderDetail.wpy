@@ -1,8 +1,14 @@
 <template>
     <view class="container">
         <view class="status">
-            <view class="status-title">{{ statusDesc[order.status][0] }}</view>
-            <view class="status-subtitle">{{ statusDesc[order.status][1] }}</view>
+            <block wx:if="{{ order.status === 10 && order.applyStatus !== 0 }}">
+                <view class="status-title">退款中</view>
+                <view class="status-subtitle">您已申请平台介入</view>
+            </block>
+            <block wx:else>
+                <view class="status-title">{{ statusDesc[order.status][0] }}</view>
+                <view class="status-subtitle">{{ statusDesc[order.status][1] }}</view>
+            </block>
         </view>
         <view class="order-info">
             <view class="user-info">
@@ -99,7 +105,7 @@
                     @tap="handleStartDeliver"
                     >开始配送</button>
             </block>
-            <block wx:elif="{{ order.status === 10 }}">
+            <block wx:elif="{{ order.status === 10 && order.applyStatus === 0 }}">
                 <button
                     class="button"
                     @tap="handlePlatformIn"

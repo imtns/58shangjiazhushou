@@ -85,7 +85,7 @@
 
 <script>
 import wepy from 'wepy';
-import { alert, toast } from '../../utils';
+import { alert } from '../../utils';
 import { post, get } from '../../utils/ajax';
 import { LOAD_BUSINESS_SETTING, SAVE_BUSINESS_SETTING } from '../../utils/url';
 import * as globalService from '../../utils/globalService';
