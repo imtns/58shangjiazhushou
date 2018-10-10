@@ -60,21 +60,19 @@ export const alert = (content, title, callBack) => {
 };
 
 // alert的Promise版本
-export const alertP = (...props) => {
-    const [content, title = '注意'] = props;
-    return new Promise((resolve, reject) => {
-        wx.showModal({
-            title,
-            content,
-            success(res) {
-                resolve(res);
-            },
-            fail(err) {
-                reject(err);
-            },
-        });
+export const alertP = (content, title = '注意', extraCfg) => new Promise((resolve, reject) => {
+    wx.showModal({
+        title,
+        content,
+        success(res) {
+            resolve(res);
+        },
+        fail(err) {
+            reject(err);
+        },
+        ...extraCfg,
     });
-};
+});
 
 // toast
 export const toast = (title, duration = 1500) => wepy.showToast({

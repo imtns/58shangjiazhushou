@@ -123,7 +123,7 @@
 <script>
 import wepy from 'wepy';
 
-import { alert } from '../../utils';
+import { alert, alertP } from '../../utils';
 import * as globalService from '../../utils/globalService';
 import { get, post } from '../../utils/ajax';
 import {
@@ -151,6 +151,7 @@ export default class extends wepy.page {
     onLoad() {
         mpId = wepy.getStorageSync('current_mpid');
         this.loadData();
+        this.checkBusinessInfo();
     }
     onShow() {
         if (globalService.get('refresh')) {
@@ -301,6 +302,31 @@ export default class extends wepy.page {
 
         this.groupList = groupList;
         this.$apply();
+    }
+
+    async checkBusinessInfo() {
+        try {
+            const businessInfoCheck = wepy.getStorageSync('businessInfoCheck');
+
+            // pm说了，不管用户填没填，进来都提示一次，然后缓存在storage里
+            if (businessInfoCheck) {
+                return;
+            }
+            wepy.setStorageSync('businessInfoCheck', true);
+
+            const confirm = await alertP('您还没有完善营业信息，完善后用户才能收到你呢商品', '提示', {
+                confirmText: '去完善',
+                confirmColor: '#4E88FF',
+            });
+
+            if (!confirm) {
+                return;
+            }
+
+            wepy.navigateTo({ url: '/pages/app/businessInfo' });
+        } catch (err) {
+            console.log(err);
+        }
     }
 }
 </script>
