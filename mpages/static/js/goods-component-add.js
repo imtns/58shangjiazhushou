@@ -249,6 +249,16 @@ var Page = {
         Page.toast($errorPop, '商品内容不得大于20000个字符');
         return;
       }
+      var check = false;
+      $(".size-info-wrapper").forEach(function (item) {
+        if ($(item).find(".size-price").val() == '' || $(item).find(".size-name").val() == '' || $(item).find(".size-stock").val() == '') {
+          check = true;
+        }
+      })
+      if (check) {
+        Page.toast($errorPop, '库存内容不能为空');
+        return;
+      }
       if ($('input[name=size]:checked').val() == 'multi') {
         $(".size-info-wrapper").forEach(function (item) {
           var skuObj = {
