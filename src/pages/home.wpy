@@ -8,7 +8,7 @@
         <view class="index-loaded-header">
             <view class="welcome-block">
                 <view class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
-                <view @tap="changeIdentity" wx:if="{{business.mpCount >= 2}}" class="item-switch">账号切换</view>
+                <view @tap="changeIdentity" class="item-switch">账号切换</view>
             </view>
             <view class="item-detail">
                 <view class="item-name" :class="{logoPadding : business.mpCount > 0 }">{{ business.miniProgramName }}</view>
@@ -21,7 +21,7 @@
                         style="width:{{ 30 * (~~(business.selected.score / 1)) + 22 * (business.selected.score % 1) }}rpx">
                             <view class="icon-star" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
                         </view>      
-                        <navigator class="star-box-title" url="/pages/shopScore" @tap="shopScore">店铺评分</navigator>
+                        <view class="star-box-title" @tap="shopScore">店铺评分</view>
                     </view>
                     <view wx:else>可上传素材、提交注册信息到当前小程序</view>
                 </view>
@@ -69,15 +69,15 @@
                 <view class="confirm" :class="{ 'active' : business.canConfirm}" bindtap="confirmAction">确定</view>
             </view>
         </view>
-        <view wx:if="{{!assistAuth && showModal}}">
+        <view wx:if="{{!assistAuth && showModal && storageShowmodal}}">
             <view class="showModal_mask" bindtap="hideModal"></view>
             <view class="showModal_modal auth_modal">
                 <view class="showModal_text">各位老板，您需要<text>授权</text>后商家助手才能给您提供更好的服务哦</view>
-                <button class="showModal_btn" open-type="getUserInfo" @tap="loadSession">去授权</button>
+                <button class="showModal_btn" open-type="getUserInfo" bindgetuserinfo="loadSession">去授权</button>
                 <button class="showModal_cancle" bindtap="hideModal"></button>
             </view>
         </view>
-        <view wx:if="{{assistAuth && !isFollow && showModal}}">
+        <view wx:if="{{assistAuth && !isFollow && showModal && storageShowmodal}}">
             <view class="showModal_mask" bindtap="hideModal"></view>
             <view class="showModal_modal follow_modal">
                 <view class="showModal_text">各位老板，您<text>关注公众号</text>后商家助手才能及时给您通知订单消息哦</view>
@@ -108,7 +108,9 @@ import { getUid, SendClickLog } from '../utils/maidian';
 
 import { CHAT_LOGIN, MY_MPLIST, SESSION, INSERT_SESSION, GET_EXT_JSON, GET_ASSIST_AUTH } from '../utils/url';
 
-// import { sdkLogin, onMsgNotify } from '../utils/IM/IM';
+import { sdkLogin, onMsgNotify, sdkLogout } from '../utils/IM/IM';
+
+import { chatContactList } from '../store/index';
 
 export default class Home extends wepy.page {
     mixins = [Mixin]
@@ -125,6 +127,7 @@ export default class Home extends wepy.page {
         showModal: false, // 是否授权或者关注弹框
         showIdentity: false, // 是否显示切换账号弹框
         height: '',
+        storageShowmodal: false,
         business: {
             mps: [],
             name: '您的姓名',
@@ -156,10 +159,6 @@ export default class Home extends wepy.page {
                     url: 'feedback',
                 });
             } else if (text === '购买小程序') {
-                // 购买小程序页面
-                // wepy.navigateTo({
-                //     url: 'purchase',
-                // });
                 SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_buy_app');
                 this.buyMiniProgram();
             } else {
@@ -168,6 +167,9 @@ export default class Home extends wepy.page {
         },
         shopScore() {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_shopScore');
+            wepy.navigateTo({
+                url: '/pages/shopScore',
+            });
         },
         progressText() {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_progressText');
@@ -255,12 +257,6 @@ export default class Home extends wepy.page {
                     chosedId: 0,
                     canConfirm: false,
                 });
-                // this.business.mps.map((appinfo, index) => {
-                //     if (appinfo.id === this.business.selected.id) {
-                //         this.business.mps.splice(index, 1);
-                //     }
-                //     return '';
-                // });
             }
             this.$apply();
         },
@@ -319,13 +315,23 @@ export default class Home extends wepy.page {
         },
         hideModal() {
             this.showModal = false;
+            wepy.setStorageSync('showmodal', false);
+            this.storageShowmodal = wepy.getStorageSync('showmodal');
+            this.$apply();
         },
     }
     async onLoad () {
         await this.loadData();
+        // 聊天登录，监控未读消息
+        const { token } = globalData.chat;
+        if (!token) {
+            this.chatLogin();
+        }
         // globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
         this.setGlobalMpId(this.business.selected.id);
         this.loadExtJson();
+        wepy.setStorageSync('showmodal', true);
+        this.storageShowmodal = wepy.getStorageSync('showmodal');
         if (!this.isFollow && wepy.getStorageSync('ppu')) {
             this.showModal = true;
         }
@@ -336,11 +342,6 @@ export default class Home extends wepy.page {
         this.loadCode();
         this.getInfo();
         await this.getAssistAuth();
-        // 聊天登录，监控未读消息
-        const { isLoagin } = globalData.chat;
-        if (!isLoagin) {
-            this.chatLogin();
-        }
         if (!this.isFollow && wepy.getStorageSync('ppu')) {
             this.showModal = true;
             this.$apply();
@@ -391,23 +392,30 @@ export default class Home extends wepy.page {
         }
     }
     // 获取授权数据
-    async loadSession() {
-        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_follow');
+    async loadSession(e) {
+        console.log(e.detail);
         const that = this;
-        try {
-            const { data } = await get(SESSION, { code: that.code });
-            const { sessionKey } = data;
-            const { state, msg } = await get(INSERT_SESSION, { encryptedData: that.encryptedData, iv: that.iv, session: sessionKey });
-            if (state === 100) {
-                wx.navigateTo({
-                    url: '/pages/followPublic',
-                });
+        if (e.detail.errMsg === 'getUserInfo:ok') {
+            const { iv, encryptedData } = e.detail;
+            that.iv = iv;
+            that.encryptedData = encryptedData;
+            that.$apply();
+            try {
+                const { data } = await get(SESSION, { code: that.code });
+                const { sessionKey } = data;
+                const { state, msg } = await get(INSERT_SESSION, { encryptedData: that.encryptedData, iv: that.iv, session: sessionKey });
+                if (state === 100) {
+                    that.getAssistAuth();
+                }
+                if (state === 0) {
+                    alert(msg);
+                }
+            } catch (error) {
+                console.log(error);
             }
-            if (state === 0) {
-                alert(msg);
-            }
-        } catch (e) {
-            console.log(e);
+        } else {
+            console.log(e.detail.errMsg);
+            alert('由于您拒绝了授权，后续功能不能使用。');
         }
     }
     loadCode() {
@@ -463,6 +471,7 @@ export default class Home extends wepy.page {
                 nexttask = '',
                 score,
                 cardId = '',
+                productType,
             } = data;
             const formatedMpinfo = this.formatedMp(mpinfo);
             this.business = Object.assign({}, this.business, {
@@ -470,6 +479,7 @@ export default class Home extends wepy.page {
                 miniProgramName: mpinfo.nickName || '您还没购买小程序',
                 unread,
                 unreadOrder,
+                productType,
                 mpCount: count,
                 selected: {
                     ...formatedMpinfo,
@@ -480,7 +490,8 @@ export default class Home extends wepy.page {
             // wepy在链式更改属性时，在手机预览会出现不生效的情况。
             this.setData({
                 'status.loading': false,
-            })
+            });
+            wepy.setStorageSync('current_cardId', cardId);
             nexttask && this.setNextTask(nexttask);
             this.$apply();
             if (unreadOrder) { // 未读订单tab
@@ -488,17 +499,19 @@ export default class Home extends wepy.page {
                     index: 2,
                     text: unreadOrder.toString(),
                 });
+            } else {
+                wx.removeTabBarBadge({
+                    index: 2,
+                });
             }
         } catch (e) {
             console.log('e', e);
         }
     }
     setGlobalMpId (id) {
-        const { cardId = '' } = this.business.selected;
         if (id) {
             wepy.setStorageSync('current_mpid', id);
         }
-        wepy.setStorageSync('current_cardId', cardId);
     }
     checkBeforeJump (text) {
         if (!this.business.mpCount) {
@@ -508,6 +521,10 @@ export default class Home extends wepy.page {
         switch (text) {
             case '名片管理':
                 SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_myBizCard');
+                if (this.business.productType !== '20001') {
+                    alert('您暂无权限使用该功能', '提示');
+                    return;
+                }
                 wepy.navigateTo({
                     url: 'myBizCard',
                 });
@@ -520,6 +537,10 @@ export default class Home extends wepy.page {
                 break;
             case '访客记录':
                 SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_visitorLogs');
+                if (this.business.productType !== '20001') {
+                    alert('您暂无权限使用该功能', '提示');
+                    return;
+                }
                 wepy.navigateTo({
                     url: 'visitorLogs',
                 });
@@ -681,6 +702,18 @@ export default class Home extends wepy.page {
     // chatLogin 聊天登录
     async chatLogin() {
         try {
+            // 清空全局的聊天数据
+            const chat = {
+                unReadCount: 0, // 未读消息总数
+                token: '', // 消息相关接口必传字段
+                nickName: '',
+                headImg: '',
+                currentContactId: '',
+                myId: '', // 当前登录者id
+                contactList: [],
+            };
+            Object.assign(globalData.chat, chat);
+
             const { cardId = '' } = this.business.selected;
             if (!cardId) return;
             /**
@@ -717,26 +750,26 @@ export default class Home extends wepy.page {
             });
             await chatContactList();
             // IM 登录，获取实时消息
-            // this.initIM(tim);
+            this.initIM(tim);
         } catch (e) {
             console.log(e);
         }
     }
 
-    // initIM(tim) {
-    //     console.log('initIM');
-    //     // 当前用户身份
-    //     const loginInfo = {
-    //         accountType: 37611,
-    //     };
-    //     Object.assign(loginInfo, tim);
-    //     console.log(loginInfo);
-    //     // listeners
-    //     const listeners = {
-    //         onMsgNotify: onMsgNotify, // 监听新消息
-    //     };
-    //     sdkLogin(loginInfo, listeners, {});
-    // }
+    initIM(tim) {
+        console.log('initIM');
+        // 当前用户身份
+        const loginInfo = {
+            accountType: 37611,
+        };
+        Object.assign(loginInfo, tim);
+        console.log(loginInfo);
+        // listeners
+        const listeners = {
+            onMsgNotify: onMsgNotify, // 监听新消息
+        };
+        sdkLogin(loginInfo, listeners, {});
+    }
 }
 </script>
 

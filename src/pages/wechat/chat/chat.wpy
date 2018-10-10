@@ -2,6 +2,7 @@
     <view class="chat-container">
         <scroll-view
             class="chat-zone"
+            id="chat-zone"
             scroll-y="{{true}}"
             upper-threshold="300"
             @scrolltoupper="loadMore"
@@ -23,7 +24,7 @@
                     <image class="chat-msg-avatar" src="{{item.senderPortrait}}" bindtap="toDetail" data-item="{{item}}"></image>
                     <view class="chat-msg-content" wx:if="{{item.type === '0' || item.type === 0}}">{{item.content}}</view>
                     <view class="chat-img-box" wx:else>
-                        <image class="chat-msg-img" src="https://pic1.58cdn.com.cn{{item.content}}" bindtap="previewImage" data-url="{{item.content}}"></image>
+                        <image class="chat-msg-img" mode="aspectFill" src="https://pic1.58cdn.com.cn{{item.content}}" bindtap="previewImage" data-url="{{item.content}}"></image>
                         <view class="chat-img-mask" wx:if="{{item.status === 1}}">{{progress}}%</view>
                     </view>
                 </view>
@@ -73,12 +74,14 @@
 import wepy from 'wepy';
 
 import { globalData } from '../../../utils/globalData';
-// import { pubsub } from '../../../utils/IM/pubsub';
+import { pubsub } from '../../../utils/IM/pubsub';
 import '../../../utils/date';
 import { toast, withHttp } from '../../../utils';
 import { uploader } from '../../../utils/uploader';
 
-import { post } from '../../../utils/ajax';
+import { post, get } from '../../../utils/ajax';
+
+import { getUid, SendClickLog } from '../../../utils/maidian';
 import { MSG_LIST, SEND_MSG } from '../../../utils/url';
 import { msgType } from '../../../utils/msg/msgType';
 
@@ -99,6 +102,7 @@ export default class Chat extends wepy.page {
         progress: 0,
         myId: '',
         toView: '',
+        viewPortHeight: '',
     }
     onLoad(options) {
         const { token, myId } = globalData.chat;
@@ -110,6 +114,7 @@ export default class Chat extends wepy.page {
         });
 
         globalData.chat.currentContactId = contact;
+        const that = this;
 
         this.contact = contact;
         this.nickName = nickName;
@@ -118,10 +123,30 @@ export default class Chat extends wepy.page {
         this.$apply();
         this.loadData();
         this.newMsgs();
+        wx.createSelectorQuery().select('#chat-zone').boundingClientRect((res) => {
+            that.viewPortHeight = res.height;
+            that.$apply();
+        }).exec();
     }
-    onUnload() {
-        // 取消订阅
-        pubsub.unsubscribe(msgListToken);
+    async onUnload() {
+        try {
+            // 取消订阅
+            pubsub.unsubscribe(msgListToken);
+            globalData.chat.currentContactId = '';
+            msgListToken = '';
+            // 更改未读消息状态为已读
+            const {
+                contact,
+                token,
+            } = this;
+            await get(MSG_LIST, {
+                contact,
+                token,
+                from: 1, // 更改未读消息状态为已读
+            });
+        } catch (e) {
+            console.log(e);
+        }
     }
     showpanel() {
         this.showpanel = true;
@@ -132,12 +157,14 @@ export default class Chat extends wepy.page {
         this.$apply();
     }
     input(e) {
+        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_input');
         this.content = e.detail.value;
         this.canIsend = this.content.trim().length > 0;
         this.$apply();
     }
     // 拍照、上传图片
     async upload(target) {
+        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_upload');
         this.showpanel = false;
         this.$apply();
         try {
@@ -153,8 +180,10 @@ export default class Chat extends wepy.page {
                 senderPortrait: headImg,
             };
             const { tempFilePaths } = await wepy.chooseImage({
+                count: 1,
                 sourceType: [type],
             });
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_chooseImage');
             this.msgList.push(Object.assign(msg, {
                 sendTime: new Date().format('hh:mm'),
                 portrait: globalData.chat.headImg,
@@ -186,6 +215,7 @@ export default class Chat extends wepy.page {
         }
     }
     async sendMsg(target) {
+        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_sendMsg');
         try {
             const type = target.currentTarget ? target.currentTarget.dataset.type : 'IMAGE';
             const content = type === 'TEXT' ? this.content.trim() : target;
@@ -259,27 +289,41 @@ export default class Chat extends wepy.page {
     }
     newMsgs() {
         const { contact } = this;
+        const that = this;
         // 订阅当前联系人的未读消息
         msgListToken = pubsub.subscribe(contact, (...props) => {
             const newMsgs = props[0];
-            console.log(newMsgs);
+            // console.log(newMsgs);
             [newMsgs].forEach((msg) => {
                 this.msgList.push(msg);
+                // this.toView = `toview-${this.msgList.length - 1}`;
                 this.$apply();
+                const query = wx.createSelectorQuery().select('#chat-zone');
+                query.scrollOffset((res) => {
+                    const { viewPortHeight } = that;
+                    if ((res.scrollTop - viewPortHeight) > 400) {
+                        that.toView = `toview-${that.msgList.length - 1}`;
+                        that.$apply();
+                    }
+                }).exec();
             });
         });
     }
     toDetail(e) {
         // 点击头像
-        const { senderId, id, senderConsumerId } = e.currentTarget.dataset.item;
+        const { senderId, senderConsumerId } = e.currentTarget.dataset.item;
+        console.log(e.currentTarget.dataset.item);
         const { myId } = this.data;
         let url = '';
         if (senderId === myId) {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_business_toDetail');
             // 当前商家,进商家名片页面
             url = '/pages/myBizCard';
         } else {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_consumer_toDetail');
+            const cardId = wepy.getStorageSync('current_cardId');
             // 用户的，进访客详情页面
-            url = `/pages/visitorInfo?cardId=${id}&consumerId=${senderConsumerId}`;
+            url = `/pages/visitorInfo?cardId=${cardId}&consumerId=${senderConsumerId}`;
         }
 
         wepy.navigateTo({
@@ -365,7 +409,6 @@ page{
             }
             .chat-img-box,.chat-msg-img{
                 width:400rpx;
-                height:300rpx;
                 border-radius:0 20rpx 20rpx 20rpx;
                 float:left;
             }
@@ -388,6 +431,10 @@ page{
                 color: #FFFFFF;
             }
             &.chat-right .chat-img-box{
+                border-radius:20rpx 0 20rpx 20rpx;
+                float:right;
+            }
+            &.chat-right .chat-img-box .chat-msg-img{
                 border-radius:20rpx 0 20rpx 20rpx;
                 float:right;
             }

@@ -6,8 +6,8 @@ export default {
     async DoLogin(extraData) {
         const extraDataJSON = (typeof extraData === 'object') ? { ...extraData } : JSON.parse(extraData);
         if (extraDataJSON.ppu !== undefined) { // 如果获取ppu成功
-            // console.log(`获取PPU成功！ ${extraDataJSON.ppu}`);
-            // wepy.setStorageSync('ppu', extraDataJSON.ppu);
+            console.log(`获取PPU成功！ ${extraDataJSON.ppu}`);
+            wepy.setStorageSync('ppu', extraDataJSON.ppu);
             // wepy.setClipboardData({
             //     data: extraDataJSON.ppu,
             // });
@@ -15,9 +15,16 @@ export default {
             const { toRedirect, ParamNames = '' } = query;
             if (query && JSON.stringify() !== '{}' && !ParamNames) { // 如果从公众号进来的消息
                 await sleep();
-                wepy.redirectTo({
-                    url: toRedirect,
-                });
+                if (toRedirect === '/pages/chatMessages') {
+                    // 跳转到消息列表页
+                    wepy.switchTab({
+                        url: toRedirect,
+                    });
+                } else {
+                    wepy.navigateTo({
+                        url: toRedirect,
+                    });
+                }
                 wx.removeStorageSync('query');
                 return;
             }
@@ -33,7 +40,7 @@ export default {
                     });
                 }
                 await sleep();
-                wepy.redirectTo({
+                wepy.navigateTo({
                     url: `${toRedirect}?${paramsStr.substring(1)}`,
                 });
                 wx.removeStorageSync('query');

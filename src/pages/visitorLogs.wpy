@@ -5,8 +5,8 @@
             <repeat for="{{visitorList}}" key="index" index="index" item="item">
                 <view class="visitor_box" @tap="toVisitorInfo({{item.cardId}}, {{item.consumerId}})">
                     <view class="visitor_header" style="background:url({{item.portrait}}) no-repeat center"></view>
-                    <view class="visitor_name">{{item.nickName}}</view>
-                    <view class="{{item.gender == 1 ? 'male' : 'female'}}"></view>
+                    <view class="visitor_name">{{item.nickName || ''}}</view>
+                    <view wx:if="{{item.gender}}" class="{{item.gender == 1 ? 'male' : 'female'}}"></view>
                     <view class="visitor_count">
                         访问您的名片
                         <text class="visitor_num">{{item.visitCount}}</text> 
@@ -28,6 +28,7 @@
 import wepy from 'wepy';
 import { CONSUMER_RECORDS } from '../utils/url';
 import { post } from '../utils/ajax';
+import { alert } from '../utils';
 import { getUid, SendClickLog } from '../utils/maidian';
 
 export default class visitorLogs extends wepy.page {
@@ -36,6 +37,9 @@ export default class visitorLogs extends wepy.page {
     }
     data = {
         visitorList: [],
+        pageSize: 12,
+        pageNum: 1,
+        allowLoadMore: true,
     }
     methods = {
         toVisitorInfo(cardId, consumerId) {
@@ -46,24 +50,47 @@ export default class visitorLogs extends wepy.page {
         },
     }
     onLoad () {
-        console.log('onload');
+        this.loadData();
     }
-    async onShow () {
+    onShow () {
+        console.log('onshow');
+    }
+    onReachBottom() {
+        console.log('onReachBottom');
+        this.loadData();
+    }
+    async loadData() {
         const currentMpid = wepy.getStorageSync('current_mpid');
-        if (!currentMpid) {
+        console.log('this.allowLoadMore', this.allowLoadMore);
+        if (!currentMpid || !this.allowLoadMore) {
             return;
         }
-        const visitorList = await post(CONSUMER_RECORDS, {
-            mpId: currentMpid,
-        });
-        this.visitorList = visitorList.data.map((item) => {
-            const visitor = item;
-            const info = JSON.parse(item.otherInfos);
-            visitor.gender = info.gender;
-            return visitor;
-        });
-        this.$apply();
-        console.log('onshow');
+        try {
+            const visitorList = await post(CONSUMER_RECORDS, {
+                mpId: currentMpid,
+                pageNum: this.pageNum,
+                pageSize: this.pageSize,
+            });
+            const formatedList = visitorList.data.map((item) => {
+                const visitor = item;
+                let info = '';
+                if (item.otherInfos) {
+                    info = JSON.parse(item.otherInfos) || '';
+                }
+                visitor.gender = info.gender || '';
+                return visitor;
+            });
+            if (this.pageSize === formatedList.length) {
+                this.pageNum = this.pageNum + 1;
+            } else {
+                this.allowLoadMore = false;
+            }
+            this.visitorList = this.visitorList.concat(formatedList);
+            this.$apply();
+            console.log('onshow');
+        } catch (e) {
+            alert(e);
+        }
     }
 }
 </script>
