@@ -30,13 +30,33 @@
                         class="goods-item"
                         :class="{ 'is-editing': isEditing }"
                         wx:for="{{ goodsList }}"
-                        wx:key="id">
+                        wx:key="id"
+                        @tap="handleSelectGoods({{ item.id }})">
                         <view
                             class="icon-checkbox"
                             :class="{ 'selected': selectedGoods[item.id] }">
                         </view>
-                        <navigator class="goods-box"
-                            @tap="handleSelectGoods({{ item.id }})"
+                        <view
+                            class="goods-box"
+                            wx:if="{{ isEditing }}">
+                            <image
+                                class="goods-img"
+                                mode="aspectFill"
+                                src="{{ item.pics + '?w=86' }}"/>
+                            <view class="goods-info">
+                                <view class="title">{{ item.title }}</view>
+                                <view class="goods-data">
+                                    <view>销量{{ item.salesVolume || 0 }}</view>
+                                    <view>库存{{ item.stock }}</view>
+                                </view>
+                                <view class="price">
+                                    ￥<text class="bold">{{ item.price }}</text>
+                                </view>
+                            </view>
+                        </view>
+                        <navigator
+                            class="goods-box"
+                            wx:else
                             url="/pages/goodsComponentDetail?id={{item.id}}&group={{groupList[curGroupIndex].data.id}}&name={{item.title}}">
                             <image
                                 class="goods-img"
