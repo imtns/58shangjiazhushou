@@ -334,7 +334,7 @@ export default class extends wepy.page {
             }
             wepy.setStorageSync('businessInfoCheck', true);
 
-            const { confirm } = await alertP('您还没有完善营业信息，完善后用户才能收到你呢商品', '提示', {
+            const { confirm } = await alertP('您还没有完善营业信息，完善后用户才能收到你的商品', '提示', {
                 confirmText: '去完善',
                 confirmColor: '#4E88FF',
             });
@@ -453,6 +453,10 @@ export default class extends wepy.page {
                     color: #999;
                     font-size: 22rpx;
                     line-height: 30rpx;
+
+                    view {
+                        margin-right: 10rpx;
+                    }
                 }
 
                 .price {

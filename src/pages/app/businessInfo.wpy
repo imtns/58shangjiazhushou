@@ -114,22 +114,32 @@ export default class AppEdit extends wepy.page {
             distributionScope: {
                 max: 15,
                 maxError: '配送范围不能大于15公里',
+                min: 0,
+                minError: '配送范围不能小于0公里',
             },
             distributionFee: {
                 max: 50,
                 maxError: '配送费不能大于50元',
+                min: 0,
+                minError: '配送费不能小于0元',
             },
             packingFee: {
                 max: 10,
                 maxError: '包装费不能大于10元',
+                min: 0,
+                minError: '包装费不能小于0元',
             },
             avgTime: {
                 max: 120,
                 maxError: '平均配送时长不能大于120分钟',
+                min: 0,
+                minError: '平均配送时长不能小于0分钟',
             },
             minFee: {
                 max: 100,
                 maxError: '起送费不能大于100元',
+                min: 0,
+                minError: '起送费不能小于0元',
             },
         },
     }
@@ -217,8 +227,12 @@ export default class AppEdit extends wepy.page {
                 return;
             }
 
-            if (+value > valid[key].max) {
+            if (valid[key].max !== undefined && +value > valid[key].max) {
                 result = { result: false, msg: valid[key].maxError };
+            }
+
+            if (valid[key].min !== undefined && +value < valid[key].min) {
+                result = { result: false, msg: valid[key].minError };
             }
         });
 
