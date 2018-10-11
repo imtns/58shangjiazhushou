@@ -1,7 +1,6 @@
 <script>
 import wepy from 'wepy';
 import 'wepy-async-function';
-// import { alert } from './utils';
 import DoMiniProgramBack from './utils/scene';
 
 // 回调小程序类型
@@ -21,6 +20,8 @@ export default class extends wepy.app {
     config = {
         pages: [
             'pages/home',
+            'pages/app/pickBusinessHour',
+
             'pages/edit/textEdit',
             // 登陆之后的主页
             'pages/templateList',
@@ -53,9 +54,12 @@ export default class extends wepy.app {
             'pages/send', // 测试授权页面专用，勿删
             'pages/progress', // 完成度页面
             'pages/AppEdit', // 小程序编辑
+            'pages/app/businessInfo', // 营业信息编辑
             'pages/buy', // 购买页面
             'pages/index',
+            'pages/noticeSet', // 消息通知设置页面
             'pages/noticeList', // 消息通知页面
+            'pages/sysNoticeList', // 系统通知页面
             'pages/registed', // 当前小程序已注册
             'pages/registMainAccount', // 主体账户信息
             'pages/registManage', // 管理员信息
@@ -70,10 +74,14 @@ export default class extends wepy.app {
             'pages/accountNoticeList', // 入账提醒页面
             'pages/OrderList', // 订单列表
             'pages/OrderDetail', // 订单详情
+
             'pages/goodsComponentlist', // 商品列表
             'pages/goodsComponentGroup', // 商品分组
             'pages/goodsComponentAdd', // 商品添加
             'pages/goodsComponentDetail', // 商品详情
+            'pages/goodsComponent/publish', // 商品发布
+            'pages/goods/orderDetail', // 商品订单
+
             'pages/articleComponentCreate', // 文章添加(不选分组)
             'pages/articleComponentAdd', // 文章添加(选分组)
             'pages/articleComponentlist', // 文章列表
@@ -98,6 +106,17 @@ export default class extends wepy.app {
             'pages/cropper', // 图片裁剪
             'pages/orderDetailSelector', // 服务详情-服务详情编辑
             'pages/shopScore', // 店铺评分
+
+            'pages/wechat/chat/chat', // 聊天
+            'pages/chatMessages', // 消息tab 消息列表
+
+            'pages/visitorLogs', // 访客记录页面
+            'pages/visitorInfo', // 访客信息页面
+            'pages/myBizCard', // 我的名片页面
+            'pages/myBizCardSave', // 我的名片保存页面
+            'pages/articleComponentGroup', // 文章分组页面
+            'pages/newBizCard', // 新建名片页面
+            'pages/choseStyle', // 名片样式选择
         ],
         window: {
             backgroundTextStyle: 'light',
@@ -105,30 +124,49 @@ export default class extends wepy.app {
             navigationBarTitleText: 'WeChat',
             navigationBarTextStyle: 'black',
         },
+        tabBar: {
+            selectedColor: '#4E88FF',
+            list: [{
+                pagePath: 'pages/home',
+                text: '店铺',
+                iconPath: 'pages/assets/tabbar/tabbar_shop.png',
+                selectedIconPath: 'pages/assets/tabbar/tabbar_shop_selected.png',
+            }, {
+                pagePath: 'pages/chatMessages',
+                text: '消息',
+                iconPath: 'pages/assets/tabbar/tabbar_message.png',
+                selectedIconPath: 'pages/assets/tabbar/tabbar_message_selected.png',
+            }, {
+                pagePath: 'pages/OrderList',
+                text: '订单',
+                iconPath: 'pages/assets/tabbar/tabbar_order.png',
+                selectedIconPath: 'pages/assets/tabbar/tabbar_order_selected.png',
+            }],
+        },
     }
     onLaunch () {
         console.log('onlaunch');
-        // wx.setStorageSync('ppu', 'UID=31755938744583&UN=huhy02&TT=b28ea41cef5861bea9331750993644a4&PBODY=LIbxOLdwSBO_HZKchfZw3KFwFO23PWqIZlLGC5vqitqpLHds2HIOidPNM_mUQoZ72mrX21sc7fBe40HW4lggeyKEa1RJn_ehL_yUTs4QPg7U5_Qwe0spRo8447xAWSwgXW4-wuTKyvDp51fpw9LXqkrTcDPrz3EGrGGkU9-JIWQ&VER=1');
-        // wx.setStorageSync(
-        //     'ppu', // yxd 线上商家小程序
+        // wx.setStorageSync('ppu', 'UID=46160601&UN=myfdandelion&TT=2cc059576024b34ae24276be041993a3&PBODY=irL0-ueyvMZaDnImIvgXh7jP8CAZ4roIjlbunUutrSWR4OZl8vfxUqGLzIku1MyJ9UQapLsDiXfJcy30tdSevaeq4UvhVSI8ZCoO-vjtkRYgcwW1R28vG_r3_XEIVhPYWiLXfHc28cdRZteQbRbPTxf_VcSEZgZD2SPjLkfV2Zk&VER=1'); // myf
+        // wx.setStorageSync('ppu', 'UID=48917864286479&UN=zf3e85&TT=2de55ae4fc4dae0bf0fd4d689c34643e&PBODY=jAPyieEpdos8gNyqMqUTG1ieqh6ekU4Hvf2TSVrNbplU07D8ciX7rVDk-3LD_vJvQv07Wel1_uizTmoW8_vaR5alMpPFXRues2ISmGX5bFeS6SJxvxqRMX6IF3RNV8KGa12VWDnqcPvo6XSmklphaH8TxO4Cjft-HcCwqfdXwG4&VER=1'); // lqq 测试
+        // wx.setStorageSync( // yxd 正式环境
+        //     'ppu',
         //     'UID=47350441209367&UN=%E8%A2%81%E7%AD%B1%E4%B8%B90803&TT=b1ce9a3bf0dbe2fda2da594405532c38&PBODY=BPap2Dvi_m5L2imfEcj-FU_MDPTuQq26GBasfK-ItJHahjEy_bWyGsg39BqTSmck89_XCeUyHZ8sXnIN2FhO8hTveC4zvNGzJB_Z9MHGxAlCjSgUHCw3cMoMVxMfvj_bVe0PbGyyS2Q5EaUt--KqqpHJv569rteEzsnBFGtf3xI&VER=1',
         // );
+        // 学强的ppu
+        // wx.setStorageSync('ppu', 'UID=33433383496455&UN=ydvzv_p7&TT=7f6196408107d1efae4b46f4176a5922&PBODY=M_5BTzt29G2FRuEF1AgmnH4wteNcXaRX4PzJKOGipizKV2fazyLpD6Tj-cYXUmzCF0iXDDscuHy_oOvBg8D2iv1mU1TEAFXmsIZiDxLVZnKREZ4n4qe6Gi_mxyC9MXCKvLaLIgvldvXN8vojQLwo8nLmf2yHAL4Z0I0YssJVOQg&VER=1');
+        // wx.setStorageSync('ppu', 'UID=48738323270929&UN=h34xb9&TT=790cd18a7dc07c6c47dd4430561ebe49&PBODY=KxccExLLZL2FwQdhfyCRtfhIXBEY44p0bw8ZrBCn4RtLTpTZh6m_7mdLWlcUP2VkbFI2QrpmszFtZgkuYfta9nFLRbfx1svpxcb0IiDzLQREz_2Z6XwZ5VROQg6X5mFYtIEqmdphcP3q6No3bGp65lRg-TGePKaYq0-BGoov3Lc&VER=1');
     }
     onShow (options) {
         // 赋值场景值、referrer信息
         const {
             scene, referrerInfo = {}, path,
         } = options;
-        // console.log(options.query);
         const { appId } = referrerInfo;
         const fromAppId = appId;
         // action:通过fromAppId和scene返回当前小程序处理
         console.log('referrerInfo', referrerInfo);
-        console.log(scene);
         console.log(path);
-        console.log(options.query);
         // const path = '/pages/home?toRedirect=/pages/OrderDetail&ParamNames=orderId&ParamValues=123456';
-        // console.log(valueArr);
         let action = scene === 1038 || scene === '1038' ? CALLBACKAPPS[fromAppId] : '';
 
         // 1037进入 从别的小程序进入
@@ -142,13 +180,21 @@ export default class extends wepy.app {
             const { query } = options;
             const { toRedirect } = query;
             wepy.setStorageSync('query', query);
-            console.log(wepy.getStorageSync('query'));
             if (wepy.getStorageSync('ppu') && !query.ParamNames) {
-                setTimeout(() => {
-                    wepy.redirectTo({
-                        url: toRedirect,
-                    });
-                }, 1000);
+                if (toRedirect === '/pages/chatMessages') {
+                    // 跳转到消息列表页
+                    setTimeout(() => {
+                        wepy.switchTab({
+                            url: toRedirect,
+                        });
+                    }, 1000);
+                } else {
+                    setTimeout(() => {
+                        wepy.navigateTo({
+                            url: toRedirect,
+                        });
+                    }, 1000);
+                }
             }
             if (wepy.getStorageSync('ppu') && query.ParamNames) {
                 let paramsStr = '';
@@ -161,10 +207,8 @@ export default class extends wepy.app {
                         paramsStr += `&${keyArr[index]}=${valueArr[index]}`;
                     });
                 }
-                console.log(`${toRedirect}?${paramsStr.substring(1)}`);
                 setTimeout(() => {
-                    wepy.redirectTo({
-                        // url: toRedirectArr[0] + '?' + paramsStr.split('&')[1],
+                    wepy.navigateTo({
                         url: `${toRedirect}?${paramsStr.substring(1)}`,
                     });
                 }, 1000);
@@ -176,24 +220,23 @@ export default class extends wepy.app {
 }
 </script>
 
-<style lang="scss">   
-@import "css/common.scss"; 
-@import "components/mod/information/information.wxss"; 
+<style lang="scss">
+@import "css/common.scss";
+@import "components/mod/information/information.wxss";
 @import "components/mod/imageSwiper/imageSwiper.wxss";
 @import "components/mod/images/images.wxss";
 @import "components/mod/me/me.wxss";
 @import "components/mod/goods/goods.wxss";
-@import "components/mod/text/text.wxss";   
-@import "components/mod/title/title.wxss";   
-@import "components/mod/video/video.wxss";   
+@import "components/mod/text/text.wxss";
+@import "components/mod/title/title.wxss";
+@import "components/mod/video/video.wxss";
 @import "components/mod/call/call.wxss";
-@import "components/mod/services/services.wxss"; 
+@import "components/mod/services/services.wxss";
 @import "components/mod/article/article.wxss";
-@import "components/mod/evaluation/evaluation.wxss"; 
-@import "components/mod/reserve/reserve.wxss";  
-@import "components/mod/coupon/coupon.wxss";    
-@import "components/mod/pay/pay.wxss";   
-@import "components/mod/branch/branch.wxss";   
+@import "components/mod/evaluation/evaluation.wxss";
+@import "components/mod/reserve/reserve.wxss";
+@import "components/mod/coupon/coupon.wxss";
+@import "components/mod/pay/pay.wxss";
+@import "components/mod/branch/branch.wxss";
 @import "components/mod/tabBar/tabBar.wxss";
 </style>
-      

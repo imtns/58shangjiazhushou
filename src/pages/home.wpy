@@ -8,7 +8,7 @@
         <view class="index-loaded-header">
             <view class="welcome-block">
                 <view class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
-                <navigator url="noticeList" :class="{'new-msg': business.unread}" class="msg-box'"></navigator>
+                <view @tap="changeIdentity" class="item-switch">账号切换</view>
             </view>
             <view class="item-detail">
                 <view class="item-name" :class="{logoPadding : business.mpCount > 0 }">{{ business.miniProgramName }}</view>
@@ -20,25 +20,26 @@
                         <view class="star-list"
                         style="width:{{ 30 * (~~(business.selected.score / 1)) + 22 * (business.selected.score % 1) }}rpx">
                             <view class="icon-star" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
-                        </view>
-                        <navigator class="star-box-title" url="/pages/shopScore">店铺评分</navigator>
+                        </view>      
+                        <view class="star-box-title" @tap="shopScore">店铺评分</view>
                     </view>
                     <view wx:else>可上传素材、提交注册信息到当前小程序</view>
                 </view>
-                <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">切换</view>
+                <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">小程序切换</view>
                 <image  class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
                 <view class="index-block-body index-item">
-                    <view class="index-loaded-item" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
+                    <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
                         <image src="{{item.iconPath}}" class="item-img"></image>
                         <view class="item-text">{{item.text}}</view>
                     </view>
                 </view>
                 <view bindtap="checkProgress" class="item-detail-progress">
                     <view class="current-progress"></view>
-                    <view class="remind-title">{{ business.progressText}}</view>
+                    <view class="remind-title" @tap="progressText">{{ business.progressText}}</view>
                 </view>
             </view>
         </view>
+        <official-account></official-account>
         <view class="index-block"  wx:for="{{nItems}}" wx:for-item="nItem"  wx:key="{{nItem.title}}">
             <view class="index-block-title">{{nItem.title}}</view>
             <view class="index-block-body">
@@ -68,16 +69,27 @@
                 <view class="confirm" :class="{ 'active' : business.canConfirm}" bindtap="confirmAction">确定</view>
             </view>
         </view>
-        <view wx:if="{{!isFollow && showModal}}">
+        <view wx:if="{{!assistAuth && showModal && storageShowmodal}}">
             <view class="showModal_mask" bindtap="hideModal"></view>
-            <view class="showModal_modal">
-                <view class="showModal_title">提示</view>
-                <view class="showModal_text">关注公众号接收订单通知</view>
-                <view class="showModal_btns">
-                    <button class="showModal_btn" bindtap="hideModal">取消</button>
-                    <navigator class="showModal_btn red_text" wx:if="{{assistAuth}}" url="/pages/followPublic">马上关注</navigator>
-                    <button class="showModal_btn red_text" wx:elif="{{!assistAuth}}" open-type="getUserInfo" @tap="loadSession()">马上关注</button>
-                </view>
+            <view class="showModal_modal auth_modal">
+                <view class="showModal_text">各位老板，您需要<text>授权</text>后商家助手才能给您提供更好的服务哦</view>
+                <button class="showModal_btn" open-type="getUserInfo" bindgetuserinfo="loadSession">去授权</button>
+                <button class="showModal_cancle" bindtap="hideModal"></button>
+            </view>
+        </view>
+        <view wx:if="{{assistAuth && !isFollow && showModal && storageShowmodal}}">
+            <view class="showModal_mask" bindtap="hideModal"></view>
+            <view class="showModal_modal follow_modal">
+                <view class="showModal_text">各位老板，您<text>关注公众号</text>后商家助手才能及时给您通知订单消息哦</view>
+                <navigator class="showModal_btn" url="/pages/followPublic">去关注</navigator>
+                <button class="showModal_cancle" bindtap="hideModal"></button>
+            </view>
+        </view>
+        <view wx:if="{{showIdentity}}">
+            <view class="showModal_mask" bindtap="hideModal"></view>
+            <view class="showIdentity_modal">
+                <view class="switch_btn" @tap="switchIdentity">切换账号</view>
+                <view class="show_cancle" @tap="hideIdentityModal">取消</view>
             </view>
         </view>
     </scroll-view>
@@ -86,10 +98,19 @@
 <script>
 import wepy from 'wepy';
 import Mixin from '../mixin';
+
+import { items, nItems } from '../utils/homeList';
+
 import { alert } from '../utils';
 import { post, get } from '../utils/ajax';
-import { globalData } from '../utils/globalData';
+import { globalData, setTabBar } from '../utils/globalData';
 import { getUid, SendClickLog } from '../utils/maidian';
+
+import { CHAT_LOGIN, MY_MPLIST, SESSION, INSERT_SESSION, GET_EXT_JSON, GET_ASSIST_AUTH } from '../utils/url';
+
+import { sdkLogin, onMsgNotify, sdkLogout } from '../utils/IM/IM';
+
+import { chatContactList } from '../store/index';
 
 export default class Home extends wepy.page {
     mixins = [Mixin]
@@ -103,13 +124,16 @@ export default class Home extends wepy.page {
         session: '',
         isFollow: false, // 是否关注公众号
         assistAuth: false, // 是否授权
-        showModal: false, // 是否显示弹框
+        showModal: false, // 是否授权或者关注弹框
+        showIdentity: false, // 是否显示切换账号弹框
         height: '',
+        storageShowmodal: false,
         business: {
             mps: [],
             name: '您的姓名',
             miniProgramName: '您还没购买小程序',
             unread: 0,
+            unreadOrder: 0,
             mpCount: 0,
             progressText: '您还没有购买小程序',
             nexttask: 0,
@@ -124,65 +148,8 @@ export default class Home extends wepy.page {
         status: {
             loading: true,
         },
-        items: [
-            {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-my-mp.png',
-                text: '我的小程序',
-            }, {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-order-manage.png',
-                text: '订单管理',
-            }, {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-payment-record.png',
-                text: '收款记录',
-            }, {
-                iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-payment.png',
-                text: '支付开通',
-            },
-        ],
-        nItems: [
-            {
-                title: '店铺运营',
-                items: [
-                    {
-                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-store-fit.png',
-                        text: '店铺装修',
-                    }, {
-                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-order-service.png',
-                        text: '发布服务',
-                    }, {
-                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-coupon.png',
-                        text: '优惠劵',
-                    },
-                    {
-                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-goods.png',
-                        text: '发布商品',
-                    },
-                    {
-                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-resorce-manage.png',
-                        text: '素材管理',
-                    },
-                ],
-            },
-            {
-                title: '开店必做',
-                items: [
-                    {
-                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-buy-mp.png',
-                        text: '购买小程序',
-                    },
-                    {
-                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-regist-mp.png',
-                        text: '注册小程序',
-                    }, {
-                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-mp-progress.png',
-                        text: '进度查询',
-                    }, {
-                        iconPath: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/icon-feedback-mp.png',
-                        text: '意见反馈',
-                    },
-                ],
-            },
-        ],
+        items,
+        nItems,
     }
     methods = {
         link(text) {
@@ -192,17 +159,22 @@ export default class Home extends wepy.page {
                     url: 'feedback',
                 });
             } else if (text === '购买小程序') {
-                // 购买小程序页面
-                // wepy.navigateTo({
-                //     url: 'purchase',
-                // });
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_buy_app');
                 this.buyMiniProgram();
             } else {
                 this.checkBeforeJump(text);
             }
         },
+        shopScore() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_shopScore');
+            wepy.navigateTo({
+                url: '/pages/shopScore',
+            });
+        },
+        progressText() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_progressText');
+        },
         checkProgress () {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_home_buy_app');
             if (!this.business.mpCount) {
                 alert('您还未购买小程序，请登录e.58.com进行购买', '提示');
                 return;
@@ -267,11 +239,11 @@ export default class Home extends wepy.page {
             this.$apply();
         },
         async changeAction () {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_home_switch_app');
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_switch_app');
             this.business = Object.assign({}, this.business, {
                 changeMP: true,
             });
-            const { data } = await post('/mplogic/mymplist');
+            const { data } = await post(MY_MPLIST);
             const { mpinfos } = data;
             this.business = Object.assign({}, this.business, {
                 mps: mpinfos,
@@ -285,12 +257,6 @@ export default class Home extends wepy.page {
                     chosedId: 0,
                     canConfirm: false,
                 });
-                // this.business.mps.map((appinfo, index) => {
-                //     if (appinfo.id === this.business.selected.id) {
-                //         this.business.mps.splice(index, 1);
-                //     }
-                //     return '';
-                // });
             }
             this.$apply();
         },
@@ -306,41 +272,84 @@ export default class Home extends wepy.page {
                 chosedId: item.id,
                 canConfirm: true,
             });
-            // console.log('点击', this.business);
+            this.$apply();
+        },
+        changeIdentity() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_switch_Identity');
+            this.showIdentity = true;
+            this.$apply();
+        },
+        // 切换账号
+        switchIdentity() {
+            this.showIdentity = false;
+            this.$apply();
+            wepy.clearStorageSync();
+            wepy.navigateTo({
+                url: 'intro',
+            });
+        },
+        hideIdentityModal() {
+            this.showIdentity = false;
             this.$apply();
         },
         // 切换小程序操作
-        confirmAction () {
+        async confirmAction () {
+            // 切换小程序，登出IM
+            const { cardId = '' } = this.business.selected;
+            if (cardId) {
+                sdkLogout(() => {
+                    console.log('logout success');
+                }, () => {
+                    console.log('logout error');
+                });
+            }
+
             if (this.business.selected.id) {
-                this.setGlobalMpId(this.business.chosedId);
-                this.loadData();
-                this.loadExtJson();
-                this.hideMask();
+                await this.setGlobalMpId(this.business.chosedId);
+                await this.loadData();
+                await this.loadExtJson();
+                await this.hideMask();
+                // 切换小程序，重新登录IM
+                await this.chatLogin();
             }
         },
         hideModal() {
             this.showModal = false;
+            wepy.setStorageSync('showmodal', false);
+            this.storageShowmodal = wepy.getStorageSync('showmodal');
+            this.$apply();
         },
     }
     async onLoad () {
-        // globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
         await this.loadData();
+        // 聊天登录，监控未读消息
+        const { token } = globalData.chat;
+        if (!token) {
+            this.chatLogin();
+        }
+        // globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
         this.setGlobalMpId(this.business.selected.id);
         this.loadExtJson();
-    }
-    async onShow () {
-        await this.loadData();
-        await this.getAssistAuth();
-        await this.loadCode();
-        await this.getInfo();
+        wepy.setStorageSync('showmodal', true);
+        this.storageShowmodal = wepy.getStorageSync('showmodal');
         if (!this.isFollow && wepy.getStorageSync('ppu')) {
             this.showModal = true;
         }
         this.$apply();
     }
+    async onShow () {
+        await this.loadData();
+        this.loadCode();
+        this.getInfo();
+        await this.getAssistAuth();
+        if (!this.isFollow && wepy.getStorageSync('ppu')) {
+            this.showModal = true;
+            this.$apply();
+        }
+    }
     formatedMp (item) {
         const mp = item;
-        if (mp.headImg && mp.headImg.indexOf('http') === -1) {
+        if (mp && mp.headImg && mp.headImg.indexOf('http') === -1) {
             mp.headImg = `https://pic1.58cdn.com.cn${mp.headImg}`;
         }
         return mp;
@@ -367,61 +376,66 @@ export default class Home extends wepy.page {
     async getAssistAuth() {
         const that = this;
         try {
-            const { data } = await get('/wechat/bizAssistAuth/get');
-            const { isFollow, assistInfo } = data;
-            if (!isFollow && assistInfo === null) {
-                // 既没有授权也没有关注公众号
-                that.assistAuth = false;
-                that.$apply();
-            } else if (!isFollow && JSON.stringify(assistInfo) !== '{}') {
-                // 已授权但没有关注公众号
+            const { data } = await get(GET_ASSIST_AUTH);
+            const { isFollow, assistInfo = null } = data;
+            // 9.13 王研需求修改
+            if (assistInfo && assistInfo.wechatUnionId) { // 是否授权
                 that.assistAuth = true;
-                that.$apply();
+            } else {
+                that.assistAuth = false;
             }
             that.isFollow = isFollow;
+            that.showModal = true;
             that.$apply();
         } catch (e) {
             console.log(e);
         }
     }
     // 获取授权数据
-    async loadSession() {
-        try {
-            const { data } = await get('/wechat/bizAssistAuth/session', { code: this.code });
-            const { sessionKey } = data;
-            const { state, msg } = await get('/wechat/bizAssistAuth/insert', { encryptedData: this.encryptedData, iv: this.iv, session: sessionKey });
-            if (state === 100) {
-                wx.navigateTo({
-                    url: '/pages/followPublic',
-                });
+    async loadSession(e) {
+        console.log(e.detail);
+        const that = this;
+        if (e.detail.errMsg === 'getUserInfo:ok') {
+            const { iv, encryptedData } = e.detail;
+            that.iv = iv;
+            that.encryptedData = encryptedData;
+            that.$apply();
+            try {
+                const { data } = await get(SESSION, { code: that.code });
+                const { sessionKey } = data;
+                const { state, msg } = await get(INSERT_SESSION, { encryptedData: that.encryptedData, iv: that.iv, session: sessionKey });
+                if (state === 100) {
+                    that.getAssistAuth();
+                }
+                if (state === 0) {
+                    alert(msg);
+                }
+            } catch (error) {
+                console.log(error);
             }
-            if (state === 0) {
-                alert(msg);
-            }
-        } catch (e) {
-            console.log(e);
+        } else {
+            console.log(e.detail.errMsg);
+            alert('由于您拒绝了授权，后续功能不能使用。');
         }
     }
-    async loadCode() {
+    loadCode() {
         const that = this;
         wx.login({
-            success(res) {
+            success: (res) => {
                 if (res.code) {
-                    console.log(res.code);
                     that.code = res.code;
                     // 查看是否授权
                 } else {
-                    console.log('denglishiba');
+                    console.log('获取code失败');
                 }
             },
         });
     }
-    async getInfo() {
+    getInfo() {
         const that = this;
         // 已经授权，可以调用getuseinfo获取头像昵称
         wx.getUserInfo({
             success: (res) => {
-                console.log(res);
                 const { iv, encryptedData } = res;
                 that.iv = iv;
                 that.encryptedData = encryptedData;
@@ -438,8 +452,7 @@ export default class Home extends wepy.page {
     }
     // 获取当前小程序的extjson
     async loadExtJson() {
-        const url = '/mpBusinessRelease/getExtJson';
-        const { data } = await get(url, { sceneKey: wx.getStorageSync('current_mpid') });
+        const { data } = await get(GET_EXT_JSON, { sceneKey: wx.getStorageSync('current_mpid') });
         globalData.extConfig = data;
     }
     async loadData () {
@@ -451,26 +464,45 @@ export default class Home extends wepy.page {
             const {
                 username = '',
                 mpinfo = {},
-                unread = '',
+                unread = 0,
+                unreadOrder = 0,
                 count = 0,
                 nexttask = '',
                 score,
+                cardId = '',
+                productType,
             } = data;
             const formatedMpinfo = this.formatedMp(mpinfo);
             this.business = Object.assign({}, this.business, {
                 name: username,
                 miniProgramName: mpinfo.nickName || '您还没购买小程序',
                 unread,
+                unreadOrder,
+                productType,
                 mpCount: count,
                 selected: {
                     ...formatedMpinfo,
                     score,
+                    cardId,
                 },
             });
-            this.status.loading = false;
+            // wepy在链式更改属性时，在手机预览会出现不生效的情况。
+            this.setData({
+                'status.loading': false,
+            });
+            wepy.setStorageSync('current_cardId', cardId);
             nexttask && this.setNextTask(nexttask);
-            // console.log('this.business', this.business);
             this.$apply();
+            if (unreadOrder) { // 未读订单tab
+                wx.setTabBarBadge({
+                    index: 2,
+                    text: unreadOrder.toString(),
+                });
+            } else {
+                wx.removeTabBarBadge({
+                    index: 2,
+                });
+            }
         } catch (e) {
             console.log('e', e);
         }
@@ -486,60 +518,109 @@ export default class Home extends wepy.page {
             return;
         }
         switch (text) {
-            case '我的小程序':
+            case '名片管理':
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_myBizCard');
+                if (this.business.productType !== '20001') {
+                    alert('您暂无权限使用该功能', '提示');
+                    return;
+                }
                 wepy.navigateTo({
-                    url: 'myMp',
+                    url: 'myBizCard',
                 });
                 break;
-            case '订单管理':
+            case '通知':
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_noticeList');
                 wepy.navigateTo({
-                    url: 'OrderList',
+                    url: 'noticeList',
+                });
+                break;
+            case '访客记录':
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_visitorLogs');
+                if (this.business.productType !== '20001') {
+                    alert('您暂无权限使用该功能', '提示');
+                    return;
+                }
+                wepy.navigateTo({
+                    url: 'visitorLogs',
                 });
                 break;
             case '收款记录':
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_paymentRecord');
                 wepy.navigateTo({
                     url: 'paymentRecord',
                 });
                 break;
-            case '支付开通':
+            case '我的小程序':
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_myMp');
                 wepy.navigateTo({
-                    url: 'OpenPay',
+                    url: 'myMp',
                 });
                 break;
-            case '店铺装修':
+            case '小程序制作':
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_myMp_make');
+                if (this.business.selected.app_type === 3) {
+                    alert('请升级到优享或企业小程序后使用', '提示');
+                    return;
+                }
                 wepy.navigateTo({
                     url: 'templateList',
                 });
                 break;
-            case '发布商品':
-                wepy.navigateTo({
-                    url: 'goodsComponentGroup',
-                });
-                break;
-            case '发布服务':
-                wepy.navigateTo({
-                    url: 'orderComponentGroup',
-                });
-                break;
-            case '优惠劵':
-                wepy.navigateTo({
-                    url: 'couponManage',
-                });
-                break;
             case '素材管理':
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_resourceManage');
+                if (this.business.selected.app_type === 3) {
+                    alert('请升级到优享或企业小程序后使用', '提示');
+                    return;
+                }
                 wepy.navigateTo({
                     url: 'resourceManage',
                 });
                 break;
+            case '支付开通':
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_OpenPay');
+                wepy.navigateTo({
+                    url: 'OpenPay',
+                });
+                break;
+            case '服务':
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_orderComponentGroup');
+                wepy.navigateTo({
+                    url: 'orderComponentGroup',
+                });
+                break;
+            case '商品':
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_goodsComponentGroup');
+                wepy.navigateTo({
+                    url: '/pages/goodsComponent/publish',
+                });
+                break;
+            case '文章':
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_articleComponentGroup');
+                wepy.navigateTo({
+                    url: 'articleComponentGroup',
+                });
+                break;
+            case '优惠劵':
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_couponManage');
+                wepy.navigateTo({
+                    url: 'couponManage',
+                });
+                break;
             case '购买小程序':
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_noticeList');
                 // wepy.navigateTo({
                 //     url: 'purchase',
                 // });
                 this.buyMiniProgram();
                 break;
             case '注册小程序':
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_myMp_registed');
                 if (this.business.selected.app_type === 1) {
                     alert('当前小程序为优享小程序，不用提交注册信息', '提示');
+                    return;
+                }
+                if (this.business.selected.app_type === 3) {
+                    alert('请升级到优享或企业小程序后使用', '提示');
                     return;
                 }
                 if (this.business.selected.sign === 1) {
@@ -554,11 +635,13 @@ export default class Home extends wepy.page {
                 }
                 break;
             case '进度查询':
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_progress');
                 wepy.navigateTo({
                     url: 'progress',
                 });
                 break;
             case '意见反馈':
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_feedback');
                 wepy.navigateTo({
                     url: 'feedback',
                 });
@@ -614,6 +697,78 @@ export default class Home extends wepy.page {
         }
         this.$apply();
     }
+
+    // chatLogin 聊天登录
+    async chatLogin() {
+        try {
+            // 清空全局的聊天数据
+            const chat = {
+                unReadCount: 0, // 未读消息总数
+                token: '', // 消息相关接口必传字段
+                nickName: '',
+                headImg: '',
+                currentContactId: '',
+                myId: '', // 当前登录者id
+                contactList: [],
+            };
+            Object.assign(globalData.chat, chat);
+
+            const { cardId = '' } = this.business.selected;
+            if (!cardId) return;
+            /**
+                tim 包含 sdkAppID identifier userSig
+                myInfo 包含 token nickName headImg
+                unReadCount 未读消息数
+            */
+            const { data } = await get(CHAT_LOGIN, {
+                channel: 1, // channel 身份 1是名片 2是用户
+                userId: cardId, // userId 该身份对应的识别id，商家传cardId(名片Id)
+            });
+
+            const { tim, myInfo, unReadCount = 20 } = data;
+            const { unReadCount: counts } = globalData.chat;
+            const text = counts && counts > 0 ? (counts + Number(unReadCount)) : unReadCount;
+
+            setTabBar(text);
+
+            const {
+                token, nickName, headImg, id,
+            } = myInfo;
+
+            // 设置全局token
+            let tempHeadImg = headImg;
+            if (headImg.indexOf('http') === -1) {
+                tempHeadImg = `https://pic1.58cdn.com.cn${headImg}`;
+            }
+            Object.assign(globalData.chat, {
+                isLogin: true,
+                token,
+                nickName,
+                headImg: tempHeadImg,
+                myId: id,
+            });
+            await chatContactList();
+            // IM 登录，获取实时消息
+            this.initIM(tim);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    initIM(tim) {
+        console.log('initIM');
+        // 当前用户身份
+        const loginInfo = {
+            accountType: 37611,
+        };
+        Object.assign(loginInfo, tim);
+        console.log(loginInfo);
+        // listeners
+        const listeners = {
+            onMsgNotify: onMsgNotify, // 监听新消息
+        };
+        sdkLogin(loginInfo, listeners, {});
+    }
 }
 </script>
 
@@ -634,9 +789,11 @@ scroll-view {
     .mask {
         width: 100%;
         height: 100%;
-        position: absolute;
+        position: fixed;
         background: rgba(0, 0, 0, 0.5);
         top: 0;
+        bottom: 0;
+        z-index:9;
     }
     .mpBox {
         width: 540rpx;
@@ -646,6 +803,7 @@ scroll-view {
         transform: translate3d(-50%, -50%, 0);
         background: white;
         border-radius: 2rpx;
+        z-index: 99;
         .name {
             width: 400rpx;
             white-space: nowrap;
@@ -752,15 +910,28 @@ scroll-view {
                 background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAAfCAYAAAB6Q+RGAAAAAXNSR0IArs4c6QAAAzpJREFUWAnNmMdP1GEQhhcwerDXgyC2owePYoktnowxGmOMsRy88Ccgij0GoxHFFhs2bAcvnvGgwRCMRqKRk11PerImiyD4DJmXfKy7vy2wsJO8mfm+aU8Wthb19PTMicVijagCFaNCsW5AWtHWIiCbCFYVClkSjiaDjJMY5clOfDX64ufhcCUsPYxKfXk8BqTsrwft+GnDQcfeEnTXOfpcCLmD27hnXuGnDiUo+wzwju83V684hJzO5WrU4cmX+ClDAcoeA7zte83tRKU694M0IBJrkEBfEE/OJyjzDfAWktlzwjhSQ3rBWor+eFcbflI+QJlbjG76HnO7tIc4GtJB11Eo0OfEEzVgMDzzDLARyXaHc7lMD+mg6ynu9CnP8BPCQbnGzDHAGz7XXE3iLO4yg3TQDTQI9CnxgEDpN8DrSLYnEdD3Zg7pDRuZ2OVTn+DHJxuc7o4+A7zmc8ztTdVDLjtIB91Eo0BbicelWpDsnnoDvIpk+5LV6Y6i7CGtmcbNSKAtxGM1NMpTZ2+/V5Bsf1S95SjMDdKbtzBAb6GPicdELSRvgA1IdiCqXjmKc4d00EPaiG9GozU89Nwb4GUkaw7zUTENuUPSvAB901b3j/D9QDkb4CXPh84+4aQ1GnKDpLECffeNn/FVSH/6h8S9L/j4kSj8E9dyDh/R2nSU1GcPSdNCFALOtUXcbUcC/Up8H71Dsl4gDvbIXtQl/kgUKPnsIGlYhH4gs0/IvnL0GWd7HU38F7C31Kq+IgLOBnoByY6G+TCmIHNIihcjAX4knh0OU8x9OapG9onmIJqvXOi5N9DzSHYszCsmmRkkhUvQT5/2AT9LQwbimWOg53yuueOJ87hLD0nRUiTA98SDAigY5hnoWSSrU848l9GQFCxDv5CZPQlmhgMGM2b2GVvidlKzOaeGJLkcCfAtcbka8+XZcQrJ6m0Ph+SQJFag315tgDPyBZY4l131vtfcaVSmsxHLthEI8A1xWeKgfJ/ZeUIw+HuKQ8guv3yN1xfzfHP9N5/ddYKTH0FVB7JfMOyXgy7UgFZSgBsWa2NrO5rn2+P2MtDEoZB/C3pgv6JVohbUjQrJjMe4Kv8BnZkdhMJllJAAAAAASUVORK5CYII=);
                 background-size: 100% auto;
             }
-            .msg-box.new-msg::after {
-                width: 20rpx;
-                height: 20rpx;
-                background: red;
-                border-radius: 50%;
-                content: '';
+            .item-switch {
+                font-size: 26rpx;
+                color: #fff;
+                letter-spacing: 0;
+                line-height: 60rpx;
+            }
+            .item-switch {
+                color: #fff;
                 position: absolute;
-                right: -9rpx;
-                top: -8rpx;
+                right: 30rpx;
+                top: 33rpx;
+                &:before{
+                    width:18rpx;
+                    height:17rpx;
+                    content: '';
+                    background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/switchlogin-icon.png) no-repeat;
+                    background-size:100% 100%;
+                    position:absolute;
+                    left:-30rpx;
+                    top:50%;
+                    margin-top:-9rpx;
+                }
             }
         }
         .item-detail {
@@ -791,11 +962,11 @@ scroll-view {
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                width: 560rpx;
+                width: 470rpx;
             }
             .item-title,
             .item-switch {
-                font-size: 28rpx;
+                font-size: 26rpx;
                 color: #999999;
                 letter-spacing: 0;
                 line-height: 60rpx;
@@ -806,15 +977,15 @@ scroll-view {
                 right: 30rpx;
                 top: 30rpx;
                 &:before{
-                    width:18rpx;
-                    height:17rpx;
+                    width:34rpx;
+                    height:34rpx;
                     content: '';
-                    background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/switch-icon.png) no-repeat;
-                    background-size:18rpx 17rpx;
+                    background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/switchmp-icon.png) no-repeat;
+                    background-size:100% 100%;
                     position:absolute;
-                    left:-25rpx;
+                    left:-40rpx;
                     top:50%;
-                    margin-top:-8rpx;
+                    margin-top:-19rpx;
                 }
             }
         }
@@ -894,6 +1065,7 @@ scroll-view {
             width: 156rpx;
             margin-bottom: 70rpx;
             text-align: center;
+            position: relative;
             .item-img {
                 width: 72rpx;
                 height: 72rpx;
@@ -936,6 +1108,34 @@ scroll-view {
         .index-loaded-item {
             width: 156rpx;
             text-align: center;
+            position: relative;
+            &.new-msg::after {
+                display: block;
+                content: '';
+                width: 20rpx;
+                height: 20rpx;
+                background: red;
+                border-radius: 50%;
+                position: absolute;
+                right: 37rpx;
+                top: 0;
+                z-index: 1;
+            }
+            &.new-mingpian::after {
+                font-size: 18rpx;
+                color: #fff;
+                display: block;
+                content: '上新';
+                width: 52rpx;
+                height:30rpx;
+                line-height: 30rpx;
+                background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/shangxin.png) no-repeat;
+                background-size: 100% 100%;
+                position: absolute;
+                right: 13rpx;
+                top: -10rpx;
+                z-index: 1;
+            }
             &.new-margin{
                 margin:30rpx 0 0rpx 15rpx;
             }
@@ -1028,17 +1228,25 @@ scroll-view {
     position:fixed;
     top:0;
     bottom:0;
-    z-index:1;    
+    z-index:1;
  }
  .showModal_modal{
-     width:540rpx;
-     background:white;
-     z-index:2;
-     position:fixed;
-     top:50%;
-     left:50%;
-     transform:translate3d(-50%,-50%,0);
-     text-align:center;    
+    width:576rpx;
+    height: 710rpx;
+    z-index:99;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate3d(-50%,-50%,0);
+    text-align:center;
+ }
+ .auth_modal{
+    background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/auth-pop.png) no-repeat;
+    background-size: 100% 100%;
+ }
+.follow_modal{
+    background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/public-pop.png) no-repeat;
+    background-size: 100% 100%;
  }
  .showModal_title{
      font-size: 36rpx;
@@ -1047,32 +1255,44 @@ scroll-view {
      margin: 60rpx 0 30rpx 0;
  }
  .showModal_text{
-     font-size: 28rpx;
-     color: #666666;
-     padding: 0 62rpx;
-     text-align: center;
-     margin-bottom: 48rpx;
- }
- .showModal_btns{
-     display: flex;
-     border-top: 1rpx solid #F3F3F3;
-     height: 86rpx;
-    line-height: 86rpx;
+     font-size: 30rpx;
+     color: #666;
+     padding: 0 40rpx;
+     margin-top:400rpx;
+     text{
+        color: #4E88FF;
+     }
  }
  .showModal_btn{
-     flex: 1;
-     background: white;
-     padding: 0;
-     border: none;
-     border-radius: 0;
-     font-size: 34rpx;
-     color:#333;
+    font-size: 30rpx;
+    color: #fff;
+    width: 400rpx;
+    height: 90rpx;
+    line-height: 90rpx;
+    background: #4E88FF;
+    margin: 80rpx auto 110rpx;
  }
- .showModal_btn::after{
-     display: none;
+ .showModal_cancle{
+    width: 60rpx;
+    height: 60rpx;
+    background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/close.png) no-repeat;
+    background-size: 100% 100%;
  }
- .red_text{
-    color:#6AA1FF;
-     border-left: 1rpx solid #F3F3F3;
+ .showIdentity_modal{
+    font-size: 32rpx;
+    color:#333;
+    width: 100%;
+    line-height: 100rpx;
+    text-align: center;
+    bottom: 0;
+    position: fixed;
+    z-index: 99;
+ }
+ .switch_btn{
+    background: #fff;
+ }
+ .show_cancle{
+    margin-top: 12rpx;
+    background: #fff;
  }
 </style>

@@ -60,30 +60,26 @@ export const alert = (content, title, callBack) => {
 };
 
 // alert的Promise版本
-export const alertP = (...props) => {
-    const [content, title = '注意'] = props;
-    return new Promise((resolve, reject) => {
-        wx.showModal({
-            title,
-            content,
-            success(res) {
-                resolve(res);
-            },
-            fail(err) {
-                reject(err);
-            },
-        });
+export const alertP = (content, title = '注意', extraCfg) => new Promise((resolve, reject) => {
+    wx.showModal({
+        title,
+        content,
+        success(res) {
+            resolve(res);
+        },
+        fail(err) {
+            reject(err);
+        },
+        ...extraCfg,
     });
-};
+});
 
 // toast
-export const toast = (title, duration = 1500) => {
-    wepy.showToast({
-        title,
-        icon: 'none',
-        duration,
-    });
-};
+export const toast = (title, duration = 1500) => wepy.showToast({
+    title,
+    icon: 'none',
+    duration,
+});
     // 不支持提示
 export const notSupportTips = () => {
     wx.showModal({
@@ -124,4 +120,30 @@ export const filteremoji = (content) => {
     ];
     const emojireg = content.replace(new RegExp(ranges.join('|'), 'g'), '');
     return emojireg;
+};
+
+const formatNumber = (n) => {
+    n = n.toString();
+    return n[1] ? n : `0${n}`;
+};
+
+export const formatTime = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    return [year, month, day].map(formatNumber).join('-');
+};
+
+
+export const withHttp = (list) => {
+    list.forEach((item) => {
+        const ele = item;
+        if (ele.headImg && ele.headImg.indexOf('http') === -1) {
+            ele.headImg = `https://pic1.58cdn.com.cn${headImg}`;
+        } else if (ele.senderPortrait && ele.senderPortrait.indexOf('http') === -1) {
+            ele.senderPortrait = `https://pic1.58cdn.com.cn${ele.senderPortrait}`;
+        }
+    });
+    return list;
 };

@@ -1,0 +1,172 @@
+<template>
+    <view class="visitors">
+        <view class="tips" wx:if="{{visitorList.length > 0}}">以下客户访问过您的名片，可联系他们哦</view>
+        <view class="visitor_content" wx:if="{{visitorList.length > 0}}">
+            <repeat for="{{visitorList}}" key="index" index="index" item="item">
+                <view class="visitor_box" @tap="toVisitorInfo({{item.cardId}}, {{item.consumerId}})">
+                    <view class="visitor_header" style="background:url({{item.portrait}}) no-repeat center"></view>
+                    <view class="visitor_name">{{item.nickName || ''}}</view>
+                    <view wx:if="{{item.gender}}" class="{{item.gender == 1 ? 'male' : 'female'}}"></view>
+                    <view class="visitor_count">
+                        访问您的名片
+                        <text class="visitor_num">{{item.visitCount}}</text> 
+                        次
+                    </view>
+                </view>
+            </repeat>
+        </view>  
+        <view wx:if="{{visitorList.length == 0}}">
+            <view class="empty-wrap">
+                <image class="img-no-data" src="//img.58cdn.com.cn/lbg/jianzhan/images/empty.png"/>
+                <view class="txt-no-data">暂无访客记录</view>
+            </view>
+        </view>  
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { CONSUMER_RECORDS } from '../utils/url';
+import { post } from '../utils/ajax';
+import { alert } from '../utils';
+import { getUid, SendClickLog } from '../utils/maidian';
+
+export default class visitorLogs extends wepy.page {
+    config = {
+        navigationBarTitleText: '访问记录',
+    }
+    data = {
+        visitorList: [],
+        pageSize: 12,
+        pageNum: 1,
+        allowLoadMore: true,
+    }
+    methods = {
+        toVisitorInfo(cardId, consumerId) {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_visitorLogs_toVisitorInfo');
+            wepy.navigateTo({
+                url: `visitorInfo?cardId=${cardId}&consumerId=${consumerId}`,
+            });
+        },
+    }
+    onLoad () {
+        this.loadData();
+    }
+    onShow () {
+        console.log('onshow');
+    }
+    onReachBottom() {
+        console.log('onReachBottom');
+        this.loadData();
+    }
+    async loadData() {
+        const currentMpid = wepy.getStorageSync('current_mpid');
+        console.log('this.allowLoadMore', this.allowLoadMore);
+        if (!currentMpid || !this.allowLoadMore) {
+            return;
+        }
+        try {
+            const visitorList = await post(CONSUMER_RECORDS, {
+                mpId: currentMpid,
+                pageNum: this.pageNum,
+                pageSize: this.pageSize,
+            });
+            const formatedList = visitorList.data.map((item) => {
+                const visitor = item;
+                let info = '';
+                if (item.otherInfos) {
+                    info = JSON.parse(item.otherInfos) || '';
+                }
+                visitor.gender = info.gender || '';
+                return visitor;
+            });
+            if (this.pageSize === formatedList.length) {
+                this.pageNum = this.pageNum + 1;
+            } else {
+                this.allowLoadMore = false;
+            }
+            this.visitorList = this.visitorList.concat(formatedList);
+            this.$apply();
+            console.log('onshow');
+        } catch (e) {
+            alert(e);
+        }
+    }
+}
+</script>
+
+<style lang="scss">
+.visitors{
+    .tips{
+        font-size: 24rpx;
+        color: #D38658;
+        line-height: 56rpx;
+        height: 56rpx;
+        font-size: 24rpx;
+        padding-left: 80rpx;
+        background: #FFF9DF url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_log_tips.png') no-repeat 30rpx 50%;
+        background-size: 40rpx 40rpx;
+    }
+    .visitor_content{
+        background: white;
+        .visitor_box{
+            padding: 37rpx 20rpx;
+            border-bottom: 1rpx solid #F3F3F3;
+            display: flex;
+            .visitor_header{
+                width: 60rpx;
+                height: 60rpx;
+                background-size: contain !important;
+                border-radius: 100%;
+            }
+            .visitor_name{
+                line-height: 60rpx;
+                font-size: 30rpx;
+                color: #333333;
+                padding-left: 30rpx;
+            }
+            .male{
+                margin: 18rpx 10rpx;
+                width: 24rpx;
+                height: 24rpx;
+                background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_male.png) no-repeat center;
+                background-size: contain;
+                vertical-align: middle;
+            }
+            .female{
+                margin: 18rpx 10rpx;
+                width: 24rpx;
+                height: 24rpx;
+                background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_female.png) no-repeat center;
+                background-size: contain;
+            }
+            .visitor_count{
+                line-height: 60rpx;
+                font-size: 28rpx;
+                color: #999999;
+                flex:1;
+                text-align: right;
+                background: url(https://static.58.com/lbg/mengchong/image/icon/arrow-right.png) no-repeat right;
+                background-size: 18rpx 32rpx;
+                padding-right: 30rpx;
+                .visitor_num{
+                    font-size: 28rpx;
+                    color: #151515;
+                }
+            }
+        }
+    }
+    .img-no-data {
+        display: block;
+        width: 180rpx;
+        height: 180rpx;
+        margin: 200rpx auto 20rpx;
+    }
+    .txt-no-data {
+        line-height: 88rpx;
+        text-align: center;
+        font-size: 30rpx;
+        color: #ccc;
+    }
+}
+</style>

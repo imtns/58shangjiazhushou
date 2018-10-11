@@ -1,6 +1,3 @@
-view,text{
-    font-family: PingFangSC-Regular;
-}
 .container{
     font-size: 36rpx;
 }
@@ -13,7 +10,7 @@ a:focus {
 }
 
 view {
-  box-sizing: border-box;  
+  box-sizing: border-box;
   font-weight: 300;
 }
 
@@ -28,8 +25,6 @@ page {
 
 .container {
   position: relative;
-  padding-bottom: 80rpx;
-  padding-top: 66rpx;
 }
 
 .detail-container {

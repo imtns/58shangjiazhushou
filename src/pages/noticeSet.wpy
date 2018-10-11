@@ -1,0 +1,95 @@
+<template>
+    <view class="notice-container">
+        <view class="notice-tips">
+            <view class="notice-item" wx:for="{{noticeSet}}" wx:key="index"><text>{{item.name}}</text><switch class="switch" checked="{{item.value === 1 ? 'checked' : ''}}" color="#4E88FF" bindchange="switchchange" data-index="{{index}}"/></view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { toast } from '../utils/index';
+
+import { get, post } from '../utils/ajax';
+import { PUSN_SET_UP, TO_PUSN_SET_UP } from '../utils/url';
+import { getUid, SendClickLog } from '../utils/maidian';
+
+export default class NoticeSet extends wepy.page {
+    config = {
+        navigationBarTitleText: '通知设置',
+    }
+    data = {
+        noticeSet: [
+            { name: '通知推送提醒', value: 1 },
+            { name: '聊天消息推送提醒', value: 1 },
+        ],
+    }
+    methods = {
+        async switchchange(e) {
+            const { index } = e.currentTarget.dataset;
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_noticeSet_${index}`);
+            const { value } = e.detail;
+            if (value) {
+                this.noticeSet[index].value = 1;
+            } else {
+                this.noticeSet[index].value = 0;
+            }
+            this.$apply();
+            const postData = {
+                noticePush: this.noticeSet[0].value,
+                chatPush: this.noticeSet[1].value,
+            };
+            const { data, msg, state } = await post(PUSN_SET_UP, postData);
+            if (state !== 100) toast(msg);
+            console.log(data);
+        },
+    }
+    async onLoad() {
+        // this.loadNoticeStatus();
+    }
+    async onShow() {
+        this.loadNoticeStatus();
+    }
+    async loadNoticeStatus() {
+        try {
+            const { data } = await get(TO_PUSN_SET_UP);
+            const { noticePush, chatPush } = data;
+            this.noticeSet[0].value = noticePush;
+            this.noticeSet[1].value = chatPush;
+            this.$apply();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+}
+</script>
+
+<style lang="scss">
+page{
+    width:100%;
+    height:100%;
+    background:#f5f5f5;
+}
+.notice-tips{
+    margin-top:20rpx;
+    padding:0 30rpx;
+    background: #fff;
+    box-sizing: border-box;
+}
+.notice-item{
+    font-size: 34rpx;
+    color:#000;
+    line-height: 88rpx;
+    .switch{
+        float: right;
+    }
+}
+.notice-item:first-child{
+    border-bottom: 1rpx solid #e5e5e5;
+}
+</style>
+
+<!-- 
+# 时间格式化
+# 标识优选个微信小程序的状态没有
+-->

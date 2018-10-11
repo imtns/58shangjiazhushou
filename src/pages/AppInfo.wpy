@@ -70,8 +70,8 @@
 
 <script>
 import wepy from 'wepy';
-import { picSrcDomain, toastSync } from '../utils';
-import { get } from '../utils/ajaxP';
+import { picSrcDomain, toast } from '../utils';
+import { get } from '../utils/ajax';
 import { getUid, SendClickLog } from '../utils/maidian';
 
 const appinfoApi = '/mplogic/get';
@@ -141,7 +141,7 @@ export default class AppInfo extends wepy.page {
     }
     methods = {
         bindClickPreview (qrcodeUrl) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_appinfo_youxiang_code');
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_appinfo_youxiang_code');
             wepy.previewImage({
                 urls: [picSrcDomain() + qrcodeUrl],
             });
@@ -156,13 +156,13 @@ export default class AppInfo extends wepy.page {
         this.$apply();
     }
     async getAppInfo (mpid) {
-        const [e, data] = await get(`${appinfoApi}/${mpid}`);
-        if (e) {
-            await toastSync(e);
-            return;
+        try {
+            const { data } = await get(`${appinfoApi}/${mpid}`);
+            this.loading = false;
+            this.updateAppInfo(data);
+        } catch (err) {
+            toast(err.message);
         }
-        this.loading = false;
-        this.updateAppInfo(data);
     }
     async onLoad (options) {
         const mpid = options.mpid || wepy.getStorageSync('current_mpid');

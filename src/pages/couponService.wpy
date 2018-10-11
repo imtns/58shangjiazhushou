@@ -42,6 +42,7 @@ import { picSrcDomain } from '../utils';
 import { LOAD_SERVICE_GROUPS, LOAD_SERVICE_LIST } from '../utils/url';
 import { get } from '../utils/ajax';
 import globalService from '../utils/globalService';
+import { getUid, SendClickLog } from '../utils/maidian';
 
 const pageSize = 50;
 const pageNum = 1;
@@ -70,6 +71,7 @@ export default class Index extends wepy.page {
 
     methods = {
         showProduct() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_couponService_showProduct');
             this.showProduct = !this.showProduct;
         },
 
@@ -100,6 +102,7 @@ export default class Index extends wepy.page {
         },
 
         chooseAll() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_couponService_chooseAll');
             if (!this.services.length) {
                 return;
             }
@@ -110,13 +113,15 @@ export default class Index extends wepy.page {
                 return service;
             });
 
-            if (this.currentGroup === '所有产品') {
-                this.applyType = 1;
-                this.selectedServices = this.allServices.concat();
-            } else {
-                this.applyType = 2;
-                this.selectedServices = this.services.map(v => v.id);
-            }
+            // if (this.currentGroup === '所有产品') {
+            //     this.applyType = 1;
+            //     this.selectedServices = this.allServices.concat();
+            // } else {
+            //     this.applyType = 2;
+            //     this.selectedServices = this.services.map(v => v.id);
+            // }
+            this.applyType = 2;
+            this.selectedServices = this.services.map(v => v.id);
         },
 
         confirm() {
@@ -142,10 +147,10 @@ export default class Index extends wepy.page {
         }
 
         // 全部产品选择
-        if (selectedServices.length === this.allServices.length) {
-            this.applyType = 1;
-            this.$apply();
-        }
+        // if (selectedServices.length === this.allServices.length) {
+        //     this.applyType = 1;
+        //     this.$apply();
+        // }
     }
 
     async onLoad() {

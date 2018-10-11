@@ -3,6 +3,7 @@ const data = {
     multiSelector: {}, // 用于选择器
     cropperUrl: '',
     afterCrop: false, // 是否刚裁剪完，设为true后记得改回false
+    'app.pickBusinessHour': {},
 };
 
 const foos = {
@@ -13,7 +14,6 @@ const foos = {
 
 module.exports = {
     get(key) {
-
         if (data[key] === undefined) {
             return {};
         }

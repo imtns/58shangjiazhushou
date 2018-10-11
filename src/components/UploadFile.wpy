@@ -25,7 +25,7 @@
 </template>
 <script>
 import wepy from 'wepy';
-import { toastSync, getNetStatus, toast } from '../utils';
+import { toast, getNetStatus } from '../utils';
 
 const host = 'https://yaofa.58.com';
 export default class Uploader extends wepy.component {
@@ -119,7 +119,7 @@ export default class Uploader extends wepy.component {
             tempFilePaths.map(async (file, i) => {
                 const [e, data] = await self.uploadImage(file);
                 if (e) {
-                    await toastSync(e);
+                    await toast(e);
                     sfileset.splice(start + i, 1); // 失败删除
                 } else {
                     sfileset.splice(start + i, 1, file); // 成功替换
@@ -170,7 +170,7 @@ export default class Uploader extends wepy.component {
             tempFilePaths.map(async (file, i) => {
                 const [e, data] = await self.uploadVideo(file);
                 if (e) {
-                    await toastSync(e);
+                    await toast(e);
                     sfileset.splice(start + i, 1); // 失败删除
                 } else {
                     sfileset.splice(start + i, 1, file); // 成功替换

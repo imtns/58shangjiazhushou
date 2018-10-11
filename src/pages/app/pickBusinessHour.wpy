@@ -1,0 +1,188 @@
+<template>
+    <view class="pickContainer">
+        <view class="topPart">
+            <view class="title">选择营业日</view>
+            <view class="daysTag">
+                <repeat for="{{days}}" key="index">
+                    <view @tap="dayPick" class="day {{index==3?'no-margin':''}} {{item.selected?'selected':''}}" data-index="{{index}}">{{item.value}}</view>
+                </repeat>
+            </view>
+        </view>
+        <view class="bottomPart">
+            <picker mode="time"  value="{{startTime}}"  bindchange="bindStartTimeChange">
+                <view class="pick-content-list-item">
+                    <text class="pick-form-label">营业开始时间</text>
+                    <view class="pick-form-picker-placeholder">
+                        {{startTime}}
+                    </view>
+                </view>
+            </picker>
+            <picker mode="time"  value="{{endTime}}"  bindchange="bindEndTimeChange">
+                <view class="pick-content-list-item">
+                    <text class="pick-form-label">营业结束时间</text>
+                    <view class="pick-form-picker-placeholder">
+                        {{endTime}}
+                    </view>
+                </view>
+            </picker>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+
+// import { get } from '../utils/ajax';
+
+import { toast } from '../../utils';
+import * as globalService from '../../utils/globalService';
+
+export default class PickBusinessHour extends wepy.page {
+  config = {
+      navigationBarTitleText: '营业时间',
+  };
+  data = {
+      startTime: '08:00',
+      endTime: '21:00',
+      days: [
+          { value: '周一', selected: true },
+          { value: '周二', selected: true },
+          { value: '周三', selected: true },
+          { value: '周四', selected: true },
+          { value: '周五', selected: true },
+          { value: '周六', selected: true },
+          { value: '周日', selected: true },
+      ],
+      businessDays: [1, 1, 1, 1, 1, 1, 1],
+
+  };
+  onLoad(options) {
+      const { startTime, endTime, businessDays } = options;
+      if (startTime) {
+          this.startTime = startTime;
+      }
+      if (endTime) {
+          this.endTime = endTime;
+      }
+      if (businessDays) {
+          businessDays.split('').forEach((item, index) => {
+              this.days[index].selected = item !== '0';
+          });
+          this.getDaysPicked();
+      }
+  }
+  methods = {
+      bindStartTimeChange(e) {
+          if (!this.checkTime(e.detail.value, this.endTime)) {
+              toast('结束时间不能大于开始时间');
+              return;
+          }
+          this.startTime = e.detail.value;
+      },
+      bindEndTimeChange(e) {
+          if (!this.checkTime(this.startTime, e.detail.value)) {
+              toast('结束时间不能大于开始时间');
+              return;
+          }
+          this.endTime = e.detail.value;
+      },
+      dayPick(e) {
+          const { index } = e.target.dataset;
+          this.days[index].selected = !this.days[index].selected;
+          this.getDaysPicked();
+      },
+  };
+  getDaysPicked() {
+      this.days.forEach((item, i) => {
+          this.businessDays[i] = item.selected === true ? '1' : '0';
+      });
+  }
+  onUnload() {
+      this.businessDays = this.businessDays.join('');
+      const { businessDays, startTime, endTime } = this;
+      globalService.set('app.pickBusinessHour', { businessDays, startTime, endTime });
+  }
+  checkTime(a, b) {
+      const s = a.replace(':', '');
+      const e = b.replace(':', '');
+      return !(e < s);
+  }
+}
+</script>
+<style lang="scss" scoped>
+.pickContainer {
+  box-sizing: border-box;
+  background: #f6f6f6;
+  width: 100vw;
+  height: 100vh;
+  margin-top: 20rpx;
+  .topPart {
+    padding: 0 30rpx;
+    background: #fff;
+    margin-bottom: 20rpx;
+    .title {
+      width: 100%;
+      height: 89rpx;
+      line-height: 89rpx;
+      color: #999;
+      font-size: 30rpx;
+    }
+    .daysTag {
+      display: flex;
+      flex-wrap: wrap;
+      flex-direction: row;
+      justify-content: flex-start;
+      padding-top: 40rpx;
+      .day {
+        display: flex;
+        width: 132rpx;
+        border: 1rpx solid #ccc;
+        color: #ccc;
+        justify-content: center;
+        border-radius: 4rpx;
+        height: 52rpx;
+        line-height: 52rpx;
+        text-align: center;
+        margin-right: 55rpx;
+        margin-bottom: 40rpx;
+        font-size: 28rpx;
+        &.no-margin {
+          margin-right: 0;
+        }
+        &.selected {
+          color: #4e88ff;
+          border: 1rpx solid #4e88ff;
+        }
+      }
+    }
+  }
+  .bottomPart {
+    padding: 0 30rpx;
+    background: #fff;
+    .pick-content-list-item {
+      height: 90rpx;
+      width: 100%;
+      border-bottom: 2rpx solid #f3f3f3;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .pick-form-label {
+        display: inline-block;
+        font-family: PingFangSC-Regular;
+        font-size: 30rpx;
+        color: #999999;
+      }
+      .pick-form-placeholder {
+        color: #ccc;
+      }
+      .pick-form-picker,
+      .pick-form-picker-placeholder {
+        font-family: PingFangSC-Regular;
+        font-size: 30rpx;
+        color: #333333;
+      }
+    }
+  }
+}
+</style>
+
+

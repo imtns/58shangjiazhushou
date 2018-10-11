@@ -25,7 +25,7 @@
             version="develop" wx:else>
             <view class="openpay-confirm">{{failText}}</view>
         </navigator>
-        <navigator open-type="redirect" url="/pages/home" wx:if="{{payOpenStatus === 3 && payOpenType === 2}}">
+        <navigator open-type="switchTab" hover-class="none" url="/pages/home" wx:if="{{payOpenStatus === 3 && payOpenType === 2}}">
             <view class="changepay-home">返回首页</view>
         </navigator>
         <!-- 协议内容弹框 -->
@@ -62,7 +62,7 @@
             version="develop">
             <view class="changepay-confirm">{{btnText}}</view>
         </navigator>
-        <navigator open-type="redirect" url="/pages/home">
+        <navigator open-type="switchTab" hover-class="none"  url="/pages/home">
             <view class="changepay-home">返回首页</view>
         </navigator>
     </view>
@@ -97,7 +97,7 @@ export default class OpenPay extends wepy.page {
     }
     methods = {
         bindAgreeProtocol () {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_openPay_confirmBtn');
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_openPay_confirmBtn');
             this.agreeProtocol = !this.agreeProtocol;
         },
         bindShowProtocol (showProtocol) {

@@ -25,33 +25,13 @@
             </view>
             <!-- <view wx:else style="margin:30rpx;text-align:center;color:#bdbdbd;">啥也没有</view> -->
         </view>
-        <view
-            class="group-list article-group-list {{isEditing ? 'edit' : ''}}" wx:elif="{{ curTab === 'article' && groupList.length > 0}}">
-            <view
-                class="group-item article-group-item"
-                @tap.stop="editChose({{ item.id }}, {{ index }}, {{item.name}})"
-                wx:for="{{groupList}}"
-                wx:key="index"
-                data-item="{{item}}">
-                <view class="group-line article-group-line"
-                :class="{ selected: item.choseStatu}">
-                    <view class="group-name article-group-name">{{item.name}}</view>
-                    <view class="group-size article-group-size"> ({{item.count}})</view>
-                    <view class="group-angel article-group-angel" wx:if="{{!isEditing}}"></view>
-                    <view class="rename-btn article-rename-btn" wx:if="{{isEditing}}" @tap.catch.stop="showDialog({{item.id}}, {{item.name}})">重命名</view>
-                </view>
-            </view>
-        </view>
-        <block wx:else>
-            <EmptyPage :title.sync="title"></EmptyPage>
-        </block>
         <view class="block"></view>
         <view class="options">
             <block wx:if="{{ chooseModal }}">
                 <button class="button" @tap="chooseModalConfirm">确认</button>
             </block>
             <block wx:else>
-                <button class="button edit" @tap="edit" wx:if="{{groupList.length > 0 || works.length > 0}}" data-status="{{isEditing}}">{{ isEditing ? '取消' : '编辑' }}</button>
+                <button class="button edit" @tap="edit" wx:if="{{groupList.length > 0 || works.length > 0}}" data-type="{{curTab}}" data-status="{{isEditing}}">{{ isEditing ? '取消' : '编辑' }}</button>
                 <button class="button" wx:if="{{ isEditing }}" @tap="deleteItem">删除</button>
                 <button class="button" wx:else @tap="uploadFile({{ curTab }})">{{ optionNames[curTab] }}</button>
             </block>
@@ -83,6 +63,7 @@ import uploadImages from '../utils/upload';
 import uploader from '../utils/uploaderP';
 import EmptyPage from '../components/EmptyPage';
 import Pop from '../components/Dialog';
+import { getUid, SendClickLog } from '../utils/maidian';
 
 let pageNum = 1;
 const pageSize = 20;
@@ -111,16 +92,11 @@ export default class Index extends wepy.page {
                 label: '视频',
                 name: 'video',
             },
-            {
-                label: '文章',
-                name: 'article',
-            },
         ],
         // 按钮文字
         optionNames: {
             image: '上传图片',
             video: '上传视频',
-            article: '添加文章分组',
         },
         // 展示时用的works
         works: [],
@@ -229,7 +205,8 @@ export default class Index extends wepy.page {
         },
 
         edit(e) {
-            const { status } = e.currentTarget.dataset;
+            const { status, type } = e.currentTarget.dataset;
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_resourceManage_${type}`);
             const dataList = this.groupList;
             if (status) {
                 dataList.forEach(item => {
@@ -261,6 +238,9 @@ export default class Index extends wepy.page {
                         ids,
                     });
                 } else {
+                    if (this.curTab === 'image') {
+                        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_resourceManage_deleteImage');
+                    }
                     const { cancel } = await alertP(`确认删除所选的${selectedIds.length}项素材？`);
                     if (cancel) {
                         this.isEditing = false;
@@ -410,11 +390,6 @@ export default class Index extends wepy.page {
                 })[type];
                 await this.loadResource(resourceType);
                 break;
-
-            case 'article':
-                await this.loadArticle();
-                break;
-
             default:
                 break;
         }
@@ -473,27 +448,8 @@ export default class Index extends wepy.page {
         }
     }
 
-    async loadArticle() {
-        try {
-            const { data } = await get('/businessArticle/groups');
-            if (!data || data.length === 0) {
-                this.groupList = [];
-            }
-            if (data.length) {
-                data.forEach(item => {
-                    Object.assign(item, {
-                        choseStatu: false,
-                    });
-                });
-                this.groupList = data;
-            }
-            this.$apply();
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
     async uploadImage() {
+        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_resourceManage_uploadImage');
         try {
             // 得到上传后的图片地址
             const { msg, result: resourceUrls } = await uploadImages();
@@ -517,6 +473,7 @@ export default class Index extends wepy.page {
     }
 
     async uploadVideo() {
+        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_resourceManage_uploadVideo');
         try {
             const { tempFilePath, size } = await wepy.chooseVideo();
 

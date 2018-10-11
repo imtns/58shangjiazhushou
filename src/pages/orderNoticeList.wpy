@@ -40,6 +40,7 @@ import wepy from 'wepy';
 import { sleep, toast } from '../utils/index';
 
 import { get } from '../utils/ajax';
+import { READ_GROUND_MSG, GET_GROUP_MSG_LIST } from '../utils/url';
 
 export default class OrderNoticeList extends wepy.page {
     config = {
@@ -77,14 +78,14 @@ export default class OrderNoticeList extends wepy.page {
         //     return;
         // }
         try {
-            await get('/mplogic/readgroupmsg', { group: 2 });
+            await get(READ_GROUND_MSG, { group: 2 });
         } catch (e) {
             console.log(e);
         }
     }
     async loadList () {
         try {
-            const { data } = await get('/mplogic/getgroupmsglist', this.sendParams);
+            const { data } = await get(GET_GROUP_MSG_LIST, this.sendParams);
             const { msglist } = data;
             console.log(msglist);
             if (msglist.length === 0) {

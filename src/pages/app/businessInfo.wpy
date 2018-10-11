@@ -1,0 +1,312 @@
+<template>
+    <view class="container">
+        <view class="form-group">
+            <navigator
+                class="form-item"
+                url="{{ urlPickBusinessHours }}">
+                <text class="form-label">营业时间</text>
+                <view class="form-value">
+                    <text wx:if="{{ form.businessDays }}">已选择</text>
+                    <text class="form-placeholder" wx:else>请选择</text>
+                </view>
+                <text class="form-arrow"></text>
+            </navigator>
+        </view>
+
+        <view class="form-group">
+            <view class="form-item">
+                <view class="form-label">配送方式</view>
+                <view class="form-value">送货上门</view>
+            </view>
+            <view class="form-item">
+                <view class="form-label">配送范围</view>
+                <input
+                    class="form-value"
+                    placeholder="请输入"
+                    placeholder-class="form-placeholder"
+                    type="number"
+                    value="{{ form.distributionScope }}"
+                    @input="handleInput('distributionScope')"/>
+                <view class="form-unit">公里</view>
+            </view>
+            <view class="form-item">
+                <view class="form-label">起送费</view>
+                <input
+                    class="form-value"
+                    placeholder="请输入"
+                    placeholder-class="form-placeholder"
+                    type="number"
+                    value="{{ form.minFee }}"
+                    @input="handleInput('minFee')"/>
+                <view class="form-unit">元</view>
+            </view>
+            <view class="form-item">
+                <view class="form-label">配送费</view>
+                <input
+                    class="form-value"
+                    placeholder="请输入"
+                    placeholder-class="form-placeholder"
+                    type="number"
+                    value="{{ form.distributionFee }}"
+                    @input="handleInput('distributionFee')"/>
+                <view class="form-unit">元</view>
+            </view>
+            <view class="form-item">
+                <view class="form-label">包装费</view>
+                <input
+                    class="form-value"
+                    placeholder="请输入"
+                    placeholder-class="form-placeholder"
+                    type="number"
+                    value="{{ form.packingFee }}"
+                    @input="handleInput('packingFee')"/>
+                <view class="form-unit">元</view>
+            </view>
+            <view class="form-item">
+                <view class="form-label">平均送达时长</view>
+                <input
+                    class="form-value"
+                    placeholder="请输入"
+                    placeholder-class="form-placeholder"
+                    type="number"
+                    value="{{ form.avgTime }}"
+                    @input="handleInput('avgTime')"/>
+                <view class="form-unit">分钟</view>
+            </view>
+            <view class="form-item border-none">
+                <view class="form-label">接单设置</view>
+                <view class="form-value">手动接单</view>
+            </view>
+        </view>
+
+        <view class="button save {{ canSubmit ? '' : 'disabled' }}" @tap="handleSubmit">保存</view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { alert } from '../../utils';
+import { post, get } from '../../utils/ajax';
+import { LOAD_BUSINESS_SETTING, SAVE_BUSINESS_SETTING } from '../../utils/url';
+import * as globalService from '../../utils/globalService';
+
+export default class AppEdit extends wepy.page {
+    config = {
+        navigationBarTitleText: '营业信息',
+    }
+
+    data = {
+        form: {
+            id: '',
+            distributionMode: '0', // 配送方式
+            distributionScope: 5, // 配送范围
+            minFee: 5,
+            distributionFee: 5, // 配送费
+            packingFee: 2, // 包装费
+            avgTime: 30, // 平均送达时长
+            receiptType: '0', // 接单类型
+            businessDays: '1，1，1，1，1，1，1，1',
+            startTime: '08:00',
+            endTime: '21:00',
+        },
+        // 默认值、最大值
+        valid: {
+            distributionScope: {
+                max: 15,
+                maxError: '配送范围不能大于15公里',
+            },
+            distributionFee: {
+                max: 50,
+                maxError: '配送费不能大于50元',
+            },
+            packingFee: {
+                max: 10,
+                maxError: '包装费不能大于10元',
+            },
+            avgTime: {
+                max: 120,
+                maxError: '平均配送时长不能大于120分钟',
+            },
+            minFee: {
+                max: 100,
+                maxError: '起送费不能大于100元',
+            },
+        },
+    }
+
+    computed = {
+        canSubmit() {
+            let result = true;
+            const { form } = this;
+            const requireFields = [
+                'distributionMode', 'distributionScope', 'distributionFee',
+                'packingFee', 'avgTime', 'receiptType',
+                'businessDays', 'startTime', 'endTime',
+            ];
+
+            // 每一个属性都必填
+            requireFields.forEach((field) => {
+                if (form[field] === '') {
+                    result = false;
+                }
+            });
+
+            return result;
+        },
+
+        urlPickBusinessHours() {
+            const { form } = this;
+            return `/pages/app/pickBusinessHour?businessDays=${form.businessDays}&startTime=${form.startTime}&endTime=${form.endTime}`;
+        },
+    }
+
+    onLoad() {
+        this.loadData();
+    }
+
+    onShow() {
+        const businessHourData = globalService.get('app.pickBusinessHour');
+        // 有数据就同步
+        if (businessHourData.businessDays) {
+            Object.assign(this.form, businessHourData);
+        }
+    }
+
+    methods = {
+        handleInput(prop, { detail: { value } }) {
+            this.form[prop] = value;
+        },
+        async handleSubmit() {
+            try {
+                const { form: postData, canSubmit } = this;
+
+                if (!canSubmit) {
+                    return;
+                }
+
+                if (!postData.id) {
+                    delete postData.id;
+                }
+
+                const check = this.validator(postData);
+                if (!check.result) {
+                    alert(check.msg);
+                    return;
+                }
+
+                await post(SAVE_BUSINESS_SETTING, postData);
+                wepy.navigateBack();
+            } catch (err) {
+                alert('保存失败');
+                console.log(err);
+            }
+        },
+    }
+
+    validator(data) {
+        let result = {
+            result: true,
+            msg: '',
+        };
+
+        Object.keys(data).forEach((key) => {
+            const { valid } = this;
+            const value = data[key];
+
+            if (!valid[key]) {
+                return;
+            }
+
+            if (+value > valid[key].max) {
+                result = { result: false, msg: valid[key].maxError };
+            }
+        });
+
+        return result;
+    }
+
+    async loadData() {
+        try {
+            const mpid = wepy.getStorageSync('current_mpid');
+            const [{ data: result }, { latitude: addressLatitude, longitude: addressLongitude }] = await Promise.all([
+                get(LOAD_BUSINESS_SETTING + mpid), wepy.getLocation(),
+            ]);
+
+            if (!result) {
+                throw new Error('data is empty');
+            }
+
+            this.form = {
+                ...result,
+                addressLatitude,
+                addressLongitude,
+            };
+            this.$apply();
+        } catch (err) {
+            alert('数据加载错误，请稍后再试~');
+            console.log(err);
+        }
+    }
+}
+</script>
+
+<style lang="scss">
+.form-group {
+    margin-top: 20rpx;
+    padding: 0 30rpx;
+    background-color: #fff;
+}
+.form-item {
+    height: 90rpx;
+    background: #fff;
+    font-size: 30rpx;
+    display: flex;
+    align-items: center;
+    border-bottom: 1rpx solid #f3f3f3;
+
+    .form-label {
+        color: #999999;
+    }
+    .form-value {
+        color: #000;
+        text-align: right;
+        flex-grow: 1;
+    }
+    .form-arrow {
+        width: 15rpx;
+        height: 25rpx;
+        margin-left: 20rpx;
+        background: url('https://static.58.com/lbg/mengchong/image/icon/arrow-right.png')
+            no-repeat;
+        background-size: 100%;
+    }
+    // 单位
+    .form-unit {
+        margin-left: 10rpx;
+        width: 60rpx;
+        text-align: right;
+    }
+}
+.form-placeholder {
+    color: #ccc;
+}
+.button.save {
+    width: 690rpx;
+    line-height: 94rpx;
+    background-color: #4e88ff;
+    border-radius: 4rpx;
+    font-family: PingFangSC-Regular;
+    font-size: 32rpx;
+    color: #ffffff;
+    text-align: center;
+    position: fixed;
+    bottom: 65rpx;
+    left: 30rpx;
+}
+.button.save.disabled {
+    background-color: #ccc;
+}
+.border-none {
+    border: none;
+}
+</style>
