@@ -23,8 +23,18 @@
                     <text class="order-price-value">￥<text class="price">{{item.originalAmount}}</text></text>
                 </view>
                 <view class="order-line"></view>
-                <view class="order-buttons">
+                <view class="order-buttons" wx:if="{{ item.status === 0 }}">
                     <view class="button">立刻接单</view>
+                </view>
+                <view class="order-buttons" wx:if="{{ item.status === 1 }}">
+                    <view class="button">开始配送</view>
+                </view>
+                <view class="order-buttons" wx:if="{{ item.status === 13 }}">
+                    <view class="button">已送达</view>
+                </view>
+                <view class="order-buttons" wx:if="{{ item.status === 10 }}">
+                    <view class="button">平台介入</view>
+                    <view class="button">同意</view>
                 </view>
             </view>
         </view>
