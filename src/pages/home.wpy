@@ -7,7 +7,7 @@
         </view>
         <view class="index-loaded-header">
             <view class="welcome-block">
-                <view class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
+                <view class="welcome-title">欢迎你 <text>{{ business.name }}</text></view>
                 <view @tap="changeIdentity" class="item-switch">账号切换</view>
             </view>
             <view class="item-detail">
