@@ -56,7 +56,7 @@ import wepy from 'wepy';
 export default class ProductOrder extends wepy.component {
     props = {
         orderList: Object,
-        statusSet: Array,
+        statusSet: Object,
         noMore: Boolean,
     };
     methods = {
