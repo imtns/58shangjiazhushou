@@ -35,6 +35,7 @@ export default class OrderMixin extends wepy.mixin {
             pageSize: 10,
             status: '',
         },
+        orderList: [],
         total: 0,
         serviceOrderList: [],
         productOrderList: [],
@@ -53,7 +54,7 @@ export default class OrderMixin extends wepy.mixin {
             this.sendParams = Object.assign({}, this.sendParams, {
                 pageNum: this.sendParams.pageNum + 1,
             });
-            this.getOrderList();
+            this.getOrderList(this.orderType, this.status, true);
         },
     };
     parseOrderList(orders) {
@@ -73,22 +74,27 @@ export default class OrderMixin extends wepy.mixin {
             return ret;
         });
     }
-    filterOrder(status) {
-        if (this.orderType === 'service') {
-            this.serviceOrderList =
-                status === ''
-                    ? this.listSaver.filter(item => item.orderType === 1)
-                    : this.listSaver.filter(item => item.status.toString() === status && item.orderType === 1);
-        }
-        if (this.orderType === 'product') {
-            this.productOrderList =
-                status === ''
-                    ? this.listSaver.filter(item => item.orderType === 4)
-                    : this.listSaver.filter(item => item.status.toString() === status && item.orderType === 4);
-        }
-    }
-    async getOrderList(id = '') {
+    // filterOrder(status) {
+    //     if (this.orderType === 'service') {
+    //         this.serviceOrderList =
+    //             status === ''
+    //                 ? this.listSaver.filter(item => item.orderType === 1)
+    //                 : this.listSaver.filter(item => item.status.toString() === status && item.orderType === 1);
+    //     }
+    //     if (this.orderType === 'product') {
+    //         this.productOrderList =
+    //             status === ''
+    //                 ? this.listSaver.filter(item => item.orderType === 4)
+    //                 : this.listSaver.filter(item => item.status.toString() === status && item.orderType === 4);
+    //     }
+    // }
+    async getOrderList(type, id = '', loadMore) {
+        type = type === 'product' ? 4 : 1;
         try {
+            if (!loadMore) {
+                this.orderList = [];
+                this.sendParams.pageNum = 1;
+            }
             SendClickLog(
                 'wxf03e52adc4b13448',
                 getUid(),
@@ -99,28 +105,30 @@ export default class OrderMixin extends wepy.mixin {
             const mpId = wepy.getStorageSync('current_mpid');
             this.sendParams = Object.assign({}, this.sendParams, {
                 mpId,
-                orderType: id,
+                orderType: type,
+                status: id,
             });
             const res = await get('/consumerAppointment/queryPageForUser', this.sendParams);
 
             const data = this.parseOrderList(res.data);
-            this.listSaver.push(...data);
+            this.orderList.push(...data);
+            // this.listSaver.push(...data);
             this.total = res.recordsTotal;
-            if (this.listSaver.length === this.total) {
+            if (this.orderList.length === this.total) {
                 this.noMore = true;
             }
-            const filterProduct = data.filter(item => item.orderType === 4);
-            this.productOrderList.push(...filterProduct);
-            this.productOrderList.forEach(item => {
-                if (
-                    typeof item.consumerAddressJson !== 'object' &&
-                    item.consumerAddressJson !== null
-                ) {
-                    item.consumerAddressJson = JSON.parse(item.consumerAddressJson);
-                }
-            });
-            const filterService = data.filter(item => item.orderType === 1);
-            this.serviceOrderList.push(...filterService);
+            // const filterProduct = data.filter(item => item.orderType === 4);
+            // this.productOrderList.push(...filterProduct);
+            // this.productOrderList.forEach(item => {
+            //     if (
+            //         typeof item.consumerAddressJson !== 'object' &&
+            //         item.consumerAddressJson !== null
+            //     ) {
+            //         item.consumerAddressJson = JSON.parse(item.consumerAddressJson);
+            //     }
+            // });
+            // const filterService = data.filter(item => item.orderType === 1);
+            // this.serviceOrderList.push(...filterService);
             this.$apply();
         } catch (err) {
             toast(err);

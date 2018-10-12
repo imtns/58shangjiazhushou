@@ -121,7 +121,6 @@ var Page = {
       }
     });
     $("input[type=radio][name=size]").on('change', function (event) {
-        alert('222')
       if ($(this).val() == 'single') {
         $(".item-flex-s").hide();
         $(".item-price").show();
@@ -446,7 +445,8 @@ var Page = {
     sku.forEach(function (item) {
       html += '<div class="size-info-wrapper" id="' + item.id + '">' + '<div class="size-info">' + '<div class="info-line">' + '<span>规格名称</span>' + '<input type="text" class="size-name" value="' + item.skuName + '">' + '</div>' + '<div class="info-line">' + '<span>价格</span>' + '<input type="text" class="size-price" value="' + item.price + '">' + '</div>' + '<div class="info-line">' + '<span>库存</span>' + '<input type="text" class="size-stock" value="' + item.stock + '">' + '</div>' + '</div>' + '<div class="delete"></div>' + '</div>';
     });
-    $(html).insertAfter($("#size-text"));
+    // $("#size-async").html(html);
+    $(html).insertBefore($("#ddd"));
     $(".size-info-wrapper .delete").on("click", function () {
       console.log($(this).parent().attr("id"));
       skuRemoved.push($(this).parent().attr("id"));

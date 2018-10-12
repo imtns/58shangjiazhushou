@@ -9,10 +9,12 @@
         </view> -->
         <view class="listWrapper">
             <block wx:if="{{orderType === 'product'}}">
-                <productOrder :orderList.sync="productOrderList" :statusSet="statusSet" :noMore.sync="noMore"></productOrder>
+                <!-- <productOrder :orderList.sync="productOrderList" :statusSet="statusSet" :noMore.sync="noMore"></productOrder> -->
+                <productOrder :orderList.sync="orderList" :statusSet="statusSet" :noMore.sync="noMore"></productOrder>
             </block>
             <block wx:if="{{orderType === 'service'}}">
-                <serviceOrder :orderList.sync="serviceOrderList" :statusSet="statusSet" :noMore.sync="noMore"></serviceOrder>
+                <!-- <serviceOrder :orderList.sync="serviceOrderList" :statusSet="statusSet" :noMore.sync="noMore"></serviceOrder> -->
+                <serviceOrder :orderList.sync="orderList" :statusSet="statusSet" :noMore.sync="noMore"></serviceOrder>
             </block>
         </view>
     </view>
@@ -37,15 +39,21 @@ export default class OrderList extends wepy.page {
     };
     data = {
         orderType: 'service',
+        status: '',
     };
     events = {
         switchType: async (type) => {
+            this.status = '';
             this.orderType = type;
-            await this.getOrderList(type === 'product' ? 4 : 1);
-            this.filterOrder('');
+            await this.getOrderList(type, '');
+            this.$apply();
+            // this.filterOrder('');
         },
-        getStatus(id) {
-            this.filterOrder(id);
+        async getStatus(id) {
+            this.status = id;
+            await this.getOrderList(this.orderType, id);
+            this.$apply();
+            // this.filterOrder(id);
         },
     };
     async onShow() {

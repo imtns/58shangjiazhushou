@@ -167,6 +167,7 @@ html, body{
     color:#666;
     height:.89rem;
     line-height: .89rem;
+    width:100%;
 }
 .item-text.required{
     position:relative;
@@ -184,6 +185,9 @@ html, body{
     -webkit-box-flex:1;
         -ms-flex:1;
             flex:1;
+}
+.item-input-div1{
+    width:53%;
 }
 .item-chose{
     text-align:right;
@@ -582,11 +586,7 @@ html, body{
     background-size:cover;
   }
   .item-flex-s.size{
-      display: -webkit-box;
-      display: -ms-flexbox;
-      display: flex;
-      -ms-flex-wrap: wrap;
-          flex-wrap: wrap;
+
   }
   .size-info-wrapper{
       width:100%;
@@ -594,7 +594,7 @@ html, body{
   .size-info{
       margin-bottom:.2rem;
       float:left;
-      width:29em;
+      width:92%;
       height:12em;
       background-color:#f6f6f6;
   }
