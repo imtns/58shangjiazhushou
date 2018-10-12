@@ -12,21 +12,24 @@ import {
 
 export default class OrderMixin extends wepy.mixin {
     data = {
-        statusSet: [
-            '已支付，待接单',
-            '已接单，待服务',
-            '已完成',
-            '已取消',
-            '已删除',
-            '已下单，待支付',
-            '退款成功',
-            '退款失败',
-            '已取消',
-            '已评价',
-            '退款中',
-            '',
-            '退款中',
-        ],
+        statusSet: {
+            0: '已支付，待接单',
+            1: '已接单，待服务',
+            2: '已完成',
+            3: '已取消',
+            4: '已删除',
+            5: '已下单，待支付',
+            6: '退款成功',
+            7: '退款失败',
+            8: '已取消',
+            9: '已评价',
+            10: '退款中',
+            11: '买单支付',
+            12: '退款处理中',
+            13: '开始配送',
+            14: '订单已送达',
+            15: '商家拒绝接单',
+        },
         sendParams: {
             pageNum: 1,
             pageSize: 10,
@@ -90,13 +93,13 @@ export default class OrderMixin extends wepy.mixin {
                 'wxf03e52adc4b13448',
                 getUid(),
                 '{}',
-                `sjzh_click_orderList_status_${id}`
+                `sjzh_click_orderList_status_${id}`,
             );
             this.noMore = false;
             const mpId = wepy.getStorageSync('current_mpid');
             this.sendParams = Object.assign({}, this.sendParams, {
                 mpId,
-                status: id,
+                orderType: id,
             });
             const res = await get('/consumerAppointment/queryPageForUser', this.sendParams);
 

@@ -39,9 +39,9 @@ export default class OrderList extends wepy.page {
         orderType: 'service',
     };
     events = {
-        switchType: type => {
+        switchType: async (type) => {
             this.orderType = type;
-            //   this.getOrderList();
+            await this.getOrderList(type === 'product' ? 4 : 1);
             this.filterOrder('');
         },
         getStatus(id) {
@@ -55,7 +55,7 @@ export default class OrderList extends wepy.page {
             '{}',
             'sjzh_click_orderList_onload',
         );
-        await this.getOrderList();
+        await this.getOrderList(1);
     }
     onLoad() {
         SendClickLog(
