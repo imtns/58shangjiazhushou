@@ -1,7 +1,14 @@
 import wepy from 'wepy';
 import { toast, picSrcDomain } from '../../utils';
-import { get } from '../../utils/ajax';
+import { get, post } from '../../utils/ajax';
 import { getUid, SendClickLog } from '../../utils/maidian';
+import {
+    ACCEPT_ORDER,
+    DELIVER_ORDER,
+    REFUSE_ORDER,
+    WHETHER_ACCEPT_REFUND,
+    ARRIVE_ORDER,
+} from '../../utils/url';
 
 export default class OrderMixin extends wepy.mixin {
     data = {
@@ -115,5 +122,106 @@ export default class OrderMixin extends wepy.mixin {
         } catch (err) {
             toast(err);
         }
+    }
+
+    methods = {
+        // 商家的各种按钮操作事件处理
+
+        // 拒绝接单
+        async handleRefuseOrder(orderId) {
+            try {
+                const { state } = await post(`${REFUSE_ORDER}${orderId}`);
+
+                if (state !== 100) {
+                    throw new Error('取消订单失败');
+                }
+
+                await toast('取消订单成功');
+                this.loadData();
+            } catch (err) {
+                console.log(err);
+                toast('取消订单失败，请稍后再试');
+            }
+        },
+        // 接单
+        async handleAcceptOrder(orderId) {
+            try {
+                const { state } = await post(`${ACCEPT_ORDER}${orderId}`);
+
+                if (state !== 100) {
+                    throw new Error('接单失败');
+                }
+
+                await toast('接单成功');
+                this.loadData();
+            } catch (err) {
+                console.log(err);
+                toast('接单失败，请稍后再试');
+            }
+        },
+        // 开始配送
+        async handleStartDeliver(orderId) {
+            try {
+                const { state } = await post(`${DELIVER_ORDER}${orderId}`);
+
+                if (state !== 100) {
+                    throw new Error('开始配送失败');
+                }
+
+                await toast('开始配送成功');
+                this.loadData();
+            } catch (err) {
+                console.log(err);
+                toast('开始配送失败，请稍后再试');
+            }
+        },
+        // 平台介入
+        async handlePlatformIn(orderId) {
+            try {
+                const { state } = await post(`${WHETHER_ACCEPT_REFUND}${orderId}`, { action: 'refuse' });
+
+                if (state !== 100) {
+                    throw new Error('平台介入失败');
+                }
+
+                await toast('平台介入成功');
+                this.loadData();
+            } catch (err) {
+                console.log(err);
+                toast('平台介入失败');
+            }
+        },
+        // 同意退款
+        async handleAcceptRefund(orderId) {
+            try {
+                const { state } = await post(`${WHETHER_ACCEPT_REFUND}${orderId}`, { action: 'agree' });
+
+                if (state !== 100) {
+                    throw new Error('退款失败');
+                }
+
+                await toast('退款成功');
+                this.loadData();
+            } catch (err) {
+                console.log(err);
+                toast('退款失败');
+            }
+        },
+        // 已送达
+        async handleConfirm(orderId) {
+            try {
+                const { state } = await post(`${ARRIVE_ORDER}${orderId}`);
+
+                if (state !== 100) {
+                    throw new Error('');
+                }
+
+                await toast('操作成功');
+                this.loadData();
+            } catch (err) {
+                console.log(err);
+                toast('操作失败');
+            }
+        },
     }
 }

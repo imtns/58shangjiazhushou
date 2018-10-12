@@ -52,15 +52,15 @@
             <view class="order-detail">
                 <view class="order-detail-item">
                     <view class="order-detail-label">包装费</view>
-                    <view class="order-detail-value">￥{{ order.packingFee || 3 }}</view>
+                    <view class="order-detail-value">￥{{ order.packingFee || 0 }}</view>
                 </view>
                 <view class="order-detail-item">
                     <view class="order-detail-label">配送费</view>
-                    <view class="order-detail-value">￥{{ order.distributionFee || 10 }}</view>
+                    <view class="order-detail-value">￥{{ order.distributionFee || 0 }}</view>
                 </view>
-                <view class="order-detail-item">
+                <view class="order-detail-item" wx:if="{{ order.couponAmount }}">
                     <view class="order-detail-label">优惠券</view>
-                    <view class="order-detail-value">-￥{{ order.couponAmount || 20 }}</view>
+                    <view class="order-detail-value">-￥{{ order.couponAmount || 0 }}</view>
                 </view>
             </view>
             <view class="goods-total">
@@ -92,33 +92,33 @@
             <block wx:if="{{ order.status === 0 }}">
                 <button
                     class="button cancel"
-                    @tap="handleRefuseOrder"
+                    @tap="handleRefuseOrder({{ orderId}})"
                     >取消订单</button>
                 <button
                     class="button primary accept"
-                    @tap="handleAcceptOrder"
+                    @tap="handleAcceptOrder({{ orderId}})"
                     >立即接单</button>
             </block>
             <block wx:elif="{{ order.status === 1 }}">
                 <button
                     class="button primary"
-                    @tap="handleStartDeliver"
+                    @tap="handleStartDeliver({{ orderId}})"
                     >开始配送</button>
             </block>
             <block wx:elif="{{ order.status === 10 && order.applyStatus === 0 }}">
                 <button
                     class="button"
-                    @tap="handlePlatformIn"
+                    @tap="handlePlatformIn({{ orderId}})"
                     >申请平台介入</button>
                 <button
                     class="button primary"
-                    @tap="handleAcceptRefund"
+                    @tap="handleAcceptRefund({{ orderId}})"
                     >同意退款</button>
             </block>
             <block wx:elif="{{ order.status === 13 }}">
                 <button
                     class="button primary"
-                    @tap="handleConfirm"
+                    @tap="handleConfirm({{ orderId}})"
                     >确认配送到达</button>
             </block>
         </view>
@@ -131,18 +131,15 @@
  */
 import wepy from 'wepy';
 import { goodsOrderDetail as goodsOrderDetailConfig } from '../../utils/config';
-import { get, post } from '../../utils/ajax';
+import { get } from '../../utils/ajax';
 import { alert, toast } from '../../utils';
 import {
     LOAD_ORDER_DETAIL,
-    ACCEPT_ORDER,
-    DELIVER_ORDER,
-    REFUSE_ORDER,
-    WHETHER_ACCEPT_REFUND,
-    ARRIVE_ORDER,
 } from '../../utils/url';
+import OrderMixin from '../../components/order/mixin';
 
 export default class Index extends wepy.page {
+    mixins = [OrderMixin]
     config = {
         navigationBarTitleText: '订单详情',
     }
@@ -167,6 +164,7 @@ export default class Index extends wepy.page {
         statusDesc: [],
         showGoodsList: true,
         goodsList: [],
+        orderId: '',
     }
     onLoad({ orderId }) {
         this.statusDesc = goodsOrderDetailConfig.statusDesc;
@@ -245,102 +243,6 @@ export default class Index extends wepy.page {
         },
         handleTriggerShowGoodsList() {
             this.showGoodsList = !this.showGoodsList;
-        },
-        async handleRefuseOrder() {
-            try {
-                const { orderId } = this;
-                const { state } = await post(`${REFUSE_ORDER}${orderId}`);
-
-                if (state !== 100) {
-                    throw new Error('取消订单失败');
-                }
-
-                await toast('取消订单成功');
-                this.loadData();
-            } catch (err) {
-                console.log(err);
-                toast('取消订单失败，请稍后再试');
-            }
-        },
-        async handleAcceptOrder() {
-            try {
-                const { orderId } = this;
-                const { state } = await post(`${ACCEPT_ORDER}${orderId}`);
-
-                if (state !== 100) {
-                    throw new Error('接单失败');
-                }
-
-                await toast('接单成功');
-                this.loadData();
-            } catch (err) {
-                console.log(err);
-                toast('接单失败，请稍后再试');
-            }
-        },
-        async handleStartDeliver() {
-            try {
-                const { orderId } = this;
-                const { state } = await post(`${DELIVER_ORDER}${orderId}`);
-
-                if (state !== 100) {
-                    throw new Error('开始配送失败');
-                }
-
-                await toast('开始配送成功');
-                this.loadData();
-            } catch (err) {
-                console.log(err);
-                toast('开始配送失败，请稍后再试');
-            }
-        },
-        async handlePlatformIn() {
-            try {
-                const { orderId } = this;
-                const { state } = await post(`${WHETHER_ACCEPT_REFUND}${orderId}`, { action: 'refuse' });
-
-                if (state !== 100) {
-                    throw new Error('平台介入失败');
-                }
-
-                await toast('平台介入成功');
-                this.loadData();
-            } catch (err) {
-                console.log(err);
-                toast('平台介入失败');
-            }
-        },
-        async handleAcceptRefund() {
-            try {
-                const { orderId } = this;
-                const { state } = await post(`${WHETHER_ACCEPT_REFUND}${orderId}`, { action: 'agree' });
-
-                if (state !== 100) {
-                    throw new Error('退款失败');
-                }
-
-                await toast('退款成功');
-                this.loadData();
-            } catch (err) {
-                console.log(err);
-                toast('退款失败');
-            }
-        },
-        async handleConfirm() {
-            try {
-                const { orderId } = this;
-                const { state } = await post(`${ARRIVE_ORDER}${orderId}`);
-
-                if (state !== 100) {
-                    throw new Error('');
-                }
-
-                await toast('操作成功');
-                this.loadData();
-            } catch (err) {
-                console.log(err);
-                toast('操作失败');
-            }
         },
     }
 }
