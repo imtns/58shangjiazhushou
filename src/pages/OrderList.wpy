@@ -63,7 +63,7 @@ export default class OrderList extends wepy.page {
             '{}',
             'sjzh_click_orderList_onload',
         );
-        await this.getOrderList(1);
+        await this.getOrderList(this.orderType, this.status);
     }
     onLoad() {
         SendClickLog(

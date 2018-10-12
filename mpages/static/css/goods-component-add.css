@@ -620,7 +620,10 @@ html, body{
           -ms-flex-align: center;
               align-items: center;
       -ms-flex-pack: distribute;
-          justify-content: space-around;
+          justify-content: space-between;
+  }
+  .size-info .info-line:last-child{
+      padding-bottom: 0;
   }
   .size-info .info-line span{
       color:#999;
