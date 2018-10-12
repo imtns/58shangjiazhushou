@@ -92,6 +92,10 @@
                 <view class="show_cancle" @tap="hideIdentityModal">取消</view>
             </view>
         </view>
+        <!-- 分享名片赢大奖 -->
+        <view class="">
+
+        </view>
     </scroll-view>
 </template>
 
