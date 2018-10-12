@@ -11,7 +11,7 @@
             </block>
         </view>
         <view class="order-info">
-            <view class="user-info">
+            <view class="user-info" @tap="handleCall({{ order.telephone }})">
                 <view class="user-name">{{ order.name }}</view>
                 <view class="user-phone">{{ order.telephone }}</view>
                 <view class="icon-phone"></view>
@@ -239,6 +239,10 @@ export default class Index extends wepy.page {
         }
     }
     methods = {
+        handleCall(phoneNumber) {
+            wepy.makePhoneCall({ phoneNumber })
+                .catch(() => {});
+        },
         handleTriggerShowGoodsList() {
             this.showGoodsList = !this.showGoodsList;
         },
