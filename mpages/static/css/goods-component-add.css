@@ -284,7 +284,7 @@ html, body{
 }
 
 .mask{
-    position:absolute;
+    position:fixed;
     left:0;
     top:0;
     width:100%;
@@ -419,7 +419,7 @@ html, body{
     overflow:hidden;
 }
 .win2 {
-    position:absolute;
+    position:fixed;
     z-index:1001;
     width:80%;
     height:2.2rem;
@@ -542,6 +542,7 @@ html, body{
     text-align:center
 }
 .radio{
+    width:1.4rem;
     float:right;
     margin-left:.34rem;
     font-size:14px;
@@ -563,6 +564,8 @@ html, body{
     vertical-align: middle;
     cursor: pointer;
     text-align: center;
+    -webkit-transition: all 250ms ease;
+    -o-transition: all 250ms ease;
     transition: all 250ms ease;
   }
   .radio input[type="radio"]:checked + .radio-label:before {
@@ -579,8 +582,11 @@ html, body{
     background-size:cover;
   }
   .item-flex-s.size{
+      display: -webkit-box;
+      display: -ms-flexbox;
       display: flex;
-      flex-wrap: wrap;
+      -ms-flex-wrap: wrap;
+          flex-wrap: wrap;
   }
   .size-info-wrapper{
       width:100%;
@@ -603,13 +609,18 @@ html, body{
       background-size:contain;
   }
   .size-info .info-line{
+      display: -webkit-box;
+      display: -ms-flexbox;
       display: flex;
       height: .86rem;
       font-size: .28rem;
       line-height: .86rem;
       padding:0 .3rem;
-      align-items: center;
-      justify-content: space-around;
+      -webkit-box-align: center;
+          -ms-flex-align: center;
+              align-items: center;
+      -ms-flex-pack: distribute;
+          justify-content: space-around;
   }
   .size-info .info-line span{
       color:#999;

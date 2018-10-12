@@ -49,7 +49,7 @@ import wepy from 'wepy';
 export default class ServiceOrder extends wepy.component {
     props = {
         orderList: Object,
-        statusSet: Array,
+        statusSet: Object,
         noMore: Boolean,
     }
   methods = {
