@@ -25,7 +25,7 @@ export const GOODS_UNDER = '/goods/under'; // 下架商品
 export const LOAD_ORDER_DETAIL = '/consumerAppointment/get/'; // 订单详情
 export const ACCEPT_ORDER = '/consumerAppointment/accept/'; // 接单
 export const DELIVER_ORDER = '/consumerAppointment/deliverOrder/'; // 配送
-export const REFUSE_ORDER = '/consumerAppointment/arriveOrder/'; // 拒绝接单
+export const REFUSE_ORDER = '/consumerAppointment/bizRufuse/'; // 拒绝接单
 export const WHETHER_ACCEPT_REFUND = '/consumerAppointment/optRefund/'; // 是否统一退款，action: agree, action: refuse
 export const ARRIVE_ORDER = '/consumerAppointment/arriveOrder/'; // 订单送达
 
