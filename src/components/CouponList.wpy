@@ -17,7 +17,7 @@
                     <view class="info">
                         <view class="title">满{{ item.limitAmount }}可用</view>
                         <view class="type">{{ item.subTitle }}</view>
-                        <!-- 固定时间类型 -->
+                        <!-- 固定时间类型 --> 
                         <view class="time" wx:if="{{ item.validType === 1}}">
                             {{ item.validStarttime }}-{{ item.validEndtime }}
                         </view>
