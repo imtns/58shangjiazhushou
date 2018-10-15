@@ -127,6 +127,7 @@ export default class ProductOrder extends wepy.component {
               }
               this.orderList.splice(index, 1);
               toast('取消订单成功');
+              this.checkList();
               this.$apply();
           } catch (err) {
               console.log(err);
@@ -145,6 +146,7 @@ export default class ProductOrder extends wepy.component {
 
               this.orderList.splice(index, 1);
               toast('接单成功');
+              this.checkList();
               this.$apply();
           } catch (err) {
               console.log(err);
@@ -161,6 +163,7 @@ export default class ProductOrder extends wepy.component {
               }
               this.orderList.splice(index, 1);
               toast('开始配送成功');
+              this.checkList();
               this.$apply();
           } catch (err) {
               console.log(err);
@@ -179,6 +182,7 @@ export default class ProductOrder extends wepy.component {
               }
               this.orderList.splice(index, 1);
               toast('平台介入成功');
+              this.checkList();
               this.$apply();
           } catch (err) {
               console.log(err);
@@ -197,6 +201,7 @@ export default class ProductOrder extends wepy.component {
               }
               this.orderList.splice(index, 1);
               toast('退款成功');
+              this.checkList();
               this.$apply();
           } catch (err) {
               console.log(err);
@@ -213,6 +218,7 @@ export default class ProductOrder extends wepy.component {
               }
               this.orderList.splice(index, 1);
               toast('操作成功');
+              this.checkList();
               this.$apply();
           } catch (err) {
               console.log(err);
@@ -220,6 +226,13 @@ export default class ProductOrder extends wepy.component {
           }
       },
   };
+  checkList() {
+      if (this.orderList.length === 0) {
+          this.noOrder = true;
+          this.noMore = false;
+      }
+      this.$apply();
+  }
 }
 </script>
 <style lang="scss">

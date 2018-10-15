@@ -7,6 +7,15 @@
         content="text/html; charset=utf-8" />
   <meta name="viewport"
         content="width=1080, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<<<<<<< HEAD
+=======
+  <style>
+      #abc{
+          width:100px;
+          background:red;
+      }
+  </style>
+>>>>>>> huangxin
 </head>
 
 <body>
@@ -17,6 +26,7 @@
   <script>
     $(function () {
       $("#abc").on("click", function () {
+<<<<<<< HEAD
         wx.chooseImage({
           count: 9, // 最多可以选择的图片张数，默认9
           sizeType: ['original', 'compressed'], // original 原图，compressed 压缩图，默认二者都有
@@ -31,6 +41,9 @@
             // complete
           }
         })
+=======
+        wx.miniProgram.postMessage({data:'123'})
+>>>>>>> huangxin
       })
     })
 
