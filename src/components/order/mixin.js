@@ -14,7 +14,7 @@ export default class OrderMixin extends wepy.mixin {
     data = {
         statusSet: {
             0: '已支付，待接单',
-            1: '已接单，待服务',
+            1: '已接单，待配送',
             2: '已完成',
             3: '已取消',
             4: '已删除',
@@ -157,14 +157,14 @@ export default class OrderMixin extends wepy.mixin {
         // 接单
         async handleAcceptOrder(orderId) {
             try {
-                const { state } = await post(`${ACCEPT_ORDER}${orderId}`);
+                // const { state } = await post(`${ACCEPT_ORDER}${orderId}`);
 
-                if (state !== 100) {
-                    throw new Error('接单失败');
-                }
+                // if (state !== 100) {
+                //     throw new Error('接单失败');
+                // }
 
-                await toast('接单成功');
-                this.loadData();
+                await toast(orderId);
+                // this.loadData();
             } catch (err) {
                 console.log(err);
                 toast('接单失败，请稍后再试');

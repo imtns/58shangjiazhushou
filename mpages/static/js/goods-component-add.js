@@ -110,6 +110,12 @@ var Page = {
         });
       }
     });
+    $("#pName").on('keyup',function(e) {
+        alert('44a4')
+        if (e.target.value.length >= 15) {
+            e.target.value = e.target.value.substr(0,15);
+        }
+    });
     $(".icon-bold").on("click", function () {
       if ($(this).attr("src").indexOf('unbold') > 1) {
         $(this).attr("src", '//static.58.com/lbg/shangjiaxcxht/zhushou/img/bold.png');
@@ -134,7 +140,7 @@ var Page = {
         Page.toast($errorPop, '规格最多添加10个');
         return;
       }
-      var insertContent = '<div class="size-info-wrapper">' + '<div class="size-info"><div class="info-line">' + '<span>规格名称</span>' + '<input type="text" class="size-name" value="" placeholder="例/大份">' + '</div>' + '<div class="info-line">' + '<span>价格</span>' + '<input type="text" class="size-price" value="" placeholder="请输入"><span>元</span>' + '</div>' + '<div class="info-line">' + '<span>库存</span>' + '<input type="text" class="size-stock" value="" placeholder="请输入"><span>件</span>' + '</div>' + '</div>' + '<div class="delete"></div>' + '</div>';
+      var insertContent = '<div class="size-info-wrapper">' + '<div class="size-info"><div class="info-line">' + '<span>名称</span>' + '<input type="text" class="size-name" value="" placeholder="例/大份">' + '</div>' + '<div class="info-line">' + '<span>价格</span>' + '<input type="text" class="size-price" value="" placeholder="请输入"><span></span>' + '</div>' + '<div class="info-line">' + '<span>库存</span>' + '<input type="text" class="size-stock" value="" placeholder="请输入"><span></span>' + '</div>' + '</div>' + '<div class="delete"></div>' + '</div>';
       $(insertContent).insertBefore($(this));
       $(".size-info-wrapper .delete").on("click", function () {
         $(this).parent().remove();
@@ -401,7 +407,7 @@ var Page = {
         return;
       }
       $('.item-chose').text(name);
-      Page.name = name;
+      Page.name = name; 
       Page.group = group;
       $('.mask,.group-dialog').addClass('none');
       $(this).data(name, '');
@@ -443,10 +449,9 @@ var Page = {
   sizeWrap: function (sku) {
     var html = '';
     sku.forEach(function (item) {
-      html += '<div class="size-info-wrapper" id="' + item.id + '">' + '<div class="size-info">' + '<div class="info-line">' + '<span>规格名称</span>' + '<input type="text" class="size-name" value="' + item.skuName + '">' + '</div>' + '<div class="info-line">' + '<span>价格</span>' + '<input type="text" class="size-price" value="' + item.price + '">' + '</div>' + '<div class="info-line">' + '<span>库存</span>' + '<input type="text" class="size-stock" value="' + item.stock + '">' + '</div>' + '</div>' + '<div class="delete"></div>' + '</div>';
+      html += '<div class="size-info-wrapper" id="' + item.id + '">' + '<div class="size-info">' + '<div class="info-line">' + '<span>名称</span>' + '<input type="text" class="size-name" value="' + item.skuName + '">' + '</div>' + '<div class="info-line">' + '<span>价格</span>' + '<input type="text" class="size-price" value="' + item.price + '">' + '</div>' + '<div class="info-line">' + '<span>库存</span>' + '<input type="text" class="size-stock" value="' + item.stock + '">' + '</div>' + '</div>' + '<div class="delete"></div>' + '</div>';
     });
-    // $("#size-async").html(html);
-    $(html).insertBefore($("#ddd"));
+    $(html).insertAfter($("#size-text"));
     $(".size-info-wrapper .delete").on("click", function () {
       console.log($(this).parent().attr("id"));
       skuRemoved.push($(this).parent().attr("id"));
