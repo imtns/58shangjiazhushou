@@ -15,7 +15,7 @@
                         </block>
                     </view>
                     <view class="subtitle">
-                        满{{ item.limitAmount }}可用
+                        满{{ item.limitAmount }}可用 
                     </view>
                     <!-- 固定时间类型 -->
                     <view class="valid-time" wx:if="{{ item.validType === 1}}">
