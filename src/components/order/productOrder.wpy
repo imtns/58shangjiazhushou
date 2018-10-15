@@ -213,6 +213,7 @@ export default class ProductOrder extends wepy.component {
               }
               this.orderList.splice(index, 1);
               toast('操作成功');
+              this.$apply();
           } catch (err) {
               console.log(err);
               toast('操作失败');
