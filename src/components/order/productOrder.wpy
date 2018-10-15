@@ -12,7 +12,7 @@
                     <view class="order-line"></view>
                     <view class="order-info">
                         <view class="order-info-detail">
-                            <image class="icon" src="{{item.mpLogo}}"></image><text class="name">{{item.mpName}}</text>
+                            <image class="icon" src="{{item.mpLogo}}?w=29"></image><text class="name">{{item.mpName}}</text>
                         </view> 
                         <view class="order-info-detail"><text class="item">商品名称：</text> {{item.description}}</view>
                         <view class="order-info-detail order-info-detail-address"><text class="item">配送地址：</text> {{item.consumerAddressJson.fullAddress}}</view>
