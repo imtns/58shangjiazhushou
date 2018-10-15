@@ -2,9 +2,10 @@
 <view class="order-view">
     <block wx:if="{{orderList && orderList.length > 0}}">
      <scroll-view  lower-threshold="70" scroll-top="{{scrollValue}}"  @scrolltolower="bindLoadDown" style="height:82vh" scroll-y="true"> 
+          <navigator wx:for="{{orderList}}" wx:for-index="index" wx:key="item.id" url="/pages/goods/orderDetail?orderId={{item.id}}">
         <view class="mod-view mod-order">
-            <view data-item="{{item}}">
-                <navigator wx:for="{{orderList}}" wx:for-index="idx" wx:key="item.id" url="/pages/goods/orderDetail?orderId={{item.id}}">
+           
+                <view data-item="{{item}}"   >
                     <view class="order-orderNo">
                         <view class="order-No">订单号: {{item.id}}</view>
                         <view class="order-status {{item.status==3?'order-status-grey':''}}">{{statusSet[item.status]}}</view>
@@ -22,24 +23,25 @@
                         <text class="order-price-name">共计费用</text>
                         <text class="order-price-value">￥<text class="price">{{item.originalAmount}}</text></text>
                     </view>
-                </navigator>
+
                 <view class="order-line"></view>
-                <view class="order-buttons" @tap="handleAcceptOrder(item.id)" wx:if="{{ item.status === 0 }}">
+                <view class="order-buttons" @tap.stop="handleAcceptOrder({{item.id}},{{index}})" wx:if="{{ item.status === 0 }}">
                     <view class="button">立刻接单</view>
                 </view>
-                <view class="order-buttons" wx:if="{{ item.status === 1 }}">
+                <view class="order-buttons" @tap.stop="handleStartDeliver({{item.id}},{{index}})" wx:if="{{ item.status === 1 }}">
                     <view class="button">开始配送</view>
                 </view>
-                <view class="order-buttons" wx:if="{{ item.status === 13 }}">
+                <view class="order-buttons" @tap.stop="handleConfirm({{item.id}},{{index}})" wx:if="{{ item.status === 13 }}">
                     <view class="button">已送达</view>
                 </view>
-                <view class="order-buttons" wx:if="{{ item.status === 10 }}">
+                <view class="order-buttons" @tap.stop="handlePlatformIn({{item.id}},{{index}})" wx:if="{{ item.status === 10 }}">
                     <view class="button">平台介入</view>
                     <view class="button">同意</view>
                 </view>
             </view>
         </view>
-               <view class="order-list-nomore" wx:if="{{noMore}}">
+          </navigator>
+        <view class="order-list-nomore" wx:if="{{noMore}}">
             ╮(￣▽￣)╭已经到底了
         </view>
     </scroll-view>
@@ -52,17 +54,129 @@
 </template>
 <script>
 import wepy from 'wepy';
+import { toast } from '../../utils';
+import { post } from '../../utils/ajax';
+import {
+    ACCEPT_ORDER,
+    DELIVER_ORDER,
+    REFUSE_ORDER,
+    WHETHER_ACCEPT_REFUND,
+    ARRIVE_ORDER,
+} from '../../utils/url';
 
 export default class ProductOrder extends wepy.component {
   props = {
-    orderList: Object,
-    statusSet: Object,
-    noMore: Boolean
+      orderList: Object,
+      statusSet: Object,
+      noMore: Boolean,
   };
   methods = {
-    bindLoadDown() {
-      this.$emit('bindLoadDown');
-    }
+      bindLoadDown() {
+          this.$emit('bindLoadDown');
+      },
+      // 商家的各种按钮操作事件处理
+
+      // 拒绝接单
+      async handleRefuseOrder(orderId, index) {
+          try {
+              const { state } = await post(`${REFUSE_ORDER}${orderId}`);
+
+              if (state !== 100) {
+                  throw new Error('取消订单失败');
+              }
+              this.orderList.splice(index, 1);
+              toast('取消订单成功');
+              this.$apply();
+          } catch (err) {
+              console.log(err);
+              toast('取消订单失败，请稍后再试');
+          }
+      },
+      // 接单
+      async handleAcceptOrder(orderId, index) {
+          console.log(orderId);
+          try {
+              const { state } = await post(`${ACCEPT_ORDER}${orderId}`);
+
+              if (state !== 100) {
+                  throw new Error('接单失败');
+              }
+
+              this.orderList.splice(index, 1);
+              toast('接单成功');
+              this.$apply();
+          } catch (err) {
+              console.log(err);
+              toast('接单失败，请稍后再试');
+          }
+      },
+      // 开始配送
+      async handleStartDeliver(orderId, index) {
+          try {
+              const { state } = await post(`${DELIVER_ORDER}${orderId}`);
+
+              if (state !== 100) {
+                  throw new Error('开始配送失败');
+              }
+              this.orderList.splice(index, 1);
+              toast('开始配送成功');
+              this.$apply();
+          } catch (err) {
+              console.log(err);
+              toast('开始配送失败，请稍后再试');
+          }
+      },
+      // 平台介入
+      async handlePlatformIn(orderId, index) {
+          try {
+              const { state } = await post(`${WHETHER_ACCEPT_REFUND}${orderId}`, {
+                  action: 'refuse',
+              });
+
+              if (state !== 100) {
+                  throw new Error('平台介入失败');
+              }
+              this.orderList.splice(index, 1);
+              toast('平台介入成功');
+              this.$apply();
+          } catch (err) {
+              console.log(err);
+              toast('平台介入失败');
+          }
+      },
+      // 同意退款
+      async handleAcceptRefund(orderId, index) {
+          try {
+              const { state } = await post(`${WHETHER_ACCEPT_REFUND}${orderId}`, {
+                  action: 'agree',
+              });
+
+              if (state !== 100) {
+                  throw new Error('退款失败');
+              }
+              this.orderList.splice(index, 1);
+              toast('退款成功');
+              this.$apply();
+          } catch (err) {
+              console.log(err);
+              toast('退款失败');
+          }
+      },
+      // 已送达
+      async handleConfirm(orderId, index) {
+          try {
+              const { state } = await post(`${ARRIVE_ORDER}${orderId}`);
+
+              if (state !== 100) {
+                  throw new Error('');
+              }
+              this.orderList.splice(index, 1);
+              toast('操作成功');
+          } catch (err) {
+              console.log(err);
+              toast('操作失败');
+          }
+      },
   };
 }
 </script>
@@ -87,6 +201,7 @@ export default class ProductOrder extends wepy.component {
   font-size: 30rpx;
   float: left;
   width: 100%;
+  margin-bottom: 30rpx;
 }
 
 .order-No {
@@ -109,7 +224,7 @@ export default class ProductOrder extends wepy.component {
   display: inline-block;
   background: rgb(236, 236, 236);
   height: 1rpx;
-  margin: 30rpx -30rpx 1rpx;
+  margin: 0rpx -30rpx 1rpx;
 }
 
 .order-info {
