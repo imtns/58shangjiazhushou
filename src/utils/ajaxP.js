@@ -1,7 +1,7 @@
 import wepy from 'wepy';
 import { toast } from './index';
 
-const test = '';
+const test = 'test';
 const host = 'https://yaofa.58.com';
 const http = (method, ...props) => {
     const [url, param, showLoading = true] = props;
