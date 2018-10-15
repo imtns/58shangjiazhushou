@@ -10,7 +10,7 @@
                     <view class="order-status active" wx:else>{{statusSet[item.status]}}</view>
                 </view>
                 <view class="order-ul-li-row logo-row {{item.read === false ? 'unread' : ''}}">
-                    <image class="order-mplogo" src="{{item.mpLogo}}"/>
+                    <image class="order-mplogo" src="{{item.mpLogo}}?w=29"/>
                     <view class="order-mpname">{{item.mpName}}</view>
                 </view>
                 <view class="order-ul-li-row order-servicename">

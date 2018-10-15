@@ -96,6 +96,11 @@ export default class OrderMixin extends wepy.mixin {
             const res = await get('/consumerAppointment/queryPageForUser', this.sendParams);
 
             const data = this.parseOrderList(res.data);
+            data.forEach((item) => {
+                if (item.consumerAddressJson) {
+                    item.consumerAddressJson = JSON.parse(item.consumerAddressJson);
+                }
+            });
             this.orderList.push(...data);
             this.total = res.recordsTotal;
             if (this.orderList.length === this.total && this.sendParams.pageNum !== 1) {
