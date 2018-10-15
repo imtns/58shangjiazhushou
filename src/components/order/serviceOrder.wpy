@@ -39,8 +39,8 @@
     </scroll-view>
     </block>
     <view class="empty-wrap" wx:else>
-        <image class="img-no-data" src="//img.58cdn.com.cn/lbg/jianzhan/images/empty.png"/>
-        <view class="txt-no-data">暂无订单信息</view>
+        <image class="img-no-data" src="../../../pages/assets/empty.png"/>
+        <view class="txt-no-data">您还没有订单哦</view>
     </view>
 </template>
 <script>
