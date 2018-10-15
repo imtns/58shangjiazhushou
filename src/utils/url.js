@@ -43,6 +43,8 @@ export const INSERT_SESSION = '/wechat/bizAssistAuth/insert'; // 插入SESSION�
 export const GET_EXT_JSON = '/mpBusinessRelease/getExtJson'; // 获取ExtJson
 export const GET_ASSIST_AUTH = '/wechat/bizAssistAuth/get'; // 获取关注公众号信息
 
+export const SHARE = '/mplogic/share'; // 分享小程序
+
 // 访客记录接口
 export const CONSUMER_RECORDS = '/mpCardBusiness/consumerRecords';
 // 底部消息tab，获取contact列表

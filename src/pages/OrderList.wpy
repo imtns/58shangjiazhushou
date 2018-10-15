@@ -1,20 +1,12 @@
 <template>
     <view class="orderlist">
         <tabs></tabs>
-        <!-- <view class="tabs-wrap">
-            <view class="tab-box {{sendParams.status==='0'?'selected':''}}" @tap="bindClickTab(0)">待接单</view>
-            <view class="tab-box {{sendParams.status==='1'?'selected':''}}" @tap="bindClickTab(1)">待服务</view>
-            <view class="tab-box {{sendParams.status==='2'?'selected':''}}" @tap="bindClickTab(2)">已完成</view>
-            <view class="tab-box {{sendParams.status===''?'selected':''}}" @tap="bindClickTab('')">全部</view>
-        </view> -->
         <view class="listWrapper">
             <block wx:if="{{orderType === 'product'}}">
-                <!-- <productOrder :orderList.sync="productOrderList" :statusSet="statusSet" :noMore.sync="noMore"></productOrder> -->
-                <productOrder :orderList.sync="orderList" :statusSet="statusSet" :noMore.sync="noMore"></productOrder>
+                <productOrder :orderList.sync="orderList"  :statusSet="statusSet" :noOrder.sync="noOrder" :noMore.sync="noMore"></productOrder>
             </block>
             <block wx:if="{{orderType === 'service'}}">
-                <!-- <serviceOrder :orderList.sync="serviceOrderList" :statusSet="statusSet" :noMore.sync="noMore"></serviceOrder> -->
-                <serviceOrder :orderList.sync="orderList" :statusSet="statusSet" :noMore.sync="noMore"></serviceOrder>
+                <serviceOrder :orderList.sync="orderList" :statusSet="statusSet" :noOrder.sync="noOrder" :noMore.sync="noMore"></serviceOrder>
             </block>
         </view>
     </view>
@@ -45,12 +37,18 @@ export default class OrderList extends wepy.page {
         switchType: async (type) => {
             this.status = '';
             this.orderType = type;
+            this.orderList = [];
+            this.noOrder = false;
+            this.sendParams.pageNum = 1;
             await this.getOrderList(type, '');
             this.$apply();
             // this.filterOrder('');
         },
         async getStatus(id) {
             this.status = id;
+            this.orderList = [];
+            this.sendParams.pageNum = 1;
+            this.noOrder = false;
             await this.getOrderList(this.orderType, id);
             this.$apply();
             // this.filterOrder(id);
@@ -63,6 +61,8 @@ export default class OrderList extends wepy.page {
             '{}',
             'sjzh_click_orderList_onload',
         );
+        this.orderList = [];
+        this.sendParams.pageNum = 1;
         await this.getOrderList(this.orderType, this.status);
     }
     onLoad() {
@@ -72,14 +72,6 @@ export default class OrderList extends wepy.page {
             '{}',
             'sjzh_click_orderList_onload',
         );
-    }
-    onHide() {
-        this.sendParams = {
-            pageNum: 1,
-            pageSize: 10,
-            status: '',
-        };
-        this.orderList = [];
     }
 }
 </script>
