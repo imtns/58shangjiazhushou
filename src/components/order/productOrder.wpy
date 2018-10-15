@@ -14,9 +14,9 @@
                         <view class="order-info-detail">
                             <image class="icon" src="{{item.mpLogo}}"></image><text class="name">{{item.mpName}}</text>
                         </view> 
-                        <view class="order-info-detail"><text class="item">服务名称：</text> {{item.serviceName}}</view>
-                        <view class="order-info-detail order-info-detail-address"><text class="item">服务地址：</text> {{item.consumerAddressJson.fullAddress}}</view>
-                        <view class="order-info-detail"><text class="item">服务时间：</text> {{item.startTime}}</view>
+                        <view class="order-info-detail"><text class="item">商品名称：</text> {{item.description}}</view>
+                        <view class="order-info-detail order-info-detail-address"><text class="item">配送地址：</text> {{item.consumerAddressJson.fullAddress}}</view>
+                        <view class="order-info-detail"><text class="item">预计送达时间：</text> {{item.arriveTime}}</view>
                     </view>
                     <view class="order-price">
                         <text class="order-price-name">共计费用</text>

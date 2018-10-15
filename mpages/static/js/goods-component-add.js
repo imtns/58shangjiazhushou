@@ -111,7 +111,6 @@ var Page = {
       }
     });
     $("#pName").on('keyup',function(e) {
-        alert('44a4')
         if (e.target.value.length >= 15) {
             e.target.value = e.target.value.substr(0,15);
         }
@@ -140,7 +139,7 @@ var Page = {
         Page.toast($errorPop, '规格最多添加10个');
         return;
       }
-      var insertContent = '<div class="size-info-wrapper">' + '<div class="size-info"><div class="info-line">' + '<span>名称</span>' + '<input type="text" class="size-name" value="" placeholder="例/大份">' + '</div>' + '<div class="info-line">' + '<span>价格</span>' + '<input type="text" class="size-price" value="" placeholder="请输入"><span></span>' + '</div>' + '<div class="info-line">' + '<span>库存</span>' + '<input type="text" class="size-stock" value="" placeholder="请输入"><span></span>' + '</div>' + '</div>' + '<div class="delete"></div>' + '</div>';
+      var insertContent = '<div class="size-info-wrapper">' + '<div class="size-info"><div class="info-line">' + '<span>名称</span>' + '<input type="text" class="size-name" value="" placeholder="例/大份">' + '</div>' + '<div class="info-line">' + '<span>价格</span>' + '<input type="number" class="size-price" value="" placeholder="请输入"><span></span>' + '</div>' + '<div class="info-line">' + '<span>库存</span>' + '<input type="number" class="size-stock" value="" placeholder="请输入"><span></span>' + '</div>' + '</div>' + '<div class="delete"></div>' + '</div>';
       $(insertContent).insertBefore($(this));
       $(".size-info-wrapper .delete").on("click", function () {
         $(this).parent().remove();
@@ -207,7 +206,8 @@ var Page = {
           temp = $('.zeditor-content').find('p'),
           content = $('.zeditor-content').html(),
           pics = $('#cover').attr('src') ? $('#cover').attr('src').split('.cn')[1].replace(/([/])\1+/g, '$1') : '',
-          sku = [];
+          sku = [],
+          skuType = 1;
       if (Number(price) > 999999) {
         Page.toast($errorPop, '商品价格不能大于99999');
         return;
@@ -255,6 +255,7 @@ var Page = {
         return;
       }
       if ($('input[name=size]:checked').val() == 'multi') {
+        skuType = 2;
         $(".size-info-wrapper").forEach(function (item) {
           var skuObj = {
             id: $(item).attr("id"),
@@ -298,7 +299,8 @@ var Page = {
         price: price || '0',
         description: description,
         test: Page.test || '',
-        mpId: Page.mpId
+        mpId: Page.mpId,
+        skuType: skuType,
       };
       console.log(data);
       if (Page.id && Page.id != 'undefined') {
@@ -449,7 +451,7 @@ var Page = {
   sizeWrap: function (sku) {
     var html = '';
     sku.forEach(function (item) {
-      html += '<div class="size-info-wrapper" id="' + item.id + '">' + '<div class="size-info">' + '<div class="info-line">' + '<span>名称</span>' + '<input type="text" class="size-name" value="' + item.skuName + '">' + '</div>' + '<div class="info-line">' + '<span>价格</span>' + '<input type="text" class="size-price" value="' + item.price + '">' + '</div>' + '<div class="info-line">' + '<span>库存</span>' + '<input type="text" class="size-stock" value="' + item.stock + '">' + '</div>' + '</div>' + '<div class="delete"></div>' + '</div>';
+      html += '<div class="size-info-wrapper" id="' + item.id + '">' + '<div class="size-info">' + '<div class="info-line">' + '<span>名称</span>' + '<input type="text" class="size-name" value="' + item.skuName + '">' + '</div>' + '<div class="info-line">' + '<span>价格</span>' + '<input type="number" class="size-price" value="' + item.price + '">' + '</div>' + '<div class="info-line">' + '<span>库存</span>' + '<input type="number" class="size-stock" value="' + item.stock + '">' + '</div>' + '</div>' + '<div class="delete"></div>' + '</div>';
     });
     $(html).insertAfter($("#size-text"));
     $(".size-info-wrapper .delete").on("click", function () {
@@ -474,7 +476,7 @@ var Page = {
         var res = JSON.parse(res);
         console.log(res);
         $('.group-dialog-list').html('');
-        if (res.data.sku && res.data.sku.length > 0) {
+        if (res.data.sku && res.data.sku.length > 0 && res.data.skuHave == 1) {
           Page.sizeWrap(res.data.sku);
           $("#radio-1").attr('checked', 'checked');
           $(".item-flex-s").show();
