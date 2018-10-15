@@ -31,18 +31,16 @@ export default class OrderMixin extends wepy.mixin {
         },
         orderList: [],
         total: 0,
-        serviceOrderList: [],
-        productOrderList: [],
         noMore: false,
-        listSaver: [],
+        noOrder: false,
     };
     events = {
         bindLoadDown() {
             if (this.noMore) return;
-            if (this.orderType === 'service' && this.serviceOrderList === this.total.service) {
+            if (this.orderType === 'service' && this.OrderList === this.total) {
                 return;
             }
-            if (this.orderType === 'product' && this.productOrderList === this.total.product) {
+            if (this.orderType === 'product' && this.OrderList === this.total) {
                 return;
             }
             this.sendParams = Object.assign({}, this.sendParams, {
@@ -68,25 +66,11 @@ export default class OrderMixin extends wepy.mixin {
             return ret;
         });
     }
-    // filterOrder(status) {
-    //     if (this.orderType === 'service') {
-    //         this.serviceOrderList =
-    //             status === ''
-    //                 ? this.listSaver.filter(item => item.orderType === 1)
-    //                 : this.listSaver.filter(item => item.status.toString() === status && item.orderType === 1);
-    //     }
-    //     if (this.orderType === 'product') {
-    //         this.productOrderList =
-    //             status === ''
-    //                 ? this.listSaver.filter(item => item.orderType === 4)
-    //                 : this.listSaver.filter(item => item.status.toString() === status && item.orderType === 4);
-    //     }
-    // }
     async getOrderList(type, id = '', loadMore) {
         type = type === 'product' ? 4 : 1;
         try {
             if (!loadMore) {
-                this.orderList = [];
+                // this.orderList = [];
                 this.sendParams.pageNum = 1;
             }
             SendClickLog(
@@ -106,23 +90,13 @@ export default class OrderMixin extends wepy.mixin {
 
             const data = this.parseOrderList(res.data);
             this.orderList.push(...data);
-            // this.listSaver.push(...data);
             this.total = res.recordsTotal;
-            if (this.orderList.length === this.total) {
+            if (this.orderList.length === this.total && this.sendParams.pageNum !== 1) {
                 this.noMore = true;
             }
-            // const filterProduct = data.filter(item => item.orderType === 4);
-            // this.productOrderList.push(...filterProduct);
-            // this.productOrderList.forEach(item => {
-            //     if (
-            //         typeof item.consumerAddressJson !== 'object' &&
-            //         item.consumerAddressJson !== null
-            //     ) {
-            //         item.consumerAddressJson = JSON.parse(item.consumerAddressJson);
-            //     }
-            // });
-            // const filterService = data.filter(item => item.orderType === 1);
-            // this.serviceOrderList.push(...filterService);
+            if (this.orderList.length === 0 && this.sendParams.pageNum === 1) {
+                this.noOrder = true;
+            }
             this.$apply();
         } catch (err) {
             toast(err);

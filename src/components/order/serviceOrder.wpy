@@ -1,5 +1,5 @@
 <template lang="wxml">
-<block wx:if="{{orderList && orderList.length > 0}}">
+<block wx:if="{{!noOrder}}">
     <scroll-view class="orders-ul"  style="height:82vh" scroll-y @scrolltolower="bindLoadDown" >
         <navigator wx:for="{{orderList}}" wx:for-index="idx" wx:key="item.id" url="/pages/OrderDetail?id={{item.id}}">
             <view class="order-ul-li" data-orderid="{{item.id}}">
@@ -51,6 +51,7 @@ export default class ServiceOrder extends wepy.component {
         orderList: Object,
         statusSet: Object,
         noMore: Boolean,
+        noOrder: Boolean,
     }
   methods = {
       bindLoadDown() {
@@ -200,7 +201,7 @@ export default class ServiceOrder extends wepy.component {
   display: block;
   width: 180rpx;
   height: 180rpx;
-  margin: 200rpx auto 20rpx;
+  margin: 100rpx auto 20rpx;
 }
 .txt-no-data {
   line-height: 88rpx;
