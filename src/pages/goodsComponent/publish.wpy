@@ -170,14 +170,15 @@ export default class extends wepy.page {
     }
     onLoad() {
         mpId = wepy.getStorageSync('current_mpid');
-        this.loadData();
+        // this.loadData();
         this.checkBusinessInfo();
     }
     onShow() {
-        if (globalService.get('refresh')) {
-            globalService.set('refresh', false);
-            this.loadData();
-        }
+        // if (globalService.get('refresh')) {
+        //     globalService.set('refresh', false);
+        //     this.loadData();
+        // }
+        this.loadData();
     }
 
     methods = {
