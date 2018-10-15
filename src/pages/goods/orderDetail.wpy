@@ -208,6 +208,8 @@ export default class Index extends wepy.page {
                 arriveTime,
                 remark,
                 applyStatus,
+
+                optionTime, // 商家操作时间
             } = data;
 
             const {
@@ -233,6 +235,8 @@ export default class Index extends wepy.page {
                 fullAddress,
                 applyStatus,
             };
+
+            this.statusDesc[13][1] = this.statusDesc[13][1].replace('$$', optionTime);
             this.$apply();
         } catch (err) {
             console.log(err);
