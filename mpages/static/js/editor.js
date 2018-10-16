@@ -244,7 +244,7 @@
                 params.selectImage && params.selectImage(function (url) {
                     var $p = window.$p;
                     if ($p && $p.parent().dom) {
-                        $("#mainWapper").append('<p><img src="'+url+'" /></p>');
+                        $("#mainWapper").append('<p><img src="'+url+'" style="width:100%" /></p>');
                     } else {
                         $editor.append('<p><img src="'+url+'" /></p>');
                     }

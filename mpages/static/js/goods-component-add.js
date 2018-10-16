@@ -83,7 +83,7 @@ var Page = {
           formData.append('source', $(self).get(0).files[0]);
           document.domain = '58.com';
           $.ajax({
-            url: 'https://yaofa.58.com/fileUpload',
+            url: 'https://yaofa.58.com/picRotateUpload',
             type: 'POST',
             data: formData,
             contentType: false,
@@ -165,7 +165,7 @@ var Page = {
 
       formData.append('sources', $(self).get(0).files[0]);
       $.ajax({
-        url: 'https://yaofa.58.com/fileUpload',
+        url: 'https://yaofa.58.com/picRotateUpload',
         type: 'POST',
         data: formData,
         contentType: false,
