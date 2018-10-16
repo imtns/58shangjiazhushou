@@ -13,18 +13,8 @@ export default class GoodsComponentAdd extends wepy.page {
     }
     onLoad(option) {
         const ppu = encodeURIComponent(wx.getStorageSync('ppu'));
-<<<<<<< HEAD
-<<<<<<< HEAD
-        const v = (+new Date() * 1).toString(36);
-        this.url = `https://yaofa.58.com/uhtml/goodsComponentAdd?ppu=${ppu}&mpId=${wx.getStorageSync('current_mpid')}&group=${option.group}&id=${option.id}#wechat_redirect`;
-=======
-        // const v = (+new Date() * 1).toString(36);
-        this.url = `https://yaofa.58.com/uhtml/goodsComponentAdd?v=1&ppu=${ppu}&mpId=${wx.getStorageSync('current_mpid')}&group=${option.group}&id=${option.id}#wechat_redirect`;
->>>>>>> huangxin
-=======
         const v = (+new Date() * 1).toString(36);
         this.url = `https://yaofa.58.com/uhtml/goodsComponentAdd?v=${v}&ppu=${ppu}&mpId=${wx.getStorageSync('current_mpid')}&group=${option.group}&id=${option.id}`;
->>>>>>> huangxin
         this.$apply();
         console.log(this.url);
     }
