@@ -46,7 +46,7 @@
     </scroll-view>
     </block>
      <view class="empty-wrap" wx:else>
-        <image class="img-no-data" src="../../../pages/assets/empty.png"/>
+        <image class="img-no-data" src="/pages/assets/empty.png"/>
         <view class="txt-no-data">您还没有订单哦</view>
         <view class="noOrder-frame">
             “想获得更多订单和客户? 您可以：”
