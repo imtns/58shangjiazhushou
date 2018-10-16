@@ -9,6 +9,7 @@
                         <view class="order-No">订单号: {{item.id}}</view>
                         <view class="order-status cancel" wx:if="{{item.status==3}}">{{statusSet[item.status]}}</view>
                         <view class="order-status complete" wx:elif="{{item.status==2}}">{{statusSet[item.status]}}</view>
+                        <view class="order-status finish" wx:elif="{{item.status==14}}">{{statusSet[item.status]}}</view>
                         <view class="order-status active" wx:else>{{statusSet[item.status]}}</view>
                     </view>
                     <view class="order-line"></view>
