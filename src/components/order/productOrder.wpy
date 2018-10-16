@@ -25,7 +25,7 @@
                         <text class="order-price-name">共计费用</text>
                         <text class="order-price-value cancel" wx:if="{{item.status==3}}">￥<text class="price">{{item.originalAmount}}</text></text>
                         <text class="order-price-value complete" wx:elif="{{item.status==2}}">￥<text class="price">{{item.originalAmount}}</text></text>
-                        <text class="order-price-value active" wx:else>￥<text class="price">{{item.originalAmount}}</text></text>
+                        <text class="order-price-value active" wx:else>￥<text class="price">{{item.realAmount}}</text></text>
                     </view>
 
                 <view class="order-line"></view>
