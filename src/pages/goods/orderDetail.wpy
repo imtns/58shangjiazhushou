@@ -209,7 +209,7 @@ export default class Index extends wepy.page {
                 remark,
                 applyStatus,
 
-                optionTime, // 商家操作时间
+                startTime, // 商家配送时间
             } = data;
 
             const {
@@ -236,7 +236,7 @@ export default class Index extends wepy.page {
                 applyStatus,
             };
 
-            this.statusDesc[13][1] = this.statusDesc[13][1].replace('$$', optionTime);
+            this.statusDesc[13][1] = this.statusDesc[13][1].replace('$$', startTime || '');
             this.$apply();
         } catch (err) {
             console.log(err);
