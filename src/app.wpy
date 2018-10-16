@@ -154,7 +154,7 @@ export default class extends wepy.app {
         //     'UID=47350441209367&UN=%E8%A2%81%E7%AD%B1%E4%B8%B90803&TT=b1ce9a3bf0dbe2fda2da594405532c38&PBODY=BPap2Dvi_m5L2imfEcj-FU_MDPTuQq26GBasfK-ItJHahjEy_bWyGsg39BqTSmck89_XCeUyHZ8sXnIN2FhO8hTveC4zvNGzJB_Z9MHGxAlCjSgUHCw3cMoMVxMfvj_bVe0PbGyyS2Q5EaUt--KqqpHJv569rteEzsnBFGtf3xI&VER=1',
         // );
         // 学强的ppu
-        // wx.setStorageSync('ppu', 'UID=33433383496455&UN=ydvzv_p7&TT=63046237fda44c3618cc448c0d9e775f&PBODY=PzEmS2SkwlxQvyWQ3mU3o0bHEOoNi6QYWl3WpU1qkKKsvIlH1htP_qIGa6tTLiV8CKDI1t4aUPcIIASv6HJ84yiJkydieLeKtGxdnXjneT6qSViYdf6Aq8PLlyouQOawaSZNS-aryLMYEPWHPcp91YGv-degT1vDexCUdl28H9s&VER=1');
+        wx.setStorageSync('ppu', 'UID=33433383496455&UN=ydvzv_p7&TT=63046237fda44c3618cc448c0d9e775f&PBODY=PzEmS2SkwlxQvyWQ3mU3o0bHEOoNi6QYWl3WpU1qkKKsvIlH1htP_qIGa6tTLiV8CKDI1t4aUPcIIASv6HJ84yiJkydieLeKtGxdnXjneT6qSViYdf6Aq8PLlyouQOawaSZNS-aryLMYEPWHPcp91YGv-degT1vDexCUdl28H9s&VER=1');
         // wx.setStorageSync('ppu', 'UID=48738323270929&UN=h34xb9&TT=790cd18a7dc07c6c47dd4430561ebe49&PBODY=KxccExLLZL2FwQdhfyCRtfhIXBEY44p0bw8ZrBCn4RtLTpTZh6m_7mdLWlcUP2VkbFI2QrpmszFtZgkuYfta9nFLRbfx1svpxcb0IiDzLQREz_2Z6XwZ5VROQg6X5mFYtIEqmdphcP3q6No3bGp65lRg-TGePKaYq0-BGoov3Lc&VER=1');
     }
     onShow (options) {
