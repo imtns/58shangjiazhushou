@@ -27,7 +27,7 @@ export default class OrderMixin extends wepy.mixin {
             10: '退款中',
             11: '买单支付',
             12: '退款处理中',
-            13: '开始配送',
+            13: '配送中',
             14: '订单已送达',
             15: '商家拒绝接单',
         },
