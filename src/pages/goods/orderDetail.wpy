@@ -236,7 +236,9 @@ export default class Index extends wepy.page {
                 applyStatus,
             };
 
-            this.statusDesc[13][1] = this.statusDesc[13][1].replace('$$', startTime || '');
+            const newDesc = JSON.parse(JSON.stringify(this.statusDesc));
+            newDesc[13][1] = newDesc[13][1].replace('$$', startTime || '');
+            this.statusDesc = newDesc;
             this.$apply();
         } catch (err) {
             console.log(err);
