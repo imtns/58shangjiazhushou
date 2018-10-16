@@ -1,5 +1,5 @@
 <template>
-    <web-view src="{{url}}" @message="bindmessage"></web-view>
+    <web-view src="{{url}}"></web-view>
 </template>
 <script>
 import wepy from 'wepy';
@@ -13,44 +13,12 @@ export default class GoodsComponentAdd extends wepy.page {
     }
     onLoad(option) {
         const ppu = encodeURIComponent(wx.getStorageSync('ppu'));
-<<<<<<< HEAD
         const v = (+new Date() * 1).toString(36);
-        this.url = `https://yaofa.58.com/uhtml/goodsComponentAdd?ppu=${ppu}&mpId=${wx.getStorageSync('current_mpid')}&group=${option.group}&id=${option.id}#wechat_redirect`;
-=======
-        // const v = (+new Date() * 1).toString(36);
-        this.url = `https://yaofa.58.com/uhtml/goodsComponentAdd?v=1&ppu=${ppu}&mpId=${wx.getStorageSync('current_mpid')}&group=${option.group}&id=${option.id}#wechat_redirect`;
->>>>>>> huangxin
+        this.url = `https://yaofa.58.com/uhtml/goodsComponentAdd?v=${v}&ppu=${ppu}&mpId=${wx.getStorageSync('current_mpid')}&group=${option.group}&id=${option.id}`;
         this.$apply();
         console.log(this.url);
-    }
-    methods ={
-        bindmessage(e) {
-            console.log(e);
-            wx.showModal({ title: '提示', content: '获取号码出错' });
-            wx.chooseImage({
-                count: 9, // 最多可以选择的图片张数，默认9
-                sizeType: ['original', 'compressed'], // original 原图，compressed 压缩图，默认二者都有
-                sourceType: ['album', 'camera'], // album 从相册选图，camera 使用相机，默认二者都有
-                success(res) {
-                    // success
-                    console.log(res);
-                // _this.setData({
-                //     src: res.tempFilePaths,
-                // });
-                },
-                fail() {
-                    // fail
-                },
-                complete() {
-                    // complete
-                },
-            });
-        },
     }
 }
 </script>
 <style lang="scss">
 </style>
-<!--
-    此页面用于文章添加选分组，入口从编辑页面进来
--->
