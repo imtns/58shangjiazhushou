@@ -7,7 +7,10 @@
                 <view data-item="{{item}}"   >
                     <view class="order-orderNo">
                         <view class="order-No">订单号: {{item.id}}</view>
-                        <view class="order-status {{item.status==3?'order-status-grey':''}}">{{statusSet[item.status]}}</view>
+                        <view class="order-status cancel" wx:if="{{item.status==3}}">{{statusSet[item.status]}}</view>
+                        <view class="order-status complete" wx:elif="{{item.status==2}}">{{statusSet[item.status]}}</view>
+                        <view class="order-status finish" wx:elif="{{item.status==14}}">{{statusSet[item.status]}}</view>
+                        <view class="order-status active" wx:else>{{statusSet[item.status]}}</view>
                     </view>
                     <view class="order-line"></view>
                     <view class="order-info">
@@ -20,7 +23,9 @@
                     </view>
                     <view class="order-price">
                         <text class="order-price-name">共计费用</text>
-                        <text class="order-price-value">￥<text class="price">{{item.originalAmount}}</text></text>
+                        <text class="order-price-value cancel" wx:if="{{item.status==3}}">￥<text class="price">{{item.originalAmount}}</text></text>
+                        <text class="order-price-value complete" wx:elif="{{item.status==2}}">￥<text class="price">{{item.originalAmount}}</text></text>
+                        <text class="order-price-value active" wx:else>￥<text class="price">{{item.realAmount}}</text></text>
                     </view>
 
                 <view class="order-line"></view>
@@ -84,7 +89,7 @@ export default class ProductOrder extends wepy.component {
           mpId: id,
           nickName,
       };
-          // 延迟时间，让用户感知loading文案，故意为之。
+      // 延迟时间，让用户感知loading文案，故意为之。
       const delay = 1500;
       const { data } = await post('/mplogic/share', subData, '', {
           loadingTitle: '图片生成...',
@@ -263,7 +268,7 @@ export default class ProductOrder extends wepy.component {
       text-align: center;
       line-height: 60rpx;
       font-size: 31rpx;
-      background:rgb(243,243,243);
+      background: rgb(243, 243, 243);
       color: rgb(102, 102, 102) !important;
       &:nth-child(1) {
         margin-left: 80rpx;
@@ -294,13 +299,21 @@ export default class ProductOrder extends wepy.component {
   /* text-indent:30rpx; */
 }
 
-.order-status,
-.order-status-cancel {
+.order-status {
+  text-align: right;
   color: #ff552e;
-  float: right;
-}
-.order-status-grey {
-  color: #666666;
+  &.active {
+    color: #ff552e;
+  }
+  &.cancel {
+    color: #bdbdbd;
+  }
+  &.finish {
+    color: #333;
+  }
+  &.complete {
+    color: #999;
+  }
 }
 
 .order-line {
@@ -365,6 +378,12 @@ export default class ProductOrder extends wepy.component {
   text-align: right;
   .price {
     font-size: 34rpx;
+  }
+  &.finish {
+    color: #333;
+  }
+  &.complete {
+    color: #999;
   }
 }
 .order-buttons {
