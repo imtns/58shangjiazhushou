@@ -132,10 +132,8 @@
 import wepy from 'wepy';
 import { goodsOrderDetail as goodsOrderDetailConfig } from '../../utils/config';
 import { get } from '../../utils/ajax';
-import { alert, toast } from '../../utils';
-import {
-    LOAD_ORDER_DETAIL,
-} from '../../utils/url';
+import { alert } from '../../utils';
+import { LOAD_ORDER_DETAIL } from '../../utils/url';
 import OrderMixin from '../../components/order/mixin';
 
 export default class Index extends wepy.page {

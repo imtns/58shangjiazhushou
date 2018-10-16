@@ -127,8 +127,7 @@ export default class goodsComponentGroup extends wepy.page {
             }
         },
         editChose(id, index) {
-            const item = this.groupList[index];
-            let delList = this.delList;
+            let { delList } = this;
 
             if (!~delList.indexOf(id)) {
                 delList = [id];
@@ -136,8 +135,8 @@ export default class goodsComponentGroup extends wepy.page {
                 delList = [];
             }
 
-            this.groupList.forEach(item => {
-                item.chooseStatus = ~delList.indexOf(item.data.id);
+            this.groupList.forEach(group => {
+                group.chooseStatus = ~delList.indexOf(group.data.id);
             });
 
             this.delList = delList;
