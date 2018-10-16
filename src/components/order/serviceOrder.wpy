@@ -28,8 +28,7 @@
                 </view>
                 <view class="order-ul-li-row footer-row">
                     <view class="order-totle">共计费用</view>
-                    <view class="order-fee finish" wx:if="{{item.status>=4}}">￥<view class="order-fee-txt">{{item.realAmount}}</view></view>
-                    <view class="order-fee cancel" wx:elif="{{item.status==3}}">￥<view class="order-fee-txt">{{item.realAmount}}</view></view>
+                    <view class="order-fee cancel" wx:if="{{item.status==3}}">￥<view class="order-fee-txt">{{item.realAmount}}</view></view>
                     <view class="order-fee complete" wx:elif="{{item.status==2}}">￥<view class="order-fee-txt">{{item.realAmount}}</view></view>
                     <view class="order-fee active" wx:else>￥<view class="order-fee-txt">{{item.realAmount}}</view></view>
                 </view>
@@ -177,7 +176,6 @@ export default class ServiceOrder extends wepy.component {
         }
         .order-fee {
           text-align: right;
-          color: #ff552e;
           .order-fee-txt {
             display: inline-block;
             font-family: PingFangSC-Semibold;
