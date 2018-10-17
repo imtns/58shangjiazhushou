@@ -1,6 +1,6 @@
 <template>
     <view class="chatMessages">
-        <repeat wx:if="{{contactList.length > 0}}" for="{{contactList}}" key="{{index}}" index="index" item="item">
+        <repeat wx:if="{{isEmpty === 2}}" for="{{contactList}}" key="{{index}}" index="index" item="item">
             <view class="message_box"  @tap="toChat" data-item="{{item}}">
                 <view class="message_header" style="background:url({{item.portrait || 'http://pic1.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?=690'}}) no-repeat center">
                     <view class="message_tips" wx:if="{{item.unReadCount > 0}}">{{item.unReadCount}}</view>
@@ -12,7 +12,7 @@
                 </view>
             </view>
         </repeat>
-        <view wx:if="{{contactList.length == 0}}">
+        <view wx:if="{{isEmpty === 1}}">
             <view class="empty-wrap">
                 <image class="img-no-data" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/chatMessages_empty.png"/>
                 <view class="txt-no-data">暂时没有聊天消息哦</view>
@@ -38,6 +38,7 @@ export default class chatMessages extends wepy.page {
     }
     data = {
         contactList: [],
+        isEmpty: 3,
     }
     methods = {
         toChat(e) {
@@ -92,7 +93,7 @@ export default class chatMessages extends wepy.page {
                 console.log(unReadCount, unReadCountMsg);
                 item.type = type;
                 item.content = type === 1 ? '[图片]' : content;
-                item.sendTime = lastSendTime;
+                item.sendTime = formatDateTimeLocal(lastSendTime);
                 item.unReadCount = unReadCountMsg;
                 item.unReadCountMsg = unReadCountMsg;
                 contactList.forEach((msg, j) => {
@@ -113,6 +114,13 @@ export default class chatMessages extends wepy.page {
     async requestContactList() {
         const { token } = globalData.chat;
         const { data } = await post(CHAT_CONTACT_LIST, { token });
+        if (!data.length) {
+            this.isEmpty = 1;
+            this.$apply();
+            return;
+        }
+        this.isEmpty = 2;
+        this.$apply();
         const contactList = data.map((item) => {
             const {
                 unReadCount,

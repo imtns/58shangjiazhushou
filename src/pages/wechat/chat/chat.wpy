@@ -84,6 +84,7 @@ import { post, get } from '../../../utils/ajax';
 import { getUid, SendClickLog } from '../../../utils/maidian';
 import { MSG_LIST, SEND_MSG } from '../../../utils/url';
 import { msgType } from '../../../utils/msg/msgType';
+import { formatDateTimeLocal } from '../../../utils/dateFomate';
 
 let from = '';
 let msgListToken = '';
@@ -258,6 +259,9 @@ export default class Chat extends wepy.page {
             });
             if (!data || data.length <= 0) return;
             isEnd = data.length < pageSize;
+            data.forEach((msg) => {
+                msg.sendTime = formatDateTimeLocal(msg.sendTime);
+            });
             this.msgList = withHttp(data);
             from = data[0].id;
             this.toView = `toview-${data.length - 1}`;
@@ -278,6 +282,9 @@ export default class Chat extends wepy.page {
             isEnd = data.length < pageSize;
             from = data[0].id;
             const { msgList } = this;
+            data.forEach((msg) => {
+                msg.sendTime = formatDateTimeLocal(msg.sendTime);
+            });
             this.msgList = withHttp(data).concat(msgList);
             this.$apply();
         }
@@ -293,8 +300,8 @@ export default class Chat extends wepy.page {
         // 订阅当前联系人的未读消息
         msgListToken = pubsub.subscribe(contact, (...props) => {
             const newMsgs = props[0];
-            // console.log(newMsgs);
             [newMsgs].forEach((msg) => {
+                msg.sendTime = formatDateTimeLocal(msg.sendTime);
                 this.msgList.push(msg);
                 // this.toView = `toview-${this.msgList.length - 1}`;
                 this.$apply();
