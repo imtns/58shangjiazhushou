@@ -38,7 +38,7 @@
                 <view class="order-buttons" @tap.stop="handleConfirm({{item.id}},{{index}})" wx:if="{{ item.status === 13 }}">
                     <view class="button">已送达</view>
                 </view>
-                <view class="order-buttons" wx:if="{{ item.status === 10 }}">
+                <view class="order-buttons" wx:if="{{ item.status === 10 && item.applyStatus === 0 }}">
                     <view class="button" @tap.stop="handlePlatformIn({{item.id}},{{index}})" >平台介入</view>
                     <view class="button" @tap.stop="handleAcceptRefund({{item.id}},{{index}})" >同意</view>
                 </view>
