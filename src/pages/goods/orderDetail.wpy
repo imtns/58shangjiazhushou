@@ -137,6 +137,7 @@ import wepy from 'wepy';
 import { goodsOrderDetail as goodsOrderDetailConfig } from '../../utils/config';
 import { get } from '../../utils/ajax';
 import { alert } from '../../utils';
+import * as _ from '../../utils/lodash';
 import { LOAD_ORDER_DETAIL } from '../../utils/url';
 import OrderMixin from '../../components/order/mixin';
 
@@ -244,7 +245,7 @@ export default class Index extends wepy.page {
             this.$apply();
         } catch (err) {
             console.log(err);
-            alert('加载数据失败，请你稍后再试');
+            alert('数据加载失败，请稍后再试~');
         }
     }
     methods = {
