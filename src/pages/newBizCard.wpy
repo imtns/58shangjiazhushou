@@ -208,8 +208,6 @@ export default class newBizCard extends wepy.page {
             this.isAuthLocation = true;
             this.$apply();
         } catch (e) {
-            this.isAuthLocation = false;
-            this.$apply();
             console.log(e);
         }
     }
