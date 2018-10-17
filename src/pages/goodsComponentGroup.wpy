@@ -126,7 +126,7 @@ export default class goodsComponentGroup extends wepy.page {
                 toast(e);
             }
         },
-        editChose(id, index) {
+        editChose(id) {
             let { delList } = this;
 
             if (!~delList.indexOf(id)) {

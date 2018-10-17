@@ -190,6 +190,8 @@ export default class AppEdit extends wepy.page {
             try {
                 const { form: postData, canSubmit } = this;
 
+                postData.mpId = wepy.getStorageSync('current_mpid');
+
                 if (!canSubmit) {
                     return;
                 }
