@@ -54,7 +54,7 @@ var Page = {
     Page.id = Page.getKey('id');
     Page.group = Page.getKey('group');
     Page.mpId = Page.getKey('mpId');
-    Page.test = 'test';
+    Page.test = '';
     $('.item-file-div').removeClass('none');
     if (Page.id && Page.id != 'undefined') {
       document.title = '商品编辑';

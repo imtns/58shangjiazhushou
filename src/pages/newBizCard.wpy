@@ -46,10 +46,10 @@
                 <view class="text">职位</view>
                 <input type="text" class="flex_item text_right" placeholder="默认为公司职员" placeholder-style="font-size:30rpx;color:#CCCCCC" maxlength="10" bindinput="bindKeyInput" data-option="position"  value="{{position}}"/>
             </view>
-            <view class="flex_box border_bottom" @tap="setLocation">
+            <view class="flex_box border_bottom">
                 <view class="text must">联系地址</view>
-                <input type="text" class="flex_item text_right address" placeholder="选择联系地址" placeholder-style="font-size:30rpx;color:#CCCCCC" value="{{address}}" disabled wx:if="{{isAuthLocation}}"/>
-                <button open-type="openSetting" wx:else class="flex_item text_right address" bindopensetting="opensetting" bindtap="opensetting">{{address}}</button>
+                <input type="text" class="flex_item text_right address" placeholder="选择联系地址" placeholder-style="font-size:30rpx;color:#CCCCCC" value="{{address}}" disabled wx:if="{{isAuthLocation}}" @tap="setLocation"/>
+                <button wx:else class="flex_item text_right address" bindtap="opensetting">{{address}}</button>
             </view>
         </view>
         <view class="btn" @tap="creatCard">下一步</view>
@@ -177,11 +177,6 @@ export default class newBizCard extends wepy.page {
                 this.setUserLocation();
             } catch (e) {
                 console.log(e);
-                if (e.errMsg === 'chooseLocation:fail auth deny') {
-                    this.isAuthLocation = false;
-                    this.$apply();
-                    wepy.setStorageSync('isAuthLocation', false);
-                }
             }
         },
         async opensetting() {
@@ -191,14 +186,15 @@ export default class newBizCard extends wepy.page {
                     // 授权地理位置信息失败
                     this.isAuthLocation = false;
                     this.$apply();
-                    wepy.setStorageSync('isAuthLocation', false);
                     return;
                 }
-                this.setUserLocation();
+
+                setTimeout(() => {
+                    this.setUserLocation();
+                }, 500);
             } catch (e) {
                 this.isAuthLocation = false;
                 this.$apply();
-                wepy.setStorageSync('isAuthLocation', false);
                 console.log(e);
             }
         },
@@ -211,11 +207,9 @@ export default class newBizCard extends wepy.page {
             this.addressLatitude = latitude;
             this.isAuthLocation = true;
             this.$apply();
-            wepy.setStorageSync('isAuthLocation', true);
         } catch (e) {
             this.isAuthLocation = false;
             this.$apply();
-            wepy.setStorageSync('isAuthLocation', false);
             console.log(e);
         }
     }
@@ -228,20 +222,17 @@ export default class newBizCard extends wepy.page {
     }
     async onLoad () {
         await this.loadData();
-        const isAuthLocation = wepy.getStorageSync('isAuthLocation');
+        const res = await wepy.getSetting();
         let locationAuth;
-        if (isAuthLocation === true) {
+        if (res.authSetting['scope.userLocation'] !== false) {
             locationAuth = true;
-        } else if (isAuthLocation === false) {
+        } else {
             locationAuth = false;
-        } else if (!isAuthLocation) {
-            locationAuth = true;
         }
         this.isAuthLocation = locationAuth;
         this.$apply();
     }
     onShow () {
-        // await this.loadData();
     }
     async loadData() {
         const currentMpid = wepy.getStorageSync('current_mpid');

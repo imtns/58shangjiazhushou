@@ -18,7 +18,7 @@ window.__staticConfig = {
     },
     {
         name: 'js',
-        version: '20181017',
+        version: '2018101711',
         url: '/lbg/shangjiaxcxht/zhushou/js/goods-component-add.js',
     }
 ],
