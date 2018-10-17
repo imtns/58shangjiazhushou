@@ -119,10 +119,9 @@ const year = 265 * nDay;
 
 function formatDateTimeLocal(dateString) {
     const date = new Date(dateString);
-    const dateTime = date.toString();
-    const todayTime = new Date().toString();
-
-    if (todayTime - dateTime < day) {
+    const dateTime = date * 1;
+    const todayTime = new Date() * 1;
+    if (todayTime - dateTime < nDay) {
         const minute = date.getMinutes();
         const hour = date.getHours();
         return `${hour}:${minute}`;
