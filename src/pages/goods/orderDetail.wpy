@@ -394,10 +394,14 @@ export default class Index extends wepy.page {
     .order-detail-item {
         margin-bottom: 30rpx;
         display: flex;
-        align-items: center;
         justify-content: space-between;
         .order-detail-label {
             color: #999;
+            min-width: 140rpx;
+            flex-grow: 1;
+        }
+        .order-detail-value {
+            text-align: right;
         }
     }
     .order-textarea-value {
