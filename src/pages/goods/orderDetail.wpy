@@ -24,7 +24,11 @@
                     </view>
                     <view class="order-detail-item">
                         <view class="order-detail-label">配送地址</view>
-                        <view class="order-detail-value">{{ order.fullAddress }}</view>
+                        <!-- 按理来说是不应该加这个样式的，这样会导致用户的输入的英文单词或者一串数字被强制切割换行
+                        但QA拿长度100的连续数字和我说不行，我能怎么办 -->
+                        <view
+                            class="order-detail-value"
+                            style="word-break: break-all;">{{ order.fullAddress }}</view>
                     </view>
                     <view class="order-detail-item">
                         <view class="order-detail-label">预计送达时间</view>
@@ -234,8 +238,8 @@ export default class Index extends wepy.page {
                 applyStatus,
             };
 
-            const newDesc = JSON.parse(JSON.stringify(this.statusDesc));
-            newDesc[13][1] = newDesc[13][1].replace('$$', startTime || '');
+            const newDesc = _.cloneDeep(this.statusDesc);
+            newDesc[13][1] = newDesc[13][1].replace('$$', startTime ? `于${startTime}` : '');
             this.statusDesc = newDesc;
             this.$apply();
         } catch (err) {
