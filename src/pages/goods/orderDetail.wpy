@@ -133,6 +133,7 @@ import wepy from 'wepy';
 import { goodsOrderDetail as goodsOrderDetailConfig } from '../../utils/config';
 import { get } from '../../utils/ajax';
 import { alert, toast } from '../../utils';
+import * as _ from '../../utils/lodash';
 import {
     LOAD_ORDER_DETAIL,
 } from '../../utils/url';
@@ -236,8 +237,8 @@ export default class Index extends wepy.page {
                 applyStatus,
             };
 
-            const newDesc = JSON.parse(JSON.stringify(this.statusDesc));
-            newDesc[13][1] = newDesc[13][1].replace('$$', startTime || '');
+            const newDesc = _.cloneDeep(this.statusDesc);
+            newDesc[13][1] = newDesc[13][1].replace('$$', startTime ? `于${startTime}` : '');
             this.statusDesc = newDesc;
             this.$apply();
         } catch (err) {
