@@ -112,26 +112,30 @@ function addHour(dateString, num) {
  * 
  * @param {*} dateTime 时间格式：2018-09-07 14:06:26
  */
+
+const nDay = 24 * 60 * 60 * 1000;
+// const week = 7 * nDay;
+const year = 265 * nDay;
+
 function formatDateTimeLocal(dateString) {
-    let _dateString = '';
-    if (dateString) {
-        let _dateTime = parseTime(dateString);
-        let _date = new Date(_dateTime);
-        let [_dmi,_dh,_dd,_dm,_dy]=[`${_date.getMinutes()}`,`${_date.getHours()}`,`${_date.getDate()}`,`${_date.getMonth()+1}`,`${_date.getFullYear()}`];
-        let _nowTime = Date.now();
-        let _diffMin = Math.floor((_nowTime - _dateTime) / 1000 / 60);
-        const [oneDayMin, oneYearMin] = [1 * 60 * 24, 1 * 60 * 24 * 365];
-        if (_diffMin > 0 && _diffMin <= oneDayMin) { // 当天 时:分
-            _dateString=_dh.padStart(2, '0')+':'+_dmi.padStart(2, '0');
-        } else if (_diffMin > oneDayMin && _diffMin <= oneYearMin) { // 当年且大于一天：月/日
-            _dateString=_dm.padStart(2, '0')+'/'+_dd.padStart(2, '0');
-        } else if (_diffMin > oneYearMin) { // 跨年：年/月/日
-            _dateString=_dy+'/'+_dm.padStart(2, '0')+'/'+_dd.padStart(2, '0');
-        }else{
-            _dateString = dateString;
-        }
+    const date = new Date(dateString);
+    const dateTime = date.toString();
+    const todayTime = new Date().toString();
+
+    if (todayTime - dateTime < day) {
+        const minute = date.getMinutes();
+        const hour = date.getHours();
+        return `${hour}:${minute}`;
     }
-    return _dateString;
+
+    if (todayTime - dateTime > year) {
+        const year = date.getFullYear();
+        return `${year}`;
+    }
+
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    return `${month}/${day}`;
 }
 
 module.exports = {
