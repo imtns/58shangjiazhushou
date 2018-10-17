@@ -144,7 +144,6 @@
 import wepy from 'wepy';
 
 import { alert, alertP } from '../../utils';
-import * as globalService from '../../utils/globalService';
 import { get, post } from '../../utils/ajax';
 import {
     LOAD_GOODS_GROUPS,
