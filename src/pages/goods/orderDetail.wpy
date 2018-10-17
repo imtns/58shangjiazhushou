@@ -170,9 +170,9 @@ export default class Index extends wepy.page {
         goodsList: [],
         orderId: '',
     }
-    onLoad({ orderId }) {
+    onLoad({ id }) {
         this.statusDesc = goodsOrderDetailConfig.statusDesc;
-        this.orderId = orderId;
+        this.orderId = id;
         this.loadData();
     }
     loadData() {
