@@ -1655,7 +1655,7 @@ scroll-view {
 }
 .tomake-money{
     position: fixed;
-    bottom: 35rpx;
+    bottom: 152rpx;
     right: 35rpx;
     width: 143rpx;
     height: 130rpx;
