@@ -158,7 +158,6 @@ export default class extends wepy.app {
         // wx.setStorageSync('ppu', 'UID=48738323270929&UN=h34xb9&TT=790cd18a7dc07c6c47dd4430561ebe49&PBODY=KxccExLLZL2FwQdhfyCRtfhIXBEY44p0bw8ZrBCn4RtLTpTZh6m_7mdLWlcUP2VkbFI2QrpmszFtZgkuYfta9nFLRbfx1svpxcb0IiDzLQREz_2Z6XwZ5VROQg6X5mFYtIEqmdphcP3q6No3bGp65lRg-TGePKaYq0-BGoov3Lc&VER=1');
     }
     onShow (options) {
-
         // 版本更新检查
         if (wx.getUpdateManager) {
             // 1.9.90版本开始支持
@@ -173,15 +172,15 @@ export default class extends wepy.app {
                             return;
                         }
                         // 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
-                        updateManager.applyUpdate()
-                    }
-                })
+                        updateManager.applyUpdate();
+                    },
+                });
             });
 
             updateManager.onUpdateFailed(() => {
                 // 新版本下载失败
                 console.log('下载新版本失败');
-            })
+            });
         }
 
         // 赋值场景值、referrer信息
