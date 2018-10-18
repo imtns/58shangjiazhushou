@@ -18,7 +18,7 @@ var Page = {
     loadPrizeData: function(){
         const that = this;
         //$.get('/yunying/getShare', {userId: '33433383496455', platform: 'app',}, function(res){
-        $.get('mpcardactive/result', function(res){        
+        $.get('/mpcardactive/result', function(res){
             const { data } = JSON.parse(res);
             that.share = Object.assign(that.share, data);
             if(that.share.cashDistance && that.share.hasPerm) { // 还未开奖，并且有资格参加活动
