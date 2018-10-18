@@ -129,7 +129,7 @@
                 <button hover-class="none" form-type="submit" class="toshare-btn" data-action="topubnumber" bindtap="handleActionRoute">到公众号看更多赚钱秘籍</button>
             </form>
             <!-- 活动结束,获奖 -->
-            <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{!share.cashDistance && share.hasShareDays >= share.needShareDays}}">
+            <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{share.hasShareDays >= share.needShareDays}}">
                 <button hover-class="none" form-type="submit" class="toshare-btn" data-action="toshareprize" bindtap="handleActionRoute">去"58同城微学院"瓜分奖金</button>
             </form>
             <!-- 若是今天已分享，则分享按钮置灰，今日不可再次分享 -->

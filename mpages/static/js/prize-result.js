@@ -3,40 +3,47 @@
 'use strict';
 var Page = {
     share: {
-        hasPerm: false, // 能不能参加活动
-        isAuto: false, // 是不是默认名片
-        hasPromptToday: true, // 今天需不需要弹框
-        hasShareToday: 0, // 今天分享次数
-        hasShareDays: 0, // 一共分享天数
-        needShareDays: 3, // 分享多少天达标
-        cashTime: '2018-10-18', // 开奖日期
-        cashDistance: 0, // 开奖距离，单位秒
-        cashTotal: 0, // 奖池金额，单位元，可修改
-        cashAmount: 0, // 我的中奖金额，单位元
+        // hasPerm: false, // 能不能参加活动
+        // isAuto: false, // 是不是默认名片
+        // hasPromptToday: true, // 今天需不需要弹框
+        // hasShareToday: 0, // 今天分享次数
+        // hasShareDays: 0, // 一共分享天数
+        // needShareDays: 3, // 分享多少天达标
+        // cashTime: '2018-10-18', // 开奖日期
+        // cashDistance: 0, // 开奖距离，单位秒
+        // cashTotal: 0, // 奖池金额，单位元，可修改
+        // cashAmount: 0, // 我的中奖金额，单位元
         timeArray: [], // 开奖倒计时数组
     },
     loadPrizeData: function(){
         const that = this;
         //$.get('/yunying/getShare', {userId: '33433383496455', platform: 'app',}, function(res){
-        $.get('/mpcardactive/result', function(res){
+        const unionid = $(".prize-result").attr("data-unionid");
+        $.get('/yunying/getShare',{
+            unionId: unionid,
+            platform: 'h5',
+        },function(res){
             const { data } = JSON.parse(res);
-            that.share = Object.assign(that.share, data);
+            that.share = data;
+            if(!that.share.hasPerm) { // 没有资格参加活动
+                $(".prize-result").css("display","block");
+                $(".result-tip").html('有58云名片的商家才能参加这个活动哦，可以去购买名片获取商机、赢大奖');
+                return;
+            }
             if(that.share.cashDistance && that.share.hasPerm) { // 还未开奖，并且有资格参加活动
                 that.getPrize();
                 $(".prize-attend").css("display","block");
-            }else if(that.share.cashDistance && !that.share.hasPerm) { // 还未开奖，没有资格参加活动
-                $(".prize-result").css("display","block");
-                $(".result-tip").html('有58云名片的商家才能参加这个活动哦，可以去购买名片获取商机、赢大奖');
-            }else{ // 已开奖
-                $(".prize-result").css("display","block");
-                if(parseInt(that.share.hasShareDays) >= that.share.needShareDays){
-                    $(".result-title").html('领奖成功');
-                    $(".result-tip").html('恭喜您！<em>¥' + that.share.cashAmount + '</em>瓜分获得现金奖励');
-                    $("._withdraw-btn").css("display","inline-block");
-                } else{
-                    $(".result-title").html('非常遗憾');
-                    $(".result-tip").html('您没有达到累计分享'+that.share.needShareDays+'天的活动要求，<br>再接再厉，期待在之后的活动中赢取大奖');
-                }
+                return;
+            }
+            // 已开奖
+            $(".prize-result").css("display","block");
+            if(parseInt(that.share.hasShareDays) >= that.share.needShareDays){
+                $(".result-title").html('领奖成功');
+                $(".result-tip").html('恭喜您！<em>¥' + that.share.cashAmount + '</em>瓜分获得现金奖励');
+                $("._withdraw-btn").css("display","inline-block");
+            } else{
+                $(".result-title").html('非常遗憾');
+                $(".result-tip").html('您没有达到累计分享'+that.share.needShareDays+'天的活动要求，<br>再接再厉，期待在之后的活动中赢取大奖');
             }
         })
     },
