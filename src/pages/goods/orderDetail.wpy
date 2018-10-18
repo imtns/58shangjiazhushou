@@ -11,7 +11,7 @@
             </block>
         </view>
         <view class="order-info">
-            <view class="user-info">
+            <view class="user-info" @tap="handleCall({{ order.telephone }})">
                 <view class="user-name">{{ order.name }}</view>
                 <view class="user-phone">{{ order.telephone }}</view>
                 <view class="icon-phone"></view>
@@ -24,7 +24,11 @@
                     </view>
                     <view class="order-detail-item">
                         <view class="order-detail-label">配送地址</view>
-                        <view class="order-detail-value">{{ order.fullAddress }}</view>
+                        <!-- 按理来说是不应该加这个样式的，这样会导致用户的输入的英文单词或者一串数字被强制切割换行
+                        但QA拿长度100的连续数字和我说不行，我能怎么办 -->
+                        <view
+                            class="order-detail-value"
+                            style="word-break: break-all;">{{ order.fullAddress }}</view>
                     </view>
                     <view class="order-detail-item">
                         <view class="order-detail-label">预计送达时间</view>
@@ -52,15 +56,15 @@
             <view class="order-detail">
                 <view class="order-detail-item">
                     <view class="order-detail-label">包装费</view>
-                    <view class="order-detail-value">￥{{ order.packingFee || 3 }}</view>
+                    <view class="order-detail-value">￥{{ order.packingFee || 0 }}</view>
                 </view>
                 <view class="order-detail-item">
                     <view class="order-detail-label">配送费</view>
-                    <view class="order-detail-value">￥{{ order.distributionFee || 10 }}</view>
+                    <view class="order-detail-value">￥{{ order.distributionFee || 0 }}</view>
                 </view>
-                <view class="order-detail-item">
+                <view class="order-detail-item" wx:if="{{ order.couponAmount }}">
                     <view class="order-detail-label">优惠券</view>
-                    <view class="order-detail-value">-￥{{ order.couponAmount || 20 }}</view>
+                    <view class="order-detail-value">-￥{{ order.couponAmount || 0 }}</view>
                 </view>
             </view>
             <view class="goods-total">
@@ -92,33 +96,33 @@
             <block wx:if="{{ order.status === 0 }}">
                 <button
                     class="button cancel"
-                    @tap="handleRefuseOrder"
+                    @tap="handleRefuseOrder({{ orderId}})"
                     >取消订单</button>
                 <button
                     class="button primary accept"
-                    @tap="handleAcceptOrder"
+                    @tap="handleAcceptOrder({{ orderId}})"
                     >立即接单</button>
             </block>
             <block wx:elif="{{ order.status === 1 }}">
                 <button
                     class="button primary"
-                    @tap="handleStartDeliver"
+                    @tap="handleStartDeliver({{ orderId}})"
                     >开始配送</button>
             </block>
             <block wx:elif="{{ order.status === 10 && order.applyStatus === 0 }}">
                 <button
                     class="button"
-                    @tap="handlePlatformIn"
+                    @tap="handlePlatformIn({{ orderId}})"
                     >申请平台介入</button>
                 <button
                     class="button primary"
-                    @tap="handleAcceptRefund"
+                    @tap="handleAcceptRefund({{ orderId}})"
                     >同意退款</button>
             </block>
             <block wx:elif="{{ order.status === 13 }}">
                 <button
                     class="button primary"
-                    @tap="handleConfirm"
+                    @tap="handleConfirm({{ orderId}})"
                     >确认配送到达</button>
             </block>
         </view>
@@ -131,18 +135,14 @@
  */
 import wepy from 'wepy';
 import { goodsOrderDetail as goodsOrderDetailConfig } from '../../utils/config';
-import { get, post } from '../../utils/ajax';
-import { alert, toast } from '../../utils';
-import {
-    LOAD_ORDER_DETAIL,
-    ACCEPT_ORDER,
-    DELIVER_ORDER,
-    REFUSE_ORDER,
-    WHETHER_ACCEPT_REFUND,
-    ARRIVE_ORDER,
-} from '../../utils/url';
+import { get } from '../../utils/ajax';
+import { alert } from '../../utils';
+import * as _ from '../../utils/lodash';
+import { LOAD_ORDER_DETAIL } from '../../utils/url';
+import OrderMixin from '../../components/order/mixin';
 
 export default class Index extends wepy.page {
+    mixins = [OrderMixin]
     config = {
         navigationBarTitleText: '订单详情',
     }
@@ -163,14 +163,16 @@ export default class Index extends wepy.page {
             name: '', // 收货人
             telephone: '', // 收货人电话
             fullAddress: '', // 收货人地址
+            applyStatus: 0, // 退款状态
         },
         statusDesc: [],
         showGoodsList: true,
         goodsList: [],
+        orderId: '',
     }
-    onLoad({ orderId }) {
+    onLoad({ id }) {
         this.statusDesc = goodsOrderDetailConfig.statusDesc;
-        this.orderId = orderId;
+        this.orderId = id;
         this.loadData();
     }
     loadData() {
@@ -208,6 +210,9 @@ export default class Index extends wepy.page {
                 createTime,
                 arriveTime,
                 remark,
+                applyStatus,
+
+                startTime, // 商家配送时间
             } = data;
 
             const {
@@ -231,112 +236,25 @@ export default class Index extends wepy.page {
                 name,
                 telephone,
                 fullAddress,
+                applyStatus,
             };
+
+            const newDesc = _.cloneDeep(this.statusDesc);
+            newDesc[13][1] = newDesc[13][1].replace('$$', startTime ? `于${startTime}` : '');
+            this.statusDesc = newDesc;
             this.$apply();
         } catch (err) {
             console.log(err);
-            alert('加载数据失败，请你稍后再试');
+            alert('数据加载失败，请稍后再试~');
         }
     }
     methods = {
+        handleCall(phoneNumber) {
+            wepy.makePhoneCall({ phoneNumber })
+                .catch(() => {});
+        },
         handleTriggerShowGoodsList() {
             this.showGoodsList = !this.showGoodsList;
-        },
-        async handleRefuseOrder() {
-            try {
-                const { orderId } = this;
-                const { state } = await post(`${REFUSE_ORDER}${orderId}`);
-
-                if (state !== 100) {
-                    throw new Error('取消订单失败');
-                }
-
-                await toast('取消订单成功');
-                this.loadData();
-            } catch (err) {
-                console.log(err);
-                toast('取消订单失败，请稍后再试');
-            }
-        },
-        async handleAcceptOrder() {
-            try {
-                const { orderId } = this;
-                const { state } = await post(`${ACCEPT_ORDER}${orderId}`);
-
-                if (state !== 100) {
-                    throw new Error('接单失败');
-                }
-
-                await toast('接单成功');
-                this.loadData();
-            } catch (err) {
-                console.log(err);
-                toast('接单失败，请稍后再试');
-            }
-        },
-        async handleStartDeliver() {
-            try {
-                const { orderId } = this;
-                const { state } = await post(`${DELIVER_ORDER}${orderId}`);
-
-                if (state !== 100) {
-                    throw new Error('开始配送失败');
-                }
-
-                await toast('开始配送成功');
-                this.loadData();
-            } catch (err) {
-                console.log(err);
-                toast('开始配送失败，请稍后再试');
-            }
-        },
-        async handlePlatformIn() {
-            try {
-                const { orderId } = this;
-                const { state } = await post(`${WHETHER_ACCEPT_REFUND}${orderId}`, { action: 'refuse' });
-
-                if (state !== 100) {
-                    throw new Error('平台介入失败');
-                }
-
-                await toast('平台介入成功');
-                this.loadData();
-            } catch (err) {
-                console.log(err);
-                toast('平台介入失败');
-            }
-        },
-        async handleAcceptRefund() {
-            try {
-                const { orderId } = this;
-                const { state } = await post(`${WHETHER_ACCEPT_REFUND}${orderId}`, { action: 'agree' });
-
-                if (state !== 100) {
-                    throw new Error('退款失败');
-                }
-
-                await toast('退款成功');
-                this.loadData();
-            } catch (err) {
-                console.log(err);
-                toast('退款失败');
-            }
-        },
-        async handleConfirm() {
-            try {
-                const { orderId } = this;
-                const { state } = await post(`${ARRIVE_ORDER}${orderId}`);
-
-                if (state !== 100) {
-                    throw new Error('');
-                }
-
-                await toast('操作成功');
-                this.loadData();
-            } catch (err) {
-                console.log(err);
-                toast('操作失败');
-            }
         },
     }
 }
@@ -476,15 +394,20 @@ export default class Index extends wepy.page {
     .order-detail-item {
         margin-bottom: 30rpx;
         display: flex;
-        align-items: center;
         justify-content: space-between;
         .order-detail-label {
             color: #999;
+            min-width: 140rpx;
+            flex-grow: 1;
+        }
+        .order-detail-value {
+            text-align: right;
         }
     }
     .order-textarea-value {
         height: 198rpx;
         margin-bottom: 30rpx;
+        word-break:break-all;
     }
 }
 

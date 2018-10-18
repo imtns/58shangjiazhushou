@@ -55,7 +55,7 @@ export const alert = (content, title, callBack) => {
     // showCancel设为false，然后在success里判断用户点的确定还是取消？
     wepy.showModal({
         showCancel: false,
-        title: title || '注意',
+        title: title || '提示',
         content,
         success(res) {
             if (res.confirm) {
@@ -69,7 +69,7 @@ export const alert = (content, title, callBack) => {
 };
 
 // alert的Promise版本
-export const alertP = (content, title = '注意', extraCfg) => new Promise((resolve, reject) => {
+export const alertP = (content, title = '提示', extraCfg) => new Promise((resolve, reject) => {
     wx.showModal({
         title,
         content,

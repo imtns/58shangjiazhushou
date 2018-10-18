@@ -13,7 +13,7 @@ export default {
             // });
             const query = wepy.getStorageSync('query');
             const { toRedirect, ParamNames = '' } = query;
-            if (query && JSON.stringify() !== '{}' && !ParamNames) { // 如果从公众号进来的消息
+            if (query && JSON.stringify(query) !== '{}' && !ParamNames) { // 如果从公众号进来的消息
                 await sleep();
                 if (toRedirect === '/pages/chatMessages') {
                     // 跳转到消息列表页

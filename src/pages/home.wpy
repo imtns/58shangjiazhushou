@@ -432,31 +432,39 @@ export default class Home extends wepy.page {
         },
     }
     async onLoad () {
-        await this.loadData();
-        // 聊天登录，监控未读消息
-        const { token } = globalData.chat;
-        if (!token) {
-            this.chatLogin();
+        try {
+            await this.loadData();
+            // 聊天登录，监控未读消息
+            const { token } = globalData.chat;
+            if (!token) {
+                this.chatLogin();
+            }
+            // globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
+            this.setGlobalMpId(this.business.selected.id);
+            this.loadExtJson();
+            wepy.setStorageSync('showmodal', true);
+            this.storageShowmodal = wepy.getStorageSync('showmodal');
+            if (!this.isFollow && wepy.getStorageSync('ppu')) {
+                this.showModal = true;
+            }
+            this.$apply();
+        } catch (err) {
+            console.log(err);
         }
-        // globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
-        this.setGlobalMpId(this.business.selected.id);
-        this.loadExtJson();
-        wepy.setStorageSync('showmodal', true);
-        this.storageShowmodal = wepy.getStorageSync('showmodal');
-        if (!this.isFollow && wepy.getStorageSync('ppu')) {
-            this.showModal = true;
-        }
-        this.$apply();
     }
     async onShow () {
-        await this.loadData();
-        await this.loadShareActivity();
-        this.loadCode();
-        this.getInfo();
-        await this.getAssistAuth();
-        if (!this.isFollow && wepy.getStorageSync('ppu')) {
-            this.showModal = true;
-            this.$apply();
+        try {
+            await this.loadData();
+            await this.loadShareActivity();
+            this.loadCode();
+            this.getInfo();
+            await this.getAssistAuth();
+            if (!this.isFollow && wepy.getStorageSync('ppu')) {
+                this.showModal = true;
+                this.$apply();
+            }
+        } catch (err) {
+            console.log(err);
         }
     }
     formatedMp (item) {
@@ -669,7 +677,6 @@ export default class Home extends wepy.page {
         globalData.extConfig = data;
     }
     async loadData () {
-        this.$apply();
         try {
             const subData = {
                 mpid: wepy.getStorageSync('current_mpid') || '',

@@ -22,6 +22,3 @@ export default class GoodsComponentAdd extends wepy.page {
 </script>
 <style lang="scss">
 </style>
-<!--
-    此页面用于文章添加选分组，入口从编辑页面进来
--->

@@ -119,6 +119,7 @@ export default class extends wepy.app {
             'pages/choseStyle', // 名片样式选择
             'pages/activityIntro', // 分享名片赢大奖活动说明页
             'pages/activityRedirect', // 分享名片赢大奖活动说明页
+            'pages/orderWebpage', // 订单列表赚钱秘籍m页
         ],
         window: {
             backgroundTextStyle: 'light',
@@ -168,7 +169,7 @@ export default class extends wepy.app {
         // action:通过fromAppId和scene返回当前小程序处理
         console.log('referrerInfo', referrerInfo);
         console.log(path);
-        // const path = '/pages/home?toRedirect=/pages/OrderDetail&ParamNames=orderId&ParamValues=123456';
+        // const path = '/pages/home?toRedirect=/pages/OrderDetail&ParamNames=id&ParamValues=123456';
         let action = scene === 1038 || scene === '1038' ? CALLBACKAPPS[fromAppId] : '';
 
         // 1037进入 从别的小程序进入

@@ -62,12 +62,12 @@ export default class Tabs extends wepy.component {
           },
           {
               name: '配送中',
-              id: '2',
+              id: '13',
               selected: false,
               left: 347,
           },
           {
-              id: '3',
+              id: '2',
               name: '已完成',
               selected: false,
               left: 495,

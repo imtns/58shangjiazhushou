@@ -126,22 +126,20 @@ export default class goodsComponentGroup extends wepy.page {
                 toast(e);
             }
         },
-        editChose(id, index) {
-            const item = this.groupList[index];
-            const itemIndex =
-                this.delList.length === 0 ? -2 : this.delList.indexOf(id);
+        editChose(id) {
+            let { delList } = this;
 
-            if (item) {
-                item.chooseStatus = !item.chooseStatus;
-            }
-
-            if (itemIndex < 0) {
-                this.delList.push(id);
+            if (!~delList.indexOf(id)) {
+                delList = [id];
             } else {
-                this.delList.splice(itemIndex, 1);
+                delList = [];
             }
 
-            this.$apply();
+            this.groupList.forEach(group => {
+                group.chooseStatus = ~delList.indexOf(group.data.id);
+            });
+
+            this.delList = delList;
         },
     };
     async loadData() {

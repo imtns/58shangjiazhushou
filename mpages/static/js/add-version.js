@@ -9,17 +9,17 @@ window.__staticConfig = {
     jsCdn: 'https://static.58.com',
     jsCfg: [{
         name: 'jq',
-        version: '20180717',
+        version: '20180905',
         url: '/lbg/shangjiaxcxht/zhushou/js/zepto.min.js',
     }, 
     {
         name: 'js',
-        version: '20180822',
+        version: '20180905',
         url: '/lbg/shangjiaxcxht/zhushou/js/editor.js',
     },
      {
         name: 'js',
-        version: '20180822',
+        version: '20180905',
         url: '/lbg/shangjiaxcxht/zhushou/js/article-component-add.js',
     },
 ],

@@ -46,9 +46,10 @@
                 <view class="text">职位</view>
                 <input type="text" class="flex_item text_right" placeholder="默认为公司职员" placeholder-style="font-size:30rpx;color:#CCCCCC" maxlength="10" bindinput="bindKeyInput" data-option="position"  value="{{position}}"/>
             </view>
-            <view class="flex_box border_bottom" @tap="setLocation">
+            <view class="flex_box border_bottom">
                 <view class="text must">联系地址</view>
-                <input type="text" class="flex_item text_right address" placeholder="选择联系地址" placeholder-style="font-size:30rpx;color:#CCCCCC" value="{{address}}" disabled/>
+                <input type="text" class="flex_item text_right address" placeholder="选择联系地址" placeholder-style="font-size:30rpx;color:#CCCCCC" value="{{address}}" disabled wx:if="{{isAuthLocation}}" @tap="setLocation"/>
+                <button wx:else class="flex_item text_right address" bindtap="opensetting">{{address}}</button>
             </view>
         </view>
         <view class="btn" @tap="creatCard">下一步</view>
@@ -83,7 +84,8 @@ export default class newBizCard extends wepy.page {
         addressLongitude: '', // 地址经度
         addressLatitude: '', // 地址纬度
         serviceTagArr: [], // 服务标签数组
-        hasCompany: false, // 页面有无公司名称，disable input 用
+        hasCompany: false, // 页面有无公司名称，disable input 用,
+        isAuthLocation: true,
     }
     methods = {
         async setLogo () {
@@ -170,13 +172,44 @@ export default class newBizCard extends wepy.page {
             }
         },
         async setLocation () {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_setLocation');
+            try {
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_setLocation');
+                this.setUserLocation();
+            } catch (e) {
+                console.log(e);
+            }
+        },
+        async opensetting() {
+            try {
+                const res = await wepy.openSetting();
+                if (!res.authSetting['scope.userLocation']) {
+                    // 授权地理位置信息失败
+                    this.isAuthLocation = false;
+                    this.$apply();
+                    return;
+                }
+
+                setTimeout(() => {
+                    this.setUserLocation();
+                }, 500);
+            } catch (e) {
+                this.isAuthLocation = false;
+                this.$apply();
+                console.log(e);
+            }
+        },
+    }
+    async setUserLocation() {
+        try {
             const { address, latitude, longitude } = await wepy.chooseLocation();
             this.address = address;
             this.addressLongitude = longitude;
             this.addressLatitude = latitude;
+            this.isAuthLocation = true;
             this.$apply();
-        },
+        } catch (e) {
+            console.log(e);
+        }
     }
     isFullyFilled(subData) {
         let result = false;
@@ -187,10 +220,17 @@ export default class newBizCard extends wepy.page {
     }
     async onLoad () {
         await this.loadData();
-        console.log('onload');
+        const res = await wepy.getSetting();
+        let locationAuth;
+        if (res.authSetting['scope.userLocation'] !== false) {
+            locationAuth = true;
+        } else {
+            locationAuth = false;
+        }
+        this.isAuthLocation = locationAuth;
+        this.$apply();
     }
     onShow () {
-        // await this.loadData();
     }
     async loadData() {
         const currentMpid = wepy.getStorageSync('current_mpid');
@@ -319,6 +359,10 @@ export default class newBizCard extends wepy.page {
             white-space: nowrap;
             text-align: right;
             padding-left: 10rpx;
+        }
+        button.address{
+            background: #fff;
+            padding-right:0;
         }
         .border_bottom{
             border-bottom: 1rpx solid #F3F3F3;
