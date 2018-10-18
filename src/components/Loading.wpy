@@ -20,7 +20,7 @@ export default class Index extends wepy.component {
             type: Boolean,
             default: false,
         },
-    },
+    };
 }
 </script>
 
