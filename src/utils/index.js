@@ -42,20 +42,18 @@ export const sleep = (time = 300) => new Promise((resolve) => {
 });
 
 // alert
-export const alert = (content, title, callBack, fail, showCancel) => {
+export const alert = (content, title, callBack) => {
     // showCancel设为false，然后在success里判断用户点的确定还是取消？
     wepy.showModal({
-        showCancel: showCancel || false,
+        showCancel: false,
         title: title || '提示',
         content,
         success(res) {
-            console.log('11111');
             if (res.confirm) {
                 console.log('用户点击确定');
                 callBack && callBack();
             } else if (res.cancel) {
                 console.log('用户点击取消');
-                fail && fail();
             }
         },
     });
