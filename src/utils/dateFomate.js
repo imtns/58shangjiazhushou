@@ -1,3 +1,5 @@
+const moment = require('./moment');
+
 function formatTime() {
     var date = new Date();
     var year = date.getFullYear();
@@ -112,28 +114,27 @@ function addHour(dateString, num) {
  * 
  * @param {*} dateTime 时间格式：2018-09-07 14:06:26
  */
-
 const nDay = 24 * 60 * 60 * 1000;
-// const week = 7 * nDay;
 const year = 265 * nDay;
 
 function formatDateTimeLocal(dateString) {
-    const date = new Date(dateString);
-    const dateTime = date * 1;
-    const todayTime = new Date() * 1;
+    const date = moment(dateString);
+    const dateTime = date.valueOf();
+    const todayTime = new Date();
+
     if (todayTime - dateTime < nDay) {
-        const minute = date.getMinutes();
-        const hour = date.getHours();
+        const minute = date.minutes();
+        const hour = date.hours();
         return `${hour}:${minute}`;
     }
 
     if (todayTime - dateTime > year) {
-        const year = date.getFullYear();
+        const year = date.year();
         return `${year}`;
     }
 
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
+    const day = date.date();
+    const month = date.month() + 1;
     return `${month}/${day}`;
 }
 
