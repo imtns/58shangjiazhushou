@@ -183,7 +183,7 @@ export default class Home extends wepy.page {
         iv: '',
         encryptedData: '',
         session: '',
-        isFollow: false, // 是否关注公众号
+        isFollow: true, // 是否关注公众号
         assistAuth: false, // 是否授权
         showModal: false, // 是否授权或者关注弹框
         showIdentity: false, // 是否显示切换账号弹框
