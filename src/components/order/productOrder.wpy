@@ -2,7 +2,7 @@
 <view class="order-view">
     <block wx:if="{{!noOrder}}">
      <scroll-view  lower-threshold="70" scroll-top="{{scrollValue}}"  @scrolltolower="bindLoadDown" style="height:82vh" scroll-y="true"> 
-          <navigator wx:for="{{orderList}}" wx:for-index="index" wx:key="item.id" url="/pages/goods/orderDetail?orderId={{item.id}}">
+          <navigator wx:for="{{orderList}}" wx:for-index="index" wx:key="item.id" url="/pages/goods/orderDetail?id={{item.id}}">
         <view class="mod-view mod-order">
                 <view data-item="{{item}}"   >
                     <view class="order-orderNo">
