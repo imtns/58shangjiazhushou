@@ -60,7 +60,7 @@
                 </view>
                 <view class="order-detail-item">
                     <view class="order-detail-label">配送费</view>
-                    <view class="order-detail-value">￥{{ order.distributionFee || 0 }}</view>
+                    <view class="order-detail-value">{{ order.distributionFee ? '￥' + order.distributionFee : '免配送费' }}</view>
                 </view>
                 <view class="order-detail-item" wx:if="{{ order.couponAmount }}">
                     <view class="order-detail-label">优惠券</view>
