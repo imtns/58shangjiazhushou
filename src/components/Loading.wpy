@@ -15,7 +15,7 @@
 import wepy from 'wepy';
 
 export default class Index extends wepy.component {
-    props: {
+    props = {
         show: {
             type: Boolean,
             default: false,

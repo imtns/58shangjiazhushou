@@ -6,7 +6,7 @@
                 <productOrder :orderList.sync="orderList"  :statusSet="statusSet" :noOrder.sync="noOrder" :noMore.sync="noMore"></productOrder>
             </block>
             <block wx:if="{{orderType === 'service'}}">
-                <serviceOrder :orderList.sync="orderList" :statusSet="statusSet" :noOrder.sync="noOrder" :noMore.sync="noMore"></serviceOrder>
+                <serviceOrder :orderList.sync="orderList" :noOrder.sync="noOrder" :noMore.sync="noMore"></serviceOrder>
             </block>
         </view>
     </view>
