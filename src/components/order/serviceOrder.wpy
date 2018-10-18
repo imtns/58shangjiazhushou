@@ -50,9 +50,29 @@ import wepy from 'wepy';
 export default class ServiceOrder extends wepy.component {
     props = {
         orderList: Object,
-        statusSet: Object,
         noMore: Boolean,
         noOrder: Boolean,
+    }
+
+    data = {
+      statusSet: {
+        0: '已支付，待接单',
+        1: '已接单，待服务',
+        2: '已完成',
+        3: '已取消',
+        4: '已删除',
+        5: '已下单，待支付',
+        6: '退款成功',
+        7: '退款失败',
+        8: '已取消,系统自动取消',
+        9: '已评价',
+        10: '退款中',
+        11: '买单支付',
+        12: '退款中',
+        13: '配送中',
+        14: '已送达',
+        15: '商家拒绝接单',
+      },
     }
   methods = {
       bindLoadDown() {
