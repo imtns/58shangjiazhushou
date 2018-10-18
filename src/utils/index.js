@@ -37,6 +37,15 @@ export const isEmpty = v => {
     return false;
 };
 
+// 倒计时
+export const formatDuring = (mss) => {
+    const days = parseInt(mss / (1000 * 60 * 60 * 24));
+    const hours = parseInt((mss % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = parseInt((mss % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = parseInt((mss % (1000 * 60)) / 1000);
+    return [days > 9 ? days : `0${days}`, hours > 9 ? hours : `0${hours}`, minutes > 9 ? minutes : `0${minutes}`, seconds > 9 ? seconds : `0${seconds}`];
+};
+
 export const sleep = (time = 300) => new Promise((resolve) => {
     setTimeout(() => { resolve(); }, time);
 });

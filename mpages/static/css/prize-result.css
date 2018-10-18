@@ -1,0 +1,114 @@
+@charset "UTF-8";
+
+.prize-result{
+    display: none;
+    text-align: center;
+}
+.result-img{
+    display: block;
+    width: 90%;
+    margin:1rem auto 0;
+}
+.result-title{
+    color: #333;
+    font-size: .36rem;
+    font-weight: 800;
+}
+.result-tip{
+    color: #666;
+    font-size: .32rem;
+    margin-top: .32rem;
+    line-height: .45rem;
+}
+.result-tip em{
+    font-style: normal;
+    color: #FF552E;
+}
+.result-btn{
+    display: inline-block;
+    line-height: .88rem;
+    width: 70%;
+    font-size: .32rem;
+    color: #fff;
+    text-decoration:none;
+    background-image: linear-gradient(-149deg, #FFBA00 0%, #FA9D02 100%);
+    border-radius: 100px;
+    margin-top: .88rem;
+    display: none;
+}
+.prize-attend{
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    text-align: center;
+    background-image: linear-gradient(-180deg, #FBD249 0%, #F5A623 100%);
+    display: none;
+}
+.attend-btn{
+    font-size: .36rem;
+    color: #fff;
+    display: inline-block;
+    line-height: .94rem;
+    background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/share-btn-bg.png) no-repeat;
+    background-size:100% 100%;
+    width: 70%;
+    text-decoration: none;
+    margin-top: 1.2rem;
+}
+.attend-con{
+    margin-top: 1rem;
+    width: 100%;
+    height: 7.49rem;
+    background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/home-pop-bg.png) no-repeat;
+    background-size:100%;
+    position: relative;
+}
+.count-down{
+    line-height: .82rem;
+    width: 74%;
+    background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/countdown-bg.png) no-repeat;
+    background-size:100% 100%;
+    font-size: .36rem;
+    color: #FFF;
+    position: absolute;
+    left: 13%;
+    bottom: .68rem;
+    padding: 0 .25rem;
+    box-sizing: border-box;
+    display: flex;
+}
+.count-down span{
+    flex: 1;
+    font-size: .28rem;
+}
+.count-down .time-down{
+    color: #6C1A00;
+    height: .48rem;
+    line-height: .48rem;
+    background-image: linear-gradient(90deg, #e5e5e5, #fff);
+    background: #fff;
+    border-radius: 6px;
+    margin-top: .17rem;
+}
+.dialoge-code{
+    position:fixed;
+    width:100%;
+    min-height:100vh;
+    top:0;
+    left:0;
+    z-index:99;
+    text-align:center;
+    background:rgba(0, 0, 0, 0.7);
+    -webkit-transition:all 0.6s ease-in-out;
+    transition:all 0.6s ease-in-out;
+    display: none;
+}
+.zhushou-code{
+    width:100%;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    margin-top: -50%;
+}

@@ -1,0 +1,23 @@
+<template>
+    <web-view src="{{url}}"></web-view>
+</template>
+<script>
+import wepy from 'wepy';
+
+export default class ActivityIntro extends wepy.page {
+    config = {
+        navigationBarTitleText: '',
+    }
+    onLoad() {
+        wepy.setStorageSync('Actfrom', 'h5');
+        wepy.switchTab({
+            url: '/pages/home',
+        });
+    }
+}
+</script>
+<style lang="scss">
+</style>
+<!--
+    此页面用于文章添加选分组，入口从编辑页面进来
+-->

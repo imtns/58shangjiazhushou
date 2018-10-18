@@ -20,7 +20,7 @@
                         <view class="star-list"
                         style="width:{{ 30 * (~~(business.selected.score / 1)) + 22 * (business.selected.score % 1) }}rpx">
                             <view class="icon-star" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
-                        </view>      
+                        </view>
                         <view class="star-box-title" @tap="shopScore">店铺评分</view>
                     </view>
                     <view wx:else>可上传素材、提交注册信息到当前小程序</view>
@@ -92,10 +92,63 @@
                 <view class="show_cancle" @tap="hideIdentityModal">取消</view>
             </view>
         </view>
-        <!-- 分享名片赢大奖 -->
-        <view class="">
-
+        <!-- 未编辑过名片提示 -->
+        <view class="toedit-modal" wx:if="{{share.showEditModal}}">
+            <view class="toedit-con">
+                <view class="edit-title">提示</view>
+                <view class="edit-tip">{{editDialog.tip}}</view>
+                <view class="edit-action">
+                    <view class="cancle-btn" @tap="cancleEdit">{{editDialog.leftButton}}</view>
+                    <view class="edit-btn" @tap="toEdit"  data-action="{{editDialog.action}}">{{editDialog.rightButton}}</view>
+                </view>
+            </view>
         </view>
+        <!-- 分享名片赢大奖提示 -->
+        <view class="toedit-modal" wx:if="{{Actfrom || share.hasPromptToday}}">
+            <form bindsubmit="handleFormidCollect" report-submit="true">
+                <button class="share-active-cancle" data-action="cancle" bindtap="handleActionRoute" hover-class="none" form-type="submit"></button>
+            </form>
+            <view class="share-active-con">
+                <view class="share-countdown" wx:if="{{share.cashDistance}}">
+                    倒计时：
+                    <view class="time-countdown">{{share.timeArray[0]}}</view><view>天</view>
+                    <view class="time-countdown">{{share.timeArray[1]}}</view><view>时</view>
+                    <view class="time-countdown">{{share.timeArray[2]}}</view><view>分</view>
+                    <view class="time-countdown">{{share.timeArray[3]}}</view><view>秒</view>
+                </view>
+                <view class="share-tips" wx:if="{{share.cashDistance}}">
+                    <view class="share-days">您已分享了{{share.hasShareDays}}天</view>
+                    <navigator class="share-intro" hover-class="none" url="/pages/activityIntro">活动规则 ></navigator>
+                </view>
+                <view class="share-ending" wx:if="{{!share.cashDistance && share.needShareDays > share.hasShareDays}}">活动结束，您没有达到累计分享{{share.needShareDays}}天的活动要求，再接再厉，期待在之后的活动中赢取大奖</view>
+                <view class="share-ending" wx:if="{{!share.cashDistance && share.hasShareDays > share.needShareDays}}">活动结束，您达到了累计分享{{share.needShareDays}}天的活动要求，请去"58同城微学院"公众号瓜分奖金</view>
+            </view>
+            <!-- 活动结束,未获奖 -->
+            <form bindsubmit="handleFormhandleFormidCollectidCollect" report-submit="true" wx:if="{{!share.cashDistance && share.needShareDays > share.hasShareDays}}">
+                <button hover-class="none" form-type="submit" class="toshare-btn" data-action="topubnumber" bindtap="handleActionRoute">到公众号看更多赚钱秘籍</button>
+            </form>
+            <!-- 活动结束,获奖 -->
+            <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{!share.cashDistance && share.hasShareDays >= share.needShareDays}}">
+                <button hover-class="none" form-type="submit" class="toshare-btn" data-action="toshareprize" bindtap="handleActionRoute">去"58同城微学院"瓜分奖金</button>
+            </form>
+            <!-- 若是今天已分享，则分享按钮置灰，今日不可再次分享 -->
+            <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{share.cashDistance && share.hasShareDays && share.hasShareToday}}">
+                <button hover-class="none" form-type="submit" class="shared-btn" data-action="sharedtoday" bindtap="handleActionRoute">已分享{{share.hasShareDays}}天，明天开始下一次分享</button>
+            </form>
+            <!-- 若是默认名片没有保存过，则弹窗提示商家去编辑 -->
+            <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{share.cashDistance && !share.hasShareToday && share.isAuto}}">
+                <button hover-class="none" form-type="submit" class="toshare-btn" data-action="toeditcard" bindtap="handleActionRoute">立即分享</button>
+            </form>
+            <!-- 若不是默认名片，分享跳转到c端名片页 -->
+            <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{share.cashDistance && !share.hasShareToday && !share.isAuto}}">
+                <navigator class="toshare-action" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="/pages/index58/index58?mpcardId={{business.selected.cardId}}&businessId={{business.userId}}&from=zhushou_home" extra-data="" version="develop">
+                    <button hover-class="none" form-type="submit" class="toshare-btn" data-action="share" bindtap="handleActionRoute">立即分享</button>
+                </navigator>
+            </form>
+        </view>
+        <form bindsubmit="handleFormidCollect" report-submit="true"  wx:if="{{!Actfrom && !share.hasPromptToday}}">
+            <button class="tomake-money" data-action="makemoney" bindtap="handleActionRoute" hover-class="none" form-type="submit"></button>
+        </form>
     </scroll-view>
 </template>
 
@@ -105,12 +158,12 @@ import Mixin from '../mixin';
 
 import { items, nItems } from '../utils/homeList';
 
-import { alert } from '../utils';
+import { alert, formatDuring } from '../utils';
 import { post, get } from '../utils/ajax';
 import { globalData, setTabBar } from '../utils/globalData';
 import { getUid, SendClickLog } from '../utils/maidian';
 
-import { CHAT_LOGIN, MY_MPLIST, SESSION, INSERT_SESSION, GET_EXT_JSON, GET_ASSIST_AUTH } from '../utils/url';
+import { CHAT_LOGIN, MY_MPLIST, SESSION, INSERT_SESSION, GET_EXT_JSON, GET_ASSIST_AUTH, GET_SHARE } from '../utils/url';
 
 import { sdkLogin, onMsgNotify, sdkLogout } from '../utils/IM/IM';
 
@@ -132,6 +185,7 @@ export default class Home extends wepy.page {
         showIdentity: false, // 是否显示切换账号弹框
         height: '',
         storageShowmodal: false,
+        Actfrom: '', // 首页进入来源 ‘app’ || ‘h5’
         business: {
             mps: [],
             name: '您的姓名',
@@ -147,6 +201,25 @@ export default class Home extends wepy.page {
                 id: 0,
             },
             chosedId: 0,
+        },
+        share: {
+            hasPerm: false, // 能不能参加活动
+            isAuto: false, // 是不是默认名片
+            hasPromptToday: false, // 今天需不需要弹框
+            hasShareToday: 0, // 今天分享次数
+            hasShareDays: 0, // 一共分享天数
+            needShareDays: 3, // 分享多少天达标
+            cashTime: '2018-10-18', // 开奖日期
+            cashDistance: 0, // 开奖距离，单位秒
+            cashTotal: 0, // 奖池金额，单位元，可修改
+            cashAmount: 0, // 我的中奖金额，单位元
+            timeArray: [], // 开奖倒计时数组
+            showEditModal: false, // 是否显示去编辑名片弹框
+        },
+        editDialog: {
+            tip: '',
+            leftButton: '取消',
+            rightButton: '去编辑',
         },
         // 将状态属性收敛到status
         status: {
@@ -323,6 +396,40 @@ export default class Home extends wepy.page {
             this.storageShowmodal = wepy.getStorageSync('showmodal');
             this.$apply();
         },
+        // 取消编辑小程序
+        cancleEdit() {
+            this.share.showEditModal = false;
+        },
+        // 去编辑小程序
+        toEdit(e) {
+            const { action } = e.currentTarget.dataset;
+            switch (action) {
+                case 'toshareprize':
+                    wepy.navigateTo({
+                        url: '/pages/followPublic',
+                    });
+                    break;
+                case 'toeditcard':
+                    wepy.navigateTo({
+                        url: 'newBizCard',
+                    });
+                    break;
+                default:
+                    break;
+            }
+        },
+        /**
+         * 事件操作：表单提交 收集formId
+         * 收集formid操作：去分享，关闭，去赚钱
+         */
+        handleFormidCollect(e) {
+            const { formId } = e.detail;
+            const {
+                action,
+            } = e.detail.target.dataset;
+            console.log('handleFormidCollect', 'action=', action, 'formId=', formId);
+            this.requestFormidCollect(formId);
+        },
     }
     async onLoad () {
         await this.loadData();
@@ -343,6 +450,7 @@ export default class Home extends wepy.page {
     }
     async onShow () {
         await this.loadData();
+        await this.loadShareActivity();
         this.loadCode();
         this.getInfo();
         await this.getAssistAuth();
@@ -357,6 +465,78 @@ export default class Home extends wepy.page {
             mp.headImg = `https://pic1.58cdn.com.cn${mp.headImg}`;
         }
         return mp;
+    }
+    /**
+     * 倒计时计时器
+     */
+    countDown() {
+        const timeNow = parseInt(new Date().getTime());
+        const timeEnd = parseInt(new Date(this.share.cashTime.replace(/-/g, '/')).getTime());
+        const deadTime = parseInt(timeEnd - timeNow);
+        this.share.timeArray = formatDuring(deadTime);
+        this.$apply();
+    }
+    /**
+     * 数据请求：收集FormID,用于给用户推送服务通知
+     */
+    requestFormidCollect(formId) {
+        const seft = this;
+        if (formId) {
+            const { data } = get('/formidcollect/collect', {
+                consumerId: seft.business.userId || '', // 当前用户 ID
+                formId,
+            });
+            console.log(data);
+        }
+    }
+    /**
+     * 事件操作：所有操作入口
+     */
+    handleActionRoute(e) {
+        const seft = this;
+        const { action } = e.currentTarget.dataset;
+        console.log('事件路由 handleActionRoute', 'action=', action);
+        wepy.removeStorageSync('Actfrom');
+        seft.Actfrom = '';
+        this.$apply();
+        switch (`${action}`) {
+            case 'cancle': // 关闭分享赢大奖弹框
+                seft.share.hasPromptToday = false;
+                // clickLog = 'cancle';
+                break;
+            case 'makemoney': // 去赚钱
+                seft.share.hasPromptToday = true;
+                // clickLog = 'makemoney';
+                break;
+            case 'toeditcard': // 去赚钱
+                seft.editDialog = {
+                    tip: '您还没有编辑过名片信息，需编辑保存后再分享赚大钱',
+                    action: 'toeditcard',
+                    leftButton: '取消',
+                    rightButton: '去编辑',
+                };
+                seft.share.showEditModal = true;
+                seft.share.hasPromptToday = false;
+                // clickLog = 'makemoney';
+                break;
+            case 'toshareprize': // 去瓜分奖金
+                seft.editDialog = {
+                    tip: '输入 领奖 发送后获取公众号二维码，长按识别关注公众号快速瓜分10W奖金',
+                    action: 'toshareprize',
+                    leftButton: '取消',
+                    rightButton: '去获取',
+                };
+                seft.share.showEditModal = true;
+                seft.share.hasPromptToday = true;
+                break;
+            case 'topubnumber': // 去公众号获取更多赚钱机会
+                wepy.navigateTo({
+                    url: '/pages/followPublic',
+                });
+                break;
+            default:
+                break;
+        }
     }
     /**
      * 用户点击右上角分享
@@ -376,6 +556,36 @@ export default class Home extends wepy.page {
                 console.log(err);
             },
         };
+    }
+    /**
+     * 获取分享名片赢大奖弹框接口
+     */
+    async loadShareActivity() {
+        const that = this;
+        console.log(wepy.getStorageSync('Actfrom'));
+        try {
+            const sendData = {
+                userId: that.business.userId,
+                platform: wepy.getStorageSync('Actfrom') || 'app',
+            };
+            that.Actfrom = wepy.getStorageSync('Actfrom') || '';
+            const { data } = await get(GET_SHARE, sendData);
+            that.share = Object.assign(that.share, data);
+            console.log(that.share);
+            // 未开奖倒计时开始
+            if (that.share.cashDistance) {
+                setInterval(() => {
+                    that.countDown();
+                }, 1000);
+            } else {
+                clearInterval(() => {
+                    that.countDown();
+                });
+            }
+            that.$apply();
+        } catch (error) {
+            console.log(error);
+        }
     }
     async getAssistAuth() {
         const that = this;
@@ -397,7 +607,6 @@ export default class Home extends wepy.page {
     }
     // 获取授权数据
     async loadSession(e) {
-        console.log(e.detail);
         const that = this;
         if (e.detail.errMsg === 'getUserInfo:ok') {
             const { iv, encryptedData } = e.detail;
@@ -485,6 +694,7 @@ export default class Home extends wepy.page {
                 unreadOrder,
                 productType,
                 mpCount: count,
+                userId: mpinfo.userid,
                 selected: {
                     ...formatedMpinfo,
                     score,
@@ -761,13 +971,11 @@ export default class Home extends wepy.page {
     }
 
     initIM(tim) {
-        console.log('initIM');
         // 当前用户身份
         const loginInfo = {
             accountType: 37611,
         };
         Object.assign(loginInfo, tim);
-        console.log(loginInfo);
         // listeners
         const listeners = {
             onMsgNotify: onMsgNotify, // 监听新消息
@@ -1199,7 +1407,6 @@ scroll-view {
         line-height: 24rpx;
     }
 }
-
 .unstar-list {
     display: flex;
     .icon-unstar {
@@ -1300,4 +1507,159 @@ scroll-view {
     margin-top: 12rpx;
     background: #fff;
  }
+.toedit-modal{
+    position: fixed;
+    width: 100%;
+    min-height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: 99;
+    text-align:center;
+    background:rgba(0, 0, 0, 0.7);
+    transition:all 0.6s ease-in-out;
+}
+.toedit-con{
+    width: 74%;
+    text-align: center;
+    margin: 45% 13% 0 13%;
+    padding-top: 50rpx;
+    background: #fff;
+    border-radius: 8rpx;
+    z-index:100;
+}
+.edit-title{
+    font-size: 36rpx;
+    color: #000;
+}
+.edit-tip{
+    font-size: 28rpx;
+    color: #999;
+    line-height: 40rpx;
+    margin: 20rpx 70rpx 30rpx;
+}
+.edit-action{
+    font-size: 36rpx;
+    border-top: 1rpx solid #e5e5e5;
+    line-height: 100rpx;
+    display: flex;
+}
+.cancle-btn{
+    color: #4E88FF;
+    flex:1;
+    border-right: 1rpx solid #e5e5e5;
+}
+.edit-btn{
+    color:#666;
+    flex:1;
+}
+.share-active-cancle{
+    width: 74rpx;
+    height: 74rpx;
+    background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/home-cancle-btn.png) no-repeat;
+    background-size: 100% 100%;
+    float:right;
+    margin:40rpx 40rpx 0 0;
+    overflow: hidden;
+}
+.share-active-con{
+    width: 100%;
+    height: 749rpx;
+    background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/home-pop-bg.png) no-repeat;
+    background-size: 100% 100%;
+    margin-top:110rpx;
+    position: relative;
+}
+.toshare-action{
+    width: 100%;
+    height: 100%;
+    background:none;
+    margin-top: 40rpx;
+}
+.toshare-btn{
+    font-size: 36rpx;
+    color: #fff;
+    width: 74%;
+    padding: 0 66rpx;
+    line-height: 110rpx;
+    margin:40rpx auto 0;
+    box-sizing:border-box;
+    background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/share-btn-bg.png) no-repeat;
+    background-size: 100% 100%;
+}
+.shared-btn{
+    font-size: 32rpx;
+    color: #fff;
+    width: 74%;
+    padding: 0 30rpx;
+    line-height: 110rpx;
+    margin:40rpx auto 0;
+    box-sizing:border-box;
+    background:#999;
+    border-radius: 110rpx;
+}
+.share-countdown{
+    font-size:36rpx;
+    color: #fff;
+    width: 74%;
+    height: 82rpx;
+    line-height: 82rpx;
+    padding: 0 20rpx;
+    background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/countdown-bg.png) no-repeat;
+    background-size: 100% 100%;
+    position: absolute;
+    left:13%;
+    bottom:100rpx;
+    display: flex;
+}
+.share-countdown view{
+    font-size: 28rpx;
+    color: #FFBB98;
+    flex:1;
+}
+.time-countdown{
+    color: #6C1A00 !important;
+    width: 46rpx;
+    height: 52rpx;
+    line-height: 52rpx;
+    border-radius: 6rpx;
+    background: #fff;
+    margin-top:15rpx;
+}
+.share-tips{
+    font-size: 26rpx;
+    color: #FFD6D6;
+    width: 70%;
+    position: absolute;
+    left:15%;
+    bottom:40rpx;
+    display: flex;
+}
+.share-tips .share-days{
+    flex:1;
+    text-align: left;
+}
+.share-tips .share-intro{
+    flex:1;
+    text-align: right;
+}
+.tomake-money{
+    position: fixed;
+    bottom: 35rpx;
+    right: 35rpx;
+    width: 143rpx;
+    height: 130rpx;
+    background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/zhuanqian_icon.png) no-repeat;
+    background-size: 100% 100%;
+    z-index: 99;
+}
+.share-ending{
+    font-size: 28rpx;
+    color: #FFD6D6;
+    line-height: 40rpx;
+    width:66%;
+    text-align: left;
+    position: absolute;
+    left:17%;
+    bottom:50rpx;
+}
 </style>
