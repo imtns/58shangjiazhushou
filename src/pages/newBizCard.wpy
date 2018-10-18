@@ -48,8 +48,8 @@
             </view>
             <view class="flex_box border_bottom">
                 <view class="text must">联系地址</view>
-                <input type="text" class="flex_item text_right address" placeholder="选择联系地址" placeholder-style="font-size:30rpx;color:#CCCCCC" value="{{address}}" disabled wx:if="{{isAuthLocation}}" @tap="setLocation"/>
-                <button wx:else class="flex_item text_right address" bindtap="opensetting">{{address}}</button>
+                <input type="text" class="flex_item text_right address" placeholder="选择联系地址" placeholder-style="font-size:30rpx;color:#CCCCCC" value="{{address}}" disabled wx:if="{{isAuthLocation === 1 || isAuthLocation === 2}}" @tap="setLocation"/>
+                <button wx:if="{{isAuthLocation === 3}}" class="flex_item text_right address" bindtap="opensetting">{{address}}</button>
             </view>
         </view>
         <view class="btn" @tap="creatCard">下一步</view>
@@ -60,7 +60,7 @@
 import wepy from 'wepy';
 import { CARD_FIRST_EDIT, CARD_CREATE_NEW_CARD } from '../utils/url';
 import { post } from '../utils/ajax';
-import { getNetStatus, toast } from '../utils';
+import { getNetStatus, toast, alertP } from '../utils';
 import { getUid, SendClickLog } from '../utils/maidian';
 
 const host = 'https://yaofa.58.com';
@@ -85,7 +85,7 @@ export default class newBizCard extends wepy.page {
         addressLatitude: '', // 地址纬度
         serviceTagArr: [], // 服务标签数组
         hasCompany: false, // 页面有无公司名称，disable input 用,
-        isAuthLocation: true,
+        isAuthLocation: 1, // 1、授权状态未知 2、授权成功  3、拒绝授权
     }
     methods = {
         async setLogo () {
@@ -172,43 +172,59 @@ export default class newBizCard extends wepy.page {
             }
         },
         async setLocation () {
-            try {
-                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_setLocation');
-                this.setUserLocation();
-            } catch (e) {
-                console.log(e);
-            }
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_setLocation');
+            this.setUserLocation();
         },
         async opensetting() {
             try {
-                const res = await wepy.openSetting();
-                if (!res.authSetting['scope.userLocation']) {
-                    // 授权地理位置信息失败
-                    this.isAuthLocation = false;
-                    this.$apply();
-                    return;
+                let isAuth;
+                const { cancel, confirm } = await alertP('需要获取您的位置信息，请到小程序的设置中打开授权', '是否要打开设置页面', {
+                    showCancel: true,
+                });
+                if (confirm) {
+                    isAuth = 2;
+                    this.authSetting();
+                } else if (cancel) {
+                    isAuth = 3;
                 }
-
-                setTimeout(() => {
-                    this.setUserLocation();
-                }, 500);
-            } catch (e) {
-                this.isAuthLocation = false;
+                this.isAuthLocation = isAuth;
                 this.$apply();
+            } catch (e) {
                 console.log(e);
             }
         },
     }
+    async authSetting() {
+        try {
+            const res = await wepy.openSetting();
+            if (!res.authSetting['scope.userLocation']) {
+                // 授权地理位置信息失败
+                this.isAuthLocation = 3;
+                this.$apply();
+                return;
+            }
+
+            setTimeout(() => {
+                this.setUserLocation();
+            }, 500);
+        } catch (e) {
+            this.isAuthLocation = 3;
+            this.$apply();
+            console.log(e);
+        }
+    }
     async setUserLocation() {
         try {
-            const { address, latitude, longitude } = await wepy.chooseLocation();
+            const res = await wepy.chooseLocation();
+            const { address = '', latitude = '', longitude = '' } = res;
             this.address = address;
             this.addressLongitude = longitude;
             this.addressLatitude = latitude;
-            this.isAuthLocation = true;
+            this.isAuthLocation = 2;
             this.$apply();
         } catch (e) {
             console.log(e);
+            await this.settingLocation();
         }
     }
     isFullyFilled(subData) {
@@ -218,17 +234,14 @@ export default class newBizCard extends wepy.page {
         }
         return result;
     }
-    async onLoad () {
-        await this.loadData();
+    async settingLocation() {
         const res = await wepy.getSetting();
-        let locationAuth;
-        if (res.authSetting['scope.userLocation'] !== false) {
-            locationAuth = true;
-        } else {
-            locationAuth = false;
-        }
-        this.isAuthLocation = locationAuth;
+        this.isAuthLocation = res.authSetting['scope.userLocation'] !== false ? 2 : 3;
         this.$apply();
+    }
+    async onLoad () {
+        await this.settingLocation();
+        await this.loadData();
     }
     onShow () {
     }
