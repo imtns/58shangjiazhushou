@@ -1,132 +1,135 @@
 <template>
-    <view class="container">
-        <view class="status">
-            <block wx:if="{{ order.status === 10 && order.applyStatus !== 0 }}">
-                <view class="status-title">退款中</view>
-                <view class="status-subtitle">您已申请平台介入</view>
-            </block>
-            <block wx:else>
-                <view class="status-title">{{ statusDesc[order.status][0] }}</view>
-                <view class="status-subtitle">{{ statusDesc[order.status][1] }}</view>
-            </block>
-        </view>
-        <view class="order-info">
-            <view class="user-info" @tap="handleCall({{ order.telephone }})">
-                <view class="user-name">{{ order.name }}</view>
-                <view class="user-phone">{{ order.telephone }}</view>
-                <view class="icon-phone"></view>
+    <block>
+        <loading wx:if="{{ loading }}" :show="loading"></loading>
+        <view class="container" wx:else>
+            <view class="status">
+                <block wx:if="{{ order.status === 10 && order.applyStatus !== 0 }}">
+                    <view class="status-title">退款中</view>
+                    <view class="status-subtitle">您已申请平台介入</view>
+                </block>
+                <block wx:else>
+                    <view class="status-title">{{ statusDesc[order.status][0] }}</view>
+                    <view class="status-subtitle">{{ statusDesc[order.status][1] }}</view>
+                </block>
             </view>
-            <view class="order-wrap">
+            <view class="order-info">
+                <view class="user-info" @tap="handleCall({{ order.telephone }})">
+                    <view class="user-name">{{ order.name }}</view>
+                    <view class="user-phone">{{ order.telephone }}</view>
+                    <view class="icon-phone"></view>
+                </view>
+                <view class="order-wrap">
+                    <view class="order-detail">
+                        <view class="order-detail-item">
+                            <view class="order-detail-label">下单时间</view>
+                            <view class="order-detail-value">{{ order.createTime }}</view>
+                        </view>
+                        <view class="order-detail-item">
+                            <view class="order-detail-label">配送地址</view>
+                            <!-- 按理来说是不应该加这个样式的，这样会导致用户的输入的英文单词或者一串数字被强制切割换行
+                            但QA拿长度100的连续数字和我说不行，我能怎么办 -->
+                            <view
+                                class="order-detail-value"
+                                style="word-break: break-all;">{{ order.fullAddress }}</view>
+                        </view>
+                        <view class="order-detail-item">
+                            <view class="order-detail-label">预计送达时间</view>
+                            <view class="order-detail-value">{{ order.arriveTime }}</view>
+                        </view>
+                        <view class="order-detail-item">
+                            <view class="order-detail-label">配送方式</view>
+                            <view class="order-detail-value">商家配送</view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+            <view class="goods-info">
+                <view class="goods-title {{ showGoodsList ? '' : 'hide-goods-list' }}" @tap="handleTriggerShowGoodsList">{{ order.mpName }}</view>
+                <view class="goods-list {{ showGoodsList ? '' : 'hidden' }}">
+                    <view class="goods-item" wx:for="{{ goodsList }}" wx:key="index">
+                        <image src="{{ item.pics }}" class="goods-img"/>
+                        <view class="goods-detail-info">
+                            <view class="goods-name">{{ item.title }}</view>
+                            <view class="goods-amount">x {{ item.total }}</view>
+                        </view>
+                        <view class="goods-price">￥{{ item.price }}</view>
+                    </view>
+                </view>
                 <view class="order-detail">
                     <view class="order-detail-item">
-                        <view class="order-detail-label">下单时间</view>
-                        <view class="order-detail-value">{{ order.createTime }}</view>
+                        <view class="order-detail-label">包装费</view>
+                        <view class="order-detail-value">￥{{ order.packingFee || 0 }}</view>
                     </view>
                     <view class="order-detail-item">
-                        <view class="order-detail-label">配送地址</view>
-                        <!-- 按理来说是不应该加这个样式的，这样会导致用户的输入的英文单词或者一串数字被强制切割换行
-                        但QA拿长度100的连续数字和我说不行，我能怎么办 -->
-                        <view
-                            class="order-detail-value"
-                            style="word-break: break-all;">{{ order.fullAddress }}</view>
+                        <view class="order-detail-label">配送费</view>
+                        <view class="order-detail-value">{{ order.distributionFee ? '￥' + order.distributionFee : '免配送费' }}</view>
                     </view>
+                    <view class="order-detail-item" wx:if="{{ order.couponAmount }}">
+                        <view class="order-detail-label">优惠券</view>
+                        <view class="order-detail-value">-￥{{ order.couponAmount || 0 }}</view>
+                    </view>
+                </view>
+                <view class="goods-total">
+                    总计<text class="bold">￥{{ order.realAmount || 89.8 }}</text>
+                </view>
+            </view>
+            <view class="extra-info">
+                <view class="order-detail" style="border-top: none;">
                     <view class="order-detail-item">
-                        <view class="order-detail-label">预计送达时间</view>
-                        <view class="order-detail-value">{{ order.arriveTime }}</view>
+                        <view class="order-detail-label">订单编号</view>
+                        <view class="order-detail-value">{{ orderId }}</view>
                     </view>
+                </view>
+                <view class="order-detail">
                     <view class="order-detail-item">
-                        <view class="order-detail-label">配送方式</view>
-                        <view class="order-detail-value">商家配送</view>
+                        <view class="order-detail-label">支付方式</view>
+                        <view class="order-detail-value">{{ order.payType || '线上支付' }}</view>
                     </view>
                 </view>
-            </view>
-        </view>
-        <view class="goods-info">
-            <view class="goods-title {{ showGoodsList ? '' : 'hide-goods-list' }}" @tap="handleTriggerShowGoodsList">{{ order.mpName }}</view>
-            <view class="goods-list {{ showGoodsList ? '' : 'hidden' }}">
-                <view class="goods-item" wx:for="{{ goodsList }}" wx:key="index">
-                    <image src="{{ item.pics }}" class="goods-img"/>
-                    <view class="goods-detail-info">
-                        <view class="goods-name">{{ item.title }}</view>
-                        <view class="goods-amount">x {{ item.total }}</view>
+                <view class="order-detail">
+                    <view class="order-detail-item">
+                        <view class="order-detail-label">备注</view>
+                        <view class="order-detail-value"></view>
                     </view>
-                    <view class="goods-price">￥{{ item.price }}</view>
+                    <view class="order-textarea-value">{{ order.remark }}</view>
                 </view>
             </view>
-            <view class="order-detail">
-                <view class="order-detail-item">
-                    <view class="order-detail-label">包装费</view>
-                    <view class="order-detail-value">￥{{ order.packingFee || 0 }}</view>
-                </view>
-                <view class="order-detail-item">
-                    <view class="order-detail-label">配送费</view>
-                    <view class="order-detail-value">{{ order.distributionFee ? '￥' + order.distributionFee : '免配送费' }}</view>
-                </view>
-                <view class="order-detail-item" wx:if="{{ order.couponAmount }}">
-                    <view class="order-detail-label">优惠券</view>
-                    <view class="order-detail-value">-￥{{ order.couponAmount || 0 }}</view>
-                </view>
-            </view>
-            <view class="goods-total">
-                总计<text class="bold">￥{{ order.realAmount || 89.8 }}</text>
-            </view>
-        </view>
-        <view class="extra-info">
-            <view class="order-detail" style="border-top: none;">
-                <view class="order-detail-item">
-                    <view class="order-detail-label">订单编号</view>
-                    <view class="order-detail-value">{{ orderId }}</view>
-                </view>
-            </view>
-            <view class="order-detail">
-                <view class="order-detail-item">
-                    <view class="order-detail-label">支付方式</view>
-                    <view class="order-detail-value">{{ order.payType || '线上支付' }}</view>
-                </view>
-            </view>
-            <view class="order-detail">
-                <view class="order-detail-item">
-                    <view class="order-detail-label">备注</view>
-                    <view class="order-detail-value"></view>
-                </view>
-                <view class="order-textarea-value">{{ order.remark }}</view>
+            <view class="options">
+                <block wx:if="{{ order.status === 0 }}">
+                    <button
+                        class="button cancel"
+                        @tap="handleRefuseOrder({{ orderId}})"
+                        >取消订单</button>
+                    <button
+                        class="button primary accept"
+                        @tap="handleAcceptOrder({{ orderId}})"
+                        >立即接单</button>
+                </block>
+                <block wx:elif="{{ order.status === 1 }}">
+                    <button
+                        class="button primary"
+                        @tap="handleStartDeliver({{ orderId}})"
+                        >开始配送</button>
+                </block>
+                <block wx:elif="{{ order.status === 10 && order.applyStatus === 0 }}">
+                    <button
+                        class="button"
+                        @tap="handlePlatformIn({{ orderId}})"
+                        >申请平台介入</button>
+                    <button
+                        class="button primary"
+                        @tap="handleAcceptRefund({{ orderId}})"
+                        >同意退款</button>
+                </block>
+                <block wx:elif="{{ order.status === 13 }}">
+                    <button
+                        class="button primary"
+                        @tap="handleConfirm({{ orderId}})"
+                        >确认配送到达</button>
+                </block>
             </view>
         </view>
-        <view class="options">
-            <block wx:if="{{ order.status === 0 }}">
-                <button
-                    class="button cancel"
-                    @tap="handleRefuseOrder({{ orderId}})"
-                    >取消订单</button>
-                <button
-                    class="button primary accept"
-                    @tap="handleAcceptOrder({{ orderId}})"
-                    >立即接单</button>
-            </block>
-            <block wx:elif="{{ order.status === 1 }}">
-                <button
-                    class="button primary"
-                    @tap="handleStartDeliver({{ orderId}})"
-                    >开始配送</button>
-            </block>
-            <block wx:elif="{{ order.status === 10 && order.applyStatus === 0 }}">
-                <button
-                    class="button"
-                    @tap="handlePlatformIn({{ orderId}})"
-                    >申请平台介入</button>
-                <button
-                    class="button primary"
-                    @tap="handleAcceptRefund({{ orderId}})"
-                    >同意退款</button>
-            </block>
-            <block wx:elif="{{ order.status === 13 }}">
-                <button
-                    class="button primary"
-                    @tap="handleConfirm({{ orderId}})"
-                    >确认配送到达</button>
-            </block>
-        </view>
-    </view>
+    </block>
 </template>
 
 <script>
@@ -134,6 +137,7 @@
  * 商品订单详情
  */
 import wepy from 'wepy';
+import Loading from '../../components/Loading';
 import { goodsOrderDetail as goodsOrderDetailConfig } from '../../utils/config';
 import { get } from '../../utils/ajax';
 import { alert } from '../../utils';
@@ -142,6 +146,9 @@ import { LOAD_ORDER_DETAIL } from '../../utils/url';
 import OrderMixin from '../../components/order/mixin';
 
 export default class Index extends wepy.page {
+    components = {
+        loading: Loading,
+    }
     mixins = [OrderMixin]
     config = {
         navigationBarTitleText: '订单详情',
@@ -169,6 +176,7 @@ export default class Index extends wepy.page {
         showGoodsList: true,
         goodsList: [],
         orderId: '',
+        loading: true,
     }
     onLoad({ id }) {
         this.statusDesc = goodsOrderDetailConfig.statusDesc;
@@ -242,6 +250,7 @@ export default class Index extends wepy.page {
             const newDesc = _.cloneDeep(this.statusDesc);
             newDesc[13][1] = newDesc[13][1].replace('$$', startTime ? `于${startTime}` : '');
             this.statusDesc = newDesc;
+            this.loading = false;
             this.$apply();
         } catch (err) {
             console.log(err);
