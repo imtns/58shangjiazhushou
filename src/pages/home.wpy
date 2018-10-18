@@ -382,19 +382,18 @@ export default class Home extends wepy.page {
         };
     }
     async getAssistAuth() {
-        const that = this;
         try {
             const { data } = await get(GET_ASSIST_AUTH);
             const { isFollow, assistInfo = null } = data;
             // 9.13 王研需求修改
             if (assistInfo && assistInfo.wechatUnionId) { // 是否授权
-                that.assistAuth = true;
+                this.assistAuth = true;
             } else {
-                that.assistAuth = false;
+                this.assistAuth = false;
             }
-            that.isFollow = isFollow;
-            that.showModal = true;
-            that.$apply();
+            this.isFollow = isFollow;
+            this.showModal = true;
+            this.$apply();
         } catch (e) {
             console.log(e);
         }
