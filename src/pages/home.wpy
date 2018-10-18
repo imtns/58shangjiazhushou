@@ -104,7 +104,7 @@
             </view>
         </view>
         <!-- 分享名片赢大奖提示 -->
-        <view class="toedit-modal" wx:if="{{Actfrom || share.hasPromptToday}}">
+        <view class="toedit-modal" wx:if="{{Actfrom || share.hasPromptToday && share.hasPerm}}">
             <form bindsubmit="handleFormidCollect" report-submit="true">
                 <button class="share-active-cancle" data-action="cancle" bindtap="handleActionRoute" hover-class="none" form-type="submit"></button>
             </form>
@@ -149,7 +149,7 @@
                 </navigator>
             </form>
         </view>
-        <form bindsubmit="handleFormidCollect" report-submit="true"  wx:if="{{!Actfrom && !share.hasPromptToday}}">
+        <form bindsubmit="handleFormidCollect" report-submit="true"  wx:if="{{!Actfrom && !share.hasPromptToday && share.hasPerm}}">
             <button class="tomake-money" data-action="makemoney" bindtap="handleActionRoute" hover-class="none" form-type="submit"></button>
         </form>
     </scroll-view>
