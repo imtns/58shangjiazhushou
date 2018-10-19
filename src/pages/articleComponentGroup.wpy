@@ -333,7 +333,6 @@ export default class Index extends wepy.page {
     }
     showDialog(id = '', name = '') {
         SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_articleComponentGroup_showDialog');
-        console.log(name, id);
         const { groupList } = this;
         if (!name && groupList && groupList.length >= 10) {
             toast(' 分组数量达到最大（10个），无法创建更多。');

@@ -44,7 +44,6 @@ export default class Pop extends wepy.component {
             this.$apply();
         },
         async add() {
-            console.log(this.content);
             const content = this.content.trim();
             if (!content) {
                 toast('请填写分组名称');
