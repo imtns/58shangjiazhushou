@@ -105,7 +105,7 @@ export default class AppEdit extends wepy.page {
             packingFee: 2, // 包装费
             avgTime: 30, // 平均送达时长
             receiptType: '0', // 接单类型
-            businessDays: '1，1，1，1，1，1，1，1',
+            businessDays: '1,1,1,1,1,1,1,1',
             startTime: '08:00',
             endTime: '21:00',
         },
