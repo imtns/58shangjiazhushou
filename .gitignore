@@ -2,3 +2,4 @@ node_modules
 .DS_store
 .wepycache
 dist
+package-lock.json
