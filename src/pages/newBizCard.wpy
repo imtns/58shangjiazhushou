@@ -60,7 +60,7 @@
 import wepy from 'wepy';
 import { CARD_FIRST_EDIT, CARD_CREATE_NEW_CARD } from '../utils/url';
 import { post } from '../utils/ajax';
-import { getNetStatus, toast, alertP } from '../utils';
+import { getNetStatus, toast } from '../utils';
 import { getUid, SendClickLog } from '../utils/maidian';
 
 const host = 'https://yaofa.58.com';
@@ -176,20 +176,37 @@ export default class newBizCard extends wepy.page {
             this.setUserLocation();
         },
         async opensetting() {
+            // try {
+            //     let isAuth;
+            //     const { cancel, confirm } = await alertP('需要获取您的位置信息，请到小程序的设置中打开授权', '是否要打开设置页面', {
+            //         showCancel: true,
+            //     });
+            //     if (confirm) {
+            //         isAuth = 2;
+            //         this.authSetting();
+            //     } else if (cancel) {
+            //         isAuth = 3;
+            //     }
+            //     this.isAuthLocation = isAuth;
+            //     this.$apply();
+            // } catch (e) {
+            //     console.log(e);
+            // }
             try {
-                let isAuth;
-                const { cancel, confirm } = await alertP('需要获取您的位置信息，请到小程序的设置中打开授权', '是否要打开设置页面', {
-                    showCancel: true,
-                });
-                if (confirm) {
-                    isAuth = 2;
-                    this.authSetting();
-                } else if (cancel) {
-                    isAuth = 3;
+                const res = await wepy.openSetting();
+                if (!res.authSetting['scope.userLocation']) {
+                    // 授权地理位置信息失败
+                    this.isAuthLocation = 3;
+                    this.$apply();
+                    return;
                 }
-                this.isAuthLocation = isAuth;
-                this.$apply();
+
+                setTimeout(() => {
+                    this.setUserLocation();
+                }, 500);
             } catch (e) {
+                this.isAuthLocation = 3;
+                this.$apply();
                 console.log(e);
             }
         },

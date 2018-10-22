@@ -45,7 +45,6 @@ export default class Feedback extends wepy.page {
     }
     async onLoad() {
         await sleep();
-        console.log('onLoad');
     }
     input(e) {
         const val = e.detail.value;
@@ -61,10 +60,8 @@ export default class Feedback extends wepy.page {
         try {
             this.content = '';
             this.$apply();
-            console.log('3', this.content, '4', con);
             await post('/suggestion/submit', { content: con });
             alert('提交成功，谢谢您的建议！', '提示', () => {
-                console.log('进入callback');
                 wepy.redirectTo({
                     url: 'home',
                 });
