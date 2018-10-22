@@ -417,7 +417,6 @@ export default class Home extends wepy.page {
                     wepy.navigateTo({
                         url: 'newBizCard',
                     });
-                    showEditModal
                     break;
                 default:
                     break;
