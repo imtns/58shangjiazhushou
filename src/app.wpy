@@ -118,6 +118,8 @@ export default class extends wepy.app {
             'pages/newBizCard', // 新建名片页面
             'pages/choseStyle', // 名片样式选择
             'pages/orderWebpage', // 订单列表赚钱秘籍m页
+
+            'pages/regist/index',
         ],
         window: {
             backgroundTextStyle: 'light',

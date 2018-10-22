@@ -1,0 +1,18 @@
+<template lang="wxml">
+    <view class="container">
+        Hello world regist
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class Index extends wepy.page {
+    onLoad() {
+        console.log('onLoad');
+    }
+}
+</script>
+
+<style lang="scss">
+</style>
