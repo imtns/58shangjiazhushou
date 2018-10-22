@@ -121,7 +121,8 @@ export default class extends wepy.app {
             'pages/activityRedirect', // 分享名片赢大奖活动说明页
             'pages/orderWebpage', // 订单列表赚钱秘籍m页
 
-            'pages/regist/index',
+            'pages/regist/index', // 快速注册页面
+            'pages/regist/qrcode', // 注册二维码
         ],
         window: {
             backgroundTextStyle: 'light',
