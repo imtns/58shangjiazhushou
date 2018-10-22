@@ -16,18 +16,9 @@ var Page = {
         const from = Page.getKey('from');
         console.log(from);
         $("._share-btn").on("click",function(){
-          if(from) { // 来源商家助手
-            wx.miniProgram.navigateTo({
-                url: '/pages/activityRedirect',
-            });
-          }else{ // 商家通app
-            shangjiatongApp.jumpSubroutine({
-                path: '/pages/activityRedirect',
-                userName: 'gh_9f4d902c92e5',
-                miniType: '0'
-            });
-            shangjiatongApp.backNative();
-          }
+          wx.miniProgram.navigateTo({
+              url: '/pages/activityRedirect',
+          });
         })
     },
 };
