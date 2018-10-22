@@ -39,7 +39,7 @@ var Page = {
             $(".prize-result").css("display","block");
             if(parseInt(that.share.hasShareDays) >= that.share.needShareDays){
                 $(".result-title").html('领奖成功');
-                $(".result-tip").html('恭喜您！<em>¥' + that.share.cashAmount + '</em>瓜分获得现金奖励');
+                $(".result-tip").html('恭喜您！瓜分获得<em>¥' + that.share.cashAmount + '</em>现金奖励');
                 $("._withdraw-btn").css("display","inline-block");
             } else{
                 $(".result-title").html('非常遗憾');
