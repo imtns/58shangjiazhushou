@@ -21,7 +21,7 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
         delay = loadingControl.delay;
     }
     // test="test"字段是为切换测试和线上环境的，如果提交审核和发布，将test改为''，标识切换为线上环境
-    const sendData = Object.assign({}, data, { test: '' });
+    const sendData = Object.assign({}, data, { test: 'test' });
     // const sendData = Object.assign({}, data, { test: '' });
     // ppu加入header
     const ppu = wx.getStorageSync('ppu');
@@ -37,9 +37,9 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
         header: {
             'content-type': method === 'GET' ? 'application/json' : 'application/x-www-form-urlencoded;charset=utf-8',
             PPU: ppu || 'wanghongyue',
-            // 'YkuYdY8rk5As4T2QaJ7v': '45797966958100',
+            // 'YkuYdY8rk5As4T2QaJ7v': '48738323270929',
             reqfrom: 'biz_assistant',
-            // 'YkuYdY8rk5As4T2QaJ7v': 33433383496455,
+            // 'YkuYdY8rk5As4T2QaJ7v': 47350441209367,
         },
         success(response) {
             console.log('response', response);

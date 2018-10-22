@@ -13,6 +13,7 @@ export const LOAD_SERVICE_LIST = '/businessService/listByPageForUser'; // 获取
 export const LOAD_SERVICE = '/businessService/get/'; // 获取预约服务组件内容
 export const INSERT_SERVICE = '/businessService/insert'; // 新增
 export const SAVE_SERVICE = '/businessService/update'; // 更新
+export const GET_SHARE = '/yunying/getShare'; // 首页获取分享赢奖金
 
 // 商品相关
 export const LOAD_GOODS_GROUPS = '/goods/groups/specail';

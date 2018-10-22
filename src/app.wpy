@@ -117,6 +117,8 @@ export default class extends wepy.app {
             'pages/articleComponentGroup', // 文章分组页面
             'pages/newBizCard', // 新建名片页面
             'pages/choseStyle', // 名片样式选择
+            'pages/activityIntro', // 分享名片赢大奖活动说明页
+            'pages/activityRedirect', // 分享名片赢大奖活动说明页
             'pages/orderWebpage', // 订单列表赚钱秘籍m页
 
             'pages/regist/index',
