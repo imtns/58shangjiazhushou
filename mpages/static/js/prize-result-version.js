@@ -2,7 +2,7 @@ window.__staticConfig = {
     cssCdn: 'https://static.58.com',
     cssCfg:[{
         name:'css',
-        version: '20181019',
+        version: '201810212',
         url:'/lbg/shangjiaxcxht/zhushou/css/prize-result.css'
     }],
     jsCdn: 'https://static.58.com',
@@ -12,7 +12,7 @@ window.__staticConfig = {
         url:'/lbg/shangjiaxcxht/zhushou/js/zepto.min.js'
     },{
         name:'js',
-        version: '20181019',
+        version: '201810212',
         url:'/lbg/shangjiaxcxht/zhushou/js/prize-result.js'
     }]
 };

@@ -25,12 +25,12 @@ var Page = {
         },function(res){
             const { data } = JSON.parse(res);
             that.share = data;
-            if(!that.share.hasPerm) { // 没有资格参加活动
+            if(!that.share.hasPerm && that.share.cashDistance > 0) { // 没有资格参加活动
                 $(".prize-result").css("display","block");
                 $(".result-tip").html('有58云名片的商家才能参加这个活动哦，可以去购买名片获取商机、赢大奖');
                 return;
             }
-            if(that.share.cashDistance && that.share.hasPerm) { // 还未开奖，并且有资格参加活动
+            if(that.share.cashDistance > 0 && that.share.hasPerm) { // 还未开奖，并且有资格参加活动
                 that.getPrize();
                 $(".prize-attend").css("display","block");
                 return;

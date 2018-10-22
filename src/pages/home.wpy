@@ -111,22 +111,22 @@
                 <button class="share-active-cancle" data-action="cancle" bindtap="handleActionRoute" hover-class="none" form-type="submit"></button>
             </form>
             <view class="share-active-con">
-                <view class="share-countdown" wx:if="{{share.cashDistance}}">
+                <view class="share-countdown" wx:if="{{share.cashDistance > 0}}">
                     倒计时：
                     <view class="time-countdown">{{share.timeArray[0]}}</view><view>天</view>
                     <view class="time-countdown">{{share.timeArray[1]}}</view><view>时</view>
                     <view class="time-countdown">{{share.timeArray[2]}}</view><view>分</view>
                     <view class="time-countdown">{{share.timeArray[3]}}</view><view>秒</view>
                 </view>
-                <view class="share-tips" wx:if="{{share.cashDistance}}">
+                <view class="share-tips" wx:if="{{share.cashDistance > 0}}">
                     <view class="share-days">您已分享了{{share.hasShareDays}}天</view>
                     <navigator class="share-intro" hover-class="none" url="/pages/activityIntro">活动规则 ></navigator>
                 </view>
-                <view class="share-ending" wx:if="{{!share.cashDistance && share.needShareDays > share.hasShareDays}}">活动结束，您没有达到累计分享{{share.needShareDays}}天的活动要求，再接再厉，期待在之后的活动中赢取大奖</view>
-                <view class="share-ending" wx:if="{{!share.cashDistance && share.hasShareDays > share.needShareDays}}">活动结束，您达到了累计分享{{share.needShareDays}}天的活动要求，请去"58同城微学院"公众号瓜分奖金</view>
+                <view class="share-ending" wx:if="{{share.cashDistance <= 0 && share.needShareDays > share.hasShareDays}}">活动结束，您没有达到累计分享{{share.needShareDays}}天的活动要求，再接再厉，期待在之后的活动中赢取大奖</view>
+                <view class="share-ending" wx:if="{{share.cashDistance <= 0 && share.hasShareDays > share.needShareDays}}">活动结束，您达到了累计分享{{share.needShareDays}}天的活动要求，请去"58同城微学院"公众号瓜分奖金</view>
             </view>
             <!-- 活动结束,未获奖 -->
-            <form bindsubmit="handleFormhandleFormidCollectidCollect" report-submit="true" wx:if="{{!share.cashDistance && share.needShareDays > share.hasShareDays}}">
+            <form bindsubmit="handleFormhandleFormidCollectidCollect" report-submit="true" wx:if="{{share.cashDistance <= 0 && share.needShareDays > share.hasShareDays}}">
                 <button hover-class="none" form-type="submit" open-type="contact" class="toshare-btn" data-action="topubnumber" bindtap="handleActionRoute">到公众号看更多赚钱秘籍</button>
             </form>
             <!-- 活动结束,获奖 -->
@@ -134,17 +134,17 @@
                 <button hover-class="none" form-type="submit" class="toshare-btn" data-action="toshareprize" bindtap="handleActionRoute">去"58同城微学院"瓜分奖金</button>
             </form>
             <!-- 若是今天已分享，则分享按钮置灰，今日不可再次分享 -->
-            <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{share.cashDistance && share.hasShareDays && share.hasShareToday && !share.isAuto && share.needShareDays > share.hasShareDays}}">
+            <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{share.cashDistance > 0 && share.hasShareDays && share.hasShareToday && !share.isAuto && share.needShareDays > share.hasShareDays}}">
                 <navigator class="toshare-action" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="/pages/index58/index58?mpcardId={{business.selected.cardId}}&businessId={{business.userId}}&from=zhushou_home" extra-data="" version="develop">
                     <button hover-class="none" form-type="submit" class="toshare-btn" data-action="share" bindtap="handleActionRoute">已分享{{share.hasShareDays}}天，明天开始下一次分享</button>
                 </navigator>
             </form>
             <!-- 若是默认名片没有保存过，则弹窗提示商家去编辑 -->
-            <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{share.cashDistance && !share.hasShareToday && share.isAuto && share.needShareDays > share.hasShareDays}}">
+            <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{share.cashDistance > 0 && !share.hasShareToday && share.isAuto && share.needShareDays > share.hasShareDays}}">
                 <button hover-class="none" form-type="submit" class="toshare-btn" data-action="toeditcard" bindtap="handleActionRoute">立即分享</button>
             </form>
             <!-- 若不是默认名片，分享跳转到c端名片页 -->
-            <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{share.cashDistance && !share.hasShareToday && !share.isAuto&& share.needShareDays > share.hasShareDays}}">
+            <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{share.cashDistance > 0 && !share.hasShareToday && !share.isAuto&& share.needShareDays > share.hasShareDays}}">
                 <navigator class="toshare-action" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="/pages/index58/index58?mpcardId={{business.selected.cardId}}&businessId={{business.userId}}&from=zhushou_home" extra-data="" version="develop">
                     <button hover-class="none" form-type="submit" class="toshare-btn" data-action="share" bindtap="handleActionRoute">立即分享</button>
                 </navigator>
@@ -417,6 +417,7 @@ export default class Home extends wepy.page {
                     wepy.navigateTo({
                         url: 'newBizCard',
                     });
+                    showEditModal
                     break;
                 default:
                     break;
