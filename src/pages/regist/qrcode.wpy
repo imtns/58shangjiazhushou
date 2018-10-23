@@ -47,7 +47,7 @@ export default class Index extends wepy.page {
     }
 
     async checkAuth(authName) {
-        returnn (await wepy.getSetting()).authSetting[authName];
+        return (await wepy.getSetting()).authSetting[authName];
     }
 
     async getTmpPath(url) {
