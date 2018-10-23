@@ -16,9 +16,18 @@ var Page = {
         const from = Page.getKey('from');
         console.log(from);
         $("._share-btn").on("click",function(){
-          wx.miniProgram.navigateTo({
-              url: '/pages/activityRedirect',
-          });
+          if(from == "shangjiazhushou"){ // 来源商家助手
+            wx.miniProgram.navigateTo({
+                url: '/pages/activityRedirect',
+            });
+          }else if(from == "shangjiatong"){ // 商家通app
+            shangjiatongApp.jumpSubroutine({
+                path: '/pages/activityRedirect',
+                userName: 'gh_9f4d902c92e5',
+                miniType: '0'
+            });
+            shangjiatongApp.backNative();
+          }
         })
     },
 };
