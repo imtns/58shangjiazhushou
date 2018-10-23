@@ -8,7 +8,6 @@
     display: flex;
     padding-top: 10rpx;
     background-color: #FFFFFF;
-    font-family: PingFangSC-Regular;
     border-top: 1rpx solid #EEEEEE;
 }
 .tab-item {
