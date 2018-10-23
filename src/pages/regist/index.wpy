@@ -9,7 +9,7 @@
         <form @submit="handleSubmit">
             <view class="header">
                 <view>注册基本信息</view>
-                <view class="help">?</view>
+                <view class="help" @tap="handleShowHelp">?</view>
             </view>
             <view class="form">
                 <view class="form-item">
@@ -31,12 +31,39 @@
                 <button class="btn-save" :class="{ disabled: !canSubmit }" form-type="submit">保存</button>
             </view>
         </form>
+        <helpModal
+            :show.sync="helpModalShow">
+            <view class="help-modal-content" slot="content">
+                <view class="notice-item">
+                    <view class="notice-item-value">
+                        <text class="notice-item-value-bold">企业法人姓名：</text>与营业执照法人姓名相同。
+                    </view>
+                </view>
+                <view class="notice-item">
+                    <view class="notice-item-value">
+                        <text class="notice-item-value-bold">企业法人微信号：</text>营业执照法人的微信号，之后会用于认证身份信息，请使用已开通微信支付的微信号。
+                    </view>
+                </view>
+                <view class="notice-item">
+                    <view class="notice-item-value">
+                        <text class="notice-item-value-bold">企业名称：</text>与营业执照的企业名称相同。
+                    </view>
+                </view>
+                <view class="notice-item">
+                    <view class="notice-item-value">
+                        <text class="notice-item-value-bold">企业代码：</text>与营业执照的企业代码相同。
+                    </view>
+                </view>
+                <view class="notice-tips notice-item-value-bold">请确认输入正确后再提交，每天最多可提交5次</view>
+            </view>
+        </helpModal>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
 import MessageBox from '../../components/MessageBox';
+import HelpModal from '../../components/HelpModal';
 
 export default class Index extends wepy.page {
     config = {
@@ -46,9 +73,12 @@ export default class Index extends wepy.page {
         modalShow: false,
         modalContent: '您填写的信息有误。一天内只能提交5次，您还可以提交4次',
         modalConfirmText: '重新填写',
+
+        helpModalShow: false,
     }
     components = {
         messageBox: MessageBox,
+        helpModal: HelpModal,
     }
     onLoad() {
         console.log('onLoad');
@@ -56,7 +86,7 @@ export default class Index extends wepy.page {
     computed = {
         canSubmit() {
             return true;
-        }
+        },
     }
 
     onConfirm() {
@@ -70,7 +100,10 @@ export default class Index extends wepy.page {
             this.modalShow = true;
             const { value: data, formId } = e.detail;
             console.log(data, formId);
-        }
+        },
+        handleShowHelp() {
+            this.helpModalShow = true;
+        },
     }
 }
 </script>
@@ -124,5 +157,17 @@ export default class Index extends wepy.page {
         &.disabled {
             background-color: #DBDBDB;
         }
+    }
+
+    .notice-item-value-bold {
+        font-size: 28rpx;
+        color: #2a2a2a;
+        font-weight: bold;
+    }
+    .notice-tips {
+        margin-top: 40rpx;
+    }
+    .help-modal-content {
+        margin-top: 40rpx;
     }
 </style>
