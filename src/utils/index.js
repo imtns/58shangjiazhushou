@@ -156,3 +156,7 @@ export const withHttp = (list) => {
     });
     return list;
 };
+
+export const autoFixed = (num) => {
+    return num <= 9 ? `0${num}` : num;
+};

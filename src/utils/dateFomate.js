@@ -1,4 +1,5 @@
 const moment = require('./moment');
+import { autoFixed } from './index';
 
 function formatTime() {
     var date = new Date();
@@ -122,20 +123,20 @@ function formatDateTimeLocal(dateString) {
     const dateTime = date.valueOf();
     const todayTime = new Date();
 
+    const minute = autoFixed(date.minutes());
+    const hour = autoFixed(date.hours());
     if (todayTime - dateTime < nDay) {
-        const minute = date.minutes();
-        const hour = date.hours();
         return `${hour}:${minute}`;
     }
 
+    const day = autoFixed(date.date());
+    const month = autoFixed(date.month() + 1);
     if (todayTime - dateTime > year) {
         const year = date.year();
-        return `${year}`;
+        return `${year}/${month}/${day} ${hour}:${minute}`;
     }
 
-    const day = date.date();
-    const month = date.month() + 1;
-    return `${month}/${day}`;
+    return `${month}/${day} ${hour}:${minute}`;
 }
 
 module.exports = {
