@@ -123,6 +123,8 @@ export default class extends wepy.app {
 
             'pages/regist/index', // 快速注册页面
             'pages/regist/qrcode', // 注册二维码
+            'pages/regist/notice', // 创建小程序提示页
+            'pages/regist/edit', // 创建小程序页面
         ],
         window: {
             backgroundTextStyle: 'light',
