@@ -2,7 +2,7 @@
     <scroll-view class="home" scroll-y style="height:100vh" wx:if="{{ !status.loading }}">
         <view class="follow-public" wx:if="{{!isFollow}}">
             <text>关注公众号接收通知</text>
-            <navigator class="follow-action" wx:if="{{assistAuth}}" url="/pages/followPublic">马上关注</navigator>
+            <navigator class="follow-action" wx:if="{{assistAuth}}" @tap="toFollow">马上关注</navigator>
             <button class="follow-action" wx:elif="{{!assistAuth}}" open-type="getUserInfo" @tap="loadSession">马上关注</button>
         </view>
         <view class="index-loaded-header">
@@ -82,7 +82,7 @@
             <view class="showModal_mask" bindtap="hideModal"></view>
             <view class="showModal_modal follow_modal">
                 <view class="showModal_text">各位老板，您<text>关注公众号</text>后商家助手才能及时给您通知订单消息哦</view>
-                <navigator class="showModal_btn" url="/pages/followPublic">去关注</navigator>
+                <navigator class="showModal_btn" @tap="toFollow">去关注</navigator>
                 <button class="showModal_cancle" bindtap="hideModal"></button>
             </view>
         </view>
@@ -236,6 +236,7 @@ export default class Home extends wepy.page {
         link(text) {
             // console.log(text);意见反馈不做判断
             if (text === '意见反馈') {
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_feedback');
                 wepy.navigateTo({
                     url: 'feedback',
                 });
@@ -245,6 +246,12 @@ export default class Home extends wepy.page {
             } else {
                 this.checkBeforeJump(text);
             }
+        },
+        toFollow() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_follow');
+            wepy.navigateTo({
+                url: '/pages/followPublic',
+            });
         },
         shopScore() {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_shopScore');
