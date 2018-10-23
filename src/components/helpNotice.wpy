@@ -1,0 +1,45 @@
+<template lang="wxml">
+    <view class="help-notice-container" wx:if="{{ show }}">
+        <view class="help-notice-title">{{ title }}</view>
+        <view class="help-notice-content">哈哈哈</view>
+        <view class="help-notice-close"></view>
+    </view>
+</template>
+
+<script>
+/**
+ * @desc 帮助提示弹窗
+ */
+import wepy from 'wepy';
+
+export default class Index extends wepy.component {
+    props = {
+        title: {
+            type: String,
+            default: '提示',
+        },
+        show: {
+            type: Boolean,
+            default: false,
+            twoWay: true,
+        },
+    }
+}
+</script>
+
+<style lang="scss">
+    .help-notice-container {
+        position: fixed;
+        top: 0;
+        height: 100vh;
+        width: 750rpx;
+        padding-top: 100rpx;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #fff;
+    }
+    .help-notice-title {
+        line-height: 
+    }
+</style>

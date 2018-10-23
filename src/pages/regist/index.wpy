@@ -68,8 +68,8 @@ export default class Index extends wepy.page {
     methods = {
         handleSubmit(e) {
             this.modalShow = true;
-            const { value: data } = e.detail;
-            console.log(data);
+            const { value: data, formId } = e.detail;
+            console.log(data, formId);
         }
     }
 }
