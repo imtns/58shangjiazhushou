@@ -5,6 +5,8 @@ export const globalData = {
     iv: null,
     sessionId: null,
     userInfo: null,
+    scene: 1001,
+    mpType: 1,
     encryptedData: null,
     information: {},
     extConfig: {},

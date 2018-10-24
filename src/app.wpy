@@ -2,6 +2,7 @@
 import wepy from 'wepy';
 import 'wepy-async-function';
 import DoMiniProgramBack from './utils/scene';
+import { globalData } from './utils/globalData';
 
 // 回调小程序类型
 const CALLBACKAPPS = {
@@ -197,6 +198,10 @@ export default class extends wepy.app {
         } = options;
         const { appId } = referrerInfo;
         const fromAppId = appId;
+        Object.assign(globalData, {
+            appScene: scene,
+        });
+        console.log(globalData);
         // action:通过fromAppId和scene返回当前小程序处理
         console.log('referrerInfo', referrerInfo);
         console.log(path);
