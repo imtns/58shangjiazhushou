@@ -5,9 +5,9 @@
             <view class="successTip">保存名片成功</view>
             <view class="openTip" wx:if="{{isPayOpen === 'false'}}">系统检查到您还未开通支付功能，开通后顾客可通过名片给您支付哦</view>
         </view>
-        <navigator url="myBizCard" open-type="navigate" hover-class="none" class="checkBizCard" @tap="checkBizCard">查看名片</navigator>
-        <navigator url="OpenPay" wx:if="{{isPayOpen === 'false'}}" open-type="navigate" hover-class="none" class="openPay" @tap="openPay">开通支付</navigator>
-        <navigator url="home" open-type="switchTab" hover-class="none" class="returnHome" @tap="returnHome">返回首页</navigator>
+        <navigator open-type="navigate" hover-class="none" class="checkBizCard" @tap="checkBizCard">查看名片</navigator>
+        <navigator wx:if="{{isPayOpen === 'false'}}" open-type="navigate" hover-class="none" class="openPay" @tap="openPay">开通支付</navigator>
+        <navigator open-type="switchTab" hover-class="none" class="returnHome" @tap="returnHome">返回首页</navigator>
     </view>
 </template>
 
@@ -15,22 +15,31 @@
 import wepy from 'wepy';
 import { getUid, SendClickLog } from '../utils/maidian';
 
-export default class myBizCard extends wepy.page {
+export default class myBizCardSave extends wepy.page {
     config = {
         navigationBarTitleText: '选择样式',
     }
     data = {
         isPayOpen: null,
     }
-    method = {
+    methods = {
         checkBizCard() {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_myBizCardSave_checkBizCard');
+            wepy.navigateTo({
+                url: '/pages/myBizCard',
+            });
         },
         openPay() {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_myBizCardSave_openPay');
+            wepy.navigateTo({
+                url: '/pages/OpenPay',
+            });
         },
         returnHome() {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_myBizCardSave_returnHome');
+            wepy.switchTab({
+                url: '/pages/home',
+            });
         },
     }
     onLoad (option) {
