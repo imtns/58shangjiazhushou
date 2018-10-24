@@ -1,15 +1,15 @@
 /*eslint-disable */
-(function() {
-    let LazyLoad = (function(doc) {
-        let env,
-            head,
+(function () {
+    var LazyLoad = function (doc) {
+        var env = void 0,
+            head = void 0,
             pending = {},
             pollCount = 0,
             queue = { css: [], js: [] },
             styleSheets = doc.styleSheets;
         function createNode(name, attrs) {
-            let node = doc.createElement(name),
-                attr;
+            var node = doc.createElement(name),
+                attr = void 0;
 
             for (attr in attrs) {
                 if (attrs.hasOwnProperty(attr)) {
@@ -20,9 +20,9 @@
             return node;
         }
         function finish(type) {
-            let p = pending[type],
-                callback,
-                urls;
+            var p = pending[type],
+                callback = void 0,
+                urls = void 0;
 
             if (p) {
                 callback = p.callback;
@@ -38,30 +38,26 @@
             }
         }
         function getEnv() {
-            let ua = navigator.userAgent;
+            var ua = navigator.userAgent;
 
             env = {
-                async: doc.createElement('script').async === true,
+                async: doc.createElement('script').async === true
             };
 
-            (env.webkit = /AppleWebKit\//.test(ua)) ||
-                (env.ie = /MSIE|Trident/.test(ua)) ||
-                (env.opera = /Opera/.test(ua)) ||
-                (env.gecko = /Gecko\//.test(ua)) ||
-                (env.unknown = true);
+            (env.webkit = /AppleWebKit\//.test(ua)) || (env.ie = /MSIE|Trident/.test(ua)) || (env.opera = /Opera/.test(ua)) || (env.gecko = /Gecko\//.test(ua)) || (env.unknown = true);
         }
         function load(type, urls, callback, obj, context) {
-            let _finish = function() {
-                    finish(type);
-                },
+            var _finish = function _finish() {
+                finish(type);
+            },
                 isCSS = type === 'css',
                 nodes = [],
-                i,
-                len,
-                node,
-                p,
-                pendingUrls,
-                url;
+                i = void 0,
+                len = void 0,
+                node = void 0,
+                p = void 0,
+                pendingUrls = void 0,
+                url = void 0;
 
             env || getEnv();
 
@@ -72,7 +68,7 @@
                         urls: urls,
                         callback: callback,
                         obj: obj,
-                        context: context,
+                        context: context
                     });
                 } else {
                     for (i = 0, len = urls.length; i < len; ++i) {
@@ -80,7 +76,7 @@
                             urls: [urls[i]],
                             callback: i === len - 1 ? callback : null,
                             obj: obj,
-                            context: context,
+                            context: context
                         });
                     }
                 }
@@ -97,12 +93,10 @@
                 url = pendingUrls[i];
 
                 if (isCSS) {
-                    node = env.gecko
-                        ? createNode('style')
-                        : createNode('link', {
-                            href: url,
-                            rel: 'stylesheet',
-                        });
+                    node = env.gecko ? createNode('style') : createNode('link', {
+                        href: url,
+                        rel: 'stylesheet'
+                    });
                 } else {
                     node = createNode('script', { src: url });
                     node.async = false;
@@ -111,13 +105,8 @@
                 node.className = 'lazyload';
                 node.setAttribute('charset', 'utf-8');
 
-                if (
-                    env.ie &&
-                    !isCSS &&
-                    'onreadystatechange' in node &&
-                    !('draggable' in node)
-                ) {
-                    node.onreadystatechange = function() {
+                if (env.ie && !isCSS && 'onreadystatechange' in node && !('draggable' in node)) {
+                    node.onreadystatechange = function () {
                         if (/loaded|complete/.test(node.readyState)) {
                             node.onreadystatechange = null;
                             _finish();
@@ -128,7 +117,7 @@
                         p.urls[i] = node.href;
                         pollWebKit();
                     } else {
-                        node.innerHTML = `@import "${  url  }";`;
+                        node.innerHTML = '@import "' + url + '";';
                         pollGecko(node);
                     }
                 } else {
@@ -144,7 +133,7 @@
         }
 
         function pollGecko(node) {
-            let hasRules;
+            var hasRules = void 0;
 
             try {
                 hasRules = !!node.sheet.cssRules;
@@ -152,7 +141,7 @@
                 pollCount += 1;
 
                 if (pollCount < 200) {
-                    setTimeout(() => {
+                    setTimeout(function () {
                         pollGecko(node);
                     }, 50);
                 } else {
@@ -166,8 +155,8 @@
         }
 
         function pollWebKit() {
-            let css = pending.css,
-                i;
+            var css = pending.css,
+                i = void 0;
 
             if (css) {
                 i = styleSheets.length;
@@ -192,17 +181,16 @@
         }
 
         return {
-            css(urls, callback, obj, context) {
+            css: function css(urls, callback, obj, context) {
                 load("css", urls, callback, obj, context);
             },
-
-            js(urls, callback, obj, context) {
+            js: function js(urls, callback, obj, context) {
                 load("js", urls, callback, obj, context);
-            },
+            }
         };
-    }(this.document));
+    }(this.document);
 
-    LazyLoad.js(`${window.__staticConfigUrl  }?${  (+new Date()).toString(36)}`, () => {
+    LazyLoad.js(window.__staticConfigUrl + '?' + (+new Date()).toString(36), function () {
         var sc = window.__staticConfig,
             jsCfg = sc.jsCfg,
             jsCdn = sc.jsCdn || '//j1.58cdn.com.cn',
@@ -217,4 +205,4 @@
             LazyLoad.css(cssCdn + css.url + "?" + css.version);
         }
     });
-}());
+})();
