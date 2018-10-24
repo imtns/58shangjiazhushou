@@ -1,8 +1,9 @@
 const version = '1.0.0';
+import { globalData } from './globalData';
 /**
  * sendTrackLog 流量track日志发送接口
  * @param
- * appid 小程序id
+ * appid 当前小程序id
  * uid 用户身份id 【必须传递】例如：openid、thirdKey等，能够保证小程序内用户唯一身份识别
  * _trackURL 页面基本属性变量，支持扩展，例如："{'cate':'1,12','area':'1','pagetype':'special','page':'huodong','qudao':'weixin','自定义key':'自定义val'}"。
  * 内部字段如果影响url解析，请先编码
@@ -14,9 +15,25 @@ const version = '1.0.0';
  * @example
 
  */
-function SendTrackLog(appid, uid, _trackURL) {
+function SendTrackLog(appid, uid, _trackURL, currentPage) {
+    console.log(currentPage);
+    const appType = 2; // appType:1:优选壳子 2小程序
+    // mpType:小程序类型(1优享 2企业)
+    const { appScene, mpType } = globalData;
+    const mpId = wx.getStorageSync('current_mpid');
+    const cardId = wx.getStorageSync('current_cardId') || '';
+    const paramJson = {
+        appBaseSign: 'LBG_BIZMP_XZS',
+        appScene,
+        appType,
+        userId: uid,
+        mpId,
+        cardId,
+        mpType, // mpType:小程序类型(1优享 2企业)
+        conKey: uid,
+    };
     if (uid) {
-        const url = `https://tracklog.58.com/wx/track/empty.js.gif?wxid=${appid || ''}&uid=${uid}&trackURL=${_trackURL || ''}&v=${version}&rand_id=${Math.random()}`;
+        const url = `https://tracklog.58.com/wx/track/empty.js.gif?wxid=${appid || ''}&uid=${uid}&trackURL=${paramJson || ''}&v=${version}&rand_id=${Math.random()}`;
         wx.request({
             url: url,
             success() {},
@@ -43,14 +60,29 @@ function SendTrackLog(appid, uid, _trackURL) {
  * referrer.sendClickLog('1234','abcd', "{'cate':'1,12','area':'1','pagetype':'special','page':'huodong','qudao':'weixin','自定义key':'自定义val'}", "tz_huodong_fx&infoid=8976");
  */
 function SendClickLog(appid, uid, _trackURL, clickTag) {
+    const appType = 2; // appType:1:优选壳子 2小程序
+    // mpType:小程序类型(1优享 2企业)
+    const { appScene, mpType } = globalData;
+    const mpId = wx.getStorageSync('current_mpid');
+    const cardId = wx.getStorageSync('current_cardId') || '';
+    const paramJson = {
+        appBaseSign: 'LBG_BIZMP_XZS',
+        appScene,
+        appType,
+        userId: uid,
+        mpId,
+        cardId,
+        mpType, // mpType:小程序类型(1优享 2企业)
+        conKey: uid,
+    };
     if (uid) {
-        const url = `https://tracklog.58.com/wx/click/empty.js.gif?wxid=${appid || ''}&uid=${uid}&from=${clickTag || 'default'}&trackURL=${_trackURL || ''}&v=${version}&rand_id=${Math.random()}`;
+        const url = `https://tracklog.58.com/wx/click/empty.js.gif?wxid=${mpId || ''}&uid=${uid}&from=${clickTag || 'default'}&trackURL=${JSON.stringify(paramJson) || ''}&v=${version}&rand_id=${Math.random()}`;
         wx.request({
             url: url,
             success() {},
         });
     } else {
-        console.error('sendTrackLog 方法 uid参数为空，请求被拒绝');
+        console.error('SendClickLog 方法 uid参数为空，请求被拒绝');
     }
 }
 

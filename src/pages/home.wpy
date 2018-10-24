@@ -465,6 +465,12 @@ export default class Home extends wepy.page {
     }
     async onShow () {
         try {
+            SendClickLog(
+                'wxf03e52adc4b13448',
+                getUid(),
+                '{}',
+                'sjzh_click_home_onload',
+            );
             await this.loadData();
             await this.loadShareActivity();
             this.loadCode();
@@ -705,6 +711,7 @@ export default class Home extends wepy.page {
                 productType,
             } = data;
             const formatedMpinfo = this.formatedMp(mpinfo);
+            globalData.mpType = mpinfo.app_type;
             this.business = Object.assign({}, this.business, {
                 name: username,
                 miniProgramName: mpinfo.nickName || '您还没购买小程序',
