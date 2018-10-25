@@ -6,7 +6,7 @@
             :confirmText="modalConfirmText"
             :onCancel="onCancel"
             :onConfirm="onConfirm"></messageBox>
-        <form @submit="handleSubmit">
+        <form @submit="handleSubmit" report-submit>
             <view class="header">
                 <view>注册基本信息</view>
                 <view class="help" @tap="handleShowHelp">?</view>
@@ -14,19 +14,23 @@
             <view class="form">
                 <view class="form-item">
                     <view class="label">企业法人姓名</view>
-                    <input class="input" name="name" type="text" maxlength="10" placeholder="请输入"/>
+                    <input class="input" name="legalPerson" type="text" maxlength="10"
+                        placeholder-class="placeholder" placeholder="请输入"/>
                 </view>
                 <view class="form-item">
                     <view class="label">企业法人微信号</view>
-                    <input class="input" name="wechat" type="text" maxlength="20"  placeholder="请输入"/>
+                    <input class="input" name="legalPersonWechat" type="text" maxlength="20"
+                        placeholder-class="placeholder" placeholder="请输入"/>
                 </view>
                 <view class="form-item">
                     <view class="label">企业姓名</view>
-                    <input class="input" name="bizName" type="text" maxlength="50" placeholder="请输入"/>
+                    <input class="input" name="enterpriseName" type="text" maxlength="50"
+                        placeholder-class="placeholder" placeholder="请输入"/>
                 </view>
                 <view class="form-item last">
                     <view class="label">企业代码</view>
-                    <input class="input" name="bizCode" type="text" maxlength="20" placeholder="请输入"/>
+                    <input class="input" name="enterpriseCode" type="text" maxlength="20"
+                        placeholder-class="placeholder" placeholder="请输入"/>
                 </view>
                 <button class="btn-save" :class="{ disabled: !canSubmit }" form-type="submit">保存</button>
             </view>
@@ -64,6 +68,8 @@
 import wepy from 'wepy';
 import MessageBox from '../../components/MessageBox';
 import HelpModal from '../../components/HelpModal';
+import { LOAD_REGIST_QRCODE } from '../../url';
+import { get } from '../../ajax';
 
 export default class Index extends wepy.page {
     config = {
@@ -75,13 +81,15 @@ export default class Index extends wepy.page {
         modalConfirmText: '重新填写',
 
         helpModalShow: false,
+
+        userId: '', // 销售的userId
     }
     components = {
         messageBox: MessageBox,
         helpModal: HelpModal,
     }
-    onLoad() {
-        console.log('onLoad');
+    onLoad({ userId = '' }) {
+        this.userId = userId;
     }
     computed = {
         canSubmit() {
@@ -96,10 +104,17 @@ export default class Index extends wepy.page {
         console.log('cancel');
     }
     methods = {
-        handleSubmit(e) {
-            this.modalShow = true;
-            const { value: data, formId } = e.detail;
-            console.log(data, formId);
+        async handleSubmit(e) {
+            try {
+                this.modalShow = true;
+                const { value: data, formId } = e.detail;
+
+                Object.assign(data, { userId: this.userId });
+
+            } catch (err) {
+                console.log(err);
+            }
+
         },
         handleShowHelp() {
             this.helpModalShow = true;
@@ -144,6 +159,8 @@ export default class Index extends wepy.page {
             width: 396rpx;
             color: #333;
             text-align: right;
+            height: 42rpx;
+            min-height: auto;
         }
     }
     .btn-save {
@@ -169,5 +186,8 @@ export default class Index extends wepy.page {
     }
     .help-modal-content {
         margin-top: 40rpx;
+    }
+    .placeholder {
+        color: #ccc;
     }
 </style>

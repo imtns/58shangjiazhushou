@@ -1,18 +1,210 @@
 <template lang="wxml">
     <view class="container">
-        Hello world 6
+        <form @submit="handleSubmit">
+            <view class="header">
+                <view>注册基本信息</view>
+                <view class="help" @tap="handleShowHelp">?</view>
+            </view>
+            <view class="form">
+                <view class="form-item logo" @tap="handleUploadLogo">
+                    <text class="label">上传小程序标志</text>
+                    <image class="logo" mode="aspectFill"
+                        src="{{ logo ? logo + '?w=72&h=72&ss=1' : '' }}"></image>
+                    <text class="arrow"></text>
+                </view>
+                <navigator class="form-item" wx:if="{{ true }}">
+                    <view class="label">所属行业</view>
+                    <view class="selector placeholder">请选择</view>
+                    <text class="arrow"></text>
+                </navigator>
+                <view class="form-item" wx:else>
+                    <view class="label">所属行业</view>
+                    <view class="selector placeholder">具体的行业</view>
+                    <text class="arrow"></text>
+                </view>
+                <view class="form-item">
+                    <view class="label">小程序名称</view>
+                    <input class="input" name="wechatName" type="text" maxlength="20" placeholder-class="placeholder" placeholder="请输入"/>
+                </view>
+                <view class="form-text-item">小程序名称提交后不可修改，请谨慎写</view>
+                <button class="btn-save" :class="{ disabled: !canSubmit }" form-type="submit">提交</button>
+            </view>
+        </form>
+        <helpModal
+            :show.sync="helpModalShow">
+            <view slot="content">
+                <view class="notice-item">
+                    <view class="notice-item-title">小程序名称规则（提交后不可修改）：</view>
+                    <view class="notice-item-content">
+                        <text>1）小程序名称可以由中文、数字、英文。长度在4-30个字符之间，一个中文字等于2个字符。\n</text>
+                        <text>2）公众号、小程序在微信公众平台上的名称是唯一的，且属于同一主体下，可以重名。\n</text>
+                        <text>3）不得与不同主体的公众号名称重名。</text>
+                    </view>
+                </view>
+                <view class="notice-item">
+                    <view class="notice-item-title">小程序头像：</view>
+                    <view class="notice-item-content">
+                        <text>1. 新头像不允许涉及政治敏感与色情;\n</text>
+                        <text>2. 图片格式必须为：png,bmp,jpeg,jpg,gif；不可大于2M；建议使用png格式图片，以保持最佳效果；建议图片尺寸为144px*144px</text>
+                    </view>
+                </view>
+                <view class="notice-item">
+                    <view class="notice-item-content">
+                        <text>小程序所属行业必须为规定行业</text>
+                    </view>
+                </view>
+            </view>
+        </helpModal>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
+import HelpModal from '../../components/HelpModal';
+import { picSrcDomain, getNetStatus, toast } from '../../utils/index';
+import uploadImages from '../../utils/upload';
 
 export default class Index extends wepy.page {
-    onLoad() {
-        console.log('onLoad');
+    config = {
+        navigationBarTitleText: '创建小程序',
+    }
+    data = {
+        helpModalShow: false,
+        logo: 'http://pic1.58cdn.com.cn//bizmp/n_v2c28ded7ebd49465f802e3560680175b9_bce1063f4c37be3b.jpg',
+    }
+    components = {
+        helpModal: HelpModal,
+    }
+    methods = {
+        handleShowHelp() {
+            this.helpModalShow = true;
+        },
+        async handleUploadLogo() {
+            try {
+                const netStatus = await getNetStatus();
+
+                if (netStatus === 0) {
+                    toast('无网络');
+                    return;
+                }
+
+                const { msg, result, tempFilePaths } = await uploadImages({
+                    count: 1,
+                    maxSize: 2000 * 1024,
+                });
+
+                console.log(msg, result, tempFilePaths);
+                if (msg) {
+                    console.log(msg);
+                    return;
+                }
+                this.logo = picSrcDomain() + result[0];
+                this.$apply();
+            } catch (e) {
+                console.log(e);
+            }
+        }
     }
 }
 </script>
 
 <style lang="scss">
+    .header {
+        padding: 20rpx 30rpx;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 28rpx;
+        color: #999;
+        .help {
+            width: 36rpx;
+            height: 36rpx;
+            background-color: #4E88FF;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 36rpx;
+            color: #fff;
+        }
+    }
+    .form-item {
+        padding: 24rpx 30rpx;
+        color: #999;
+        font-size: 30rpx;
+        line-height: 42rpx;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1rpx solid #f3f3f3;
+        background-color: #fff;
+        &.last {
+            border: none;
+        }
+
+        .input {
+            width: 396rpx;
+            color: #333;
+            text-align: right;
+            height: 42rpx;
+            min-height: auto;
+        }
+        .selector {
+            margin-right: 20rpx;
+            width: 398rpx;
+            color: #333;
+            text-align: right;
+            flex-grow: 1;
+        }
+        .selector.placeholder {
+            color: #ccc;
+        }
+        .arrow {
+            display: block;
+            content: '';
+            width: 15rpx;
+            height: 25rpx;
+            background: url('https://static.58.com/lbg/mengchong/image/icon/arrow-right.png')
+                no-repeat;
+            background-size: 100%;
+        }
+        .logo {
+            width: 72rpx;
+            height: 72rpx;
+            border-radius: 50%;
+            margin: 0 20rpx 0 auto;
+        }
+    }
+    .form-item.logo {
+        border: none;
+        margin-bottom: 20rpx;
+    }
+    .form-text-item {
+        font-size: 28rpx;
+        line-height: 40rpx;
+        color: #999;
+        padding: 10rpx 30rpx;
+    }
+    .btn-save {
+        position: fixed;
+        width: 100%;
+        bottom: 0;
+        background-color: #4E88FF;
+        color: #fff;
+        line-height: 102rpx;
+        border-radius: 0;
+        &.disabled {
+            background-color: #DBDBDB;
+        }
+    }
+
+    .notice-item {
+        margin-bottom: 40rpx;
+    }
+    .notice-item-title {
+        font-size: 28rpx;
+        color: #2a2a2a;
+        font-weight: bold;
+    }
+    .placeholder {
+        color: #ccc;
+    }
 </style>

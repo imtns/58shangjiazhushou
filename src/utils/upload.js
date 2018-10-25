@@ -13,7 +13,7 @@ const uploadResource = async (path, type) => {
     return resourceUrl;
 };
 
-const uploadImages = async ({ count = 9, sourceType = ['album', 'camera'] } = {}) => {
+const uploadImages = async ({ count = 9, maxSize = 4000 * 1024, sourceType = ['album', 'camera'] } = {}) => {
     const { tempFiles } = await wepy.chooseImage({
         count, sourceType,
     });
@@ -21,7 +21,7 @@ const uploadImages = async ({ count = 9, sourceType = ['album', 'camera'] } = {}
     let msg = '';
 
     // 过滤大于4M的
-    let filesToUpload = tempFiles.filter(v => v.size < 4000 * 1024);
+    let filesToUpload = tempFiles.filter(v => v.size < maxSize);
     if (filesToUpload.length < tempFiles.length) {
         msg = '部分图片上传失败，大小需小于4M';
     }
