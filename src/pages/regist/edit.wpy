@@ -61,7 +61,7 @@
 <script>
 import wepy from 'wepy';
 import HelpModal from '../../components/HelpModal';
-import { picSrcDomain, getNetStatus, toast } from '../../utils/index';
+import { picSrcDomain, getNetStatus, toast, alert } from '../../utils/index';
 import uploadImages from '../../utils/upload';
 import { REGIST_INDUSTRY_CATE } from '../../utils/url';
 import { post } from '../../utils/ajax';
@@ -80,10 +80,48 @@ export default class Index extends wepy.page {
     onLoad() {
 
     }
+
+    validator(data) {
+        const { nickName } = data;
+        const strArr = nickName.split('');
+        let len = 0;
+
+        for (let i = 0; i < strArr.length; i += 1) {
+            const v = strArr[i];
+            if (!/[\u4e00-\u9fa5_a-zA-Z0-9_]/.test(v)) {
+                return { msg: '只能包含英文、数字和中文' };
+            }
+
+            if (/[a-zA-Z0-9]/.test(v)) {
+                len += 1;
+            } else {
+                len += 2;
+            }
+        }
+
+        if (len > 30) {
+            return { msg: '小程序名称不能大于30个字符' };
+        }
+
+        if (len < 4) {
+            return { msg: '小程序名称不能小于4个字符' };
+        }
+
+        return { msg: '' };
+    }
+
     methods = {
         async handleSubmit(e) {
             try {
                 const { value: data, formId } = e.detail;
+
+                const { msg } = this.validator(data);
+
+                if (msg) {
+                    alert(msg);
+                    return;
+                }
+
                 await post(REGIST_INDUSTRY_CATE, {
                     ...data,
                     avator: this.logo,
@@ -91,7 +129,11 @@ export default class Index extends wepy.page {
                     secondCate: '',
                     formId,
                 });
+
+                await toast('创建成功！');
+                wepy.navigateTo({ url: '/pages/home' });
             } catch (err) {
+                alert('提交失败，请稍后再试');
                 console.log(err);
             }
         },

@@ -437,6 +437,13 @@ export default class Home extends wepy.page {
     }
     async onLoad () {
         try {
+            // 快速注册判断跳转
+            // 如果用户在快速注册的流程中，则让用户跳转到注册流程的相应页面
+            const { msg: registMsg } = await this.checkRegistStatus();
+            if (registMsg) {
+                return;
+            }
+
             await this.loadData();
             // 聊天登录，监控未读消息
             const { token } = globalData.chat;
@@ -470,6 +477,9 @@ export default class Home extends wepy.page {
         } catch (err) {
             console.log(err);
         }
+    }
+    async checkRegistStatus() {
+        return { msg: '' };
     }
     formatedMp (item) {
         const mp = item;
