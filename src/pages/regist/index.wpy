@@ -68,8 +68,8 @@
 import wepy from 'wepy';
 import MessageBox from '../../components/MessageBox';
 import HelpModal from '../../components/HelpModal';
-import { LOAD_REGIST_QRCODE } from '../../url';
-import { get } from '../../ajax';
+import { SAVE_MPINFO } from '../../utils/url';
+import { post } from '../../utils/ajax';
 
 export default class Index extends wepy.page {
     config = {
@@ -109,8 +109,20 @@ export default class Index extends wepy.page {
                 this.modalShow = true;
                 const { value: data, formId } = e.detail;
 
-                Object.assign(data, { userId: this.userId });
+                Object.keys(data).forEach(key => {
+                    if (!data[key]) {
+                        this.modalShow = true;
+                        this.modalContent = '所有信息都必须填写哦~';
+                        this.modalConfirmText = '好的';
+                        return;
+                    }
+                })
 
+                Object.assign(data, { userId: this.userId, formId });
+
+                await post(SAVE_MPINFO, data);
+
+                wepy.navigateTo({ url: '/pages/regist/notice' });
             } catch (err) {
                 console.log(err);
             }

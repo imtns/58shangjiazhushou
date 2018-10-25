@@ -1,6 +1,6 @@
 <template lang="wxml">
     <view class="container">
-        <form @submit="handleSubmit">
+        <form @submit="handleSubmit" report-submit>
             <view class="header">
                 <view>注册基本信息</view>
                 <view class="help" @tap="handleShowHelp">?</view>
@@ -24,7 +24,7 @@
                 </view>
                 <view class="form-item">
                     <view class="label">小程序名称</view>
-                    <input class="input" name="wechatName" type="text" maxlength="20" placeholder-class="placeholder" placeholder="请输入"/>
+                    <input class="input" name="nickName" type="text" maxlength="20" placeholder-class="placeholder" placeholder="请输入"/>
                 </view>
                 <view class="form-text-item">小程序名称提交后不可修改，请谨慎写</view>
                 <button class="btn-save" :class="{ disabled: !canSubmit }" form-type="submit">提交</button>
@@ -63,6 +63,8 @@ import wepy from 'wepy';
 import HelpModal from '../../components/HelpModal';
 import { picSrcDomain, getNetStatus, toast } from '../../utils/index';
 import uploadImages from '../../utils/upload';
+import { REGIST_INDUSTRY_CATE } from '../../utils/url';
+import { post } from '../../utils/ajax';
 
 export default class Index extends wepy.page {
     config = {
@@ -75,7 +77,24 @@ export default class Index extends wepy.page {
     components = {
         helpModal: HelpModal,
     }
+    onLoad() {
+
+    }
     methods = {
+        async handleSubmit(e) {
+            try {
+                const { value: data, formId } = e.detail;
+                await post(REGIST_INDUSTRY_CATE, {
+                    ...data,
+                    avator: this.logo,
+                    firstCate: '',
+                    secondCate: '',
+                    formId,
+                });
+            } catch (err) {
+                console.log(err);
+            }
+        },
         handleShowHelp() {
             this.helpModalShow = true;
         },
@@ -103,7 +122,7 @@ export default class Index extends wepy.page {
             } catch (e) {
                 console.log(e);
             }
-        }
+        },
     }
 }
 </script>

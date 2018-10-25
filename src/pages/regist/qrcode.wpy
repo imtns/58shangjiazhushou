@@ -22,9 +22,9 @@
 
 <script>
 import wepy from 'wepy';
-import { toast, alert } from '../../utils';
-import { LOAD_REGIST_QRCODE } from '../../url';
-import { get } from '../../ajax';
+import { toast, alert } from '../../utils/index';
+import { LOAD_REGIST_QRCODE } from '../../utils/url';
+import { get } from '../../utils/ajax';
 
 export default class Index extends wepy.page {
     config = {
