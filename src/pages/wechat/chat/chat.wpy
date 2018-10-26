@@ -39,12 +39,16 @@
                 cursor-spacing="30"
                 @input="input"
                 @focus="closepanel"
+                confirm-type="send"
+                confirm-hold="true"
+                bindconfirm="sendMsg"
+                data-type="TEXT"
                 value="{{content}}"/>
             </view>
             <view class="chat-show-upload" @tap="showpanel" wx:if="{{!showpanel}}"></view>
             <view class="chat-show-upload close-upload" @tap="closepanel" wx:else></view>
             
-            <view class="chat-send-msg {{canIsend ? 'sended' : ''}}" @tap="sendMsg()" data-type="TEXT">发送</view>
+            <view class="chat-send-msg {{canIsend ? 'sended' : ''}}" @tap="sendMsg" data-type="TEXT">发送</view>
         </view>
         <view class="chat-input-panel" wx:if="{{showpanel}}">
             <view class="chat-btn" @tap="upload" data-type="camera">
@@ -104,7 +108,6 @@ export default class Chat extends wepy.page {
         progress: 0,
         myId: '',
         toView: '',
-        viewPortHeight: '',
     }
     onLoad(options) {
         const { token, myId } = globalData.chat;
@@ -116,8 +119,6 @@ export default class Chat extends wepy.page {
         });
 
         globalData.chat.currentContactId = contact;
-        const that = this;
-
         this.contact = contact;
         this.nickName = nickName;
         this.token = token;
@@ -125,10 +126,6 @@ export default class Chat extends wepy.page {
         this.$apply();
         this.loadData();
         this.newMsgs();
-        wx.createSelectorQuery().select('#chat-zone').boundingClientRect((res) => {
-            that.viewPortHeight = res.height;
-            that.$apply();
-        }).exec();
     }
     async onUnload() {
         try {
@@ -323,23 +320,14 @@ export default class Chat extends wepy.page {
     }
     newMsgs() {
         const { contact } = this;
-        const that = this;
         // 订阅当前联系人的未读消息
         msgListToken = pubsub.subscribe(contact, (...props) => {
             const newMsgs = props[0];
             [newMsgs].forEach((msg) => {
                 msg.sendTime = formatDateTimeLocal(msg.sendTime);
                 this.msgList.push(msg);
-                // this.toView = `toview-${this.msgList.length - 1}`;
+                this.toView = `toview-${this.msgList.length - 1}`;
                 this.$apply();
-                const query = wx.createSelectorQuery().select('#chat-zone');
-                query.scrollOffset((res) => {
-                    const { viewPortHeight } = that;
-                    if ((res.scrollTop - viewPortHeight) > 400) {
-                        that.toView = `toview-${that.msgList.length - 1}`;
-                        that.$apply();
-                    }
-                }).exec();
             });
         });
     }
