@@ -455,12 +455,10 @@ export default class choseImageStyle extends wepy.page {
     async cardCode() {
         const that = this;
         const cardId = wepy.getStorageSync('current_cardId');
-        const consumerId = '';
         try {
             const { data } = await get('/share', {
-                path: 'pages/index/index?from=myBizCard',
-                sceneId: 121,
-                consumerId,
+                path: 'pages/index/index?from=zhushou_myBizCard',
+                sceneId: 'card_' + cardId,
                 cardId,
             });
             const { url } = data;

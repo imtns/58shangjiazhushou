@@ -61,7 +61,7 @@
         <view wx:if="{{isShowDialogShare}}" class="mycard-share-mask">
             <view class="mycard-share">
                 <form report-submit="true" bindsubmit="handleFormidCollect">
-                    <navigator class="item_box" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="/pages/index58/index58?mpcardId={{cardId}}&from=myBizCard" extra-data="" version="develop">
+                    <navigator class="item_box" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="/pages/index58/index58?mpcardId={{cardId}}&from=zhushou_myBizCard" extra-data="" version="develop">
                         <button hover-class="none" form-type="submit" class='dialog-share-item'>分享给好友</button>
                     </navigator>
                 </form>
