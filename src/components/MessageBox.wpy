@@ -51,11 +51,11 @@ export default class Index extends wepy.component {
     }
     methods = {
         handleConfirm() {
-            this.onConfirm();
+            this.onConfirm && this.onConfirm();
             this.show = false;
         },
         handleCancel() {
-            this.onCancel();
+            this.onCancel && this.onCancel();
             this.show = false;
         },
     }
@@ -115,9 +115,11 @@ export default class Index extends wepy.component {
     .options-cancel {
         border-right: 1rpx solid #e5e5e5;
         height: 100rpx;
+        line-height: 100rpx;
     }
     .options-confirm {
         color: #4E88FF;
         height: 100rpx;
+        line-height: 100rpx;
     }
 </style>
