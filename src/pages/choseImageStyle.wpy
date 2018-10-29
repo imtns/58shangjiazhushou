@@ -458,7 +458,7 @@ export default class choseImageStyle extends wepy.page {
         const consumerId = '';
         try {
             const { data } = await get('/share', {
-                path: 'pages/index/index',
+                path: 'pages/index/index?from=myBizCard',
                 sceneId: 121,
                 consumerId,
                 cardId,
