@@ -28,7 +28,7 @@
                     <view class="label">企业代码</view>
                     <input class="input" name="bizCode" type="text" maxlength="20" placeholder="请输入"/>
                 </view>
-                <button class="btn-save" :class="{ disabled: !canSubmit }" form-type="submit">保存</button>
+                <button class="btn-save" :class="{ disabled: !canSubmit }" form-type="submit" @tap="d">保存</button>
             </view>
         </form>
     </view>
@@ -66,6 +66,11 @@ export default class Index extends wepy.page {
         console.log('cancel');
     }
     methods = {
+        d() {
+            wepy.navigateTo({
+                url: 'notice',
+            });
+        },
         handleSubmit(e) {
             this.modalShow = true;
             const { value: data } = e.detail;

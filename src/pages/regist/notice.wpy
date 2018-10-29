@@ -6,20 +6,24 @@
             <view class="tip-text">{{status[currentState].tip}}</view>
         </view>
         <view class="regist-bottom" wx:if="{{currentState != 3}}"> 
-            <view class="button">{{status[currentState].button}}</view>
+            <view class="button" @tap="operate">{{status[currentState].button}}</view>
         </view>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
+// import { toast, alert } from '../../utils';
+import { get } from '../../utils/ajax';
+import Mixin from '../../mixin';
 
 export default class Index extends wepy.page {
+  mixins = [Mixin]
   config = {
       navigationBarTitleText: '注册信息',
   };
   data = {
-      currentState: 3,
+      currentState: '',
       status: {
           0: {
               title: '您已注册认证成功',
@@ -43,8 +47,39 @@ export default class Index extends wepy.page {
           },
       },
   };
-
-  onLoad() {
+  methods = {
+      operate() {
+          if (this.currentState === 0) {
+              this.buyMiniProgram();
+          } else if (this.currentState === 1 || this.currentState === 2) {
+              wepy.navigateTo({
+                  url: 'edit',
+              });
+          }
+      },
+  }
+  async onLoad() {
+      try {
+          const { data } = await get('/register/preCheck');
+          let state = data.currentAuditStatus;
+          if (state === 1) {
+              this.currentState = 3;
+          } else if (state === 2) {
+              const pages = this.getCurrentPages();
+              const page = pages[pages.length - 1].route;
+              if (page === 'pages/regist/index') {
+                  state = 1;
+              } else {
+                  state = 2;
+              }
+              this.currentState = state;
+          } else {
+              this.currentState = state;
+          }
+          this.$apply();
+      } catch (e) {
+          console.log(e);
+      }
       console.log('onLoad');
   }
 }
