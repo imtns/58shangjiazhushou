@@ -37,9 +37,9 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
         header: {
             'content-type': method === 'GET' ? 'application/json' : 'application/x-www-form-urlencoded;charset=utf-8',
             PPU: ppu || 'wanghongyue',
-            // 'YkuYdY8rk5As4T2QaJ7v': '48738323270929',
+            // 'YkuYdY8rk5As4T2QaJ7v': '47350441209367',
             reqfrom: 'biz_assistant',
-            // 'YkuYdY8rk5As4T2QaJ7v': 47350441209367,
+            // 'YkuYdY8rk5As4T2QaJ7v': 46160601,
         },
         success(response) {
             console.log('response', response);

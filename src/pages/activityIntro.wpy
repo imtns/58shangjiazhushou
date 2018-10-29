@@ -3,6 +3,7 @@
 </template>
 <script>
 import wepy from 'wepy';
+import { getUid, SendClickLog } from '../utils/maidian';
 
 export default class ActivityIntro extends wepy.page {
     config = {
@@ -12,6 +13,7 @@ export default class ActivityIntro extends wepy.page {
         url: '',
     }
     onLoad() {
+        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_activityIntro_onload');
         const v = (+new Date() * 1).toString(36);
         this.url = `https://yaofa.58.com/yunying/activeIntro.html?v=${v}&from=shangjiazhushou`;
         this.$apply();

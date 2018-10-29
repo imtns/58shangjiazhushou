@@ -20,11 +20,11 @@
             </view> -->
             <block wx:for="{{msgList}}" wx:key="index">
                 <view class="chat-msg-body {{item.senderId === myId ? 'chat-right' : ''}}" id="toview-{{index}}">
-                    <view class="chat-msg-time">{{item.sendTime}}</view>
-                    <image class="chat-msg-avatar" src="{{item.senderPortrait}}" bindtap="toDetail" data-item="{{item}}"></image>
+                    <view class="chat-msg-time" wx:if="{{item.isTimeVisible}}">{{item.nSendTime}}</view>
+                    <image class="chat-msg-avatar" mode="aspectFill" src="{{item.senderPortrait}}?w=80&h=80&ss=1" bindtap="toDetail" data-item="{{item}}"></image>
                     <view class="chat-msg-content" wx:if="{{item.type === '0' || item.type === 0}}">{{item.content}}</view>
                     <view class="chat-img-box" wx:else>
-                        <image class="chat-msg-img" mode="aspectFill" src="https://pic1.58cdn.com.cn{{item.content}}" bindtap="previewImage" data-url="{{item.content}}"></image>
+                        <image class="chat-msg-img" mode="aspectFill" src="https://pic1.58cdn.com.cn{{item.content}}?w=400&h=300&ss=1" bindtap="previewImage" data-url="{{item.content}}"></image>
                         <view class="chat-img-mask" wx:if="{{item.status === 1}}">{{progress}}%</view>
                     </view>
                 </view>
@@ -76,15 +76,16 @@ import wepy from 'wepy';
 import { globalData } from '../../../utils/globalData';
 import { pubsub } from '../../../utils/IM/pubsub';
 import '../../../utils/date';
-import { toast, withHttp } from '../../../utils';
+import { toast } from '../../../utils';
 import { uploader } from '../../../utils/uploader';
-
 import { post, get } from '../../../utils/ajax';
 
 import { getUid, SendClickLog } from '../../../utils/maidian';
 import { MSG_LIST, SEND_MSG } from '../../../utils/url';
 import { msgType } from '../../../utils/msg/msgType';
 import { formatDateTimeLocal } from '../../../utils/dateFomate';
+
+const moment = require('../../../utils/moment');
 
 let from = '';
 let msgListToken = '';
@@ -259,10 +260,8 @@ export default class Chat extends wepy.page {
             });
             if (!data || data.length <= 0) return;
             isEnd = data.length < pageSize;
-            data.forEach((msg) => {
-                msg.sendTime = formatDateTimeLocal(msg.sendTime);
-            });
-            this.msgList = withHttp(data);
+            const formateData = this.formateData(data);
+            this.msgList = formateData;
             from = data[0].id;
             this.toView = `toview-${data.length - 1}`;
             this.$apply();
@@ -282,12 +281,40 @@ export default class Chat extends wepy.page {
             isEnd = data.length < pageSize;
             from = data[0].id;
             const { msgList } = this;
-            data.forEach((msg) => {
-                msg.sendTime = formatDateTimeLocal(msg.sendTime);
-            });
-            this.msgList = withHttp(data).concat(msgList);
+            const formateData = this.formateData(data);
+            this.msgList = formateData.concat(msgList);
             this.$apply();
         }
+    }
+    /*
+    消息时间格式化 以及展示规则
+    当天展示时分   隔天展示月日时分   隔年展示年月日时分
+    如果当前消息时间与上一条消息时间相差超过10分钟 则展示消息时间  否则不展示消息时间
+    */
+    formateData(list) {
+        if (!list.length) return [];
+        const nList = list;
+        nList.forEach((msg, index) => {
+            if (index === 0) {
+                msg.isTimeVisible = true;
+            } else {
+                const lastTime = list[index - 1].sendTime;
+                const currentSendTime = msg.sendTime;
+                const gap = moment(currentSendTime) - moment(lastTime);
+                if (gap / 1000 / 60 >= 5) {
+                    msg.isTimeVisible = true;
+                } else {
+                    msg.isTimeVisible = false;
+                }
+            }
+            msg.nSendTime = formatDateTimeLocal(msg.sendTime);
+
+            if (msg.senderPortrait && msg.senderPortrait.indexOf('http') === -1) {
+                msg.senderPortrait = `https://pic1.58cdn.com.cn${msg.senderPortrait}`;
+            }
+            return msg;
+        });
+        return nList;
     }
     clearInput() {
         this.content = '';

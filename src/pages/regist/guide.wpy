@@ -23,7 +23,7 @@
             </view>
         </view>
         <view class="regist-bottom">
-            <view class="button">去认证</view>
+            <view class="button" @tap="close">去认证</view>
             <view class="tip">之后需要对您的身份和人脸信息采集，过程只需10分钟</view>
         </view>
     </view>
@@ -107,8 +107,8 @@ export default class Index extends wepy.page {
           background: #4e88ff;
           box-sizing: border-box;
           border: 6rpx solid white;
+          line-height: 38rpx;
           text-align: center;
-          line-height: 40rpx;
         }
       }
     }
@@ -123,7 +123,7 @@ export default class Index extends wepy.page {
       border-radius: 4rpx;
       background: #4e88ff;
       color: white;
-      margin:0 auto 30rpx;
+      margin:0 auto 30rpx; 
     }
     .tip{
         width:690rpx;

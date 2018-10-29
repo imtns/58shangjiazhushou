@@ -129,10 +129,9 @@ export default class Index extends wepy.page {
             } catch (err) {
                 this.showModal(err, {
                     confirmText: '重新填写',
-                })
+                });
                 console.log(err);
             }
-
         },
         handleShowHelp() {
             this.helpModalShow = true;

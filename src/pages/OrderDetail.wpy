@@ -126,6 +126,7 @@ export default class OrderDetail extends wepy.page {
     }
     methods = {
         async bindPhoneCall (mobile) {
+            console.log(getUid());
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderDetail_phoneCall');
             // const { userid } = this.order;
             // const sendParams = { sign: `${userid}#${mobile}`, from: 'OrderDetail' };
