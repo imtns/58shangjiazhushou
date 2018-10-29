@@ -20,7 +20,7 @@ import Mixin from '../../mixin';
 export default class Index extends wepy.page {
   mixins = [Mixin]
   config = {
-      navigationBarTitleText: '注册信息',
+      navigationBarTitleText: '注册结果',
   };
   data = {
       currentState: '',
