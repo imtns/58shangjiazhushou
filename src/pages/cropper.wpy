@@ -55,6 +55,7 @@
  */
 
 import wepy from 'wepy';
+import { alert } from '../utils';
 import { uploadResource } from '../utils/upload';
 import globalService from '../utils/globalService';
 
@@ -143,7 +144,7 @@ export default class Cropper extends wepy.page {
     onLoad({ url, ratio, onlineImage }) {
         ctx = wx.createCanvasContext('myCanvas');
         this.onlineImage = onlineImage === 'true';
-        this.$emit('crop-loadImage', url, ratio, true);
+        this.$emit('crop-loadImage', decodeURIComponent(url), ratio, true);
     }
 
     events = {
@@ -154,141 +155,148 @@ export default class Cropper extends wepy.page {
             wepy.navigateBack();
         },
         async 'crop-loadImage'(imageSrc, ratio = '1,1', first = false) {
-            const { qualityWidth } = this;
-            let { innerAspectRadio } = this;
-            let cutRatio = null;
+            try {
+                const { qualityWidth } = this;
+                let { innerAspectRadio } = this;
+                let cutRatio = null;
 
-            wx.showLoading({
-                title: '图片加载中...',
-            });
+                wx.showLoading({
+                    title: '图片加载中...',
+                });
 
-            // 在线图片，需要下载到本地
-            if (this.onlineImage) {
-                this.onlineImage = false;
-                const { tempFilePath } = await downloadFile({ url: imageSrc });
-                imageSrc = tempFilePath;
-            }
-
-            this.imageSrc = imageSrc;
-            this.ratio = ratio; // 通过ratio控制是否可以自由拉伸
-
-            if (first === true) {
-                // 保存原始数据
-                originSrc = imageSrc;
-            }
-
-            const res = await wepy.getImageInfo({ src: imageSrc });
-            innerAspectRadio = res.width / res.height;
-
-            // 用于canvas2
-            const canvasWidth = Math.max(qualityWidth, qualityWidth / innerAspectRadio);
-            this.canvasWidth = canvasWidth;
-
-            // 处理裁剪比例
-            if (typeof ratio === 'string' && ratio) {
-                const [width, height] = ratio.split(',');
-                cutRatio = +width / +height;
-            } else {
-                cutRatio = innerAspectRadio;
-            }
-            this.cutRatio = cutRatio;
-
-
-            // 根据图片的宽高显示不同的效果   保证图片可以正常显示
-
-            // width较大
-            if (innerAspectRadio >= 1) {
-                const cropperW = windowWRPX;
-                const cropperH = cropperW / innerAspectRadio;
-                this.cropperW = cropperW;
-                this.cropperH = cropperH;
-                this.cropperL = 0;
-                this.cropperT = Math.ceil((windowHeight - cropperH) / 2) - 88;
-                // 裁剪框宽高
-                // 宽>高，高度填满，宽度根据高度，按照裁剪比例来
-                // 还需要排除过长过宽的情况
-                // const tempCutW = windowWRPX * cutCoefficient;
-                // const tempCutH = (windowWRPX * cutCoefficient) / cutRatio;
-
-                // 根据产品的要求，裁剪框每次满足短边
-                let cutH = cropperH * cutCoefficient;
-                let cutW = cutH * cutRatio;
-
-                // 还需要处理裁剪比例大于图片宽高比的情况
-                if (cutW > cropperW) {
-                    cutW = cropperW;
-                    cutH = cropperW / cutRatio;
+                // 在线图片，需要下载到本地
+                if (this.onlineImage) {
+                    this.onlineImage = false;
+                    const { tempFilePath } = await downloadFile({ url: imageSrc });
+                    console.log('online');
+                    imageSrc = tempFilePath;
                 }
 
-                this.cutH = cutH;
-                this.cutW = cutW;
+                this.imageSrc = imageSrc;
+                this.ratio = ratio; // 通过ratio控制是否可以自由拉伸
 
-
-                // (图片宽度 - 裁剪框宽度) / 2
-                this.cutL = Math.ceil((cropperW - cutW) / 2);
-                this.cutT = Math.ceil((cropperH - cutH) / 2);
-
-                // 目前没用
-                this.scaleP = (res.width * pixelRatio) / windowWRPX;
-                this.imageW = res.width * pixelRatio;
-                this.imageH = res.height * pixelRatio;
-                // ============
-
-                // 用于canvas2
-                const drawT = (canvasWidth - (qualityWidth / innerAspectRadio)) / 2;
-                this.drawT = drawT;
-                this.drawL = 0;
-
-            // height 较大
-            } else {
-                const cropperH = windowWRPX;
-                const cropperW = cropperH * innerAspectRadio;
-                this.cropperW = cropperW;
-                this.cropperH = cropperH;
-                this.cropperL = Math.ceil((windowWRPX - cropperW) / 2);
-                // 图片区域top值，(屏幕高度 - 图片高度) / 2
-                this.cropperT = Math.ceil((windowHeight - cropperH) / 2) - 88;
-                // 裁剪框宽高
-                // 宽<高，宽度填满，高度根据高度，按照裁剪比例来
-                let cutW = cropperW * cutCoefficient;
-                let cutH = cutW / cutRatio;
-
-                // 还需要处理裁剪比例大于图片宽高比的情况
-                if (cutH > cropperH) {
-                    cutH = cropperH;
-                    cutW = cutH * cutRatio;
+                if (first === true) {
+                    // 保存原始数据
+                    originSrc = imageSrc;
                 }
-
-                this.cutW = cutW;
-                this.cutH = cutH;
-
-                this.cutL = Math.ceil((cropperW - cutW) / 2);
-                // (图片高度 - 裁剪框高度) / 2
-                this.cutT = Math.ceil((cropperH - cutH) / 2);
-
-                // 目前没用
-                this.scaleP = (res.width * pixelRatio) / windowWRPX;
-                this.imageW = res.width * pixelRatio;
-                this.imageH = res.height * pixelRatio;
-                // ===================
+                console.log(imageSrc);
+                const res = await wepy.getImageInfo({ src: imageSrc });
+                innerAspectRadio = res.width / res.height;
 
                 // 用于canvas2
-                const drawL = (canvasWidth - qualityWidth) / 2;
-                this.drawL = drawL;
-                this.drawT = 0;
-            }
-            this.isShowImg = true;
+                const canvasWidth = Math.max(qualityWidth, qualityWidth / innerAspectRadio);
+                this.canvasWidth = canvasWidth;
 
-            ctx.drawImage(
-                imageSrc,
-                0,
-                0,
-                qualityWidth,
-                qualityWidth / innerAspectRadio,
-            );
-            this.innerAspectRadio = innerAspectRadio;
-            wx.hideLoading();
-            this.$apply();
+                // 处理裁剪比例
+                if (typeof ratio === 'string' && ratio) {
+                    const [width, height] = ratio.split(',');
+                    cutRatio = +width / +height;
+                } else {
+                    cutRatio = innerAspectRadio;
+                }
+                this.cutRatio = cutRatio;
+
+
+                // 根据图片的宽高显示不同的效果   保证图片可以正常显示
+
+                // width较大
+                if (innerAspectRadio >= 1) {
+                    const cropperW = windowWRPX;
+                    const cropperH = cropperW / innerAspectRadio;
+                    this.cropperW = cropperW;
+                    this.cropperH = cropperH;
+                    this.cropperL = 0;
+                    this.cropperT = Math.ceil((windowHeight - cropperH) / 2) - 88;
+                    // 裁剪框宽高
+                    // 宽>高，高度填满，宽度根据高度，按照裁剪比例来
+                    // 还需要排除过长过宽的情况
+                    // const tempCutW = windowWRPX * cutCoefficient;
+                    // const tempCutH = (windowWRPX * cutCoefficient) / cutRatio;
+
+                    // 根据产品的要求，裁剪框每次满足短边
+                    let cutH = cropperH * cutCoefficient;
+                    let cutW = cutH * cutRatio;
+
+                    // 还需要处理裁剪比例大于图片宽高比的情况
+                    if (cutW > cropperW) {
+                        cutW = cropperW;
+                        cutH = cropperW / cutRatio;
+                    }
+
+                    this.cutH = cutH;
+                    this.cutW = cutW;
+
+
+                    // (图片宽度 - 裁剪框宽度) / 2
+                    this.cutL = Math.ceil((cropperW - cutW) / 2);
+                    this.cutT = Math.ceil((cropperH - cutH) / 2);
+
+                    // 目前没用
+                    this.scaleP = (res.width * pixelRatio) / windowWRPX;
+                    this.imageW = res.width * pixelRatio;
+                    this.imageH = res.height * pixelRatio;
+                    // ============
+
+                    // 用于canvas2
+                    const drawT = (canvasWidth - (qualityWidth / innerAspectRadio)) / 2;
+                    this.drawT = drawT;
+                    this.drawL = 0;
+
+                // height 较大
+                } else {
+                    const cropperH = windowWRPX;
+                    const cropperW = cropperH * innerAspectRadio;
+                    this.cropperW = cropperW;
+                    this.cropperH = cropperH;
+                    this.cropperL = Math.ceil((windowWRPX - cropperW) / 2);
+                    // 图片区域top值，(屏幕高度 - 图片高度) / 2
+                    this.cropperT = Math.ceil((windowHeight - cropperH) / 2) - 88;
+                    // 裁剪框宽高
+                    // 宽<高，宽度填满，高度根据高度，按照裁剪比例来
+                    let cutW = cropperW * cutCoefficient;
+                    let cutH = cutW / cutRatio;
+
+                    // 还需要处理裁剪比例大于图片宽高比的情况
+                    if (cutH > cropperH) {
+                        cutH = cropperH;
+                        cutW = cutH * cutRatio;
+                    }
+
+                    this.cutW = cutW;
+                    this.cutH = cutH;
+
+                    this.cutL = Math.ceil((cropperW - cutW) / 2);
+                    // (图片高度 - 裁剪框高度) / 2
+                    this.cutT = Math.ceil((cropperH - cutH) / 2);
+
+                    // 目前没用
+                    this.scaleP = (res.width * pixelRatio) / windowWRPX;
+                    this.imageW = res.width * pixelRatio;
+                    this.imageH = res.height * pixelRatio;
+                    // ===================
+
+                    // 用于canvas2
+                    const drawL = (canvasWidth - qualityWidth) / 2;
+                    this.drawL = drawL;
+                    this.drawT = 0;
+                }
+                this.isShowImg = true;
+
+                ctx.drawImage(
+                    imageSrc,
+                    0,
+                    0,
+                    qualityWidth,
+                    qualityWidth / innerAspectRadio,
+                );
+                this.innerAspectRadio = innerAspectRadio;
+                wx.hideLoading();
+                this.$apply();
+            } catch (err) {
+                console.log(err);
+                wx.hideLoading();
+                alert('图片加载失败');
+            }
         },
     }
 
@@ -518,7 +526,9 @@ export default class Cropper extends wepy.page {
                         if (rotateCount % 4 === 0) {
                             url = originSrc;
                         }
-
+                        wx.previewImage({
+                            urls: [url],
+                        });
                         that.$emit('crop-loadImage', url, that.ratio, false);
                     },
                 });
