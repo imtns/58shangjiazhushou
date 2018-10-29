@@ -243,13 +243,14 @@ export default class Home extends wepy.page {
 
         // 用户注册状态前置检查
         // 快速注册时添加
-        registPrecheck: {
-            vip: false, // 是否购买小程序
-            // 注册状态
-            // -1资料审核失败 0默认值、未提交过资料 1新提交审核中 2审核通过
-            currentAuditStatus: 0,
-            createMp: false, // 是否创建了小程序
-        },
+        // {
+        //     vip: false, // 是否购买小程序
+        //     // 注册状态
+        //     // -1资料审核失败 0默认值、未提交过资料 1新提交审核中 2审核通过
+        //     currentAuditStatus: 0,
+        //     createMp: false, // 是否创建了小程序
+        // },
+        registPrecheck: null,
     }
     methods = {
         link(text) {
@@ -520,7 +521,16 @@ export default class Home extends wepy.page {
     }
     // 检查用户的注册状态
     async checkRegistStatus() {
-        const { vip, currentAuditStatus, createMp } = await get(REGIST_PRE_CHECK) || {};
+        const {
+            data: {
+                vip, currentAuditStatus, createMp, alreadyAuth,
+            } = {},
+        } = await get(REGIST_PRE_CHECK) || {};
+
+        // 已经授权过，并且已经创建了
+        if (alreadyAuth && createMp) {
+            return { msg: '' };
+        }
 
         /**
          * 已购买、已创建
@@ -528,9 +538,16 @@ export default class Home extends wepy.page {
          * 未购买、未注册
          * 这三个情况都留在当前页面
          */
-        if ([(vip && createMp),
+        if ([(alreadyAuth && !createMp),
+            (vip && createMp),
             (vip && currentAuditStatus === 0),
             (!vip && currentAuditStatus === 0)].some(v => v)) {
+            this.registPrecheck = {
+                vip,
+                createMp,
+                currentAuditStatus,
+            };
+            this.$apply();
             return { msg: '' };
         }
 
@@ -934,6 +951,26 @@ export default class Home extends wepy.page {
                 break;
             case '注册小程序':
                 SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_myMp_registed');
+                if (this.registPrecheck) {
+                    const {
+                        vip, currentAuditStatus, createMp, alreadyAuth,
+                    } = this.registPrecheck;
+
+                    if (currentAuditStatus === 0 && vip) {
+                        wepy.redirectTo({ url: '/pages/regist/index' });
+                        return;
+                    }
+
+                    if (alreadyAuth && !createMp) {
+                        wepy.redirectTo({ url: '/pages/regist/notice' });
+                        return;
+                    }
+
+                    if (vip && createMp) {
+                        alert('您的微信小程序已创建成功');
+                        return;
+                    }
+                }
                 if (this.business.selected.app_type === 1) {
                     alert('当前小程序为优享小程序，不用提交注册信息', '提示');
                     return;
