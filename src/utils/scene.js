@@ -6,6 +6,7 @@ export default {
     async DoLogin(extraData) {
         const extraDataJSON = (typeof extraData === 'object') ? { ...extraData } : JSON.parse(extraData);
         if (extraDataJSON.ppu !== undefined) { // 如果获取ppu成功
+            console.log(extraDataJSON);
             console.log(`获取PPU成功！ ${extraDataJSON.ppu}`);
             wepy.setStorageSync('ppu', extraDataJSON.ppu);
             // wepy.setClipboardData({

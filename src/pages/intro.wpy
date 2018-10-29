@@ -40,9 +40,7 @@
                     </view>
                 </repeat>
             </view>
-            <!-- <view class="login" bindtap="callPassport">立即登录</view> -->
-            <!-- <navigator class="login" target="miniProgram" open-type="navigate" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="develop">立即登录</navigator> -->
-             <navigator class="login" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release">立即登录</navigator>
+            <navigator class="login" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release">立即登录</navigator>
         </view>
     </view>
 </template>

@@ -1,5 +1,5 @@
 <template>
-    <view class="orderlist">
+    <view class="orderlist" wx:if="{{userLogin}}">
         <tabs></tabs>
         <view class="listWrapper">
             <block wx:if="{{orderType === 'product'}}">
@@ -10,12 +10,17 @@
             </block>
         </view>
     </view>
+    <view class="orderlist" wx:if="{{!userLogin}}">
+        <nologin></nologin>
+    </view>
 </template>
 <script>
 import wepy from 'wepy';
 import Tabs from '../components/order/tabs';
+import NoLogin from '../components/NoLogin';
 import ProductOrder from '../components/order/productOrder';
 import ServiceOrder from '../components/order/serviceOrder';
+import { globalData } from '../utils/globalData';
 import { getUid, SendClickLog } from '../utils/maidian';
 import mixin from '../components/order/mixin';
 
@@ -26,12 +31,14 @@ export default class OrderList extends wepy.page {
     };
     components = {
         tabs: Tabs,
+        nologin: NoLogin,
         productOrder: ProductOrder,
         serviceOrder: ServiceOrder,
     };
     data = {
         orderType: 'service',
         status: '',
+        userLogin: true,
     };
     events = {
         switchType: async (type) => {
@@ -55,6 +62,11 @@ export default class OrderList extends wepy.page {
         },
     };
     async onShow() {
+        if (!globalData.userLogin) {
+            this.userLogin = false;
+            this.$apply();
+            return;
+        }
         SendClickLog(
             'wxf03e52adc4b13448',
             getUid(),

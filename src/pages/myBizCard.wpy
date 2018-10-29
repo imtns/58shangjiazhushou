@@ -40,7 +40,7 @@
                             <view class="img" style="background:url({{item.src}}) no-repeat center;"></view>
                             <view class="text">{{item.name}}</view>
                         </view>
-                        <navigator class="item_box" wx:if="{{item.type == 'mpJump' && item.name === '去分享'}}" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="{{item.path + cardId }}" extra-data="" version="develop">
+                        <navigator class="item_box" wx:if="{{item.type == 'mpJump' && item.name === '查看名片'}}" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="{{item.path + cardId }}" extra-data="" version="develop">
                             <view class="img" style="background:url({{item.src}}) no-repeat center;"></view>
                             <view class="text">{{item.name}}</view>
                         </navigator>
@@ -58,13 +58,26 @@
                 <view class="tips_rules">3. 点赞个数越多用户信任度越高</view>
             </view>
         </view>
+        <view wx:if="{{isShowDialogShare}}" class="mycard-share-mask">
+            <view class="mycard-share">
+                <form report-submit="true" bindsubmit="handleFormidCollect">
+                    <navigator class="item_box" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="/pages/index58/index58?mpcardId={{cardId}}&from=myBizCard" extra-data="" version="develop">
+                        <button hover-class="none" form-type="submit" class='dialog-share-item'>分享给好友</button>
+                    </navigator>
+                </form>
+                <form report-submit="true" bindsubmit="handleFormidCollect">
+                    <button hover-class="none" class='dialog-share-item line' bindtap="choseStyle">生成图片分享</button>
+                </form>
+                <button hover-class="none" class='dialog-share-item cancel' bindtap='dialogShareCancel'>取消</button>
+            </view>
+        </view>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
 import { CARD_HAS_CARD, CARD_HAS_DETAIL } from '../utils/url';
-import { post } from '../utils/ajax';
+import { get, post } from '../utils/ajax';
 import { myCardItems } from '../utils/introData';
 import { getUid, SendClickLog } from '../utils/maidian';
 
@@ -85,10 +98,15 @@ export default class myBizCard extends wepy.page {
         vote: '',
         myCardItems,
         cardId: '',
+        isShowDialogShare: false,
     }
     methods = {
         toinnerJump(path) {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_myBizCard_${path}`);
+            if (!path) {
+                this.isShowDialogShare = true;
+                return;
+            }
             if (path === 'chatMessages') {
                 wepy.switchTab({
                     url: path,
@@ -103,6 +121,27 @@ export default class myBizCard extends wepy.page {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_myBizCard_createCard');
             wepy.navigateTo({
                 url: 'newBizCard',
+            });
+        },
+        /**
+        * 事件操作：表单提交 收集formId
+        * 收集formid操作：保存、复制、点赞vote、关注favorite、分享share、拨打电话phone、在线咨询chat、买单pay
+        */
+        handleFormidCollect(e) {
+            const { formId } = e.detail;
+            const {
+                action,
+            } = e.detail.target.dataset;
+            console.log('handleFormidCollect', 'action=', action, 'formId=', formId);
+            this.requestFormidCollect(formId);
+        },
+        dialogShareCancel() {
+            this.isShowDialogShare = false;
+        },
+        choseStyle() {
+            this.isShowDialogShare = false;
+            wepy.navigateTo({
+                url: 'choseImageStyle',
             });
         },
     };
@@ -156,6 +195,17 @@ export default class myBizCard extends wepy.page {
             cardId,
         });
         this.$apply();
+    }
+    /**
+     * 数据请求：收集FormID,用于给用户推送服务通知
+     */
+    requestFormidCollect(formId) {
+        if (formId) {
+            get('/formidcollect/collect', {
+                consumerId: wx.getStorageSync('ppu').split('UID=')[1].split('&')[0] || '', // 当前用户 ID
+                formId,
+            });
+        }
     }
 }
 </script>
@@ -315,6 +365,38 @@ export default class myBizCard extends wepy.page {
                 line-height: 40rpx;
             }
         }
+    }
+    .mycard-share-mask{
+        position: fixed;
+        width: 100%;
+        min-height: 100vh;
+        top: 0;
+        left: 0;
+        z-index: 99;
+        text-align:center;
+        background:rgba(0, 0, 0, 0.7);
+        transition:all 0.6s ease-in-out;
+    }
+    .mycard-share{
+        position: fixed;
+        left: 0;
+        bottom: 0;
+    }
+    .dialog-share-item{
+        line-height: 100rpx;
+        width: 100vw;
+        height: 100rpx;
+        background: #fff;
+        border-radius: 0;
+        text-align: center;
+        font-size: 36rpx;
+        color: #000;
+    }
+    .dialog-share-item.line{
+        border-top: 1rpx solid #f3f3f3;
+    }
+    .dialog-share-item.cancel{
+        margin-top: 12rpx;
     }
 }
 </style>

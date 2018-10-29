@@ -4,7 +4,7 @@
         <view class="switch-button"><view class="active {{currentSwitch==1?'active-move':''}}"></view>
             <view class="switch-button-case {{currentSwitch==0?'active-case':''}}" @tap="switch(0,'service')">服务订单</view>
             <view class="switch-button-case {{currentSwitch==1?'active-case':''}}" @tap="switch(1,'product')">商品订单</view>
-        </view>      
+        </view>
     </view>
     <view class="tabs-container">
        <repeat for="{{tabList[currentSwitch]}}" index="index">

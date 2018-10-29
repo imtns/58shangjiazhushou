@@ -1,0 +1,539 @@
+<template>
+    <view class="choseStyle">
+        <scroll-view class="scroll_view" scroll-x style="width:100%;">
+            <view class="firstStyle Style" wx:if="{{ showCanvas }}">
+                <drawimage id="drawimageStyle1" width="530" height="940" background="{{firstStyle.background}}" layers="{{firstStyle.layers}}" />
+                <view class="{{selected1 ? 'selected' : 'select'}}" data-style="1" @tap="selectStyle"></view>
+            </view>
+            <view class="secondStyle Style" wx:if="{{ showCanvas }}">
+                <drawimage id="drawimageStyle2" data-style="2" width="560" height="740" background="{{secondStyle.background}}" layers="{{secondStyle.layers}}" />
+                <view class="{{selected2 ? 'selected' : 'select'}}" data-style="2" @tap="selectStyle"></view>
+            </view>
+        </scroll-view>
+        <button class="{{ selected2 || selected1 ? 'saveCard' : 'disabled'}}" bindtap="download" class="saveCard">保存</button>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { CARD_FIRST_EDIT } from '../utils/url';
+import { get, post } from '../utils/ajax';
+import { getUid, SendClickLog } from '../utils/maidian';
+import { getTmpFilePath } from '../utils/index';
+
+export default class choseImageStyle extends wepy.page {
+    config = {
+        navigationBarTitleText: '选择图片样式',
+        usingComponents: {
+            drawimage: 'miniprogram-drawimage',
+        },
+    }
+    data = {
+        tmpLogo: '',
+        tmpQrcode: '',
+        headImg: '',
+        mycardCode: '',
+        showCanvas: false,
+        serviceTagArr: [], // 服务标签数组
+        selected1: false,
+        selected2: false,
+        style: '',
+        firstStyle: {
+            width: 530,
+            height: 940,
+            background: {
+                imageResource: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/card_style_bg.png',
+                dx: 0,
+                dy: 0,
+                dWidth: 530,
+                dHeight: 940,
+            },
+            layers: [
+                {
+                    type: 'image', // 手机号icon
+                    imageResource: '/images/chosestyle_phone.png',
+                    dx: 67,
+                    dy: 508,
+                    dWidth: 15,
+                    dHeight: 24,
+                },
+                {
+                    type: 'text', // 手机号text
+                    textBaseline: 'top',
+                    textAlign: 'left',
+                    fontSize: 12,
+                    text: '手机号',
+                    x: 100,
+                    y: 507,
+                    color: '#999',
+                    lineHeight: '24',
+                    maxWidth: '460',
+                },
+                {
+                    type: 'image', // 微信号icon
+                    imageResource: '/images/chosestyle_wechat.png',
+                    dx: 67,
+                    dy: 565,
+                    dWidth: 22,
+                    dHeight: 18,
+                },
+                {
+                    type: 'text', // 微信号text
+                    textBaseline: 'top',
+                    textAlign: 'left',
+                    fontSize: 12,
+                    text: '微信号',
+                    x: 100,
+                    y: 565,
+                    color: '#999',
+                    lineHeight: '18',
+                    maxWidth: '460',
+                },
+                {
+                    type: 'image', // 联系地址icon
+                    imageResource: '/images/chosestyle_location.png',
+                    dx: 67,
+                    dy: 618,
+                    dWidth: 18,
+                    dHeight: 22,
+                },
+                {
+                    type: 'text', // 联系地址text
+                    textBaseline: 'top',
+                    textAlign: 'left',
+                    fontSize: 12,
+                    text: '联系地址',
+                    x: 100,
+                    y: 618,
+                    color: '#999',
+                    lineHeight: '22',
+                    maxWidth: '460',
+                },
+                {
+                    type: 'text', // 长按识别二维码text
+                    textBaseline: 'top',
+                    textAlign: 'left',
+                    fontSize: 12,
+                    text: '长按识别二维码',
+                    x: 270,
+                    y: 750,
+                    color: '#666',
+                    lineHeight: '',
+                    maxWidth: '460',
+                },
+                {
+                    type: 'text', // 查看我的更多信息text
+                    textBaseline: 'top',
+                    textAlign: 'left',
+                    fontSize: 12,
+                    text: '查看我的更多信息',
+                    x: 260,
+                    y: 785,
+                    color: '#666',
+                    lineHeight: '',
+                    maxWidth: '460',
+                },
+            ],
+        },
+        secondStyle: {
+            background: {
+                imageResource: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/card_style_bg.png',
+                dx: 0,
+                dy: 0,
+                dWidth: 560,
+                dHeight: 740,
+            },
+            layers: [],
+        },
+    }
+    methods = {
+        selectStyle(e) {
+            const { style } = e.currentTarget.dataset;
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_visitorLogs_selectStyle_${style}`);
+            this.style = style;
+            this.selected1 = false;
+            this.selected2 = false;
+            this[`selected${style}`] = true;
+            console.log(style);
+            console.log(`selected${style}`);
+        },
+        async download() {
+            const path = await this.$wxpage.selectComponent('#drawimageStyle1').toTempFilePath();
+            console.log(path);
+            wx.previewImage({
+                current: path, // 当前显示图片的http链接
+                urls: [path], // 需要预览的图片http链接列表
+            });
+            wx.saveVideoToPhotosAlbum({
+                filePath: path,
+                success (res) {
+                    console.log(res);
+                },
+            });
+        },
+    };
+    async onLoad () {
+        console.log('onload');
+    }
+    async onShow () {
+        const that = this;
+        await that.loadData();
+        await that.touchImage();
+        await that.drawTags();
+        await that.cardCode();
+        await that.drawimageStyle1();
+        await that.drawimageStyle2();
+    }
+    async loadData() {
+        const currentMpid = wepy.getStorageSync('current_mpid');
+        if (!currentMpid) {
+            return;
+        }
+        const { data } = await post(CARD_FIRST_EDIT, {
+            mpId: currentMpid,
+        });
+        Object.assign(this, data);
+        this.serviceTagArr = this.serviceTag.split(',');
+        this.headImg = `https://pic1.58cdn.com.cn${this.picImg}`;
+        this.$apply();
+    }
+    async drawimageStyle1() {
+        const that = this;
+        const { layers } = this.firstStyle;
+        this.firstStyle.background = {
+            imageResource: that.tmpLogo,
+            dx: 0,
+            dy: 0,
+            dWidth: 530,
+            dHeight: 940,
+        };
+        this.firstStyle.layers = [
+            {
+                type: 'image', // 背景图片
+                imageResource: that.tmpQrcode,
+                dx: 35,
+                dy: 35,
+                dWidth: 460,
+                dHeight: 870,
+            },
+            {
+                type: 'image', // 头像图片
+                imageResource: that.headImg,
+                dx: 212,
+                dy: 120,
+                dWidth: 106,
+                dHeight: 106,
+                radius: 106,
+            },
+            {
+                type: 'text', // 姓名text
+                textBaseline: 'top',
+                textAlign: 'center',
+                fontSize: 19,
+                text: that.realName,
+                x: 265,
+                y: 240,
+                color: '#333',
+                lineHeight: '',
+                maxWidth: '460',
+            },
+            {
+                type: 'text', // 职位text
+                textBaseline: 'middle',
+                textAlign: 'center',
+                fontSize: 12,
+                text: that.position,
+                x: 265,
+                y: 315,
+                color: '#999',
+                lineHeight: '',
+                maxWidth: '460',
+            },
+            {
+                type: 'text', // 公司名称text
+                textBaseline: 'top',
+                textAlign: 'center',
+                fontSize: 12,
+                text: that.company,
+                x: 265,
+                y: 340,
+                color: '#666',
+                lineHeight: '',
+                maxWidth: '460',
+            },
+            {
+                type: 'text', // 个性签名text
+                textBaseline: 'top',
+                textAlign: 'center',
+                fontSize: 12,
+                text: that.sign || '没有个性签名',
+                x: 265,
+                y: 390,
+                color: '#999',
+                lineHeight: '24',
+                maxWidth: '460',
+            },
+            {
+                type: 'text', // 手机号text
+                textBaseline: 'top',
+                textAlign: 'right',
+                fontSize: 12,
+                text: that.mobile,
+                x: 470,
+                y: 507,
+                color: '#333',
+                lineHeight: '24',
+                maxWidth: '260',
+            },
+            {
+                type: 'text', // 微信号text
+                textBaseline: 'top',
+                textAlign: 'right',
+                fontSize: 12,
+                text: that.wxCode,
+                x: 470,
+                y: 565,
+                color: '#333',
+                lineHeight: '18',
+                maxWidth: '260',
+            },
+            {
+                type: 'text', // 联系地址text
+                textBaseline: 'top',
+                textAlign: 'right',
+                fontSize: 12,
+                text: that.address,
+                x: 470,
+                y: 618,
+                color: '#333',
+                lineHeight: '22',
+                maxWidth: '270',
+            },
+            {
+                type: 'image', // 二维码图片
+                imageResource: that.mycardCode,
+                dx: 70,
+                dy: 710,
+                dWidth: 140,
+                dHeight: 140,
+            },
+        ].concat(layers);
+        that.$apply();
+    }
+    async drawimageStyle2() {
+        const that = this;
+        // 转成本地路径
+        const { layers } = this.secondStyle;
+        this.secondStyle.layers = [
+            {
+                type: 'color', // 颜色
+                start: [0, 0, 561, 741], // Array [x0, y0, x1, y1]
+                end: [0, 0, 561, 741], // Array [x, y, width, height]
+                colorStop: [[1, 'white']], // Array [stop, color]
+                shape: 'Linear', // Linear || Circular
+            },
+            {
+                type: 'image', // 头像图片
+                imageResource: that.headImg,
+                dx: 34,
+                dy: 34,
+                dWidth: 106,
+                dHeight: 106,
+            },
+            {
+                type: 'text', // 姓名text
+                textBaseline: 'top',
+                textAlign: 'left',
+                fontSize: 19,
+                text: that.realName,
+                x: 165,
+                y: 36,
+                color: '#333',
+                lineHeight: '',
+                maxWidth: '460',
+            },
+            {
+                type: 'text', // 公司名称text
+                textBaseline: 'top',
+                textAlign: 'left',
+                fontSize: 12,
+                text: that.company,
+                x: 165,
+                y: 107,
+                color: '#666',
+                lineHeight: '',
+                maxWidth: '460',
+            },
+            {
+                type: 'image', // 二维码图片
+                imageResource: that.mycardCode,
+                dx: 75,
+                dy: 200,
+                dWidth: 410,
+                dHeight: 410,
+            },
+            {
+                type: 'text', // 个性签名text
+                textBaseline: 'top',
+                textAlign: 'center',
+                fontSize: 12,
+                text: '长按识别二维码，马上和我微聊',
+                x: 270,
+                y: 665,
+                color: '#999',
+                lineHeight: '24',
+                maxWidth: '460',
+            },
+        ].concat(layers);
+        console.log(this.secondStyle.layers);
+        this.showCanvas = true;
+        that.$apply();
+    }
+    async drawTags() {
+        // 多标签
+        const bgWidth = 500; // 画布的宽度
+        const tags = this.serviceTagArr;
+        const TAG_CONTAINER_LEN = 400; // 标签容器宽度
+        const FONT_SIZE = 24; // 字体大小
+        const COLOR = '#F5A623';
+        const TAG_PADDING = 10;
+        const TAG_MARGIN = 10;
+        const tagsArr = [[]]; // 标签分行数据
+        const baseLen = (TAG_PADDING * 2) + (TAG_MARGIN * 2);
+        // const totalLen = tags.length * ((TAG_PADDING * 2) + (TAG_MARGIN * 2)) + tags.join('').length * FONT_SIZE;
+        let totalLen = 0;
+        let tagsArrIdx = 0;
+        tags.forEach(tag => {
+            const len = baseLen + (tag.length * FONT_SIZE);
+            totalLen += len;
+            if (totalLen > TAG_CONTAINER_LEN) {
+                // 换行，重新计算长度
+                totalLen = len;
+                tagsArrIdx += 1;
+                tagsArr[tagsArrIdx] = [tag];
+            } else {
+                tagsArr[tagsArrIdx].push(tag);
+            }
+        });
+        const { layers } = this.firstStyle;
+        // 根据分层数据重新计算每个text的坐标
+        tagsArr.forEach((arr, i) => {
+            // 每行文字的总长度
+            const len0 = (arr.length * baseLen) + (arr.join('').length * FONT_SIZE);
+            const startX = (bgWidth - len0) / 2;
+            arr.reduce((preLen, curTag) => {
+                const len1 = (curTag.length * FONT_SIZE) + baseLen; // 每个标签的宽度
+                const x = startX + preLen + (len1 / 2);
+                layers.push({
+                    type: 'text', // 文本
+                    textAlign: 'center',
+                    fontSize: FONT_SIZE / 2,
+                    text: curTag,
+                    x,
+                    y: (i * 30) + 435,
+                    color: COLOR,
+                    lineHeight: 24,
+                    maxWidth: 300,
+                    textBaseline: 'top',
+                });
+                // 返回当前总长度
+                return preLen + len1;
+            }, 0);
+        });
+        console.log(layers);
+        this.firstStyle.layers = layers;
+    }
+    async touchImage() {
+        const cardStyleBoxBg = 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/card_chosestyle_box_bg.png';
+        const cardStyleBg = 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/card_style_bg.png';
+        // 转成本地路径
+        this.tmpLogo = await getTmpFilePath(cardStyleBg);
+        this.tmpQrcode = await getTmpFilePath(cardStyleBoxBg);
+        this.headImg = await getTmpFilePath(this.headImg);
+        this.$apply();
+    }
+    async cardCode() {
+        const that = this;
+        const cardId = wepy.getStorageSync('current_cardId');
+        const consumerId = '';
+        try {
+            const { data } = await get('/share', {
+                path: 'pages/index/index',
+                sceneId: 121,
+                consumerId,
+                cardId,
+            });
+            const { url } = data;
+            that.mycardCode = await getTmpFilePath(url);
+            console.log(that.mycardCode);
+            that.$apply();
+        } catch (err) {
+            console.log(err);
+        }
+    }
+}
+</script>
+
+<style lang="scss">
+.scroll_view{
+    overflow: hidden;
+    overflow:hidden;
+    white-space:nowrap;
+    height: 1100rpx;
+}
+.choseStyle{
+    background: rgba(0, 0, 0, .7);
+    background-size: 100%;
+    height: 100vh;
+}
+.Style{
+    vertical-align: top;
+    display: inline-block;
+    position: relative;
+}
+.firstStyle{
+    width: 530rpx;
+    height: 940rpx;
+    margin:60rpx 60rpx 0 100rpx;
+}
+.secondStyle{
+    width: 560rpx;
+    height: 740rpx;
+    margin:130rpx 100rpx 0 0;
+}
+.saveCard{
+    font-size: 32rpx;
+    color: #333;
+    border-radius: 4rpx;
+    text-align: center;
+    position: absolute;
+    bottom: 40rpx;
+    left: 30rpx;
+    right: 30rpx;
+}
+.choseStyle .select {
+    position:absolute;
+    width:88rpx;
+    height:88rpx;
+    border-radius:100%;
+    background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/card_style_select.png) no-repeat center;
+    background-size:100%;
+    bottom:-44rpx;
+    left:50%;
+    -webkit-transform:translate3d(-50%, 0, 0);
+    transform:translate3d(-50%, 0, 0);
+}
+.choseStyle .selected {
+    background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/card_style_selected.png) no-repeat center;
+    background-size:100%;
+    bottom:-44rpx;
+    left:50%;
+    -webkit-transform:translate3d(-50%, 0, 0);
+    transform:translate3d(-50%, 0, 0);
+    position:absolute;
+    width:88rpx;
+    height:88rpx;
+    border-radius:100%;
+}
+
+</style>

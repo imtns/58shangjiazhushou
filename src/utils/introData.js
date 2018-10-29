@@ -50,6 +50,11 @@ export const advantage = [{
 
 // mybizcard页面，我的名片页面的数据
 export const myCardItems = [{
+    src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/check_mycard.png',
+    name: '查看名片',
+    type: 'mpJump',
+    path: '/pages/index58/index58?mpcardId=',
+},{
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_visitor_logs.png',
     name: '访客记录',
     type: 'innerJump',
@@ -61,9 +66,9 @@ export const myCardItems = [{
     path: 'chatMessages',
 },{
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_go_share.png',
-    name: '去分享',
-    type: 'mpJump',
-    path: '/pages/index58/index58?mpcardId=',
+    name: '分享名片',
+    type: 'innerJump',
+    path: '',
 },{
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_edit_card.png',
     name: '编辑名片',

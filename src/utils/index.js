@@ -160,3 +160,17 @@ export const withHttp = (list) => {
 export const autoFixed = (num) => {
     return num <= 9 ? `0${num}` : num;
 };
+
+export const getTmpFilePath = (url) => {
+    return new Promise((resolve, reject) => {
+        wx.downloadFile({
+            url,
+            success(res) {
+                resolve(res.tempFilePath);
+            },
+            fail(err) {
+                reject(err);
+            },
+        });
+    });
+};

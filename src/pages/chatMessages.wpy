@@ -1,5 +1,5 @@
 <template>
-    <view class="chatMessages">
+    <view class="chatMessages" wx:if="{{userLogin}}">
         <repeat wx:if="{{isEmpty === 2}}" for="{{contactList}}" key="{{index}}" index="index" item="item">
             <view class="message_box"  @tap="toChat" data-item="{{item}}">
                 <view class="message_header" style="background:url({{item.portrait || 'http://pic1.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?=690'}}) no-repeat center">
@@ -20,10 +20,14 @@
             </view>
         </view>  
     </view>
+    <view wx:if="{{!userLogin}}">
+        <nologin></nologin>
+    </view>
 </template>
 
 <script>
 import wepy from 'wepy';
+import NoLogin from '../components/NoLogin';
 import { post } from '../utils/ajax';
 import { globalData, setTabBar } from '../utils/globalData';
 import { pubsub } from '../utils/IM/pubsub';
@@ -39,6 +43,10 @@ export default class chatMessages extends wepy.page {
     data = {
         contactList: [],
         isEmpty: 3,
+        userLogin: true,
+    }
+    components = {
+        nologin: NoLogin,
     }
     methods = {
         toChat(e) {
@@ -60,6 +68,11 @@ export default class chatMessages extends wepy.page {
         console.log('onload');
     }
     async onShow () {
+        if (!globalData.userLogin) {
+            this.userLogin = false;
+            this.$apply();
+            return;
+        }
         await this.requestContactList();
         await this.unreadMsgs();
         const { unReadCount } = globalData.chat;
