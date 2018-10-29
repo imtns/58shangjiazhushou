@@ -67,9 +67,9 @@
 <script>
 import wepy from 'wepy';
 import HelpModal from '../../components/HelpModal';
-import { picSrcDomain, getNetStatus, toast, alert } from '../../utils/index';
+import { picSrcDomain, getNetStatus, toast } from '../../utils/index';
 import uploadImages from '../../utils/upload';
-import { REGIST_INDUSTRY_CATE, SAVE_MPINFO } from '../../utils/url';
+import { SAVE_MPINFO } from '../../utils/url';
 import { post } from '../../utils/ajax';
 import globalService from '../../utils/globalService';
 import RegistMixin from './mixin';

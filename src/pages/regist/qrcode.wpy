@@ -31,7 +31,7 @@ export default class Index extends wepy.page {
         navigationBarTitleText: '注册二维码',
     }
     data = {
-        src: 'http://pic1.58cdn.com.cn//bizmp/n_v2c28ded7ebd49465f802e3560680175b9_bce1063f4c37be3b.jpg?w=350&h=350&ss=1',
+        src: '',
         tmpPath: '',
         showOpenSetting: false,
     }

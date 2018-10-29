@@ -66,7 +66,7 @@
 import wepy from 'wepy';
 import MessageBox from '../../components/MessageBox';
 import HelpModal from '../../components/HelpModal';
-import { SAVE_MPINFO, CHECK_IS_LOGIN } from '../../utils/url';
+import { SAVE_BASICINFO, CHECK_IS_LOGIN } from '../../utils/url';
 import { post, get } from '../../utils/ajax';
 import RegistMixin from './mixin';
 
@@ -123,7 +123,7 @@ export default class Index extends wepy.page {
 
                 Object.assign(data, { userId: this.userId, formId });
 
-                await post(SAVE_MPINFO, data);
+                await post(SAVE_BASICINFO, data);
 
                 wepy.navigateTo({ url: '/pages/regist/notice' });
             } catch (err) {
