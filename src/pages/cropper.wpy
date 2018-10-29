@@ -168,7 +168,6 @@ export default class Cropper extends wepy.page {
                 if (this.onlineImage) {
                     this.onlineImage = false;
                     const { tempFilePath } = await downloadFile({ url: imageSrc });
-                    console.log('online');
                     imageSrc = tempFilePath;
                 }
 
@@ -179,7 +178,7 @@ export default class Cropper extends wepy.page {
                     // 保存原始数据
                     originSrc = imageSrc;
                 }
-                console.log(imageSrc);
+
                 const res = await wepy.getImageInfo({ src: imageSrc });
                 innerAspectRadio = res.width / res.height;
 
