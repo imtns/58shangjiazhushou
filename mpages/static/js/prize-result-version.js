@@ -12,7 +12,7 @@ window.__staticConfig = {
         url:'/lbg/shangjiaxcxht/zhushou/js/zepto.min.js'
     },{
         name:'js',
-        version: '201810213',
+        version: '20181029',
         url:'/lbg/shangjiaxcxht/zhushou/js/prize-result.js'
     }]
 };

@@ -25,7 +25,7 @@ var Page = {
         },function(res){
             const { data } = JSON.parse(res);
             that.share = data;
-            if(!that.share.hasPerm && that.share.cashDistance > 0) { // 没有资格参加活动
+            if(!that.share.hasPerm) { // 没有资格参加活动
                 $(".prize-result").css("display","block");
                 $(".result-tip").html('有58云名片的商家才能参加这个活动哦，可以去购买名片获取商机、赢大奖');
                 return;
@@ -83,7 +83,17 @@ var Page = {
             $("._dialoge-code").css("display","none");
         })
         $("._withdraw-btn").on("click",function(){
-            alert('该功能正在开发中！')
+            const unionId = $(".prize-result").attr("data-unionid");
+            const openId = $(".prize-result").attr("data-openid");
+            $.get("/yunying/cash", {
+                unionId,
+                openId,
+            },function(res){
+                const { msg } = JSON.parse(res);
+                if (msg == 'SUCCESS') {
+                    alert('恭喜您提现成功！');
+                }
+            })
         })
     }
 };
