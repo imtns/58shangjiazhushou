@@ -54,34 +54,39 @@ export const myCardItems = [{
     name: '访客记录',
     type: 'innerJump',
     path: 'visitorLogs',
-},{
+}, {
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_chat_msg.png',
     name: '消息',
     type: 'innerJump',
     path: 'chatMessages',
-},{
+}, {
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_go_share.png',
     name: '去分享',
     type: 'mpJump',
     path: '/pages/index58/index58?mpcardId=',
-},{
+}, {
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_edit_card.png',
     name: '编辑名片',
     type: 'innerJump',
     path: 'newBizCard',
-},{
+}, {
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_go_pay.png',
     name: '开通支付',
     type: 'innerJump',
     path: 'OpenPay',
-},{
+}, {
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_go_pics.png',
     name: '线下物料',
     type: 'mpJump',
     path: '/pages/index58/index58?releaseId=',
-},{
+}, {
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_go_notice.png',
     name: '通知设置',
     type: 'innerJump',
     path: 'noticeSet',
+}, {
+    src: 'http://c.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/img/mycard_regist_qrcode.png',
+    name: '注册码',
+    type: 'innerJump',
+    path: '/pages/regist/qrcode',
 }];
