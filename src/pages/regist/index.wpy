@@ -1,11 +1,9 @@
 <template lang="wxml">
-    <view class="container">
+    <view class="container" wx:if="{{ !loading }}">
         <messageBox
             :show.sync="modalShow"
-            :content="modalContent"
-            :confirmText="modalConfirmText"
-            :onCancel="onCancel"
-            :onConfirm="onConfirm"></messageBox>
+            :content.sync="modalContent"
+            :confirmText.sync="modalConfirmText"></messageBox>
         <form @submit="handleSubmit" report-submit>
             <view class="header">
                 <view>注册基本信息</view>
@@ -32,7 +30,7 @@
                     <input class="input" name="enterpriseCode" type="text" maxlength="20"
                         placeholder-class="placeholder" placeholder="请输入"/>
                 </view>
-                <button class="btn-save" :class="{ disabled: !canSubmit }" form-type="submit">保存</button>
+                <button class="btn-save" form-type="submit">保存</button>
             </view>
         </form>
         <helpModal
@@ -68,10 +66,12 @@
 import wepy from 'wepy';
 import MessageBox from '../../components/MessageBox';
 import HelpModal from '../../components/HelpModal';
-import { SAVE_MPINFO } from '../../utils/url';
-import { post } from '../../utils/ajax';
+import { SAVE_MPINFO, CHECK_IS_LOGIN } from '../../utils/url';
+import { post, get } from '../../utils/ajax';
+import RegistMixin from './mixin';
 
 export default class Index extends wepy.page {
+    mixins = [RegistMixin];
     config = {
         navigationBarTitleText: '注册信息',
     }
@@ -83,6 +83,7 @@ export default class Index extends wepy.page {
         helpModalShow: false,
 
         userId: '', // 销售的userId
+        loading: true,
     }
     components = {
         messageBox: MessageBox,
@@ -90,33 +91,35 @@ export default class Index extends wepy.page {
     }
     onLoad({ userId = '' }) {
         this.userId = userId;
-    }
-    computed = {
-        canSubmit() {
-            return true;
-        },
+        this.checkLogin()
+            .then(() => {
+                this.loading = false;
+                this.$apply();
+            })
+            .catch(err => {
+                this.showModal('网络出错，请稍后再试');
+                console.log(err);
+            });
     }
 
-    onConfirm() {
-        console.log('confirm');
+    checkLogin() {
+        // 检查登录
+        return get(CHECK_IS_LOGIN);
     }
-    onCancel() {
-        console.log('cancel');
-    }
+
     methods = {
         async handleSubmit(e) {
             try {
-                this.modalShow = true;
                 const { value: data, formId } = e.detail;
 
                 Object.keys(data).forEach(key => {
                     if (!data[key]) {
-                        this.modalShow = true;
-                        this.modalContent = '所有信息都必须填写哦~';
-                        this.modalConfirmText = '好的';
-                        return;
+                        this.showModal('所有信息都必须填写哦~', {
+                            confirmText: '好的',
+                        });
+                        throw new Error('信息填写不完整');
                     }
-                })
+                });
 
                 Object.assign(data, { userId: this.userId, formId });
 
@@ -124,6 +127,9 @@ export default class Index extends wepy.page {
 
                 wepy.navigateTo({ url: '/pages/regist/notice' });
             } catch (err) {
+                this.showModal(err, {
+                    confirmText: '重新填写',
+                })
                 console.log(err);
             }
 

@@ -1,5 +1,9 @@
 <template lang="wxml">
     <view class="container">
+        <messageBox
+            :show.sync="modalShow"
+            :content.sync="modalContent"
+            :confirmText.sync="modalConfirmText"></messageBox>
         <form @submit="handleSubmit" report-submit>
             <view class="header">
                 <view>注册基本信息</view>
@@ -12,22 +16,24 @@
                         src="{{ logo ? logo + '?w=72&h=72&ss=1' : '' }}"></image>
                     <text class="arrow"></text>
                 </view>
-                <navigator class="form-item" wx:if="{{ true }}">
+                <navigator class="form-item" url="/pages/multiSelector?type=registCate">
                     <view class="label">所属行业</view>
-                    <view class="selector placeholder">请选择</view>
+                    <view class="selector">
+                        <block wx:if="{{ form.wubaSecondName }}">
+                            {{ (form.wubaFirstName || '') + ' ' + (form.wubaSecondName || '') }}
+                        </block>
+                        <block wx:else>
+                            <text class="placeholder">请选择</text>
+                        </block>
+                    </view>
                     <text class="arrow"></text>
                 </navigator>
-                <view class="form-item" wx:else>
-                    <view class="label">所属行业</view>
-                    <view class="selector placeholder">具体的行业</view>
-                    <text class="arrow"></text>
-                </view>
                 <view class="form-item">
                     <view class="label">小程序名称</view>
                     <input class="input" name="nickName" type="text" maxlength="20" placeholder-class="placeholder" placeholder="请输入"/>
                 </view>
                 <view class="form-text-item">小程序名称提交后不可修改，请谨慎写</view>
-                <button class="btn-save" :class="{ disabled: !canSubmit }" form-type="submit">提交</button>
+                <button class="btn-save" form-type="submit">提交</button>
             </view>
         </form>
         <helpModal
@@ -63,27 +69,65 @@ import wepy from 'wepy';
 import HelpModal from '../../components/HelpModal';
 import { picSrcDomain, getNetStatus, toast, alert } from '../../utils/index';
 import uploadImages from '../../utils/upload';
-import { REGIST_INDUSTRY_CATE } from '../../utils/url';
+import { REGIST_INDUSTRY_CATE, SAVE_MPINFO } from '../../utils/url';
 import { post } from '../../utils/ajax';
+import globalService from '../../utils/globalService';
+import RegistMixin from './mixin';
+import MessageBox from '../../components/MessageBox';
 
 export default class Index extends wepy.page {
+    mixins = [RegistMixin]
     config = {
         navigationBarTitleText: '创建小程序',
     }
     data = {
         helpModalShow: false,
-        logo: 'http://pic1.58cdn.com.cn//bizmp/n_v2c28ded7ebd49465f802e3560680175b9_bce1063f4c37be3b.jpg',
+        logo: '',
+
+        form: {
+            nickName: '', // 小程序名称
+            wubaFirstId: null,
+            wubaSecondId: null,
+            wechatFirstId: null,
+            wechatSecondId: null,
+            avatarUrl: '',
+        },
+
+        modalShow: false,
+        modalContent: '',
+        modalConfirmText: '好的',
     }
     components = {
+        messageBox: MessageBox,
         helpModal: HelpModal,
     }
-    onLoad() {
-
+    onShow() {
+        const cate = globalService.get('multiSelector');
+        if (cate) {
+            const {
+                wubaFirstId,
+                wubaSecondId,
+                wechatFirstId,
+                wechatSecondId,
+                wubaFirstName,
+                wubaSecondName,
+            } = cate;
+            Object.assign(this.form, {
+                wubaFirstId,
+                wubaSecondId,
+                wechatFirstId,
+                wechatSecondId,
+                wubaFirstName,
+                wubaSecondName,
+            });
+        }
     }
 
     validator(data) {
         const { nickName } = data;
         const strArr = nickName.split('');
+        const fields = ['nickName', 'wubaFirstId', 'wubaSecondId',
+            'wechatFirstId', 'wechatSecondId', 'avatarUrl'];
         let len = 0;
 
         for (let i = 0; i < strArr.length; i += 1) {
@@ -107,6 +151,12 @@ export default class Index extends wepy.page {
             return { msg: '小程序名称不能小于4个字符' };
         }
 
+        for (let i = 0; i < fields.length; i += 1) {
+            if (!data[fields[i]]) {
+                return { msg: '请填写完整信息' };
+            }
+        }
+
         return { msg: '' };
     }
 
@@ -114,26 +164,29 @@ export default class Index extends wepy.page {
         async handleSubmit(e) {
             try {
                 const { value: data, formId } = e.detail;
+                const { nickName } = data;
+                const avatarUrl = this.logo;
+                const { form } = this;
 
-                const { msg } = this.validator(data);
+                const postData = Object.assign({}, form, {
+                    nickName,
+                    avatarUrl,
+                    formId,
+                });
+
+                const { msg } = this.validator(postData);
 
                 if (msg) {
-                    alert(msg);
+                    this.showModal(msg);
                     return;
                 }
 
-                await post(REGIST_INDUSTRY_CATE, {
-                    ...data,
-                    avator: this.logo,
-                    firstCate: '',
-                    secondCate: '',
-                    formId,
-                });
+                await post(SAVE_MPINFO, postData);
 
                 await toast('创建成功！');
                 wepy.navigateTo({ url: '/pages/home' });
             } catch (err) {
-                alert('提交失败，请稍后再试');
+                this.showModal(err);
                 console.log(err);
             }
         },
@@ -232,6 +285,7 @@ export default class Index extends wepy.page {
             height: 72rpx;
             border-radius: 50%;
             margin: 0 20rpx 0 auto;
+            background-color: #f3f3f3;
         }
     }
     .form-item.logo {

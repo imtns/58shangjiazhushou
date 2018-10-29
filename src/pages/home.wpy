@@ -167,7 +167,16 @@ import { post, get } from '../utils/ajax';
 import { globalData, setTabBar } from '../utils/globalData';
 import { getUid, SendClickLog } from '../utils/maidian';
 
-import { CHAT_LOGIN, MY_MPLIST, SESSION, INSERT_SESSION, GET_EXT_JSON, GET_ASSIST_AUTH, GET_SHARE } from '../utils/url';
+import {
+    CHAT_LOGIN,
+    MY_MPLIST,
+    SESSION,
+    INSERT_SESSION,
+    GET_EXT_JSON,
+    GET_ASSIST_AUTH,
+    GET_SHARE,
+    REGIST_PRE_CHECK,
+} from '../utils/url';
 
 import { sdkLogin, onMsgNotify, sdkLogout } from '../utils/IM/IM';
 
@@ -231,6 +240,16 @@ export default class Home extends wepy.page {
         },
         items,
         nItems,
+
+        // 用户注册状态前置检查
+        // 快速注册时添加
+        registPrecheck: {
+            vip: false, // 是否购买小程序
+            // 注册状态
+            // -1资料审核失败 0默认值、未提交过资料 1新提交审核中 2审核通过
+            currentAuditStatus: 0,
+            createMp: false, // 是否创建了小程序
+        },
     }
     methods = {
         link(text) {
@@ -439,10 +458,13 @@ export default class Home extends wepy.page {
         try {
             // 快速注册判断跳转
             // 如果用户在快速注册的流程中，则让用户跳转到注册流程的相应页面
-            const { msg: registMsg } = await this.checkRegistStatus();
-            if (registMsg) {
-                return;
-            }
+            this.checkRegistStatus()
+                .then(msg => {
+                    console.log(msg);
+                })
+                .catch(err => {
+                    console.log(err);
+                });
 
             await this.loadData();
             // 聊天登录，监控未读消息
@@ -458,6 +480,11 @@ export default class Home extends wepy.page {
             if (!this.isFollow && wepy.getStorageSync('ppu')) {
                 this.showModal = true;
             }
+
+            // wepy在链式更改属性时，在手机预览会出现不生效的情况。
+            this.setData({
+                'status.loading': false,
+            });
             this.$apply();
         } catch (err) {
             console.log(err);
@@ -478,7 +505,53 @@ export default class Home extends wepy.page {
             console.log(err);
         }
     }
+    // 检查用户的注册状态
     async checkRegistStatus() {
+        const { vip, currentAuditStatus, createMp } = await get(REGIST_PRE_CHECK) || {};
+
+        /**
+         * 已购买、已创建
+         * 已购买、未注册
+         * 未购买、未注册
+         * 这三个情况都留在当前页面
+         */
+        if ([(vip && createMp),
+            (vip && currentAuditStatus === 0),
+            (!vip && currentAuditStatus === 0)].some(v => v)) {
+            return { msg: '' };
+        }
+
+        if (currentAuditStatus === 1) {
+            wx.redirectTo({
+                url: '/pages/regist/notice',
+            });
+            return { msg: '资料审核中' };
+        }
+
+        // 审核失败，跳转到 注册成功页 (regist/guide)
+        if (currentAuditStatus === -1) {
+            wx.redirectTo({
+                url: '/pages/regist/guide',
+            });
+            return { msg: '资料审核失败' };
+        }
+
+        // 资料审核通过，但是没购买小程序
+        if (!vip && currentAuditStatus === 2 && !createMp) {
+            wx.redirectTo({
+                url: '/pages/regist/notice',
+            });
+            return { msg: '去购买' };
+        }
+
+        // 资料审核通过，已购买小程序
+        if (vip && currentAuditStatus === 2 && !createMp) {
+            wx.redirectTo({
+                url: '/pages/regist/notice',
+            });
+            return { msg: '去创建' };
+        }
+
         return { msg: '' };
     }
     formatedMp (item) {
@@ -721,10 +794,6 @@ export default class Home extends wepy.page {
                     score,
                     cardId,
                 },
-            });
-            // wepy在链式更改属性时，在手机预览会出现不生效的情况。
-            this.setData({
-                'status.loading': false,
             });
             wepy.setStorageSync('current_cardId', cardId);
             nexttask && this.setNextTask(nexttask);
