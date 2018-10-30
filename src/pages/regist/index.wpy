@@ -91,7 +91,7 @@ export default class Index extends wepy.page {
     }
     onLoad({ userId = '' }) {
         this.userId = userId;
-        this.checkLogin()
+        this.checkRegistStatus()
             .then(() => {
                 this.loading = false;
                 this.$apply();
@@ -100,11 +100,6 @@ export default class Index extends wepy.page {
                 this.showModal('网络出错，请稍后再试');
                 console.log(err);
             });
-    }
-
-    checkLogin() {
-        // 检查登录
-        return get(CHECK_IS_LOGIN);
     }
 
     methods = {
@@ -127,7 +122,7 @@ export default class Index extends wepy.page {
 
                 wepy.navigateTo({ url: '/pages/regist/notice' });
             } catch (err) {
-                this.showModal(err, {
+                this.showModal(typeof err === 'string' ? err : err.msg, {
                     confirmText: '重新填写',
                 });
                 console.log(err);

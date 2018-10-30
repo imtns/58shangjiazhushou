@@ -46,6 +46,9 @@ export default class Index extends wepy.page {
 .container {
   width: 100%;
   position: relative;
+  height: 100vh;
+  background-color: #fff;
+  overflow: hidden;
   .regist-tip {
     width: 100%;
     margin-top: 79rpx;

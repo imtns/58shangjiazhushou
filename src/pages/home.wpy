@@ -159,6 +159,7 @@
 <script>
 import wepy from 'wepy';
 import Mixin from '../mixin';
+import RegistMixin from './regist/mixin';
 
 import { items, nItems } from '../utils/homeList';
 
@@ -183,7 +184,7 @@ import { sdkLogin, onMsgNotify, sdkLogout } from '../utils/IM/IM';
 import { chatContactList } from '../store/index';
 
 export default class Home extends wepy.page {
-    mixins = [Mixin]
+    mixins = [Mixin, RegistMixin]
     config = {
         navigationBarTitleText: '首页',
     }
@@ -518,71 +519,6 @@ export default class Home extends wepy.page {
         } catch (err) {
             console.log(err);
         }
-    }
-    // 检查用户的注册状态
-    async checkRegistStatus() {
-        const {
-            data: {
-                vip, currentAuditStatus, createMp, alreadyAuth,
-            } = {},
-        } = await get(REGIST_PRE_CHECK) || {};
-
-        // 已经授权过，并且已经创建了
-        if (alreadyAuth && createMp) {
-            return { msg: '' };
-        }
-
-        /**
-         * 已购买、已创建
-         * 已购买、未注册
-         * 未购买、未注册
-         * 这三个情况都留在当前页面
-         */
-        if ([(alreadyAuth && !createMp),
-            (vip && createMp),
-            (vip && currentAuditStatus === 0),
-            (!vip && currentAuditStatus === 0)].some(v => v)) {
-            this.registPrecheck = {
-                vip,
-                createMp,
-                currentAuditStatus,
-            };
-            this.$apply();
-            return { msg: '' };
-        }
-
-        if (currentAuditStatus === 1) {
-            wx.redirectTo({
-                url: '/pages/regist/notice',
-            });
-            return { msg: '资料审核中' };
-        }
-
-        // 审核失败，跳转到 注册成功页 (regist/guide)
-        if (currentAuditStatus === -1) {
-            wx.redirectTo({
-                url: '/pages/regist/guide',
-            });
-            return { msg: '资料审核失败' };
-        }
-
-        // 资料审核通过，但是没购买小程序
-        if (!vip && currentAuditStatus === 2 && !createMp) {
-            wx.redirectTo({
-                url: '/pages/regist/notice',
-            });
-            return { msg: '去购买' };
-        }
-
-        // 资料审核通过，已购买小程序
-        if (vip && currentAuditStatus === 2 && !createMp) {
-            wx.redirectTo({
-                url: '/pages/regist/notice',
-            });
-            return { msg: '去创建' };
-        }
-
-        return { msg: '' };
     }
     formatedMp (item) {
         const mp = item;
@@ -967,7 +903,7 @@ export default class Home extends wepy.page {
                     }
 
                     if (vip && createMp) {
-                        alert('您的微信小程序已创建成功');
+                        alert('您的微信小程序已创建成功，不可重复注册');
                         return;
                     }
                 }
