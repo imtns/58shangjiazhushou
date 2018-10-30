@@ -62,6 +62,7 @@ import { CARD_FIRST_EDIT, CARD_CREATE_NEW_CARD } from '../utils/url';
 import { post } from '../utils/ajax';
 import { getNetStatus, toast } from '../utils';
 import { getUid, SendClickLog } from '../utils/maidian';
+import globalService from '../utils/globalService';
 
 const host = 'https://yaofa.58.com';
 const uploadApi = `${host}/fileUpload`;
@@ -101,7 +102,14 @@ export default class newBizCard extends wepy.page {
                     count: 1,
                     sizeType: 'compressed ',
                 });
-                this.uploadLogo(tempFilePaths[0]);
+                const url = await this.uploadLogo(tempFilePaths[0]);
+                const fullUrl = `https://pic1.58cdn.com.cn${url}`;
+                wepy.navigateTo({
+                    url: `/pages/cropper?url=${fullUrl}`,
+                });
+                // this.picImg = url;
+                // this.headImg = url;
+                // this.$apply();
             } catch (e) {
                 console.log(e);
             }
@@ -261,6 +269,11 @@ export default class newBizCard extends wepy.page {
         await this.loadData();
     }
     onShow () {
+        if (globalService.get('afterCrop')) {
+            const url = globalService.get('cropperUrl');
+            this.headImg = url;
+            this.picImg = url;
+        }
     }
     async loadData() {
         const currentMpid = wepy.getStorageSync('current_mpid');
@@ -301,13 +314,12 @@ export default class newBizCard extends wepy.page {
             });
             const res = JSON.parse(response.data);
             const { state, msg, data } = res;
-            if (state === 100) {
-                this.picImg = data.content;
-                this.headImg = data.content;
-            } else {
-                this.toast(msg);
+
+            if (state !== 100) {
+                throw new Error(msg);
             }
-            this.$apply();
+
+            return data.content;
         } catch ({ errMsg }) {
             this.toast(errMsg);
         }
