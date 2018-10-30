@@ -1,6 +1,6 @@
 <template>
     <view class="choseStyle">
-        <view class="scroll_view" style="width:300%;">
+        <!-- <view class="scroll_view" style="width:300%;">
             <view class="firstStyle Style" wx:if="{{ showCanvas }}">
                 <drawimage id="drawStyle1" width="530" height="940" style="z-index: 0;" background="{{firstStyle.background}}" layers="{{firstStyle.layers}}" />
                 <view class="{{selected1 ? 'selected' : 'select'}}" data-style="1" @tap="selectStyle"></view>
@@ -9,8 +9,8 @@
                 <drawimage id="drawStyle2" data-style="2" width="560" style="z-index: 0;" height="740" background="{{secondStyle.background}}" layers="{{secondStyle.layers}}" />
                 <view class="{{selected2 ? 'selected' : 'select'}}" data-style="2" @tap="selectStyle"></view>
             </view>
-        </view>
-        <!-- <swiper indicator-dots="{{swiper.indicatorDots}}"
+        </view> -->
+        <swiper class="swiper-contain" indicator-dots="{{swiper.indicatorDots}}"
         autoplay="{{swiper.autoplay}}" interval="{{swiper.interval}}" duration="{{swiper.duration}}">
             <block wx:if="{{ showCanvas }}">
                 <swiper-item>
@@ -20,7 +20,7 @@
                     <drawimage id="drawStyle2" data-style="2" width="560" height="740" background="{{secondStyle.background}}" layers="{{secondStyle.layers}}" />
                 </swiper-item>
             </block>
-        </swiper> -->
+        </swiper>
         <button class="{{ selected2 || selected1 ? 'saveCard' : 'disabled'}}" bindtap="download">保存</button>
     </view>
 </template>
@@ -50,10 +50,14 @@ export default class choseImageStyle extends wepy.page {
         selected2: false,
         style: '',
         swiper: {
-            indicatorDots: false,
+            indicatorDots: true,
+            vertical: true,
             autoplay: false,
-            interval: 5000,
-            duration: 1000,
+            circular: false,
+            interval: 2000,
+            duration: 500,
+            previousMargin: 0,
+            nextMargin: 0,
         },
         firstStyle: {
             width: 530,
@@ -332,11 +336,6 @@ export default class choseImageStyle extends wepy.page {
                 dHeight: 140,
             },
         ].concat(layers);
-        console.log(this);
-        console.log('=====');
-        // const path = this.$wxpage.selectComponent('#drawStyle1').toTempFilePath();
-        // console.log(path);
-        // console.log('sssssss');
         that.$apply();
     }
     async drawimageStyle2() {
@@ -493,17 +492,21 @@ export default class choseImageStyle extends wepy.page {
     /* overflow: hidden;
     white-space:nowrap; */
     height: 1100rpx;
-    overflow-x: scroll;
+}
+.swiper-contain{
+    height: 100%;
+    height: 1100rpx;
+    background: red;
 }
 #drawStyle1{
     position: absolute;
-    left: 0;
-    top:0;
+    left: 110rpx;
+    top:50rpx;
 }
 #drawStyle2{
     position: absolute;
-    left: 0;
-    top:0;
+    left: 95rpx;
+    top:100rpx;
 }
 .choseStyle{
     background: rgba(0, 0, 0, .7);
