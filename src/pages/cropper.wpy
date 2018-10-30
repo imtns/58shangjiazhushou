@@ -67,7 +67,6 @@
 import wepy from 'wepy';
 import { alert } from '../utils';
 import { uploadResource } from '../utils/upload';
-import cropHelper from '../utils/cropHelper';
 import globalService from '../utils/globalService';
 
 const downloadFile = ({ url }) => {
@@ -154,8 +153,7 @@ export default class Cropper extends wepy.page {
         drawL: 0,
     }
 
-    onLoad({ url, ratio, onlineImage = true }) {
-        console.log(url);
+    onLoad({ url, ratio, onlineImage = 'true' }) {
         ctx = wx.createCanvasContext('myCanvas');
         this.onlineImage = onlineImage === 'true';
         this.$emit('crop-loadImage', decodeURIComponent(url), ratio, true);
@@ -183,7 +181,6 @@ export default class Cropper extends wepy.page {
                 if (this.onlineImage) {
                     this.onlineImage = false;
                     const { tempFilePath } = await downloadFile({ url: imageSrc });
-                    console.log('online');
                     imageSrc = tempFilePath;
                 }
 
@@ -390,119 +387,119 @@ export default class Cropper extends wepy.page {
 
             let dragLength;
             switch (dragType) {
-            case 'right':
-                dragLength = (sizeConfPageX - e.touches[0].pageX) * dragScaleP;
-                if (initDragCutW >= dragLength) {
-                    // 如果 移动小于0 说明是在往下啦  放大裁剪的高度  这样一来 图片的高度  最大 等于 图片的top值加 当前图片的高度  否则就说明超出界限
-                    if (
-                        dragLength < 0 &&
-                        that.cropperW > initDragCutL + that.cutW
-                    ) {
-                        this.cutW = initDragCutW - dragLength;
-                    }
-                    // 如果是移动 大于0  说明在缩小  只需要缩小的距离小于原本裁剪的高度就ok
-                    if (dragLength > 0) {
-                        this.cutW = initDragCutW - dragLength;
-                    } else {
-                        return;
-                    }
-
-                    this.$apply();
-                }
-                break;
-            case 'left':
-                dragLength =
-                    (dragLength = sizeConfPageX - e.touches[0].pageX) *
-                    dragScaleP;
-                // console.log(dragLength);
-                if (initDragCutW >= dragLength && initDragCutL > dragLength) {
-                    if (dragLength < 0 && Math.abs(dragLength) >= initDragCutW) {
-                        return;
-                    }
-                    this.cutL = initDragCutL - dragLength;
-                    this.cutW = initDragCutW + dragLength;
-                    this.$apply();
-                }
-                break;
-            case 'top':
-                dragLength =
-                    (sizeConfPageY - e.touches[0].pageY) * dragScaleP;
-                if (initDragCutH >= dragLength && initDragCutT > dragLength) {
-                    if (dragLength < 0 && Math.abs(dragLength) >= initDragCutH) {
-                        return;
-                    }
-                    this.cutT = initDragCutT - dragLength;
-                    this.cutH = initDragCutH + dragLength;
-                    this.$apply();
-                }
-                break;
-            case 'bottom':
-                dragLength =
-                    (sizeConfPageY - e.touches[0].pageY) * dragScaleP;
-                // 必须是 dragLength 向上缩小的时候必须小于原本的高度
-                if (initDragCutH >= dragLength) {
-                    // 如果 移动小于0 说明是在往下啦  放大裁剪的高度  这样一来 图片的高度  最大 等于 图片的top值加 当前图片的高度  否则就说明超出界限
-                    if (
-                        dragLength < 0 &&
-                        that.cropperH > initDragCutT + that.cutH
-                    ) {
-                        this.cutH = initDragCutH - dragLength;
-                    }
-                    // 如果是移动 大于0  说明在缩小  只需要缩小的距离小于原本裁剪的高度就ok
-                    if (dragLength > 0) {
-                        this.cutH = initDragCutH - dragLength;
-                    } else {
-                        return;
-                    }
-
-                    this.$apply();
-                }
-                break;
-            case 'rightBottom': {
-                const dragLengthX =
-                    (sizeConfPageX - e.touches[0].pageX) * dragScaleP;
-                const dragLengthY =
-                    (sizeConfPageY - e.touches[0].pageY) * dragScaleP;
-                if (
-                    initDragCutH >= dragLengthY &&
-                    initDragCutW >= dragLengthX
-                ) {
-                    // bottom 方向的变化
-                    if (
-                        (dragLengthY < 0 &&
-                            that.cropperH >
-                                initDragCutT + that.cutH) ||
-                        dragLengthY > 0
-                    ) {
-                        this.cutH = initDragCutH - dragLengthY;
-
-                        if (ratio) {
-                            this.cutW = (initDragCutH - dragLengthY) * cutRatio;
+                case 'right':
+                    dragLength = (sizeConfPageX - e.touches[0].pageX) * dragScaleP;
+                    if (initDragCutW >= dragLength) {
+                        // 如果 移动小于0 说明是在往下啦  放大裁剪的高度  这样一来 图片的高度  最大 等于 图片的top值加 当前图片的高度  否则就说明超出界限
+                        if (
+                            dragLength < 0 &&
+                            that.cropperW > initDragCutL + that.cutW
+                        ) {
+                            this.cutW = initDragCutW - dragLength;
                         }
-                    }
-
-                    // right 方向的变化
-                    if (
-                        (dragLengthX < 0 &&
-                            that.cropperW >
-                                initDragCutL + that.cutW) ||
-                        dragLengthX > 0
-                    ) {
-                        this.cutW = initDragCutW - dragLengthX;
-
-                        if (ratio) {
-                            this.cutH = (initDragCutW - dragLengthX) / cutRatio;
+                        // 如果是移动 大于0  说明在缩小  只需要缩小的距离小于原本裁剪的高度就ok
+                        if (dragLength > 0) {
+                            this.cutW = initDragCutW - dragLength;
+                        } else {
+                            return;
                         }
-                    } else {
-                        return;
-                    }
 
-                    this.$apply();
+                        this.$apply();
+                    }
+                    break;
+                case 'left':
+                    dragLength =
+                        (dragLength = sizeConfPageX - e.touches[0].pageX) *
+                        dragScaleP;
+                    // console.log(dragLength);
+                    if (initDragCutW >= dragLength && initDragCutL > dragLength) {
+                        if (dragLength < 0 && Math.abs(dragLength) >= initDragCutW) {
+                            return;
+                        }
+                        this.cutL = initDragCutL - dragLength;
+                        this.cutW = initDragCutW + dragLength;
+                        this.$apply();
+                    }
+                    break;
+                case 'top':
+                    dragLength =
+                        (sizeConfPageY - e.touches[0].pageY) * dragScaleP;
+                    if (initDragCutH >= dragLength && initDragCutT > dragLength) {
+                        if (dragLength < 0 && Math.abs(dragLength) >= initDragCutH) {
+                            return;
+                        }
+                        this.cutT = initDragCutT - dragLength;
+                        this.cutH = initDragCutH + dragLength;
+                        this.$apply();
+                    }
+                    break;
+                case 'bottom':
+                    dragLength =
+                        (sizeConfPageY - e.touches[0].pageY) * dragScaleP;
+                    // 必须是 dragLength 向上缩小的时候必须小于原本的高度
+                    if (initDragCutH >= dragLength) {
+                        // 如果 移动小于0 说明是在往下啦  放大裁剪的高度  这样一来 图片的高度  最大 等于 图片的top值加 当前图片的高度  否则就说明超出界限
+                        if (
+                            dragLength < 0 &&
+                            that.cropperH > initDragCutT + that.cutH
+                        ) {
+                            this.cutH = initDragCutH - dragLength;
+                        }
+                        // 如果是移动 大于0  说明在缩小  只需要缩小的距离小于原本裁剪的高度就ok
+                        if (dragLength > 0) {
+                            this.cutH = initDragCutH - dragLength;
+                        } else {
+                            return;
+                        }
+
+                        this.$apply();
+                    }
+                    break;
+                case 'rightBottom': {
+                    const dragLengthX =
+                        (sizeConfPageX - e.touches[0].pageX) * dragScaleP;
+                    const dragLengthY =
+                        (sizeConfPageY - e.touches[0].pageY) * dragScaleP;
+                    if (
+                        initDragCutH >= dragLengthY &&
+                        initDragCutW >= dragLengthX
+                    ) {
+                        // bottom 方向的变化
+                        if (
+                            (dragLengthY < 0 &&
+                                that.cropperH >
+                                    initDragCutT + that.cutH) ||
+                            dragLengthY > 0
+                        ) {
+                            this.cutH = initDragCutH - dragLengthY;
+
+                            if (ratio) {
+                                this.cutW = (initDragCutH - dragLengthY) * cutRatio;
+                            }
+                        }
+
+                        // right 方向的变化
+                        if (
+                            (dragLengthX < 0 &&
+                                that.cropperW >
+                                    initDragCutL + that.cutW) ||
+                            dragLengthX > 0
+                        ) {
+                            this.cutW = initDragCutW - dragLengthX;
+
+                            if (ratio) {
+                                this.cutH = (initDragCutW - dragLengthX) / cutRatio;
+                            }
+                        } else {
+                            return;
+                        }
+
+                        this.$apply();
+                    }
+                    break;
                 }
-                break;
-            }
-            default:
-                break;
+                default:
+                    break;
             }
         },
 
