@@ -44,7 +44,7 @@
                             <view class="img" style="background:url({{item.src}}) no-repeat center;"></view>
                             <view class="text">{{item.name}}</view>
                         </navigator>
-                        <navigator class="item_box" wx:if="{{item.type == 'mpJump' && item.name === '线下物料'}}" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="{{item.path + cardId}}" extra-data="" version="develop">
+                        <navigator class="item_box" wx:if="{{item.type == 'mpJump' && item.name === '线下物料'}}" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="{{item.path + '1042759818970558464'}}" extra-data="" version="develop">
                             <view class="img" style="background:url({{item.src}}) no-repeat center;"></view>
                             <view class="text">{{item.name}}</view>
                         </navigator>
