@@ -1,303 +1,268 @@
-module.exports =
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// define __esModule on exports
-/******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-/******/
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports, __webpack_require__) {
+// let ctx = null;
 
-"use strict";
-
-
-var ctx = null;
-
-var px = function px(n) {
+const px = (n) => {
     if (typeof n === 'undefined') return void 0;
-    if (n === 0) return 0;
+    if (!n) return 0;
+    const {
+        windowWidth
+    } = wx.getSystemInfoSync();
+    return parseInt(n, 10) / 750 * windowWidth;
+}
 
-    var _wx$getSystemInfoSync = wx.getSystemInfoSync(),
-        windowWidth = _wx$getSystemInfoSync.windowWidth;
-
-    return n / 750 * windowWidth;
+/**
+    shape Radial/Linear
+    start Array [x, y, width, height]
+    colorStop Array [stop, color]
+    end Array [x, y, width, height]
+*/
+const fillColor = (ctx, start, end, colorStop, shape) => {
+    const grd = ctx[`create${shape}Gradient`](...start);
+    colorStop.forEach((cs) => {
+        grd.addColorStop(...cs);
+    });
+    ctx.setFillStyle(grd);
+    ctx.fillRect(...end);
 };
+
+const roundRect = (ctx, px, py, width, height, radius, lineWidth) => {
+    const x = px - lineWidth / 2;
+    const y = py - lineWidth / 2;
+    const w = width + lineWidth;
+    const h = height + lineWidth;
+    const r = Math.min(radius, h / 2, w / 2);
+    ctx.setLineWidth(lineWidth);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.clip();
+    ctx.stroke();
+}
 
 Component({
     properties: {
         width: {
             type: Number,
-            value: 750
+            value: 750,
         },
         height: {
             type: Number,
-            value: 500
+            value: 500,
         },
         layers: {
             type: Array,
-            value: []
+            value: [],
         },
         background: {
             type: Object,
-            value: null
-        }
+            value: null,
+        },
     },
 
     data: {
-        drawing: true
+        drawing: true,
     },
 
-    attached: function attached() {
-        var _this = this;
-        console.log(this.data);
+    attached() {
+        const ctx = wx.createCanvasContext('draw-canvas', this);
+        console.log(ctx);
 
-        ctx = wx.createCanvasContext('draw-canvas', this);
-
-        var _data = this.data,
-            background = _data.background,
-            layers = _data.layers,
-            width = _data.width,
-            height = _data.height;
+        const {
+            background,
+            layers,
+            width,
+            height
+        } = this.data;
 
         // 背景图片
-
         if (background) {
-            var imageResource = background.imageResource,
-                _background$dx = background.dx,
-                dx = _background$dx === undefined ? 0 : _background$dx,
-                _background$dy = background.dy,
-                dy = _background$dy === undefined ? 0 : _background$dy,
-                _background$dWidth = background.dWidth,
-                dWidth = _background$dWidth === undefined ? width : _background$dWidth,
-                _background$dHeight = background.dHeight,
-                dHeight = _background$dHeight === undefined ? height : _background$dHeight,
-                color = background.color;
+            const {
+                imageResource,
+                dx = 0,
+                dy = 0,
+                dWidth = width,
+                dHeight = height,
+                color
+            } = background;
             // 背景颜色
-
             if (color) {
-                var _ctx, _ctx2;
-
-                var start = color.start,
-                    end = color.end,
-                    colorStop = color.colorStop,
-                    _color$shape = color.shape,
-                    shape = _color$shape === undefined ? 'Linear' : _color$shape;
-
-                /**
-                    shape Circular/Linear
-                    start Array [x, y, width, height]
-                    colorStop Array [stop, color]
-                    end Array [x, y, width, height]
-                    */
-
-                var grd = (_ctx = ctx)['create' + shape + 'Gradient'].apply(_ctx, start);
-                colorStop.forEach(function (cs) {
-                    grd.addColorStop.apply(grd, cs);
-                });
-                ctx.setFillStyle(grd);
-                (_ctx2 = ctx).fillRect.apply(_ctx2, end);
+                const {
+                    start,
+                    end,
+                    colorStop,
+                    shape = 'Linear'
+                } = color;
+                fillColor(ctx, start, end, colorStop, shape);
             }
+
             ctx.drawImage(imageResource, px(dx), px(dy), px(dWidth), px(dHeight));
         }
 
         // 图层
-        layers.forEach(function (layer) {
+        layers.forEach(layer => {
             if (layer.type === 'text') {
-                var _layer$textBaseline = layer.textBaseline,
-                    textBaseline = _layer$textBaseline === undefined ? 'top' : _layer$textBaseline,
-                    _layer$textAlign = layer.textAlign,
-                    textAlign = _layer$textAlign === undefined ? 'left' : _layer$textAlign,
-                    _layer$fontSize = layer.fontSize,
-                    fontSize = _layer$fontSize === undefined ? 16 : _layer$fontSize,
-                    _layer$text = layer.text,
-                    text = _layer$text === undefined ? '' : _layer$text,
-                    _layer$x = layer.x,
-                    x = _layer$x === undefined ? 0 : _layer$x,
-                    _layer$y = layer.y,
-                    y = _layer$y === undefined ? 0 : _layer$y,
-                    _layer$color = layer.color,
-                    _color = _layer$color === undefined ? '#000' : _layer$color,
-                    _layer$lineHeight = layer.lineHeight,
-                    lineHeight = _layer$lineHeight === undefined ? 50 : _layer$lineHeight,
-                    _layer$maxWidth = layer.maxWidth,
-                    maxWidth = _layer$maxWidth === undefined ? width : _layer$maxWidth;
+                const {
+                    textBaseline = 'top',
+                    textAlign = 'left',
+                    fontSize = 16,
+                    text = '',
+                    x = 0,
+                    y = 0,
+                    color = '#000',
+                    lineHeight = 50,
+                    maxWidth = width,
+                    border = '0',
+                    radius = 0,
+                    padding = 0,
+                    bgColor = null,
+                } = layer;
+                const pxx = px(x);
+                const pxy = px(y);
+                const pxLH = px(lineHeight);
+                let pxMW = px(maxWidth);
+                const pxRadius = px(radius);
 
-                ctx.setTextBaseline(textBaseline);
-                ctx.setTextAlign(textAlign);
-                ctx.setFontSize(fontSize);
-                ctx.setFillStyle(_color);
-                var mw = px(maxWidth);
+                // border
+                const borderArr = border.split(' ');
+                borderArr[0] = px(borderArr[0]);
+                const [pxbw, bc = '#000'] = borderArr;
 
-                var textArr = [];
-                var tempArr = [];
-                var tempWidth = 0;
-                text.split('').forEach(function (word) {
-                    var w = ctx.measureText(word).width;
+                // padding
+                let paddingArr = [];
+                if (typeof padding === 'number') {
+                    paddingArr.length = 4;
+                    paddingArr.fill(px(padding));
+                } else {
+                    paddingArr = padding.split(',').map(p => px(p));
+                }
+                // 上右下左
+                const [pt, pr, pb, pl] = paddingArr;
 
-                    if (tempWidth + w > mw) {
+                const textArr = [];
+                let tempArr = [];
+                let tempWidth = 0;
+                text.split('').forEach(word => {
+                    const w = ctx.measureText(word).width;
+
+                    if (tempWidth + w > pxMW) {
                         textArr.push(tempArr.join(''));
                         tempArr = [word];
                         tempWidth = 0;
                     } else {
                         tempArr.push(word);
-                        tempWidth += w;
+                        tempWidth = w + tempWidth + 1;
                     }
                 });
                 if (tempArr.length > 0) {
                     textArr.push(tempArr.join(''));
                 }
 
-                textArr.forEach(function (str, i) {
-                    ctx.fillText(str, px(x), px(y + i * lineHeight), mw);
+                const textHeight = textArr.length * pxLH;
+                // 背景
+                // if (bgColor) {
+                //     ctx.setStrokeStyle(bgColor);
+                //     ctx.setLineJoin(radius ? 'round' : 'miter');
+                //     const textBgWidth = pxMW + pl + pr;
+                //     const textBgHeight = textHeight + pt + pb;
+                //     ctx.setFillStyle(bgColor);
+                //     ctx.fillRect(pxx - pl, pxy, pxMW + pl + pr, textHeight);
+                //     ctx.setLineWidth(pxRadius);
+                //     ctx.strokeRect(pxx - pl, pxy - pt,
+                //         textBgWidth, textBgHeight - pxRadius);
+                // }
+
+                // 真实宽高
+                const realX = pxx - pl;
+                const realY = pxy - pt;
+                const realWidth = Math.min(pxMW, ctx.measureText(textArr[0]).width) + pl + pr;
+                const realHeight = textHeight + pt + pb;
+                // 边框
+                ctx.save();
+                ctx.setStrokeStyle(pxbw === 0 ? 'rgba(0, 0, 0, 0)' : bc);
+                roundRect(ctx, realX, realY,
+                    realWidth, realHeight, pxRadius, pxbw);
+                if (pxbw === 0 && bgColor) {
+                    ctx.setFillStyle(bgColor);
+                    console.log(realX, realY,
+                        realWidth, realHeight);
+                    ctx.fillRect(realX, realY, realWidth, realHeight);
+                }
+                ctx.restore();
+
+                ctx.setFillStyle(color);
+                ctx.setTextBaseline(textBaseline);
+                ctx.setTextAlign(textAlign);
+                ctx.setFontSize(fontSize);
+                textArr.forEach((str, i) => {
+                    ctx.fillText(str, pxx, pxy + i * pxLH, pxMW);
                 });
             }
 
             if (layer.type === 'color') {
-                var _ctx3, _ctx4;
-
-                var _start = layer.start,
-                    _end = layer.end,
-                    _colorStop = layer.colorStop,
-                    _layer$shape = layer.shape,
-                    _shape = _layer$shape === undefined ? 'Linear' : _layer$shape;
-
-                var _grd = (_ctx3 = ctx)['create' + _shape + 'Gradient'].apply(_ctx3, _start);
-                _colorStop.forEach(function (cs) {
-                    _grd.addColorStop.apply(_grd, cs);
-                });
-                ctx.setFillStyle(_grd);
-                (_ctx4 = ctx).fillRect.apply(_ctx4, _end);
+                const {
+                    start,
+                    end,
+                    colorStop,
+                    shape = 'Linear',
+                } = layer;
+                fillColor(ctx, start, end, colorStop, shape);
             }
 
             if (layer.type === 'image') {
-                var _imageResource = layer.imageResource,
-                    _layer$dx = layer.dx,
-                    _dx = _layer$dx === undefined ? 0 : _layer$dx,
-                    _layer$dy = layer.dy,
-                    _dy = _layer$dy === undefined ? 0 : _layer$dy,
-                    _layer$dWidth = layer.dWidth,
-                    _dWidth = _layer$dWidth === undefined ? width : _layer$dWidth,
-                    _layer$dHeight = layer.dHeight,
-                    _dHeight = _layer$dHeight === undefined ? height : _layer$dHeight;
+                const {
+                    imageResource,
+                    dx = 0,
+                    dy = 0,
+                    radius = 0,
+                    dWidth = width,
+                    dHeight = height,
+                } = layer;
 
-                ctx.drawImage(_imageResource, px(_dx), px(_dy), px(_dWidth), px(_dHeight));
+                if (radius) {
+                    ctx.save();
+                    ctx.beginPath();
+                    const cx = px(dx + radius / 2);
+                    const cy = px(dy + radius / 2);
+                    ctx.arc(cx, cy, px(dWidth) / 2, 0, 2 * Math.PI);
+                    ctx.clip();
+                    ctx.drawImage(imageResource, px(dx), px(dy), px(dWidth), px(dHeight));
+                    ctx.restore();
+                } else {
+                    ctx.drawImage(imageResource, px(dx), px(dy), px(dWidth), px(dHeight));
+                }
             }
         });
 
-        ctx.draw(false, function () {
-            _this.setData({
-                drawing: false
+        ctx.draw(false);
+        setTimeout(() => {
+            this.setData({
+                drawing: false,
             });
-        });
+        }, 300);
     },
 
     methods: {
-        toTempFilePath: function toTempFilePath() {
-            var _this2 = this;
-
-            var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-                destWidth = _ref.destWidth,
-                destHeight = _ref.destHeight;
-
-            return new Promise(function (resolve) {
-                var _data2 = _this2.data,
-                    width = _data2.width,
-                    height = _data2.height;
-
+        toTempFilePath({
+            destWidth,
+            destHeight,
+        } = {}) {
+            return new Promise((resolve) => {
+                const {
+                    width,
+                    height,
+                } = this.data;
 
                 wx.canvasToTempFilePath({
                     destWidth: destWidth || width,
                     destHeight: destHeight || height,
                     canvasId: 'draw-canvas',
-                    success: function success(res) {
-                        resolve(res.tempFilePath);
+                    success(res) {
+                        resolve(res.tempFilePath)
                     }
-                }, _this2);
+                }, this);
             });
-        }
-    },
+        },
+    }
 });
-
-/***/ })
-/******/ ]);

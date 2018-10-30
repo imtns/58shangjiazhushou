@@ -1783,22 +1783,6 @@ scroll-view {
     top:-8px; 
     right:100rpx;/* 三角形居中显示 */
 }
-/* <view class="add-myapp-modal">
-    <view class="add-step">
-        <view class="step-text">
-            点击
-            <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step1.png" class
-            ></image>
-        </view>
-        <view class="step-text">点击【添加到我的小程序】</view>
-        <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step2.png"></image>
-        <view class="step-text">在微信首页下拉，快速进入"58商家程序助手"</view>
-        <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step3.png"></image>
-        <view class="cancle-btn">
-            <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step4.png"></image>
-        </view>
-    </view>
-</view> */
 .add-myapp-modal{
     font-size:32rpx;
     color:#fff;
@@ -1810,7 +1794,7 @@ scroll-view {
     background:rgba(0, 0, 0, 0.7);
     transition:all 0.6s ease-in-out;
     border-radius: 4rpx;
-    z-index: 2;
+    z-index: 99;
 }
 .add-step{
     padding-top: 80rpx;

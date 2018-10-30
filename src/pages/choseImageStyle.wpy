@@ -10,7 +10,7 @@
                 <view class="{{selected2 ? 'selected' : 'select'}}" data-style="2" @tap="selectStyle"></view>
             </view>
         </scroll-view>
-        <button class="{{ selected2 || selected1 ? 'saveCard' : 'disabled'}}" bindtap="download" class="saveCard">保存</button>
+        <button class="{{ selected2 || selected1 ? 'saveCard' : 'disabled'}}" bindtap="download">保存</button>
     </view>
 </template>
 
@@ -118,7 +118,6 @@ export default class choseImageStyle extends wepy.page {
                     x: 270,
                     y: 750,
                     color: '#666',
-                    lineHeight: '',
                     maxWidth: '460',
                 },
                 {
@@ -130,7 +129,6 @@ export default class choseImageStyle extends wepy.page {
                     x: 260,
                     y: 785,
                     color: '#666',
-                    lineHeight: '',
                     maxWidth: '460',
                 },
             ],
@@ -234,20 +232,18 @@ export default class choseImageStyle extends wepy.page {
                 x: 265,
                 y: 240,
                 color: '#333',
-                lineHeight: '',
                 maxWidth: '460',
             },
             {
                 type: 'text', // 职位text
-                textBaseline: 'middle',
                 textAlign: 'center',
                 fontSize: 12,
                 text: that.position,
                 x: 265,
-                y: 315,
+                y: 300,
                 color: '#999',
-                lineHeight: '',
-                maxWidth: '460',
+                maxWidth: 750,
+                radius: 20,
             },
             {
                 type: 'text', // 公司名称text
@@ -258,7 +254,6 @@ export default class choseImageStyle extends wepy.page {
                 x: 265,
                 y: 340,
                 color: '#666',
-                lineHeight: '',
                 maxWidth: '460',
             },
             {
@@ -306,7 +301,7 @@ export default class choseImageStyle extends wepy.page {
                 x: 470,
                 y: 618,
                 color: '#333',
-                lineHeight: '22',
+                lineHeight: '32',
                 maxWidth: '270',
             },
             {
@@ -379,7 +374,7 @@ export default class choseImageStyle extends wepy.page {
                 fontSize: 12,
                 text: '长按识别二维码，马上和我微聊',
                 x: 270,
-                y: 665,
+                y: 645,
                 color: '#999',
                 lineHeight: '24',
                 maxWidth: '460',
@@ -457,8 +452,8 @@ export default class choseImageStyle extends wepy.page {
         const cardId = wepy.getStorageSync('current_cardId');
         try {
             const { data } = await get('/share', {
-                path: 'pages/index/index?from=zhushou_myBizCard',
-                sceneId: 'card_' + cardId,
+                path: 'pages/index/index',
+                sceneId: `card_${cardId}`,
                 cardId,
             });
             const { url } = data;
@@ -499,9 +494,21 @@ export default class choseImageStyle extends wepy.page {
     height: 740rpx;
     margin:130rpx 100rpx 0 0;
 }
+.disabled{
+    font-size: 32rpx;
+    color: #FFF;
+    background: #DBDBDB;
+    border-radius: 4rpx;
+    text-align: center;
+    position: absolute;
+    bottom: 40rpx;
+    left: 30rpx;
+    right: 30rpx;
+}
 .saveCard{
     font-size: 32rpx;
     color: #333;
+    background: #FFF;
     border-radius: 4rpx;
     text-align: center;
     position: absolute;
