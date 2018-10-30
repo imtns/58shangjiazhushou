@@ -1,5 +1,3 @@
-// let ctx = null;
-
 const px = (n) => {
     if (typeof n === 'undefined') return void 0;
     if (!n) return 0;
@@ -67,7 +65,6 @@ Component({
 
     attached() {
         const ctx = wx.createCanvasContext('draw-canvas', this);
-        console.log(ctx);
 
         const {
             background,
@@ -101,17 +98,17 @@ Component({
         }
 
         // 图层
-        layers.forEach(layer => {
+        layers.forEach((layer) => {
             if (layer.type === 'text') {
                 const {
-                    textBaseline = 'top',
+                    // textBaseline = 'top',
                     textAlign = 'left',
-                    fontSize = 16,
+                    fontSize = 32,
                     text = '',
                     x = 0,
                     y = 0,
                     color = '#000',
-                    lineHeight = 50,
+                    lineHeight = 44,
                     maxWidth = width,
                     border = '0',
                     radius = 0,
@@ -120,9 +117,13 @@ Component({
                 } = layer;
                 const pxx = px(x);
                 const pxy = px(y);
+                const pxFS = px(fontSize);
                 const pxLH = px(lineHeight);
-                let pxMW = px(maxWidth);
+                const pxMW = px(maxWidth);
                 const pxRadius = px(radius);
+                ctx.setFontSize(pxFS);
+                ctx.setTextBaseline('top');
+                ctx.setTextAlign(textAlign);
 
                 // border
                 const borderArr = border.split(' ');
@@ -135,7 +136,7 @@ Component({
                     paddingArr.length = 4;
                     paddingArr.fill(px(padding));
                 } else {
-                    paddingArr = padding.split(',').map(p => px(p));
+                    paddingArr = padding.split(' ').map(p => px(p));
                 }
                 // 上右下左
                 const [pt, pr, pb, pl] = paddingArr;
@@ -159,6 +160,7 @@ Component({
                     textArr.push(tempArr.join(''));
                 }
 
+                const textWidth = textArr.length > 1 ? pxMW : ctx.measureText(text).width;
                 const textHeight = textArr.length * pxLH;
                 // 背景
                 // if (bgColor) {
@@ -172,29 +174,32 @@ Component({
                 //     ctx.strokeRect(pxx - pl, pxy - pt,
                 //         textBgWidth, textBgHeight - pxRadius);
                 // }
-
                 // 真实宽高
-                const realX = pxx - pl;
-                const realY = pxy - pt;
-                const realWidth = Math.min(pxMW, ctx.measureText(textArr[0]).width) + pl + pr;
+                const realWidth = textWidth + pl + pr;
                 const realHeight = textHeight + pt + pb;
+
+                let realX = pxx - pl;
+                let realY = pxy - pt;
+                if (textAlign === 'right') {
+                    realX = pxx - pl - textWidth;
+                    realY = pxy - pt;
+                } else if (textAlign === 'center') {
+                    realX = pxx - pl - textWidth / 2;
+                    realY = pxy - pt;
+                }
+
                 // 边框
                 ctx.save();
-                ctx.setStrokeStyle(pxbw === 0 ? 'rgba(0, 0, 0, 0)' : bc);
+                ctx.setStrokeStyle(pxbw === 0 ? 'rgba(0,0,0,0)' : bc);
                 roundRect(ctx, realX, realY,
                     realWidth, realHeight, pxRadius, pxbw);
                 if (pxbw === 0 && bgColor) {
                     ctx.setFillStyle(bgColor);
-                    console.log(realX, realY,
-                        realWidth, realHeight);
                     ctx.fillRect(realX, realY, realWidth, realHeight);
                 }
                 ctx.restore();
 
                 ctx.setFillStyle(color);
-                ctx.setTextBaseline(textBaseline);
-                ctx.setTextAlign(textAlign);
-                ctx.setFontSize(fontSize);
                 textArr.forEach((str, i) => {
                     ctx.fillText(str, pxx, pxy + i * pxLH, pxMW);
                 });
@@ -205,7 +210,7 @@ Component({
                     start,
                     end,
                     colorStop,
-                    shape = 'Linear',
+                    shape = 'Linear'
                 } = layer;
                 fillColor(ctx, start, end, colorStop, shape);
             }
@@ -217,7 +222,7 @@ Component({
                     dy = 0,
                     radius = 0,
                     dWidth = width,
-                    dHeight = height,
+                    dHeight = height
                 } = layer;
 
                 if (radius) {
@@ -246,12 +251,12 @@ Component({
     methods: {
         toTempFilePath({
             destWidth,
-            destHeight,
+            destHeight
         } = {}) {
             return new Promise((resolve) => {
                 const {
                     width,
-                    height,
+                    height
                 } = this.data;
 
                 wx.canvasToTempFilePath({
