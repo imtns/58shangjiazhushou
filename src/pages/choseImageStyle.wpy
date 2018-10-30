@@ -1,15 +1,26 @@
 <template>
     <view class="choseStyle">
-        <scroll-view class="scroll_view" scroll-x style="width:100%;">
+        <!-- <view class="scroll_view" style="width:300%;">
             <view class="firstStyle Style" wx:if="{{ showCanvas }}">
-                <drawimage id="drawimageStyle1" width="530" height="940" background="{{firstStyle.background}}" layers="{{firstStyle.layers}}" />
+                <drawimage id="drawStyle1" width="530" height="940" style="z-index: 0;" background="{{firstStyle.background}}" layers="{{firstStyle.layers}}" />
                 <view class="{{selected1 ? 'selected' : 'select'}}" data-style="1" @tap="selectStyle"></view>
             </view>
             <view class="secondStyle Style" wx:if="{{ showCanvas }}">
-                <drawimage id="drawimageStyle2" data-style="2" width="560" height="740" background="{{secondStyle.background}}" layers="{{secondStyle.layers}}" />
+                <drawimage id="drawStyle2" data-style="2" width="560" style="z-index: 0;" height="740" background="{{secondStyle.background}}" layers="{{secondStyle.layers}}" />
                 <view class="{{selected2 ? 'selected' : 'select'}}" data-style="2" @tap="selectStyle"></view>
             </view>
-        </scroll-view>
+        </view> -->
+        <swiper class="swiper-contain" indicator-dots="{{swiper.indicatorDots}}"
+        autoplay="{{swiper.autoplay}}" interval="{{swiper.interval}}" duration="{{swiper.duration}}">
+            <block wx:if="{{ showCanvas }}">
+                <swiper-item>
+                    <drawimage id="drawStyle1" width="530" height="940" background="{{firstStyle.background}}" layers="{{firstStyle.layers}}" />
+                </swiper-item>
+                <swiper-item>
+                    <drawimage id="drawStyle2" data-style="2" width="560" height="740" background="{{secondStyle.background}}" layers="{{secondStyle.layers}}" />
+                </swiper-item>
+            </block>
+        </swiper>
         <button class="{{ selected2 || selected1 ? 'saveCard' : 'disabled'}}" bindtap="download">保存</button>
     </view>
 </template>
@@ -38,6 +49,16 @@ export default class choseImageStyle extends wepy.page {
         selected1: false,
         selected2: false,
         style: '',
+        swiper: {
+            indicatorDots: true,
+            vertical: true,
+            autoplay: false,
+            circular: false,
+            interval: 2000,
+            duration: 500,
+            previousMargin: 0,
+            nextMargin: 0,
+        },
         firstStyle: {
             width: 530,
             height: 940,
@@ -61,7 +82,7 @@ export default class choseImageStyle extends wepy.page {
                     type: 'text', // 手机号text
                     textBaseline: 'top',
                     textAlign: 'left',
-                    fontSize: 12,
+                    fontSize: 24,
                     text: '手机号',
                     x: 100,
                     y: 507,
@@ -81,7 +102,7 @@ export default class choseImageStyle extends wepy.page {
                     type: 'text', // 微信号text
                     textBaseline: 'top',
                     textAlign: 'left',
-                    fontSize: 12,
+                    fontSize: 24,
                     text: '微信号',
                     x: 100,
                     y: 565,
@@ -101,7 +122,7 @@ export default class choseImageStyle extends wepy.page {
                     type: 'text', // 联系地址text
                     textBaseline: 'top',
                     textAlign: 'left',
-                    fontSize: 12,
+                    fontSize: 24,
                     text: '联系地址',
                     x: 100,
                     y: 618,
@@ -113,7 +134,7 @@ export default class choseImageStyle extends wepy.page {
                     type: 'text', // 长按识别二维码text
                     textBaseline: 'top',
                     textAlign: 'left',
-                    fontSize: 12,
+                    fontSize: 24,
                     text: '长按识别二维码',
                     x: 270,
                     y: 750,
@@ -124,7 +145,7 @@ export default class choseImageStyle extends wepy.page {
                     type: 'text', // 查看我的更多信息text
                     textBaseline: 'top',
                     textAlign: 'left',
-                    fontSize: 12,
+                    fontSize: 24,
                     text: '查看我的更多信息',
                     x: 260,
                     y: 785,
@@ -152,11 +173,10 @@ export default class choseImageStyle extends wepy.page {
             this.selected1 = false;
             this.selected2 = false;
             this[`selected${style}`] = true;
-            console.log(style);
-            console.log(`selected${style}`);
         },
         async download() {
-            const path = await this.$wxpage.selectComponent('#drawimageStyle1').toTempFilePath();
+            if (!this.selected2 && !this.selected1) return;
+            const path = await this.$wxpage.selectComponent(`#drawStyle${this.style}`).toTempFilePath();
             console.log(path);
             wx.previewImage({
                 current: path, // 当前显示图片的http链接
@@ -227,7 +247,7 @@ export default class choseImageStyle extends wepy.page {
                 type: 'text', // 姓名text
                 textBaseline: 'top',
                 textAlign: 'center',
-                fontSize: 19,
+                fontSize: 39,
                 text: that.realName,
                 x: 265,
                 y: 240,
@@ -237,22 +257,25 @@ export default class choseImageStyle extends wepy.page {
             {
                 type: 'text', // 职位text
                 textAlign: 'center',
-                fontSize: 12,
+                fontSize: 24,
                 text: that.position,
                 x: 265,
                 y: 300,
-                color: '#999',
+                color: '#fff',
                 maxWidth: 750,
-                radius: 20,
+                radius: 4,
+                bgColor: '#4E88FF',
+                padding: '3 24 3 24',
+                lineHeight: 32,
             },
             {
                 type: 'text', // 公司名称text
                 textBaseline: 'top',
                 textAlign: 'center',
-                fontSize: 12,
+                fontSize: 24,
                 text: that.company,
                 x: 265,
-                y: 340,
+                y: 350,
                 color: '#666',
                 maxWidth: '460',
             },
@@ -260,7 +283,7 @@ export default class choseImageStyle extends wepy.page {
                 type: 'text', // 个性签名text
                 textBaseline: 'top',
                 textAlign: 'center',
-                fontSize: 12,
+                fontSize: 24,
                 text: that.sign || '没有个性签名',
                 x: 265,
                 y: 390,
@@ -272,7 +295,7 @@ export default class choseImageStyle extends wepy.page {
                 type: 'text', // 手机号text
                 textBaseline: 'top',
                 textAlign: 'right',
-                fontSize: 12,
+                fontSize: 24,
                 text: that.mobile,
                 x: 470,
                 y: 507,
@@ -284,7 +307,7 @@ export default class choseImageStyle extends wepy.page {
                 type: 'text', // 微信号text
                 textBaseline: 'top',
                 textAlign: 'right',
-                fontSize: 12,
+                fontSize: 24,
                 text: that.wxCode,
                 x: 470,
                 y: 565,
@@ -296,7 +319,7 @@ export default class choseImageStyle extends wepy.page {
                 type: 'text', // 联系地址text
                 textBaseline: 'top',
                 textAlign: 'right',
-                fontSize: 12,
+                fontSize: 24,
                 text: that.address,
                 x: 470,
                 y: 618,
@@ -339,7 +362,7 @@ export default class choseImageStyle extends wepy.page {
                 type: 'text', // 姓名text
                 textBaseline: 'top',
                 textAlign: 'left',
-                fontSize: 19,
+                fontSize: 39,
                 text: that.realName,
                 x: 165,
                 y: 36,
@@ -351,7 +374,7 @@ export default class choseImageStyle extends wepy.page {
                 type: 'text', // 公司名称text
                 textBaseline: 'top',
                 textAlign: 'left',
-                fontSize: 12,
+                fontSize: 24,
                 text: that.company,
                 x: 165,
                 y: 107,
@@ -371,7 +394,7 @@ export default class choseImageStyle extends wepy.page {
                 type: 'text', // 个性签名text
                 textBaseline: 'top',
                 textAlign: 'center',
-                fontSize: 12,
+                fontSize: 24,
                 text: '长按识别二维码，马上和我微聊',
                 x: 270,
                 y: 645,
@@ -380,7 +403,6 @@ export default class choseImageStyle extends wepy.page {
                 maxWidth: '460',
             },
         ].concat(layers);
-        console.log(this.secondStyle.layers);
         this.showCanvas = true;
         that.$apply();
     }
@@ -422,7 +444,7 @@ export default class choseImageStyle extends wepy.page {
                 layers.push({
                     type: 'text', // 文本
                     textAlign: 'center',
-                    fontSize: FONT_SIZE / 2,
+                    fontSize: FONT_SIZE,
                     text: curTag,
                     x,
                     y: (i * 30) + 435,
@@ -435,7 +457,6 @@ export default class choseImageStyle extends wepy.page {
                 return preLen + len1;
             }, 0);
         });
-        console.log(layers);
         this.firstStyle.layers = layers;
     }
     async touchImage() {
@@ -458,7 +479,6 @@ export default class choseImageStyle extends wepy.page {
             });
             const { url } = data;
             that.mycardCode = await getTmpFilePath(url);
-            console.log(that.mycardCode);
             that.$apply();
         } catch (err) {
             console.log(err);
@@ -469,10 +489,24 @@ export default class choseImageStyle extends wepy.page {
 
 <style lang="scss">
 .scroll_view{
-    overflow: hidden;
-    overflow:hidden;
-    white-space:nowrap;
+    /* overflow: hidden;
+    white-space:nowrap; */
     height: 1100rpx;
+}
+.swiper-contain{
+    height: 100%;
+    height: 1100rpx;
+    background: red;
+}
+#drawStyle1{
+    position: absolute;
+    left: 110rpx;
+    top:50rpx;
+}
+#drawStyle2{
+    position: absolute;
+    left: 95rpx;
+    top:100rpx;
 }
 .choseStyle{
     background: rgba(0, 0, 0, .7);
@@ -483,16 +517,17 @@ export default class choseImageStyle extends wepy.page {
     vertical-align: top;
     display: inline-block;
     position: relative;
+    background: red;
 }
 .firstStyle{
     width: 530rpx;
     height: 940rpx;
-    margin:60rpx 60rpx 0 100rpx;
+    /* margin:60rpx 60rpx 0 100rpx; */
 }
 .secondStyle{
     width: 560rpx;
     height: 740rpx;
-    margin:130rpx 100rpx 0 0;
+    /* margin:130rpx 100rpx 0 0; */
 }
 .disabled{
     font-size: 32rpx;
@@ -504,6 +539,7 @@ export default class choseImageStyle extends wepy.page {
     bottom: 40rpx;
     left: 30rpx;
     right: 30rpx;
+    z-index: 9;
 }
 .saveCard{
     font-size: 32rpx;
@@ -515,6 +551,7 @@ export default class choseImageStyle extends wepy.page {
     bottom: 40rpx;
     left: 30rpx;
     right: 30rpx;
+    z-index: 9;
 }
 .choseStyle .select {
     position:absolute;

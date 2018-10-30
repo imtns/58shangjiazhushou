@@ -1,5 +1,3 @@
-// let ctx = null;
-
 const px = (n) => {
     if (typeof n === 'undefined') return void 0;
     if (!n) return 0;
@@ -33,12 +31,64 @@ const roundRect = (ctx, px, py, width, height, radius, lineWidth) => {
     ctx.setLineWidth(lineWidth);
     ctx.beginPath();
     ctx.moveTo(x + r, y);
-    ctx.arcTo(x + w, y, x + w, y + h, r);
-    ctx.arcTo(x + w, y + h, x, y + h, r);
-    ctx.arcTo(x, y + h, x, y, r);
-    ctx.arcTo(x, y, x + w, y, r);
+    // ctx.arcTo(x + w, y, x + w, y + h, r);
+    // ctx.arcTo(x + w, y + h, x, y + h, r);
+    // ctx.arcTo(x, y + h, x, y, r);
+    // ctx.arcTo(x, y, x + w, y, r);
+    ctx.lineTo(x + w - r, y);
+    ctx.arc(x + w - r, y + r, r, -Math.PI / 2, 0);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.arc(x + w - r, y + h - r, r, 0, Math.PI / 2);
+    ctx.lineTo(x + r, y + h);
+    ctx.arc(x + r, y + h - r, r, Math.PI / 2, Math.PI);
+    ctx.lineTo(x, y + r);
+    ctx.arc(x + r, y + r, r, Math.PI, Math.PI * 1.5);
     ctx.clip();
-    ctx.stroke();
+}
+
+const formatBorder = (border) => {
+    if (!border) return [0, 'rgba(0,0,0,0)'];
+    const borderArr = border.split(' ');
+    borderArr[0] = px(borderArr[0]);
+    if (!borderArr[1]) borderArr[1] = 'rgba(0,0,0,0)';
+    return borderArr;
+}
+
+const formatPadding = (padding) => {
+    let paddingArr = [];
+    if (typeof padding === 'number') {
+        paddingArr.length = 4;
+        paddingArr.fill(px(padding));
+    } else {
+        paddingArr = padding.split(' ').map(p => px(p));
+    }
+    return paddingArr;
+}
+
+const formatText = (ctx, text, pxMW, pxLH) => {
+    const textArr = [];
+    let tempArr = [];
+    let tempWidth = 0;
+    text.split('').forEach(word => {
+        const w = ctx.measureText(word).width;
+
+        if (tempWidth + w > pxMW) {
+            textArr.push(tempArr.join(''));
+            tempArr = [word];
+            tempWidth = 0;
+        } else {
+            tempArr.push(word);
+            tempWidth = w + tempWidth + 1;
+        }
+    });
+    if (tempArr.length > 0) {
+        textArr.push(tempArr.join(''));
+    }
+
+    const textWidth = textArr.length > 1 ? pxMW : ctx.measureText(text).width;
+    const textHeight = textArr.length * pxLH;
+
+    return {textArr, textWidth, textHeight};
 }
 
 Component({
@@ -67,7 +117,6 @@ Component({
 
     attached() {
         const ctx = wx.createCanvasContext('draw-canvas', this);
-        console.log(ctx);
 
         const {
             background,
@@ -101,17 +150,17 @@ Component({
         }
 
         // 图层
-        layers.forEach(layer => {
+        layers.forEach((layer) => {
             if (layer.type === 'text') {
                 const {
-                    textBaseline = 'top',
+                    // textBaseline = 'top',
                     textAlign = 'left',
-                    fontSize = 16,
+                    fontSize = 32,
                     text = '',
                     x = 0,
                     y = 0,
                     color = '#000',
-                    lineHeight = 50,
+                    lineHeight = 44,
                     maxWidth = width,
                     border = '0',
                     radius = 0,
@@ -120,46 +169,19 @@ Component({
                 } = layer;
                 const pxx = px(x);
                 const pxy = px(y);
+                const pxFS = px(fontSize);
                 const pxLH = px(lineHeight);
-                let pxMW = px(maxWidth);
+                const pxMW = px(maxWidth);
                 const pxRadius = px(radius);
+                ctx.setFontSize(pxFS);
 
                 // border
-                const borderArr = border.split(' ');
-                borderArr[0] = px(borderArr[0]);
-                const [pxbw, bc = '#000'] = borderArr;
+                const [pxbw, bc] = formatBorder(border);
+                // padding 上右下左
+                const [pt, pr, pb, pl] = formatPadding(padding);
 
-                // padding
-                let paddingArr = [];
-                if (typeof padding === 'number') {
-                    paddingArr.length = 4;
-                    paddingArr.fill(px(padding));
-                } else {
-                    paddingArr = padding.split(',').map(p => px(p));
-                }
-                // 上右下左
-                const [pt, pr, pb, pl] = paddingArr;
+                const {textArr, textWidth, textHeight} = formatText(ctx, text, pxMW, pxLH);
 
-                const textArr = [];
-                let tempArr = [];
-                let tempWidth = 0;
-                text.split('').forEach(word => {
-                    const w = ctx.measureText(word).width;
-
-                    if (tempWidth + w > pxMW) {
-                        textArr.push(tempArr.join(''));
-                        tempArr = [word];
-                        tempWidth = 0;
-                    } else {
-                        tempArr.push(word);
-                        tempWidth = w + tempWidth + 1;
-                    }
-                });
-                if (tempArr.length > 0) {
-                    textArr.push(tempArr.join(''));
-                }
-
-                const textHeight = textArr.length * pxLH;
                 // 背景
                 // if (bgColor) {
                 //     ctx.setStrokeStyle(bgColor);
@@ -174,27 +196,33 @@ Component({
                 // }
 
                 // 真实宽高
-                const realX = pxx - pl;
-                const realY = pxy - pt;
-                const realWidth = Math.min(pxMW, ctx.measureText(textArr[0]).width) + pl + pr;
+                const realWidth = textWidth + pl + pr;
                 const realHeight = textHeight + pt + pb;
+
+                let realX = pxx - pl;
+                let realY = pxy - pt;
+                if (textAlign === 'right') {
+                    realX = pxx - pl - textWidth;
+                    realY = pxy - pt;
+                } else if (textAlign === 'center') {
+                    realX = pxx - pl - textWidth / 2;
+                    realY = pxy - pt;
+                }
+
                 // 边框
                 ctx.save();
-                ctx.setStrokeStyle(pxbw === 0 ? 'rgba(0, 0, 0, 0)' : bc);
-                roundRect(ctx, realX, realY,
-                    realWidth, realHeight, pxRadius, pxbw);
-                if (pxbw === 0 && bgColor) {
+                ctx.setStrokeStyle(bc);
+                roundRect(ctx, realX, realY, realWidth, realHeight, pxRadius, pxbw);
+                if (bgColor) {
                     ctx.setFillStyle(bgColor);
-                    console.log(realX, realY,
-                        realWidth, realHeight);
                     ctx.fillRect(realX, realY, realWidth, realHeight);
                 }
+                ctx.stroke();
                 ctx.restore();
 
                 ctx.setFillStyle(color);
-                ctx.setTextBaseline(textBaseline);
+                ctx.setTextBaseline('top');
                 ctx.setTextAlign(textAlign);
-                ctx.setFontSize(fontSize);
                 textArr.forEach((str, i) => {
                     ctx.fillText(str, pxx, pxy + i * pxLH, pxMW);
                 });
@@ -205,7 +233,7 @@ Component({
                     start,
                     end,
                     colorStop,
-                    shape = 'Linear',
+                    shape = 'Linear'
                 } = layer;
                 fillColor(ctx, start, end, colorStop, shape);
             }
@@ -218,19 +246,20 @@ Component({
                     radius = 0,
                     dWidth = width,
                     dHeight = height,
+                    border
                 } = layer;
+                const [pxbw, bc] = formatBorder(border);
+                const [pxdx, pxdy, pxdWidth, pxdHeight, pxdRadius] =
+                    [px(dx), px(dy), px(dWidth), px(dHeight), px(radius)];
 
                 if (radius) {
                     ctx.save();
-                    ctx.beginPath();
-                    const cx = px(dx + radius / 2);
-                    const cy = px(dy + radius / 2);
-                    ctx.arc(cx, cy, px(dWidth) / 2, 0, 2 * Math.PI);
-                    ctx.clip();
-                    ctx.drawImage(imageResource, px(dx), px(dy), px(dWidth), px(dHeight));
+                    ctx.setStrokeStyle(bc);
+                    roundRect(ctx, pxdx, pxdy, pxdWidth, pxdHeight, pxdRadius, pxbw);
+                    ctx.drawImage(imageResource, pxdx, pxdy, pxdWidth, pxdHeight);
                     ctx.restore();
                 } else {
-                    ctx.drawImage(imageResource, px(dx), px(dy), px(dWidth), px(dHeight));
+                    ctx.drawImage(imageResource, pxdx, pxdy, pxdWidth, pxdHeight);
                 }
             }
         });
