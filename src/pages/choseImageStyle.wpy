@@ -1,27 +1,17 @@
 <template>
     <view class="choseStyle">
-        <!-- <view class="scroll_view" style="width:300%;">
-            <view class="firstStyle Style" wx:if="{{ showCanvas }}">
-                <drawimage id="drawStyle1" width="530" height="940" style="z-index: 0;" background="{{firstStyle.background}}" layers="{{firstStyle.layers}}" />
-                <view class="{{selected1 ? 'selected' : 'select'}}" data-style="1" @tap="selectStyle"></view>
-            </view>
-            <view class="secondStyle Style" wx:if="{{ showCanvas }}">
-                <drawimage id="drawStyle2" data-style="2" width="560" style="z-index: 0;" height="740" background="{{secondStyle.background}}" layers="{{secondStyle.layers}}" />
-                <view class="{{selected2 ? 'selected' : 'select'}}" data-style="2" @tap="selectStyle"></view>
-            </view>
-        </view> -->
         <swiper class="swiper-contain" indicator-dots="{{swiper.indicatorDots}}"
-        autoplay="{{swiper.autoplay}}" interval="{{swiper.interval}}" duration="{{swiper.duration}}">
-            <block wx:if="{{ showCanvas }}">
+        autoplay="{{swiper.autoplay}}" interval="{{swiper.interval}}" duration="{{swiper.duration}}" bindchange="onSlideChangeEnd">
+            <block wx:if="{{showCanvas}}">
                 <swiper-item>
-                    <drawimage id="drawStyle1" width="530" height="940" background="{{firstStyle.background}}" layers="{{firstStyle.layers}}" />
+                    <drawimage id="drawStyle0" wx:if="{{showFirstStyle}}" width="530" height="940" background="{{firstStyle.background}}" layers="{{firstStyle.layers}}" />
                 </swiper-item>
                 <swiper-item>
-                    <drawimage id="drawStyle2" data-style="2" width="560" height="740" background="{{secondStyle.background}}" layers="{{secondStyle.layers}}" />
+                    <drawimage id="drawStyle1" wx:if="{{showSecondStyle}}" data-style="2" width="560" height="740" background="{{secondStyle.background}}" layers="{{secondStyle.layers}}" />
                 </swiper-item>
             </block>
         </swiper>
-        <button class="{{ selected2 || selected1 ? 'saveCard' : 'disabled'}}" bindtap="download">保存</button>
+        <button class="saveCard" bindtap="download">保存</button>
     </view>
 </template>
 
@@ -29,6 +19,7 @@
 import wepy from 'wepy';
 import { CARD_FIRST_EDIT } from '../utils/url';
 import { get, post } from '../utils/ajax';
+import { firstStyle, secondStyle } from '../utils/introData';
 import { getUid, SendClickLog } from '../utils/maidian';
 import { getTmpFilePath } from '../utils/index';
 
@@ -46,9 +37,9 @@ export default class choseImageStyle extends wepy.page {
         mycardCode: '',
         showCanvas: false,
         serviceTagArr: [], // 服务标签数组
-        selected1: false,
-        selected2: false,
-        style: '',
+        showFirstStyle: true,
+        showSecondStyle: false,
+        style: 0,
         swiper: {
             indicatorDots: true,
             vertical: true,
@@ -59,111 +50,8 @@ export default class choseImageStyle extends wepy.page {
             previousMargin: 0,
             nextMargin: 0,
         },
-        firstStyle: {
-            width: 530,
-            height: 940,
-            background: {
-                imageResource: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/card_style_bg.png',
-                dx: 0,
-                dy: 0,
-                dWidth: 530,
-                dHeight: 940,
-            },
-            layers: [
-                {
-                    type: 'image', // 手机号icon
-                    imageResource: '/images/chosestyle_phone.png',
-                    dx: 67,
-                    dy: 508,
-                    dWidth: 15,
-                    dHeight: 24,
-                },
-                {
-                    type: 'text', // 手机号text
-                    textBaseline: 'top',
-                    textAlign: 'left',
-                    fontSize: 24,
-                    text: '手机号',
-                    x: 100,
-                    y: 507,
-                    color: '#999',
-                    lineHeight: '24',
-                    maxWidth: '460',
-                },
-                {
-                    type: 'image', // 微信号icon
-                    imageResource: '/images/chosestyle_wechat.png',
-                    dx: 67,
-                    dy: 565,
-                    dWidth: 22,
-                    dHeight: 18,
-                },
-                {
-                    type: 'text', // 微信号text
-                    textBaseline: 'top',
-                    textAlign: 'left',
-                    fontSize: 24,
-                    text: '微信号',
-                    x: 100,
-                    y: 565,
-                    color: '#999',
-                    lineHeight: '18',
-                    maxWidth: '460',
-                },
-                {
-                    type: 'image', // 联系地址icon
-                    imageResource: '/images/chosestyle_location.png',
-                    dx: 67,
-                    dy: 618,
-                    dWidth: 18,
-                    dHeight: 22,
-                },
-                {
-                    type: 'text', // 联系地址text
-                    textBaseline: 'top',
-                    textAlign: 'left',
-                    fontSize: 24,
-                    text: '联系地址',
-                    x: 100,
-                    y: 618,
-                    color: '#999',
-                    lineHeight: '22',
-                    maxWidth: '460',
-                },
-                {
-                    type: 'text', // 长按识别二维码text
-                    textBaseline: 'top',
-                    textAlign: 'left',
-                    fontSize: 24,
-                    text: '长按识别二维码',
-                    x: 270,
-                    y: 750,
-                    color: '#666',
-                    maxWidth: '460',
-                },
-                {
-                    type: 'text', // 查看我的更多信息text
-                    textBaseline: 'top',
-                    textAlign: 'left',
-                    fontSize: 24,
-                    text: '查看我的更多信息',
-                    x: 260,
-                    y: 785,
-                    color: '#666',
-                    maxWidth: '460',
-                },
-            ],
-        },
-        secondStyle: {
-            background: {
-                imageResource: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/card_style_bg.png',
-                dx: 0,
-                dy: 0,
-                dWidth: 560,
-                dHeight: 740,
-            },
-            layers: [],
-        },
+        firstStyle,
+        secondStyle,
     }
     methods = {
         selectStyle(e) {
@@ -174,8 +62,25 @@ export default class choseImageStyle extends wepy.page {
             this.selected2 = false;
             this[`selected${style}`] = true;
         },
+        onSlideChangeEnd(e) {
+            const { current } = e.detail;
+            if (current && current === 1) {
+                this.showFirstStyle = false;
+                this.showSecondStyle = true;
+                this.style = 1;
+                this.$apply();
+                console.log('======');
+            }
+            if (current === 0) {
+                console.log('-------');
+                this.showFirstStyle = true;
+                this.showSecondStyle = false;
+                this.style = 0;
+                this.$apply();
+            }
+            console.log(current);
+        },
         async download() {
-            if (!this.selected2 && !this.selected1) return;
             const path = await this.$wxpage.selectComponent(`#drawStyle${this.style}`).toTempFilePath();
             console.log(path);
             wx.previewImage({
@@ -336,6 +241,7 @@ export default class choseImageStyle extends wepy.page {
                 dHeight: 140,
             },
         ].concat(layers);
+        this.showCanvas = true;
         that.$apply();
     }
     async drawimageStyle2() {
@@ -403,7 +309,6 @@ export default class choseImageStyle extends wepy.page {
                 maxWidth: '460',
             },
         ].concat(layers);
-        this.showCanvas = true;
         that.$apply();
     }
     async drawTags() {
@@ -496,14 +401,13 @@ export default class choseImageStyle extends wepy.page {
 .swiper-contain{
     height: 100%;
     height: 1100rpx;
-    background: red;
 }
-#drawStyle1{
+#drawStyle0{
     position: absolute;
     left: 110rpx;
     top:50rpx;
 }
-#drawStyle2{
+#drawStyle1{
     position: absolute;
     left: 95rpx;
     top:100rpx;
@@ -512,34 +416,6 @@ export default class choseImageStyle extends wepy.page {
     background: rgba(0, 0, 0, .7);
     background-size: 100%;
     height: 100vh;
-}
-.Style{
-    vertical-align: top;
-    display: inline-block;
-    position: relative;
-    background: red;
-}
-.firstStyle{
-    width: 530rpx;
-    height: 940rpx;
-    /* margin:60rpx 60rpx 0 100rpx; */
-}
-.secondStyle{
-    width: 560rpx;
-    height: 740rpx;
-    /* margin:130rpx 100rpx 0 0; */
-}
-.disabled{
-    font-size: 32rpx;
-    color: #FFF;
-    background: #DBDBDB;
-    border-radius: 4rpx;
-    text-align: center;
-    position: absolute;
-    bottom: 40rpx;
-    left: 30rpx;
-    right: 30rpx;
-    z-index: 9;
 }
 .saveCard{
     font-size: 32rpx;
@@ -552,30 +428,6 @@ export default class choseImageStyle extends wepy.page {
     left: 30rpx;
     right: 30rpx;
     z-index: 9;
-}
-.choseStyle .select {
-    position:absolute;
-    width:88rpx;
-    height:88rpx;
-    border-radius:100%;
-    background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/card_style_select.png) no-repeat center;
-    background-size:100%;
-    bottom:-44rpx;
-    left:50%;
-    -webkit-transform:translate3d(-50%, 0, 0);
-    transform:translate3d(-50%, 0, 0);
-}
-.choseStyle .selected {
-    background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/card_style_selected.png) no-repeat center;
-    background-size:100%;
-    bottom:-44rpx;
-    left:50%;
-    -webkit-transform:translate3d(-50%, 0, 0);
-    transform:translate3d(-50%, 0, 0);
-    position:absolute;
-    width:88rpx;
-    height:88rpx;
-    border-radius:100%;
 }
 
 </style>

@@ -58,7 +58,6 @@
                 </navigator>
             </view>
         </view>
-        <official-account></official-account>
         <view class="index-block"  wx:for="{{nItems}}" wx:for-item="nItem"  wx:key="{{nItem.title}}">
             <view class="index-block-title">{{nItem.title}}</view>
             <view wx:if="{{userLogin}}" class="index-block-body">
