@@ -3,7 +3,7 @@
         <view class="regist-tip">
             <image class="icon" mode="aspectFill" src="/pages/assets/regist/check.png"></image>
             <view class="tip-success">您已注册成功</view>
-            <view class="tip-text">请在微信首页点击模板信息，进行快速身份认证</view>
+            <view class="tip-text">请点击右上角关闭小程序后，在微信首页点击模板消息，进行快速身份认证。</view>
         </view>
         <view class="regist-flow">
             <view class="line"></view>
@@ -23,8 +23,8 @@
             </view>
         </view>
         <view class="regist-bottom">
-            <view class="button" @tap="close">去认证</view>
-            <view class="tip">之后需要对您的身份和人脸信息采集，过程只需10分钟</view>
+            <!-- <view class="button" @tap="close">去认证</view> -->
+            <view class="tip">之后需要对您的身份和人脸信息采集，过程只需10分钟。</view>
         </view>
     </view>
 </template>
@@ -46,6 +46,9 @@ export default class Index extends wepy.page {
 .container {
   width: 100%;
   position: relative;
+  height: 100vh;
+  background-color: #fff;
+  overflow: hidden;
   .regist-tip {
     width: 100%;
     margin-top: 79rpx;
@@ -63,9 +66,11 @@ export default class Index extends wepy.page {
       margin-top: 40rpx;
     }
     .tip-text {
+      width:654rpx;
       font-size: 28rpx;
       color: #999;
-      margin-top: 20rpx;
+      text-align: left;
+      margin:20rpx auto 0;
     }
   }
   .regist-flow {
@@ -114,7 +119,8 @@ export default class Index extends wepy.page {
     }
   }
   .regist-bottom {
-    margin-top: 200rpx;
+      text-align: center;
+    margin-top: 30rpx;
     .button {
       width: 690rpx;
       height: 94rpx;
