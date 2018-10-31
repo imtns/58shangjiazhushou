@@ -44,9 +44,9 @@ export default class OrderMixin extends wepy.mixin {
 
         if (currentAuditStatus === 1) {
             wx.redirectTo({
-                url: '/pages/regist/notice',
+                url: '/pages/regist/guide',
             });
-            return { msg: '资料审核中' };
+            return { msg: '注册资料提交成功' };
         }
 
         // 审核失败，跳转到 注册成功页 (regist/guide)

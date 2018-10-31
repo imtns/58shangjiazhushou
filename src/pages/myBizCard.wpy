@@ -115,11 +115,9 @@ export default class myBizCard extends wepy.page {
          * @author zhouwunan
          */
         get(CHECK_IS_SALESMAN)
-            .then(res => {
-                if (res) {
-                    this.isSalesman = true;
-                    this.$apply();
-                }
+            .then(({ data }) => {
+                this.isSalesman = data;
+                this.$apply();
             })
             .catch(err => {
                 console.log(err);
