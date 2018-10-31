@@ -66,8 +66,8 @@
 import wepy from 'wepy';
 import MessageBox from '../../components/MessageBox';
 import HelpModal from '../../components/HelpModal';
-import { SAVE_BASICINFO, CHECK_IS_LOGIN } from '../../utils/url';
-import { post, get } from '../../utils/ajax';
+import { SAVE_BASICINFO } from '../../utils/url';
+import { post } from '../../utils/ajax';
 import RegistMixin from './mixin';
 
 export default class Index extends wepy.page {
@@ -120,7 +120,7 @@ export default class Index extends wepy.page {
 
                 await post(SAVE_BASICINFO, data);
 
-                wepy.navigateTo({ url: '/pages/regist/notice' });
+                wepy.navigateTo({ url: '/pages/regist/guide' });
             } catch (err) {
                 this.showModal(typeof err === 'string' ? err : err.msg, {
                     confirmText: '重新填写',

@@ -52,7 +52,7 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
                 toast(msg);
                 setTimeout(() => {
                     wepy.reLaunch({
-                        url: '../pages/intro',
+                        url: '/pages/intro',
                     });
                 }, 1000);
                 reject(msg);
