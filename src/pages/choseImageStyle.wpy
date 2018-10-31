@@ -20,8 +20,7 @@ import wepy from 'wepy';
 import { CARD_FIRST_EDIT } from '../utils/url';
 import { get, post } from '../utils/ajax';
 import { firstStyle, secondStyle } from '../utils/introData';
-import { getUid, SendClickLog } from '../utils/maidian';
-import { getTmpFilePath } from '../utils/index';
+import { getTmpFilePath, alert } from '../utils/index';
 
 export default class choseImageStyle extends wepy.page {
     config = {
@@ -61,35 +60,26 @@ export default class choseImageStyle extends wepy.page {
                 this.showFirstStyle = false;
                 this.showSecondStyle = true;
                 this.style = 1;
-                this.drawStyle = '#drawStyle1',
+                this.drawStyle = '#drawStyle1';
                 this.$apply();
             }
             if (current === 0) {
                 this.showFirstStyle = true;
                 this.showSecondStyle = false;
                 this.style = 0;
-                this.drawStyle = '#drawStyle0',
+                this.drawStyle = '#drawStyle0';
                 this.$apply();
             }
         },
         // 下载名片
         async saveImgToPhotosAlbum() {
-            console.log(this.drawStyle);
             const path = await this.$wxpage.selectComponent(this.drawStyle).toTempFilePath();
-            // wx.previewImage({
-            //     current: path, // 当前显示图片的http链接
-            //     urls: [path], // 需要预览的图片http链接列表
-            // });
-            console.log(path);
             wx.saveImageToPhotosAlbum({
-            success(res) { }
-            })
-            wx.saveVideoToPhotosAlbum({
                 filePath: path,
                 success (res) {
                     console.log(res);
+                    alert('成功保存图片到相册');
                 },
-
             });
         },
     };
@@ -122,7 +112,7 @@ export default class choseImageStyle extends wepy.page {
         const that = this;
         wx.showLoading({
             title: '图片生成中',
-        })
+        });
         const { layers } = this.firstStyle;
         this.firstStyle.background = {
             imageResource: that.tmpLogo,
