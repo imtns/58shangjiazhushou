@@ -21,7 +21,7 @@
                         placeholder-class="placeholder" placeholder="请输入"/>
                 </view>
                 <view class="form-item">
-                    <view class="label">企业姓名</view>
+                    <view class="label">企业名称</view>
                     <input class="input" name="enterpriseName" type="text" maxlength="50"
                         placeholder-class="placeholder" placeholder="请输入"/>
                 </view>
