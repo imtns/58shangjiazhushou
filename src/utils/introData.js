@@ -90,3 +90,112 @@ export const myCardItems = [{
     type: 'innerJump',
     path: 'noticeSet',
 }];
+
+export const firstStyle = {
+    width: 530,
+    height: 940,
+    background: {
+        imageResource: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/card_style_bg.png',
+        dx: 0,
+        dy: 0,
+        dWidth: 530,
+        dHeight: 940,
+    },
+    layers: [
+        {
+            type: 'image', // 手机号icon
+            imageResource: '/images/chosestyle_phone.png',
+            dx: 67,
+            dy: 508,
+            dWidth: 15,
+            dHeight: 24,
+        },
+        {
+            type: 'text', // 手机号text
+            textBaseline: 'top',
+            textAlign: 'left',
+            fontSize: 24,
+            text: '手机号',
+            x: 100,
+            y: 507,
+            color: '#999',
+            lineHeight: '24',
+            maxWidth: '460',
+        },
+        {
+            type: 'image', // 微信号icon
+            imageResource: '/images/chosestyle_wechat.png',
+            dx: 67,
+            dy: 565,
+            dWidth: 22,
+            dHeight: 18,
+        },
+        {
+            type: 'text', // 微信号text
+            textBaseline: 'top',
+            textAlign: 'left',
+            fontSize: 24,
+            text: '微信号',
+            x: 100,
+            y: 565,
+            color: '#999',
+            lineHeight: '18',
+            maxWidth: '460',
+        },
+        {
+            type: 'image', // 联系地址icon
+            imageResource: '/images/chosestyle_location.png',
+            dx: 67,
+            dy: 618,
+            dWidth: 18,
+            dHeight: 22,
+        },
+        {
+            type: 'text', // 联系地址text
+            textBaseline: 'top',
+            textAlign: 'left',
+            fontSize: 24,
+            text: '联系地址',
+            x: 100,
+            y: 618,
+            color: '#999',
+            lineHeight: '22',
+            maxWidth: '460',
+        },
+        {
+            type: 'text', // 长按识别二维码text
+            textBaseline: 'top',
+            textAlign: 'left',
+            fontSize: 24,
+            text: '长按识别二维码',
+            x: 270,
+            y: 750,
+            color: '#666',
+            maxWidth: '460',
+        },
+        {
+            type: 'text', // 查看我的更多信息text
+            textBaseline: 'top',
+            textAlign: 'left',
+            fontSize: 24,
+            text: '查看我的更多信息',
+            x: 260,
+            y: 785,
+            color: '#666',
+            maxWidth: '460',
+        },
+    ],
+};
+
+export const secondStyle = {
+    width: 530,
+    height: 940,
+    background: {
+        imageResource: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/card_style_bg.png',
+        dx: 0,
+        dy: 0,
+        dWidth: 560,
+        dHeight: 740,
+    },
+    layers: [],
+};

@@ -58,7 +58,6 @@
                 </navigator>
             </view>
         </view>
-        <official-account></official-account>
         <view class="index-block"  wx:for="{{nItems}}" wx:for-item="nItem"  wx:key="{{nItem.title}}">
             <view class="index-block-title">{{nItem.title}}</view>
             <view wx:if="{{userLogin}}" class="index-block-body">
@@ -770,6 +769,7 @@ export default class Home extends wepy.page {
             } = data;
             const formatedMpinfo = this.formatedMp(mpinfo);
             globalData.mpType = mpinfo.app_type;
+            globalData.userLogin = true;
             this.business = Object.assign({}, this.business, {
                 name: username,
                 miniProgramName: mpinfo.nickName || '您还没购买小程序',
@@ -805,7 +805,7 @@ export default class Home extends wepy.page {
             globalData.userLogin = false;
             this.userLogin = false;
             this.editDialog = {
-                tip: '您还未登录，登录后使用更多功能',
+                tip: '您还未登录，登录后能使用更多功能',
                 action: 'tologin',
                 leftButton: '再想想',
                 rightButton: '去登录',
