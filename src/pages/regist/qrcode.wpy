@@ -84,6 +84,7 @@ export default class Index extends wepy.page {
                 await wepy.saveImageToPhotosAlbum({
                     filePath,
                 });
+                toast('保存成功');
             } catch (err) {
                 console.log(err);
                 if (err && err.errMsg === 'saveImageToPhotosAlbum:fail:auth denied') {
