@@ -111,7 +111,9 @@ export default class myBizCard extends wepy.page {
         },
     };
     onLoad () {
-        console.log('onload');
+        /**
+         * @author zhouwunan
+         */
         get(CHECK_IS_SALESMAN)
             .then(res => {
                 if (res) {
