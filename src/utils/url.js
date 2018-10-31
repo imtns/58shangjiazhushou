@@ -74,3 +74,4 @@ export const SAVE_BASICINFO = '/register/basicInfo/insert'; // 填写法人基�
 export const SAVE_MPINFO = '/register/mpInfo/insert'; // 创建小程序
 export const REGIST_PRE_CHECK = '/register/preCheck'; // 创建小程序，前置检查
 export const REGIST_INDUSTRY_CATE = '/register/cates'; // 创建小程序，所属行业（需与腾讯提供的行业匹配）
+export const CHECK_IS_SALESMAN = '/register/isSalesman'; // 判断是否为销售人员（非销售人员不展示注册二维码入口）

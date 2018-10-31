@@ -89,4 +89,5 @@ export const myCardItems = [{
     name: '注册码',
     type: 'innerJump',
     path: '/pages/regist/qrcode',
+    id: 'regist_qrcode',
 }];
