@@ -893,12 +893,12 @@ export default class Home extends wepy.page {
                     } = this.registPrecheck;
 
                     if (currentAuditStatus === 0 && vip) {
-                        wepy.redirectTo({ url: '/pages/regist/index' });
+                        wepy.navigateTo({ url: '/pages/regist/index' });
                         return;
                     }
 
                     if (alreadyAuth && !createMp) {
-                        wepy.redirectTo({ url: '/pages/regist/notice' });
+                        wepy.navigateTo({ url: '/pages/regist/notice' });
                         return;
                     }
 

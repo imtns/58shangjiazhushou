@@ -30,7 +30,7 @@
                     <input class="input" name="enterpriseCode" type="text" maxlength="20"
                         placeholder-class="placeholder" placeholder="请输入"/>
                 </view>
-                <button class="btn-save" form-type="submit">保存</button>
+                <button class="btn-save" form-type="submit">下一步</button>
             </view>
         </form>
         <helpModal
@@ -120,7 +120,7 @@ export default class Index extends wepy.page {
 
                 await post(SAVE_BASICINFO, data);
 
-                wepy.navigateTo({ url: '/pages/regist/guide' });
+                wepy.redirectTo({ url: '/pages/regist/guide' });
             } catch (err) {
                 this.showModal(typeof err === 'string' ? err : err.msg, {
                     confirmText: '重新填写',

@@ -184,7 +184,7 @@ export default class Index extends wepy.page {
                 await post(SAVE_MPINFO, postData);
 
                 await toast('创建成功！');
-                wepy.navigateTo({ url: '/pages/home' });
+                wepy.switchTab({ url: '/pages/home' });
             } catch (err) {
                 this.showModal(err);
                 console.log(err);
