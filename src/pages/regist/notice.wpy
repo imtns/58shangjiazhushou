@@ -41,7 +41,7 @@ export default class Index extends wepy.page {
               button: '去创建',
           },
           3: {
-              title: '注册资料审核中',
+              title: '认证资料审核中',
               tip: '',
               button: '',
           },
@@ -61,21 +61,25 @@ export default class Index extends wepy.page {
   async onShow() {
       try {
           const { data } = await get('/register/preCheck');
-          let state = data.currentAuditStatus;
-          if (state === 1) {
-              this.currentState = 3;
-          } else if (state === 2) {
+          const { vip, currentAuditStatus } = data;
+          let currentState = null;
+
+          if (currentAuditStatus === 1) {
+              currentState = 3;
+          } else if (vip && currentAuditStatus === 2) {
               const pages = this.getCurrentPages();
               const page = pages[pages.length - 1].route;
+
               if (page === 'pages/regist/index') {
-                  state = 1;
+                  currentState = 1;
               } else {
-                  state = 2;
+                  currentState = 2;
               }
-              this.currentState = state;
           } else {
-              this.currentState = state;
+              currentState = 0;
           }
+
+          this.currentState = currentState;
           this.$apply();
       } catch (e) {
           console.log(e);
