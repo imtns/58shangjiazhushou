@@ -90,7 +90,7 @@ export const myCardItems = [{
     type: 'innerJump',
     path: 'noticeSet',
 }];
-
+// canvas图片分享到朋友圈默认数据
 export const firstStyle = {
     width: 530,
     height: 940,

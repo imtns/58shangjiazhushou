@@ -11,7 +11,7 @@
                 </swiper-item>
             </block>
         </swiper>
-        <button class="saveCard" bindtap="download">保存</button>
+        <button class="saveCard" bindtap="saveImgToPhotosAlbum">保存</button>
     </view>
 </template>
 
@@ -50,48 +50,46 @@ export default class choseImageStyle extends wepy.page {
             previousMargin: 0,
             nextMargin: 0,
         },
+        drawStyle: '#drawStyle0',
         firstStyle,
         secondStyle,
     }
     methods = {
-        selectStyle(e) {
-            const { style } = e.currentTarget.dataset;
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_visitorLogs_selectStyle_${style}`);
-            this.style = style;
-            this.selected1 = false;
-            this.selected2 = false;
-            this[`selected${style}`] = true;
-        },
         onSlideChangeEnd(e) {
             const { current } = e.detail;
             if (current && current === 1) {
                 this.showFirstStyle = false;
                 this.showSecondStyle = true;
                 this.style = 1;
+                this.drawStyle = '#drawStyle1',
                 this.$apply();
-                console.log('======');
             }
             if (current === 0) {
-                console.log('-------');
                 this.showFirstStyle = true;
                 this.showSecondStyle = false;
                 this.style = 0;
+                this.drawStyle = '#drawStyle0',
                 this.$apply();
             }
-            console.log(current);
         },
-        async download() {
-            const path = await this.$wxpage.selectComponent(`#drawStyle${this.style}`).toTempFilePath();
+        // 下载名片
+        async saveImgToPhotosAlbum() {
+            console.log(this.drawStyle);
+            const path = await this.$wxpage.selectComponent(this.drawStyle).toTempFilePath();
+            // wx.previewImage({
+            //     current: path, // 当前显示图片的http链接
+            //     urls: [path], // 需要预览的图片http链接列表
+            // });
             console.log(path);
-            wx.previewImage({
-                current: path, // 当前显示图片的http链接
-                urls: [path], // 需要预览的图片http链接列表
-            });
+            wx.saveImageToPhotosAlbum({
+            success(res) { }
+            })
             wx.saveVideoToPhotosAlbum({
                 filePath: path,
                 success (res) {
                     console.log(res);
                 },
+
             });
         },
     };
@@ -122,6 +120,9 @@ export default class choseImageStyle extends wepy.page {
     }
     async drawimageStyle1() {
         const that = this;
+        wx.showLoading({
+            title: '图片生成中',
+        })
         const { layers } = this.firstStyle;
         this.firstStyle.background = {
             imageResource: that.tmpLogo,
@@ -217,7 +218,7 @@ export default class choseImageStyle extends wepy.page {
                 x: 470,
                 y: 565,
                 color: '#333',
-                lineHeight: '18',
+                lineHeight: '32',
                 maxWidth: '260',
             },
             {
@@ -242,6 +243,7 @@ export default class choseImageStyle extends wepy.page {
             },
         ].concat(layers);
         this.showCanvas = true;
+        wx.hideLoading();
         that.$apply();
     }
     async drawimageStyle2() {
@@ -393,13 +395,7 @@ export default class choseImageStyle extends wepy.page {
 </script>
 
 <style lang="scss">
-.scroll_view{
-    /* overflow: hidden;
-    white-space:nowrap; */
-    height: 1100rpx;
-}
 .swiper-contain{
-    height: 100%;
     height: 1100rpx;
 }
 #drawStyle0{
@@ -410,7 +406,7 @@ export default class choseImageStyle extends wepy.page {
 #drawStyle1{
     position: absolute;
     left: 95rpx;
-    top:100rpx;
+    top:150rpx;
 }
 .choseStyle{
     background: rgba(0, 0, 0, .7);
