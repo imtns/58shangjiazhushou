@@ -221,7 +221,7 @@ export default class Index extends wepy.page {
         });
         this.contentList[colIdx][conIdx].checked = true;
         if (colIdx !== 1) {
-            this.contentList[colIdx + 1] = registCates[colIdx].children;
+            this.contentList[colIdx + 1] = registCates[conIdx].children;
         }
         Object.assign(this.result, this.contentList[colIdx][conIdx]);
     }
