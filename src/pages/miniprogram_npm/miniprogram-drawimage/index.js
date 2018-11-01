@@ -1,9 +1,11 @@
+const {
+    windowWidth,
+    pixelRatio,
+} = wx.getSystemInfoSync();
+
 const px = (n) => {
     if (typeof n === 'undefined') return void 0;
     if (!n) return 0;
-    const {
-        windowWidth
-    } = wx.getSystemInfoSync();
     return parseInt(n, 10) / 750 * windowWidth;
 }
 
@@ -91,6 +93,30 @@ const formatText = (ctx, text, pxMW, pxLH) => {
     return {textArr, textWidth, textHeight};
 }
 
+function drawed() {
+    const {
+        width,
+        height,
+        imageUrl,
+    } = this.data;
+    if (imageUrl) return;
+
+    const self = this;
+    const destWidth = px(width) * pixelRatio;
+    const destHeight = px(height) * pixelRatio;
+    wx.canvasToTempFilePath({
+        destWidth,
+        destHeight,
+        canvasId: 'draw-canvas',
+        success(res) {
+            self.setData({
+                imageUrl: res.tempFilePath,
+            });
+            self.triggerEvent('toTempFile', res);
+        }
+    }, this);
+}
+
 Component({
     properties: {
         width: {
@@ -112,18 +138,18 @@ Component({
     },
 
     data: {
-        drawing: true,
+        imageUrl: null,
     },
 
     attached() {
-        const ctx = wx.createCanvasContext('draw-canvas', this);
-
         const {
             background,
             layers,
             width,
-            height
+            height,
         } = this.data;
+
+        const ctx = wx.createCanvasContext('draw-canvas', this);
 
         // 背景图片
         if (background) {
@@ -264,34 +290,12 @@ Component({
             }
         });
 
-        ctx.draw(false);
+        ctx.draw(false, () => {
+            drawed.call(this);
+        });
+
         setTimeout(() => {
-            this.setData({
-                drawing: false,
-            });
-        }, 300);
-    },
-
-    methods: {
-        toTempFilePath({
-            destWidth,
-            destHeight,
-        } = {}) {
-            return new Promise((resolve) => {
-                const {
-                    width,
-                    height,
-                } = this.data;
-
-                wx.canvasToTempFilePath({
-                    destWidth: destWidth || width,
-                    destHeight: destHeight || height,
-                    canvasId: 'draw-canvas',
-                    success(res) {
-                        resolve(res.tempFilePath)
-                    }
-                }, this);
-            });
-        },
+            drawed.call(this);
+        }, 3000);
     }
 });

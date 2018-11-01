@@ -124,7 +124,9 @@ export default class SysNoticeList extends wepy.page {
             if (state === 100) {
                 sleep();
                 this.sysList = [];
-                this.loadList();
+                wx.redirectTo({
+                    url: 'sysNoticeList',
+                });
             }
         } catch (e) {
             console.log(e);

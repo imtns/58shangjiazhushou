@@ -4,7 +4,7 @@
             class="chat-zone"
             id="chat-zone"
             scroll-y="{{true}}"
-            upper-threshold="300"
+            upper-threshold="500"
             @scrolltoupper="loadMore"
             scroll-with-animation="{{true}}"
             scroll-into-view="{{toView}}">
@@ -48,7 +48,7 @@
             <view class="chat-show-upload" @tap="showpanel" wx:if="{{!showpanel}}"></view>
             <view class="chat-show-upload close-upload" @tap="closepanel" wx:else></view>
             
-            <view class="chat-send-msg {{canIsend ? 'sended' : ''}}" @tap="sendMsg" data-type="TEXT">发送</view>
+            <!-- <view class="chat-send-msg {{canIsend ? 'sended' : ''}}" @tap="sendMsg" data-type="TEXT">发送</view> -->
         </view>
         <view class="chat-input-panel" wx:if="{{showpanel}}">
             <view class="chat-btn" @tap="upload" data-type="camera">
@@ -241,6 +241,7 @@ export default class Chat extends wepy.page {
                 this.$apply();
             }
             this.toView = `toview-${this.msgList.length - 1}`;
+            console.log(this.toView);
             await post(SEND_MSG, msg);
             newMsg.status = 2; // 发送成功
             this.$apply();
@@ -372,6 +373,7 @@ page{
     display:flex;
     flex-direction:column;
     .chat-zone{
+        min-height: calc(100vh - 6000rpx);
         height: calc(100vh - 100rpx);
         overflow-y:scroll;
         background:#f2f2f2;
@@ -467,10 +469,11 @@ page{
         min-height:100rpx;
         background:#ffffff;
         padding:18rpx 30rpx;
+        position: relative;
         .chat-input-view{
             background: #F2F2F2;
             border-radius: 4px;
-            width:488rpx;
+            width:616rpx;
             min-height:64rpx;
             max-height:320rpx;
             line-height:64rpx;
@@ -486,11 +489,12 @@ page{
             letter-spacing: 0;
         }
         .chat-show-upload{
-            margin:8rpx 30rpx 0;
-            float:left;
             width:48rpx;
             height:48rpx;
             border-radius:50%;
+            position: absolute;
+            right: 30rpx;
+            top:26rpx;
             background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/chat-msg-upload.png);
             background-size:48rpx;
             &.close-upload{

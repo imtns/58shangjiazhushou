@@ -1,10 +1,10 @@
 <template>
     <scroll-view class="home" scroll-y style="height:100vh">
-        <view class="follow-public" wx:if="{{!isFollow}}">
+        <!-- <view class="follow-public" wx:if="{{!isFollow}}">
             <text>关注公众号接收通知</text>
             <navigator class="follow-action" wx:if="{{assistAuth}}" @tap="toFollow">马上关注</navigator>
             <button class="follow-action" wx:elif="{{!assistAuth}}" open-type="getUserInfo" @tap="loadSession">马上关注</button>
-        </view>
+        </view> -->
         <view class="add-myapp" wx:if="{{showTip}}" @tap="showAddStep">
             <view class="triangle"></view>
             点击【添加到我的小程序】，快捷访问接单 >

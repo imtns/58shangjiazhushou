@@ -4,10 +4,10 @@
         autoplay="{{swiper.autoplay}}" interval="{{swiper.interval}}" duration="{{swiper.duration}}" bindchange="onSlideChangeEnd">
             <block wx:if="{{showCanvas}}">
                 <swiper-item>
-                    <drawimage id="drawStyle0" wx:if="{{showFirstStyle}}" width="530" height="940" background="{{firstStyle.background}}" layers="{{firstStyle.layers}}" />
+                    <drawimage bind:toTempFile="toTempFile1" id="drawStyle1" width="530" height="940" background="{{firstStyle.background}}" layers="{{firstStyle.layers}}" />
                 </swiper-item>
                 <swiper-item>
-                    <drawimage id="drawStyle1" wx:if="{{showSecondStyle}}" data-style="2" width="560" height="740" background="{{secondStyle.background}}" layers="{{secondStyle.layers}}" />
+                    <drawimage bind:toTempFile="toTempFile2" id="drawStyle2" width="560" height="740" background="{{secondStyle.background}}" layers="{{secondStyle.layers}}" />
                 </swiper-item>
             </block>
         </swiper>
@@ -36,20 +36,15 @@ export default class choseImageStyle extends wepy.page {
         mycardCode: '',
         showCanvas: false,
         serviceTagArr: [], // 服务标签数组
-        showFirstStyle: true,
-        showSecondStyle: false,
-        style: 0,
+        styleImage1: '',
+        styleImage2: '',
+        style: 1,
         swiper: {
             indicatorDots: true,
-            vertical: true,
             autoplay: false,
-            circular: false,
             interval: 2000,
             duration: 500,
-            previousMargin: 0,
-            nextMargin: 0,
         },
-        drawStyle: '#drawStyle0',
         firstStyle,
         secondStyle,
     }
@@ -57,23 +52,22 @@ export default class choseImageStyle extends wepy.page {
         onSlideChangeEnd(e) {
             const { current } = e.detail;
             if (current && current === 1) {
-                this.showFirstStyle = false;
-                this.showSecondStyle = true;
-                this.style = 1;
-                this.drawStyle = '#drawStyle1';
+                this.style = 2;
                 this.$apply();
             }
             if (current === 0) {
-                this.showFirstStyle = true;
-                this.showSecondStyle = false;
-                this.style = 0;
-                this.drawStyle = '#drawStyle0';
+                this.style = 1;
                 this.$apply();
             }
         },
         // 下载名片
         async saveImgToPhotosAlbum() {
-            const path = await this.$wxpage.selectComponent(this.drawStyle).toTempFilePath();
+            let path = '';
+            if (this.style === 1) {
+                path = this.styleImage1;
+            } else if (this.style === 2) {
+                path = this.styleImage2;
+            };
             wx.saveImageToPhotosAlbum({
                 filePath: path,
                 success (res) {
@@ -81,6 +75,20 @@ export default class choseImageStyle extends wepy.page {
                     alert('成功保存图片到相册');
                 },
             });
+        },
+        toTempFile1(res) {
+            const { tempFilePath } = res.detail;
+            this.styleImage1 = tempFilePath;
+            this.$apply();
+            console.log(res.detail.tempFilePath);
+            console.log('======');
+        },
+        toTempFile2(res) {
+            const { tempFilePath } = res.detail;
+            this.styleImage2 = tempFilePath;
+            console.log(tempFilePath);
+            console.log('--------');
+            this.$apply();
         },
     };
     async onLoad () {
@@ -232,7 +240,6 @@ export default class choseImageStyle extends wepy.page {
                 dHeight: 140,
             },
         ].concat(layers);
-        this.showCanvas = true;
         wx.hideLoading();
         that.$apply();
     }
@@ -301,6 +308,7 @@ export default class choseImageStyle extends wepy.page {
                 maxWidth: '460',
             },
         ].concat(layers);
+        this.showCanvas = true;
         that.$apply();
     }
     async drawTags() {
@@ -386,14 +394,17 @@ export default class choseImageStyle extends wepy.page {
 
 <style lang="scss">
 .swiper-contain{
+    width: 100%;
     height: 1100rpx;
 }
-#drawStyle0{
+#drawStyle1{
+    width: 530rpx;
+    height: 940rpx;
     position: absolute;
     left: 110rpx;
     top:50rpx;
 }
-#drawStyle1{
+#drawStyle2{
     position: absolute;
     left: 95rpx;
     top:150rpx;
