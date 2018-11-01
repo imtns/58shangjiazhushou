@@ -46,7 +46,7 @@
             <view class="option-item cancel" @tap="cancel">取消</view>
             <view class="option-item crop" @tap="getImageInfo">裁剪</view>
         </view>
-  </view>
+    </view>
 </template>
 
 <script>
@@ -166,10 +166,11 @@ export default class Cropper extends wepy.page {
             globalService.set('afterCrop', true);
             wepy.navigateBack();
         },
-        async 'crop-loadImage'(imageSrc, ratio = '1,1', first = false) {
+        async 'crop-loadImage'(iSrc, ratio = '1,1', first = false) {
             try {
                 const { qualityWidth } = this;
                 let { innerAspectRadio } = this;
+                let imageSrc = iSrc;
                 let cutRatio = null;
 
                 wx.showLoading({
@@ -190,9 +191,8 @@ export default class Cropper extends wepy.page {
                     // 保存原始数据
                     originSrc = imageSrc;
                 }
-
                 const res = await wepy.getImageInfo({ src: imageSrc });
-                innerAspectRadio = res.width / res.height;
+                innerAspectRadio = getFixedNum(res.width / res.height);
 
                 // 用于canvas2
                 const canvasWidth = Math.max(qualityWidth, qualityWidth / innerAspectRadio);
@@ -214,10 +214,12 @@ export default class Cropper extends wepy.page {
                 if (innerAspectRadio >= 1) {
                     const cropperW = windowWRPX;
                     const cropperH = cropperW / innerAspectRadio;
+                    const cropperL = 0;
+                    const cropperT = Math.ceil((windowHeight - cropperH) / 2) - 88;
                     this.cropperW = cropperW;
                     this.cropperH = cropperH;
-                    this.cropperL = 0;
-                    this.cropperT = Math.ceil((windowHeight - cropperH) / 2) - 88;
+                    this.cropperL = cropperL;
+                    this.cropperT = cropperT;
                     // 裁剪框宽高
                     // 宽>高，高度填满，宽度根据高度，按照裁剪比例来
                     // 还需要排除过长过宽的情况
@@ -239,17 +241,18 @@ export default class Cropper extends wepy.page {
 
 
                     // (图片宽度 - 裁剪框宽度) / 2
-                    this.cutL = Math.ceil((cropperW - cutW) / 2);
-                    this.cutT = Math.ceil((cropperH - cutH) / 2);
+                    this.cutL = Math.ceil((cropperW - cutW) / 2) + cropperL;
+                    this.cutT = Math.ceil((cropperH - cutH) / 2) + cropperT;
 
                     // 目前没用
-                    this.scaleP = (res.width * pixelRatio) / windowWRPX;
+                    this.scaleP = getFixedNum((res.width * pixelRatio) / windowWRPX);
                     this.imageW = res.width * pixelRatio;
                     this.imageH = res.height * pixelRatio;
                     // ============
 
                     // 用于canvas2
-                    const drawT = (canvasWidth - (qualityWidth / innerAspectRadio)) / 2;
+                    const drawT = getFixedNum((canvasWidth -
+                        (qualityWidth / innerAspectRadio)) / 2);
                     this.drawT = drawT;
                     this.drawL = 0;
 
@@ -257,11 +260,13 @@ export default class Cropper extends wepy.page {
                 } else {
                     const cropperH = windowWRPX;
                     const cropperW = cropperH * innerAspectRadio;
+                    const cropperL = Math.ceil((windowWRPX - cropperW) / 2);
+                    const cropperT = Math.ceil((windowHeight - cropperH) / 2) - 88;
                     this.cropperW = cropperW;
                     this.cropperH = cropperH;
-                    this.cropperL = Math.ceil((windowWRPX - cropperW) / 2);
+                    this.cropperL = cropperL;
                     // 图片区域top值，(屏幕高度 - 图片高度) / 2
-                    this.cropperT = Math.ceil((windowHeight - cropperH) / 2) - 88;
+                    this.cropperT = cropperT;
                     // 裁剪框宽高
                     // 宽<高，宽度填满，高度根据高度，按照裁剪比例来
                     let cutW = cropperW * cutCoefficient;
@@ -276,18 +281,18 @@ export default class Cropper extends wepy.page {
                     this.cutW = cutW;
                     this.cutH = cutH;
 
-                    this.cutL = Math.ceil((cropperW - cutW) / 2);
+                    this.cutL = Math.ceil((cropperW - cutW) / 2) + cropperL;
                     // (图片高度 - 裁剪框高度) / 2
-                    this.cutT = Math.ceil((cropperH - cutH) / 2);
+                    this.cutT = Math.ceil((cropperH - cutH) / 2) + cropperT;
 
                     // 目前没用
-                    this.scaleP = (res.width * pixelRatio) / windowWRPX;
+                    this.scaleP = getFixedNum((res.width * pixelRatio) / windowWRPX);
                     this.imageW = res.width * pixelRatio;
                     this.imageH = res.height * pixelRatio;
                     // ===================
 
                     // 用于canvas2
-                    const drawL = (canvasWidth - qualityWidth) / 2;
+                    const drawL = getFixedNum((canvasWidth - qualityWidth) / 2);
                     this.drawL = drawL;
                     this.drawT = 0;
                 }
@@ -554,9 +559,6 @@ export default class Cropper extends wepy.page {
                         if (rotateCount % 4 === 0) {
                             url = originSrc;
                         }
-                        wx.previewImage({
-                            urls: [url],
-                        });
                         that.$emit('crop-loadImage', url, that.ratio, false);
                     },
                 });

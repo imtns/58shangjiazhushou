@@ -791,6 +791,7 @@ export default class Home extends wepy.page {
                 mpid: wepy.getStorageSync('current_mpid') || '',
             };
             const { data } = await post('/mplogic/index', subData);
+            globalData.userLogin = true;
             const {
                 username = '',
                 mpinfo = {},
@@ -804,7 +805,6 @@ export default class Home extends wepy.page {
             } = data;
             const formatedMpinfo = this.formatedMp(mpinfo);
             globalData.mpType = mpinfo.app_type;
-            globalData.userLogin = true;
             this.business = Object.assign({}, this.business, {
                 name: username,
                 miniProgramName: mpinfo.nickName || '您还没购买小程序',
