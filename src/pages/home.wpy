@@ -38,7 +38,7 @@
                     <text class="login-tip">您还没有登录，授权登录后可管理小程序赚大钱</text>
                     <navigator wx:if="{{editDialog.action=='tologin'}}" class="login-btn" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release" hover-class="none">立即登录</navigator>
                 </view>
-                <view class="index-block-body index-item">
+                <view wx:if="{{userLogin}}" class="index-block-body index-item">
                     <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
                         <image src="{{item.iconPath}}" class="item-img"></image>
                         <view class="item-text">{{item.text}}</view>
