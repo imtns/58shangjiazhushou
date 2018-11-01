@@ -1,9 +1,17 @@
 <template>
     <view class="wx-content-info" wx:if="{{ imageSrc }}">
         <view wx:if="{{ isShowImg }}" class="wx-corpper" style="width:{{cropperInitW}}rpx;height:{{cropperInitH}}rpx;">
-            <view class="wx-corpper-content" style="width:{{cropperW}}rpx;height:{{cropperH}}rpx;left:{{cropperL}}rpx;top:{{cropperT}}rpx">
-                <image src="{{ imageSrc }}" style="width:{{cropperW}}rpx;height:{{cropperH}}rpx"></image>
-                <view class="wx-corpper-crop-box" bindtouchstart="contentStartMove" bindtouchmove="contentMoveing" style="width:{{cutW}}rpx;height:{{cutH}}rpx;left:{{cutL}}rpx;top:{{cutT}}rpx">
+            <view
+                class="wx-corpper-content"
+                style="width:{{cropperW}}rpx;height:{{cropperH}}rpx;left:{{cropperL}}rpx;top:{{cropperT}}rpx">
+                <image
+                    src="{{ imageSrc }}"
+                    style="width:{{cropperW}}rpx;height:{{cropperH}}rpx;"></image>
+                <view
+                    class="wx-corpper-crop-box"
+                    bindtouchstart="contentStartMove"
+                    bindtouchmove="contentMoving"
+                    style="width:{{cutW}}rpx;height:{{cutH}}rpx;left:{{cutL}}rpx;top:{{cutT}}rpx;">
                     <view class="wx-cropper-view-box">
                         <block wx:if="{{ !ratio }}">
                             <view class="wx-cropper-dashed-h"></view>
@@ -25,7 +33,9 @@
                         <view class="wx-cropper-corner-point point-rb" data-drag="rightBottom" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
                     </view>
                 </view>
-                <view class="crop-mask" style="border-top-width:{{cutT}}rpx;border-right-width:{{cropperW-cutL-cutW}}rpx;border-bottom-width:{{cropperH-cutT-cutH}}rpx;border-left-width:{{cutL}}rpx;"></view>
+                <view
+                    class="crop-mask"
+                    style="border-top-width:{{cutT - cropperT}}rpx;border-right-width:{{(cropperL + cropperW) - (cutL + cutW)}}rpx;border-bottom-width:{{(cropperT + cropperH) - (cutT + cutH)}}rpx;border-left-width:{{cutL - cropperL}}rpx;"></view>
             </view>
         </view>
         <canvas canvas-id="myCanvas" style="position:absolute;border: 1px solid red; width:{{qualityWidth}}px;height:{{qualityWidth / innerAspectRadio}}px;top:900rpx;left:-9999px"></canvas>
@@ -104,6 +114,8 @@ let originSrc = '';
 
 let rotateCount = 0; // 旋转次数
 
+const getFixedNum = (num, digit = 4) => Math.ceil(num * (10 ** digit)) / (10 ** digit);
+
 export default class Cropper extends wepy.page {
     config = {
         navigationBarTitleText: '图片裁剪',
@@ -141,7 +153,7 @@ export default class Cropper extends wepy.page {
         drawL: 0,
     }
 
-    onLoad({ url, ratio, onlineImage }) {
+    onLoad({ url, ratio, onlineImage = 'true' }) {
         ctx = wx.createCanvasContext('myCanvas');
         this.onlineImage = onlineImage === 'true';
         this.$emit('crop-loadImage', decodeURIComponent(url), ratio, true);
@@ -316,15 +328,33 @@ export default class Cropper extends wepy.page {
         },
 
         // 拖动时候触发的touchMove事件
-        contentMoveing(e) {
-            const dragLengthX = (pageX - e.touches[0].pageX) * dragScaleP;
-            const dragLengthY = (pageY - e.touches[0].pageY) * dragScaleP;
-            const minX = Math.max(this.cutL - dragLengthX, 0);
-            const minY = Math.max(this.cutT - dragLengthY, 0);
-            const maxX = this.cropperW - this.cutW;
-            const maxY = this.cropperH - this.cutH;
-            this.cutL = Math.min(maxX, minX);
-            this.cutT = Math.min(maxY, minY);
+        contentMoving(e) {
+            // const dragLengthX = (pageX - e.touches[0].pageX) * dragScaleP;
+            // const dragLengthY = (pageY - e.touches[0].pageY) * dragScaleP;
+            // 计算裁剪框的坐标
+            // 不让x小于0，即不然裁剪框跑出屏幕
+            // const minX = Math.max(this.cutL - dragLengthX, 0);
+            // const minY = Math.max(this.cutT - dragLengthY, 0);
+            // const maxX = this.cropperW - this.cutW;
+            // const maxY = this.cropperH - this.cutH;
+            // this.cutL = Math.min(maxX, minX);
+            // this.cutT = Math.min(maxY, minY);
+
+            const deltaX = (e.touches[0].pageX - pageX) * dragScaleP;
+            const deltaY = (e.touches[0].pageY - pageY) * dragScaleP;
+            // 移动不能脱离裁剪框
+            const minX = Math.max(
+                getFixedNum(this.cropperL + deltaX),
+                getFixedNum((this.cutL + this.cutW) - this.cropperW),
+            );
+            const minY = Math.max(
+                getFixedNum(this.cropperT + deltaY),
+                getFixedNum((this.cutT + this.cutH) - this.cropperH),
+            );
+            const maxX = this.cutL;
+            const maxY = this.cutT;
+            this.cropperL = Math.min(maxX, minX);
+            this.cropperT = Math.min(maxY, minY);
             this.$apply();
             // console.log(`${maxX} ----- ${minX}`);
             [{ pageX, pageY }] = e.touches;
@@ -353,8 +383,7 @@ export default class Cropper extends wepy.page {
             let dragLength;
             switch (dragType) {
                 case 'right':
-                    dragLength =
-                        (sizeConfPageX - e.touches[0].pageX) * dragScaleP;
+                    dragLength = (sizeConfPageX - e.touches[0].pageX) * dragScaleP;
                     if (initDragCutW >= dragLength) {
                         // 如果 移动小于0 说明是在往下啦  放大裁剪的高度  这样一来 图片的高度  最大 等于 图片的top值加 当前图片的高度  否则就说明超出界限
                         if (
@@ -545,10 +574,11 @@ export default class Cropper extends wepy.page {
             ctx.draw(false, () => {
                 // 获取画布要裁剪的位置和宽度   均为百分比 * 画布中图片的宽度    保证了在微信小程序中裁剪的图片模糊
                 // 位置不对的问题 canvasT = (that.cutT / that.cropperH) * (that.imageH / pixelRatio)
-                const canvasW = (that.cutW / that.cropperW) * qualityWidth;
-                const canvasH = ((that.cutH / that.cropperH) * qualityWidth) / innerAspectRadio;
-                const canvasL = (that.cutL / that.cropperW) * qualityWidth;
-                const canvasT = ((that.cutT / that.cropperH) * qualityWidth) / innerAspectRadio;
+                const canvasW = that.cutW * (qualityWidth / that.cropperW);
+                const canvasH = (that.cutH * (qualityWidth / that.cropperH)) / innerAspectRadio;
+                const canvasL = (that.cutL - that.cropperL) * (qualityWidth / that.cropperW);
+                const canvasT = ((that.cutT - that.cropperT) *
+                    (qualityWidth / that.cropperH)) / innerAspectRadio;
                 // console.log(`canvasW:${canvasW} --- canvasH: ${canvasH} --- canvasL:
                 // ${canvasL} --- canvasT: ${canvasT} -------- that.imageW: ${
                 //     that.imageW
@@ -647,7 +677,7 @@ export default class Cropper extends wepy.page {
 
 /* 内部的信息 */
 .wx-corpper-crop-box {
-    position: absolute;
+    position: fixed;
     width: 500rpx;
     height: 500rpx;
     z-index: 2;

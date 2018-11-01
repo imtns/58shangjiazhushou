@@ -118,6 +118,7 @@ export default class extends wepy.app {
             'pages/articleComponentGroup', // 文章分组页面
             'pages/newBizCard', // 新建名片页面
             'pages/choseStyle', // 名片样式选择
+            'pages/choseImageStyle', // 名片保存图片样式选择
             'pages/activityIntro', // 分享名片赢大奖活动说明页
             'pages/activityRedirect', // 分享名片赢大奖活动说明页
             'pages/orderWebpage', // 订单列表赚钱秘籍m页
@@ -198,6 +199,7 @@ export default class extends wepy.app {
         } = options;
         const { appId } = referrerInfo;
         const fromAppId = appId;
+        // 获取进入小程序场景值，埋点所用
         Object.assign(globalData, {
             appScene: scene,
         });

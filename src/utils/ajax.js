@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 import wepy from 'wepy';
-import { toast } from '../utils';
+// import { toast } from '../utils';
 
 const host = 'https://yaofa.58.com';
 
@@ -49,12 +49,12 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
                 // callback && callback(null, response.data);
             } else if (state == -10001) {
                 console.log(url);
-                toast(msg);
-                setTimeout(() => {
-                    wepy.reLaunch({
-                        url: '/pages/intro',
-                    });
-                }, 1000);
+                // toast(msg);
+                // setTimeout(() => {
+                //     wepy.reLaunch({
+                //         url: '../pages/home',
+                //     });
+                // }, 1000);
                 reject(msg);
                 // callback && callback(null, response.data);
             } else {

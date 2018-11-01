@@ -7,6 +7,7 @@ export const globalData = {
     userInfo: null,
     scene: 1001,
     mpType: 1,
+    userLogin: true,
     encryptedData: null,
     information: {},
     extConfig: {},
@@ -18,7 +19,7 @@ export const globalData = {
     consumerId: null,
     tabBar:{},
     chat: {
-        isLogin: false, // 登录状态
+        isLogin: false, // 消息登录状态
         unReadCount: 0, // 未读消息总数
         token: '', // 消息相关接口必传字段
         nickName: '',
