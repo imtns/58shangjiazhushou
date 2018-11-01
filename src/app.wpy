@@ -154,6 +154,12 @@ export default class extends wepy.app {
                 selectedIconPath: 'pages/assets/tabbar/tabbar_order_selected.png',
             }],
         },
+        navigateToMiniProgramAppIdList: [
+            'wx2a9c6eeb1c44a284', // 58登录
+            'wx86c7b0019914401c', // 同城优选
+            'wx67b75e86c9daef45', // 支付助手
+            'wx49b3af93cbcd737b', // 商家通
+        ],
     }
     onLaunch () {
         console.log('onlaunch');

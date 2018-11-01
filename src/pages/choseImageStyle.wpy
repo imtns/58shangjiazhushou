@@ -67,7 +67,7 @@ export default class choseImageStyle extends wepy.page {
                 path = this.styleImage1;
             } else if (this.style === 2) {
                 path = this.styleImage2;
-            };
+            }
             wx.saveImageToPhotosAlbum({
                 filePath: path,
                 success (res) {
