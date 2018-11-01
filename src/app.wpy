@@ -154,6 +154,12 @@ export default class extends wepy.app {
                 selectedIconPath: 'pages/assets/tabbar/tabbar_order_selected.png',
             }],
         },
+        plugins: {
+            loginSdk: {
+                version: '2.0.2',
+                provider: 'wxd1d3a59c204109d4',
+            },
+        },
     }
     onLaunch () {
         console.log('onlaunch');

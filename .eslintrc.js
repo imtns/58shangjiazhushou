@@ -14,6 +14,7 @@ module.exports = {
     wx: true,
     Page: true, 
     Component:true,
+    requirePlugin: true,
   },
   extends: 'airbnb-base',
   plugins: [

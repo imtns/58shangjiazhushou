@@ -18,7 +18,11 @@
             <view class="item-detail">
                 <view wx:if="{{!userLogin}}" class="unlogin">
                     <text class="login-tip">您还没有登录，授权登录后可管理小程序赚大钱</text>
-                    <navigator wx:if="{{editDialog.action=='tologin'}}" class="login-btn" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release" hover-class="none">立即登录</navigator>
+                    <view
+                        wx:if="{{editDialog.action=='tologin'}}"
+                        class="login-btn"
+                        @tap="handleLogin"
+                    >立即登录</view>
                 </view>
                 <view wx:if="{{userLogin}}" class="item-name" :class="{logoPadding : business.mpCount > 0 }">{{ business.miniProgramName }}</view>
                 <view wx:if="{{userLogin}}" class="item-title" :class="{logoPadding : business.mpCount > 0 }">
@@ -203,19 +207,15 @@
 <script>
 import wepy from 'wepy';
 import Mixin from '../mixin';
-
 import { items, nItems } from '../utils/homeList';
-
 import { alert, formatDuring } from '../utils';
 import { post, get } from '../utils/ajax';
 import { globalData, setTabBar } from '../utils/globalData';
 import { getUid, SendClickLog } from '../utils/maidian';
-
 import { CHAT_LOGIN, MY_MPLIST, SESSION, INSERT_SESSION, GET_EXT_JSON, GET_ASSIST_AUTH, GET_SHARE } from '../utils/url';
-
 import { sdkLogin, onMsgNotify, sdkLogout } from '../utils/IM/IM';
-
 import { chatContactList } from '../store/index';
+import loginHelper from '../utils/login';
 
 export default class Home extends wepy.page {
     mixins = [Mixin]
@@ -279,6 +279,9 @@ export default class Home extends wepy.page {
         nItems,
     }
     methods = {
+        handleLogin() {
+            loginHelper.goLogin();
+        },
         link(text) {
             if (!this.userLogin) return;
             // console.log(text);意见反馈不做判断
@@ -807,8 +810,8 @@ export default class Home extends wepy.page {
             this.editDialog = {
                 tip: '您还未登录，登录后能使用更多功能',
                 action: 'tologin',
-                leftButton: '再想想',
-                rightButton: '去登录',
+                leftButton: '取消',
+                rightButton: '去完善',
             };
             this.share.showEditModal = true;
             this.$apply();
