@@ -1,5 +1,5 @@
 <template>
-    <scroll-view class="home" scroll-y style="height:100vh" wx:if="{{ !status.loading }}">
+    <scroll-view class="home" scroll-y style="height:100vh">
         <!-- <view class="follow-public" wx:if="{{!isFollow}}">
             <text>关注公众号接收通知</text>
             <navigator class="follow-action" wx:if="{{assistAuth}}" @tap="toFollow">马上关注</navigator>
@@ -11,32 +11,34 @@
         </view>
         <view class="index-loaded-header">
             <view class="welcome-block">
-                <view wx:if="{{business.name}}" class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
+                <view wx:if="{{userLogin}}" class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
                 <view wx:else class="welcome-title">欢迎来到58小程序管理平台</text></view>
                 <view @tap="changeIdentity" class="item-switch">账号切换</view>
             </view>
             <view class="item-detail">
+                <view wx:if="{{userLogin}}">
+                    <view class="item-name" :class="{logoPadding : business.mpCount > 0 }">{{ business.miniProgramName }}</view>
+                    <view class="item-title" :class="{logoPadding : business.mpCount > 0 }">
+                        <view class="star-box" wx:if="{{ business.selected.score }}">
+                            <view class="unstar-list">
+                                <view class="icon-unstar" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
+                            </view>
+                            <view class="star-list"
+                            style="width:{{ 30 * (~~(business.selected.score / 1)) + 22 * (business.selected.score % 1) }}rpx">
+                                <view class="icon-star" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
+                            </view>
+                            <view class="star-box-title" @tap="shopScore">店铺评分</view>
+                        </view>
+                        <view wx:else>可上传素材、提交注册信息到当前小程序</view>
+                    </view>
+                    <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">小程序切换</view>
+                    <image class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+                </view>
                 <view wx:if="{{!userLogin}}" class="unlogin">
                     <text class="login-tip">您还没有登录，授权登录后可管理小程序赚大钱</text>
                     <navigator wx:if="{{editDialog.action=='tologin'}}" class="login-btn" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release" hover-class="none">立即登录</navigator>
                 </view>
-                <view wx:if="{{userLogin}}" class="item-name" :class="{logoPadding : business.mpCount > 0 }">{{ business.miniProgramName }}</view>
-                <view wx:if="{{userLogin}}" class="item-title" :class="{logoPadding : business.mpCount > 0 }">
-                    <view class="star-box" wx:if="{{ business.selected.score }}">
-                        <view class="unstar-list">
-                            <view class="icon-unstar" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
-                        </view>
-                        <view class="star-list"
-                        style="width:{{ 30 * (~~(business.selected.score / 1)) + 22 * (business.selected.score % 1) }}rpx">
-                            <view class="icon-star" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
-                        </view>
-                        <view class="star-box-title" @tap="shopScore">店铺评分</view>
-                    </view>
-                    <view wx:else>可上传素材、提交注册信息到当前小程序</view>
-                </view>
-                <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">小程序切换</view>
-                <image class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
-                <view wx:if="{{userLogin}}" class="index-block-body index-item">
+                <view class="index-block-body index-item">
                     <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
                         <image src="{{item.iconPath}}" class="item-img"></image>
                         <view class="item-text">{{item.text}}</view>
@@ -538,9 +540,7 @@ export default class Home extends wepy.page {
             }
 
             // wepy在链式更改属性时，在手机预览会出现不生效的情况。
-            this.setData({
-                'status.loading': false,
-            });
+            this.status.loading = false;
             this.$apply();
         } catch (err) {
             console.log(err);
@@ -548,14 +548,14 @@ export default class Home extends wepy.page {
     }
     async onShow () {
         try {
+            await this.loadData();
+            if (!this.userLogin) return;
             SendClickLog(
                 'wxf03e52adc4b13448',
                 getUid(),
                 '{}',
                 'sjzh_click_home_onload',
             );
-            await this.loadData();
-            if (!this.userLogin) return;
             await this.loadShareActivity();
             this.loadCode();
             this.getInfo();
@@ -791,7 +791,6 @@ export default class Home extends wepy.page {
                 mpid: wepy.getStorageSync('current_mpid') || '',
             };
             const { data } = await post('/mplogic/index', subData);
-            globalData.userLogin = true;
             const {
                 username = '',
                 mpinfo = {},
@@ -805,6 +804,7 @@ export default class Home extends wepy.page {
             } = data;
             const formatedMpinfo = this.formatedMp(mpinfo);
             globalData.mpType = mpinfo.app_type;
+            globalData.userLogin = true;
             this.business = Object.assign({}, this.business, {
                 name: username,
                 miniProgramName: mpinfo.nickName || '您还没购买小程序',

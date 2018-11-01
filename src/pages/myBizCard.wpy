@@ -1,6 +1,6 @@
 <template>
     <view class="myBizCard">
-        <view class="tocreatCard" wx:if="{{hasCard === false && false}}">
+        <view class="tocreatCard" wx:if="{{hasCard === false}}">
             <view class="empty_box">
                 <view class="empty_header"></view>
                 <view class="empty_tips">您还没有名片，赶快创建名片吧</view>
