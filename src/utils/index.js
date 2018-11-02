@@ -166,6 +166,8 @@ export const getTmpFilePath = (url) => {
         wx.downloadFile({
             url,
             success(res) {
+                console.log(res);
+                console.log(url);
                 resolve(res.tempFilePath);
             },
             fail(err) {

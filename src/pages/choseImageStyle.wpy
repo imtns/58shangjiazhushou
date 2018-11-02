@@ -361,8 +361,8 @@ export default class choseImageStyle extends wepy.page {
         this.firstStyle.layers = layers;
     }
     async touchImage() {
-        const cardStyleBoxBg = 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/card_chosestyle_box_bg.png';
-        const cardStyleBg = 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/card_style_bg.png';
+        const cardStyleBoxBg = 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/card_chosestyle_box_bg.png';
+        const cardStyleBg = 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/card_style_bg.png';
         // 转成本地路径
         this.tmpLogo = await getTmpFilePath(cardStyleBg);
         this.tmpQrcode = await getTmpFilePath(cardStyleBoxBg);
