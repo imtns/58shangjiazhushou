@@ -1625,12 +1625,12 @@ scroll-view {
     display: flex;
 }
 .cancle-btn{
-    color: #4E88FF;
+    color:#666;
     flex:1;
     border-right: 1rpx solid #e5e5e5;
 }
 .edit-btn{
-    color:#666;
+    color: #4E88FF;
     flex:1;
 }
 .share-active-cancle{

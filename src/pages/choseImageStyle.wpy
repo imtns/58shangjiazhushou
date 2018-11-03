@@ -80,14 +80,10 @@ export default class choseImageStyle extends wepy.page {
             const { tempFilePath } = res.detail;
             this.styleImage1 = tempFilePath;
             this.$apply();
-            console.log(res.detail.tempFilePath);
-            console.log('======');
         },
         toTempFile2(res) {
             const { tempFilePath } = res.detail;
             this.styleImage2 = tempFilePath;
-            console.log(tempFilePath);
-            console.log('--------');
             this.$apply();
         },
     };
@@ -95,6 +91,9 @@ export default class choseImageStyle extends wepy.page {
         console.log('onload');
     }
     async onShow () {
+        wx.showLoading({
+            title: '图片生成中',
+        });
         const that = this;
         await that.loadData();
         await that.touchImage();
@@ -118,9 +117,6 @@ export default class choseImageStyle extends wepy.page {
     }
     async drawimageStyle1() {
         const that = this;
-        wx.showLoading({
-            title: '图片生成中',
-        });
         const { layers } = this.firstStyle;
         this.firstStyle.background = {
             imageResource: that.tmpLogo,
@@ -240,7 +236,6 @@ export default class choseImageStyle extends wepy.page {
                 dHeight: 140,
             },
         ].concat(layers);
-        wx.hideLoading();
         that.$apply();
     }
     async drawimageStyle2() {
@@ -308,6 +303,7 @@ export default class choseImageStyle extends wepy.page {
                 maxWidth: '460',
             },
         ].concat(layers);
+        wx.hideLoading();
         this.showCanvas = true;
         that.$apply();
     }
