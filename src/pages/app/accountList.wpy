@@ -1,0 +1,116 @@
+<template lang="wxml">
+    <view class="container">
+        <view class="account-list">
+            <navigator
+                class="account-item"
+                wx:for="{{ accountList }}"
+                wx:key="index"
+            >
+                <image
+                    class="account-logo"
+                    src="{{ item.logo }}"
+                ></image>
+                <view class="account-info">
+                    <view class="account-title overflow-ellipsis">
+                        {{ item.title }}
+                    </view>
+                    <view class="account-mobile">{{ item.mobile }}</view>
+                    <view class="account-mpinfo">
+                        <view class="account-mp-count">
+                            小程序数量：{{ item.mpCount }}
+                        </view>
+                        <view>
+                            名片数量：{{ item.cardCount }}
+                        </view>
+                    </view>
+                </view>
+                <view class="account-arrow"></view>
+            </navigator>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '选择58账号登录',
+    };
+    data = {
+        accountList: [
+            {
+                logo: '',
+                title: '这是58账号非常长的名字很厉害吧哈哈哈哈哈哈',
+                mobile: '18010882283',
+                mpCount: 1,
+                cardCount: 10,
+            },
+        ],
+    };
+    onLoad() {
+    }
+}
+</script>
+
+<style lang="scss">
+navigator {
+    box-sizing: border-box;
+}
+.account-list {
+    padding: 30rpx;
+}
+.account-item {
+    margin-bottom: 20rpx;
+    display: flex;
+    align-items: center;
+    width: 690rpx;
+    padding: 30rpx;
+    background-color: #fff;
+}
+.account-logo {
+    width: 100rpx;
+    height: 100rpx;
+    border-radius: 50%;
+    margin-right: 30rpx;
+    background-color: #f3f3f3;
+}
+.account-info {
+    flex-grow: 1;
+}
+.account-arrow {
+    width: 15rpx;
+    height: 25rpx;
+    margin-left: 20rpx;
+    background: url('https://static.58.com/lbg/mengchong/image/icon/arrow-right.png')
+        no-repeat;
+    background-size: 100%;
+}
+.account-title {
+    font-size: 32rpx;
+    line-height: 45rpx;
+    color: #333;
+    margin-bottom: 10rpx;
+    width: 465rpx;
+}
+.account-mobile {
+    color: #999;
+    font-size: 26rpx;
+    line-height: 37rpx;
+    margin-bottom: 10rpx;
+}
+.account-mpinfo {
+    display: flex;
+    line-height: 33rpx;
+    color: #999;
+    font-size: 24rpx;
+}
+.account-mp-count {
+    margin-right: 20rpx;
+}
+.overflow-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+</style>

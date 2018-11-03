@@ -22,6 +22,7 @@ export default class extends wepy.app {
         pages: [
             'pages/home',
             'pages/app/pickBusinessHour',
+            'pages/app/accountList', // 账号列表
 
             'pages/edit/textEdit',
             // 登陆之后的主页
