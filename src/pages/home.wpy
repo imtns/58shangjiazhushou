@@ -425,6 +425,10 @@ export default class Home extends wepy.page {
             this.$apply();
         },
         changeIdentity() {
+            if (!this.userLogin) {
+                loginHelper.goLogin();
+                return;
+            }
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_switch_Identity');
             wepy.navigateTo({
                 url: '/pages/app/accountList',

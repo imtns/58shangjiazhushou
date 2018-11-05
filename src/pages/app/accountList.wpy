@@ -1,39 +1,41 @@
 <template lang="wxml">
     <view class="container">
         <loading wx:if="{{ loading }}"></loading>
-        <view class="account-list" wx:else>
-            <view
-                class="account-item"
-                wx:for="{{ accountList }}"
-                wx:key="index"
-                @tap="handleLogin({{item.username}}, {{item.mobile}})"
-                hover-class="navigator-hover"
-            >
-                <image
-                    class="account-logo"
-                    src="{{ item.portrait ? item.portrait + '?w=100&ss=1' : '' }}"
-                ></image>
-                <view class="account-info">
-                    <view class="account-title overflow-ellipsis">
-                        {{ item.title }}
-                    </view>
-                    <view class="account-mobile">{{ item.username }}</view>
-                    <view class="account-mpinfo">
-                        <view class="account-mp-count">
-                            小程序数量：{{ item.mpCount }}
+        <block wx:else>
+            <view class="account-list">
+                <view
+                    class="account-item"
+                    wx:for="{{ accountList }}"
+                    wx:key="index"
+                    @tap="handleLogin({{item.username}}, {{item.mobile}})"
+                    hover-class="navigator-hover"
+                >
+                    <image
+                        class="account-logo"
+                        src="{{ item.portrait ? item.portrait + '?w=100&ss=1' : '' }}"
+                    ></image>
+                    <view class="account-info">
+                        <view class="account-title overflow-ellipsis">
+                            {{ item.title }}
                         </view>
-                        <view>
-                            名片数量：{{ item.cardCount }}
+                        <view class="account-mobile">{{ item.username }}</view>
+                        <view class="account-mpinfo">
+                            <view class="account-mp-count">
+                                小程序数量：{{ item.mpCount }}
+                            </view>
+                            <view>
+                                名片数量：{{ item.cardCount }}
+                            </view>
                         </view>
                     </view>
+                    <view class="account-arrow"></view>
                 </view>
-                <view class="account-arrow"></view>
             </view>
-        </view>
-        <view
-            class="login-other"
-            @tap="handleLogin"
-        >登录其他账号</view>
+            <view
+                class="login-other"
+                @tap="handleLogin"
+            >登录其他账号</view>
+        </block>
     </view>
 </template>
 
