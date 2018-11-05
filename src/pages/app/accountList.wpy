@@ -11,7 +11,7 @@
             >
                 <image
                     class="account-logo"
-                    src="{{ item.portrait }}"
+                    src="{{ item.portrait ? item.portrait + '?w=100&ss=1' : '' }}"
                 ></image>
                 <view class="account-info">
                     <view class="account-title overflow-ellipsis">
@@ -30,6 +30,10 @@
                 <view class="account-arrow"></view>
             </view>
         </view>
+        <view
+            class="login-other"
+            @tap="handleLogin"
+        >登录其他账号</view>
     </view>
 </template>
 
@@ -85,8 +89,11 @@ export default class Index extends wepy.page {
 navigator {
     box-sizing: border-box;
 }
+.container {
+    padding: 0 30rpx;
+}
 .account-list {
-    padding: 30rpx;
+    margin: 30rpx 0;
 }
 .account-item {
     margin-bottom: 20rpx;
@@ -140,5 +147,9 @@ navigator {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+.login-other {
+    font-size: 26rpx;
+    color: #999;
 }
 </style>
