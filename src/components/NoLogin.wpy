@@ -2,7 +2,6 @@
     <view class="no-login">
         <image class="login-icon" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/empty.png"></image>
         <text class="login-text">您还没有登录哦，请点击按钮登录</text>
-        <navigator class="login-btn" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release" hover-class="none">去登录</navigator>
         <view
             class="login-btn"
             hover-class="navigator-hover"
