@@ -65,25 +65,9 @@
  */
 
 import wepy from 'wepy';
-import { alert } from '../utils';
+import { getTmpFilePath, alert } from '../utils';
 import { uploadResource } from '../utils/upload';
 import globalService from '../utils/globalService';
-
-const downloadFile = ({ url }) => {
-    const result = new Promise((resolve, reject) => {
-        wx.downloadFile({
-            url,
-            success(res) {
-                resolve(res);
-            },
-            fail(err) {
-                reject(err);
-            },
-        });
-    });
-
-    return result;
-};
 
 const { pixelRatio } = wx.getSystemInfoSync();
 const windowWidth = 750;
@@ -180,7 +164,7 @@ export default class Cropper extends wepy.page {
                 // 在线图片，需要下载到本地
                 if (this.onlineImage) {
                     this.onlineImage = false;
-                    const { tempFilePath } = await downloadFile({ url: imageSrc });
+                    const tempFilePath = await getTmpFilePath(imageSrc);
                     imageSrc = tempFilePath;
                 }
 
