@@ -46,20 +46,29 @@
                         <view class="item-text">{{item.text}}</view>
                     </view>
                 </view>
-                <navigator wx:if="{{!userLogin}}" class="index-block-body index-item" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release" hover-class="none">
+                <view
+                    wx:if="{{!userLogin}}"
+                    class="index-block-body index-item"
+                    @tap="handleLogin"
+                >
                     <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index">
                         <image src="{{item.iconPath}}" class="item-img"></image>
                         <view class="item-text">{{item.text}}</view>
                     </view>
-                </navigator>
+                </view>
                 <view wx:if="{{userLogin}}" bindtap="checkProgress" class="item-detail-progress">
                     <view class="current-progress"></view>
                     <view class="remind-title">{{ business.progressText}}</view>
                 </view>
-                <navigator wx:if="{{!userLogin}}" class="item-detail-progress" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release" hover-class="none">
+
+                <view
+                    wx:if="{{!userLogin}}"
+                    class="item-detail-progress"
+                    @tap="handleLogin"
+                >
                     <view class="current-progress"></view>
                     <view class="remind-title">{{ business.progressText}}</view>
-                </navigator>
+                </view>
             </view>
         </view>
         <view class="index-block"  wx:for="{{nItems}}" wx:for-item="nItem"  wx:key="{{nItem.title}}">
@@ -70,12 +79,16 @@
                     <view class="item-text">{{item.text}}</view>
                 </view>
             </view>
-            <navigator wx:if="{{!userLogin}}" class="index-block-body" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release" hover-class="none">
+            <view
+                wx:if="{{!userLogin}}"
+                class="index-block-body"
+                @tap="handleLogin"
+            >
                 <view class="index-loaded-item new-margin {{item.text === '店铺装修' ? 'shangxin' : ''}}" wx:for="{{nItem.items}}" wx:key="index" bindtap="link({{item.text}})">
                     <image src="{{item.iconPath}}" class="item-img"></image>
                     <view class="item-text">{{item.text}}</view>
                 </view>
-            </navigator>
+            </view>
         </view>
         <view wx:if="{{business.changeMP === true}}" class="mask" @tap="bindHideMask"></view>
         <view wx:if="{{business.changeMP === true }}" class="mpBox">
