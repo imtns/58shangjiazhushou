@@ -1,5 +1,5 @@
 <template>
-  <view class="everyday-modal-container" wx:if="{{ show }}">
+  <view class="everyday-modal" wx:if="{{ show }}">
     <view class="everyday-close" @tap="handleClose"/>
     <view class="everyday-section">
       <view class="everyday-pic">
@@ -86,6 +86,12 @@
         show(newValue) {
             const seft = this;
             if (newValue) {
+                console.log('每日一言 seft.unread=', seft.unread);
+                if (seft.unread) {
+                    seft.unread = false;
+                    seft.$apply();
+                    wepy.setStorageSync('everydayUnread', { date: seft.getCuttentDateFormat(), show: false });
+                }
                 seft.initEverydayDay();
             }
         },
@@ -93,11 +99,13 @@
 
     async onLoad() {
         const seft = this;
-        await seft.requestDayBgPic();
-        // 是否未读
+        // 初始化是否未读
         const everydayUnread = wepy.getStorageSync('everydayUnread');
-        if (everydayUnread && everydayUnread.data) {
-            if (!seft.isToday(everydayUnread.data)) {
+        console.log('==========>每日一言 onLoad', everydayUnread);
+        if (everydayUnread && everydayUnread.date) {
+            if (seft.isToday(everydayUnread.date)) {
+                seft.unread = false;
+            } else {
                 seft.unread = true;
                 wepy.removeStorageSync('everydayUnread');
             }
@@ -105,6 +113,8 @@
             seft.unread = true;
         }
         seft.$apply();
+
+        await seft.initEverydayDay();
     }
 
     isToday(dateStr) {
@@ -134,8 +144,11 @@
         // 分享好友
         handleShareFriend() {
             const seft = this;
-            toast('长按图片发送给好友');
             const path = seft.everydayCanvas.imageUrl;
+            if (!path) {
+                return;
+            }
+            toast('长按图片发送给好友');
             wx.previewImage({
                 urls: [path],
             });
@@ -173,33 +186,12 @@
         },
     };
 
-    async initEverydayDay() {
-        const seft = this;
-        if (!(seft.data.everydayCanvas.layers[0] && seft.data.everydayCanvas.layers[0].imageResource)) {
-            await seft.requestCardQrPic();
-        }
-        if (seft.data.everydayBgPic && seft.data.cardQrPic) {
-            await seft.initDrawData();
-            if (seft.unread) {
-                seft.unread = false;
-                const dateS = seft.getCuttentDateFormat();
-                wepy.setStorageSync('everydayUnread', { date: dateS, show: false });
-            }
-        } else {
-            seft.show = false;
-            seft.$apply();
-        }
-    }
-
     async actionSaveImageToAlbum() {
         const seft = this;
         const path = seft.everydayCanvas.imageUrl;
         if (!path) {
             return;
         }
-
-        // const res = await wepy.getSetting();
-        // console.log('每日一言 actionSaveImageToAlbum=========>', res);
         wx.saveImageToPhotosAlbum({
             filePath: path,
             success() {
@@ -208,7 +200,6 @@
                 seft.$apply();
             },
             fail(err) {
-                console.log('handleShareMoments=========>', err);
                 const authFail = ['saveImageToPhotosAlbum:fail auth deny', 'saveImageToPhotosAlbum:fail:auth denied'];
                 if (authFail.indexOf(err.errMsg) > -1) {
                     toast('您拒绝了授权，图片无法保存到相册');
@@ -219,26 +210,14 @@
         });
     }
 
-    async initDrawData() {
+    async initEverydayDay() {
         const seft = this;
-        const { everydayBgPic, cardQrPic } = seft.data;
-        seft.everydayCanvas.background.imageResource = everydayBgPic;
-        if (cardQrPic) {
-            seft.everydayCanvas.layers = [
-                {
-                    type: 'image', // 名片二维码
-                    imageResource: cardQrPic,
-                    dx: 177, // 295
-                    dy: 621, // 1034
-                    dWidth: 96, // 160
-                    dHeight: 96, // 160
-                },
-            ];
-        } else {
-            seft.everydayCanvas.layers = [];
+        if (!seft.everydayCanvas.background.imageResource) {
+            await seft.requestDayBgPic();
         }
-        seft.$apply();
-        console.log('===========》每日一言 initDrawData', 'seft.everydayCanvas=', seft.everydayCanvas);
+        if (!(seft.data.everydayCanvas.layers[0] && seft.data.everydayCanvas.layers[0].imageResource)) {
+            await seft.requestCardQrPic();
+        }
     }
 
     async requestDayBgPic() {
@@ -248,7 +227,7 @@
             if (data && data.picUrl) {
                 const dayBgPic = `${data.picUrl.indexOf('http') === -1 ? 'https://pic1.58cdn.com.cn' : ''}${data.picUrl}`;
                 const startTime = `${data.startTime ? data.startTime : ''}`; // 2018-11-02 10:01:00
-                seft.everydayBgPic = await getTmpFilePath(dayBgPic);
+                seft.everydayCanvas.background.imageResource = await getTmpFilePath(dayBgPic);
                 seft.everydayStartTime = startTime;
                 seft.$apply();
             }
@@ -269,7 +248,7 @@
                 });
                 const { url = '' } = data;
                 if (url) {
-                    seft.cardQrPic = await getTmpFilePath(url);
+                    seft.data.everydayCanvas.layers[0].imageResource = await getTmpFilePath(url);
                     seft.$apply();
                 }
             } catch (err) {

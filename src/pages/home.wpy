@@ -313,12 +313,17 @@ export default class Home extends wepy.page {
         // },
         registPrecheck: null,
         // 每日一言 是否未读
-        everydayUnread: true,
+        everydayUnread: false,
         // 每日一言 是否显示
         everydayShow: false,
         // 每日一言 是否显示每日一言icon
         everydayIconShow: false,
     }
+    watch = {
+        everydayUnread(newValue, oldValue) {
+            console.log('每日一言 everydayUnread', 'newValue=', newValue, 'oldValue=', oldValue);
+        },
+    };
     methods = {
         link(text) {
             if (!this.userLogin) return;
@@ -533,7 +538,6 @@ export default class Home extends wepy.page {
         handleToEveryday() {
             const seft = this;
             seft.everydayShow = true;
-            // seft.everydayUnread = false;
             seft.$apply();
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_toeveryday');
         },
@@ -597,13 +601,6 @@ export default class Home extends wepy.page {
                 }
             } catch (err) {
                 console.log(err);
-            }
-        }
-        onHide () {
-            // 关闭每日一言
-            if (this.everydayShow) {
-                this.everydayShow = false;
-                this.$apply();
             }
         }
         formatedMp (item) {
@@ -857,7 +854,7 @@ export default class Home extends wepy.page {
                     },
                 });
                 wepy.setStorageSync('current_cardId', cardId);
-                this.everydayIconShow = !!cardId; // 是否显示每日一言悬浮icon
+                this.initEveryday(); // 每日一言初始化
                 nexttask && this.setNextTask(nexttask);
                 this.$apply();
                 if (unreadOrder) { // 未读订单tab
@@ -1149,6 +1146,17 @@ export default class Home extends wepy.page {
                 onMsgNotify: onMsgNotify, // 监听新消息
             };
             sdkLogin(loginInfo, listeners, {});
+        }
+        // 每日一言
+        initEveryday() {
+            const seft = this;
+            const cardId = wepy.getStorageSync('current_cardId');
+            seft.everydayIconShow = !!cardId; // 是否显示每日一言悬浮icon
+            // 关闭每日一言
+            if (seft.everydayShow) {
+                seft.everydayShow = false;
+            }
+            seft.$apply();
         }
 }
 </script>
@@ -1930,7 +1938,7 @@ scroll-view {
     background: #F43530;
   }
 }
-.everyday-modal-container {
+.everyday-modal {
   position: fixed;
   z-index: 99;
   top: 0;
@@ -1938,6 +1946,10 @@ scroll-view {
   height: 100vh;
   width: 750rpx;
   background: rgba(0, 0, 0, 0.7);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   .everyday-close {
     position: absolute;
@@ -1951,9 +1963,6 @@ scroll-view {
   }
 
   .everyday-section {
-    position: absolute;
-    top: 50rpx;
-    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
