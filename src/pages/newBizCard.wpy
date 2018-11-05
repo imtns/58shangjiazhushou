@@ -322,6 +322,7 @@ export default class newBizCard extends wepy.page {
             return data.content;
         } catch ({ errMsg }) {
             this.toast(errMsg);
+            return '';
         }
     }
 }

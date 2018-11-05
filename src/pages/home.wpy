@@ -183,6 +183,14 @@
         <form bindsubmit="handleFormidCollect" report-submit="true"  wx:if="{{!Actfrom && !share.hasPromptToday && share.hasPerm}}">
             <button class="tomake-money" data-action="makemoney" bindtap="handleActionRoute" hover-class="none" form-type="submit"></button>
         </form>
+        <!-- 每日一言悬浮提示 -->
+        <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{everydayIconShow}}">
+            <button class="to-everyday" @tap="handleToEveryday" hover-class="none" form-type="submit">
+                <view class="unread" wx:if="{{everydayIconShow && everydayUnread}}"/>
+            </button>
+        </form>
+        <!-- 每日一言弹窗模块 -->
+        <everyday-modal :show.sync="everydayShow" :unread.sync="everydayUnread"/>
         <!-- 添加到我的小程序步骤提示 -->
         <view class="add-myapp-modal" wx:if="{{showTipModal}}">
             <view class="add-step">
@@ -228,10 +236,15 @@ import { sdkLogin, onMsgNotify, sdkLogout } from '../utils/IM/IM';
 
 import { chatContactList } from '../store/index';
 
+import EverydayModal from '../components/EverydayModal';
+
 export default class Home extends wepy.page {
     mixins = [Mixin, RegistMixin]
     config = {
         navigationBarTitleText: '首页',
+        usingComponents: {
+            drawimage: 'miniprogram-drawimage',
+        },
     }
     data = {
         code: '',
@@ -299,6 +312,12 @@ export default class Home extends wepy.page {
         //     createMp: false, // 是否创建了小程序
         // },
         registPrecheck: null,
+        // 每日一言 是否未读
+        everydayUnread: true,
+        // 每日一言 是否显示
+        everydayShow: false,
+        // 每日一言 是否显示每日一言icon
+        everydayIconShow: false,
     }
     methods = {
         link(text) {
@@ -510,608 +529,627 @@ export default class Home extends wepy.page {
             this.showTipModal = false;
             this.$apply();
         },
+        // 每日一言
+        handleToEveryday() {
+            const seft = this;
+            seft.everydayShow = true;
+            // seft.everydayUnread = false;
+            seft.$apply();
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_toeveryday');
+        },
     }
-    async onLoad () {
-        try {
+        components = {
+            'everyday-modal': EverydayModal,
+        }
+        async onLoad () {
+            try {
             // 快速注册判断跳转
             // 如果用户在快速注册的流程中，则让用户跳转到注册流程的相应页面
-            this.checkRegistStatus()
-                .then(msg => {
-                    console.log(msg);
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+                this.checkRegistStatus()
+                    .then(msg => {
+                        console.log(msg);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
 
-            await this.loadData();
-            if (!this.userLogin) return;
-            // 聊天登录，监控未读消息
-            const { token } = globalData.chat;
-            if (!token) {
-                this.chatLogin();
-            }
-            // globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
-            this.setGlobalMpId(this.business.selected.id);
-            this.loadExtJson();
-            wepy.setStorageSync('showmodal', true);
-            this.storageShowmodal = wepy.getStorageSync('showmodal');
-            if (!this.isFollow && wepy.getStorageSync('ppu')) {
-                this.showModal = true;
-            }
+                await this.loadData();
+                if (!this.userLogin) return;
+                // 聊天登录，监控未读消息
+                const { token } = globalData.chat;
+                if (!token) {
+                    this.chatLogin();
+                }
+                // globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
+                this.setGlobalMpId(this.business.selected.id);
+                this.loadExtJson();
+                wepy.setStorageSync('showmodal', true);
+                this.storageShowmodal = wepy.getStorageSync('showmodal');
+                if (!this.isFollow && wepy.getStorageSync('ppu')) {
+                    this.showModal = true;
+                }
 
-            // wepy在链式更改属性时，在手机预览会出现不生效的情况。
-            this.status.loading = false;
-            this.$apply();
-        } catch (err) {
-            console.log(err);
+                // wepy在链式更改属性时，在手机预览会出现不生效的情况。
+                this.status.loading = false;
+                this.$apply();
+            } catch (err) {
+                console.log(err);
+            }
         }
-    }
-    async onShow () {
-        try {
-            await this.loadData();
-            if (!this.userLogin) return;
-            SendClickLog(
-                'wxf03e52adc4b13448',
-                getUid(),
-                '{}',
-                'sjzh_click_home_onload',
-            );
-            await this.loadShareActivity();
-            this.loadCode();
-            this.getInfo();
-            this.hideTipModal();
-            await this.getAssistAuth();
-            if (!this.isFollow && wepy.getStorageSync('ppu')) {
-                this.showModal = true;
+        async onShow () {
+            try {
+                await this.loadData();
+                if (!this.userLogin) return;
+                SendClickLog(
+                    'wxf03e52adc4b13448',
+                    getUid(),
+                    '{}',
+                    'sjzh_click_home_onload',
+                );
+                await this.loadShareActivity();
+                this.loadCode();
+                this.getInfo();
+                this.hideTipModal();
+                await this.getAssistAuth();
+                if (!this.isFollow && wepy.getStorageSync('ppu')) {
+                    this.showModal = true;
+                    this.$apply();
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        onHide () {
+            // 关闭每日一言
+            if (this.everydayShow) {
+                this.everydayShow = false;
                 this.$apply();
             }
-        } catch (err) {
-            console.log(err);
         }
-    }
-    formatedMp (item) {
-        const mp = item;
-        if (mp && mp.headImg && mp.headImg.indexOf('http') === -1) {
-            mp.headImg = `https://pic1.58cdn.com.cn${mp.headImg}`;
+        formatedMp (item) {
+            const mp = item;
+            if (mp && mp.headImg && mp.headImg.indexOf('http') === -1) {
+                mp.headImg = `https://pic1.58cdn.com.cn${mp.headImg}`;
+            }
+            return mp;
         }
-        return mp;
-    }
     /**
      * 5s关闭添加到我的小程序提示
      */
-    hideTipModal() {
-        if (!wepy.getStorageSync('showAddModal')) {
-            this.showTip = true;
-            setTimeout(() => {
-                this.showTip = false;
-                wepy.setStorageSync('showAddModal', true);
-            }, 5000);
+        hideTipModal() {
+            if (!wepy.getStorageSync('showAddModal')) {
+                this.showTip = true;
+                setTimeout(() => {
+                    this.showTip = false;
+                    wepy.setStorageSync('showAddModal', true);
+                }, 5000);
+            }
         }
-    }
     /**
      * 倒计时计时器
      */
-    countDown() {
-        const timeNow = parseInt(new Date().getTime());
-        const timeEnd = parseInt(new Date(this.share.cashTime.replace(/-/g, '/')).getTime());
-        const deadTime = parseInt(timeEnd - timeNow);
-        this.share.timeArray = formatDuring(deadTime);
-        this.$apply();
-    }
+        countDown() {
+            const timeNow = parseInt(new Date().getTime());
+            const timeEnd = parseInt(new Date(this.share.cashTime.replace(/-/g, '/')).getTime());
+            const deadTime = parseInt(timeEnd - timeNow);
+            this.share.timeArray = formatDuring(deadTime);
+            this.$apply();
+        }
     /**
      * 数据请求：收集FormID,用于给用户推送服务通知
      */
-    requestFormidCollect(formId) {
-        const seft = this;
-        if (formId) {
-            get('/formidcollect/collect', {
-                consumerId: seft.business.userId || '', // 当前用户 ID
-                formId,
-            });
+        requestFormidCollect(formId) {
+            const seft = this;
+            if (formId) {
+                get('/formidcollect/collect', {
+                    consumerId: seft.business.userId || '', // 当前用户 ID
+                    formId,
+                });
+            }
         }
-    }
     /**
      * 事件操作：所有操作入口
      */
-    handleActionRoute(e) {
-        const seft = this;
-        const { action } = e.currentTarget.dataset;
-        seft.Actfrom = '';
-        this.$apply();
-        switch (`${action}`) {
-            case 'cancle': // 关闭分享赢大奖弹框
-                seft.share.hasPromptToday = false;
-                // clickLog = 'cancle';
-                break;
-            case 'makemoney': // 去赚钱
-                seft.share.hasPromptToday = true;
-                // clickLog = 'makemoney';
-                break;
-            case 'toeditcard': // 去赚钱
-                seft.editDialog = {
-                    tip: '您还没有编辑过名片信息，需编辑保存后再分享赚大钱',
-                    action: 'toeditcard',
-                    leftButton: '取消',
-                    rightButton: '去编辑',
-                };
-                seft.share.showEditModal = true;
-                seft.share.hasPromptToday = false;
-                // clickLog = 'makemoney';
-                break;
-            case 'toshareprize': // 去瓜分奖金
-                seft.editDialog = {
-                    tip: '输入"领奖"发送后获取公众号二维码，长按识别关注公众号快速瓜分10W奖金',
-                    action: 'topublic',
-                    leftButton: '取消',
-                    rightButton: '去获取',
-                };
-                seft.share.showEditModal = true;
-                seft.share.hasPromptToday = false;
-                break;
-            case 'topubnumber': // 去公众号获取更多赚钱机会
-                seft.share.hasPromptToday = false;
-                wepy.navigateTo({
-                    url: '/pages/followPublic',
-                });
-                break;
-            default:
-                break;
+        handleActionRoute(e) {
+            const seft = this;
+            const { action } = e.currentTarget.dataset;
+            seft.Actfrom = '';
+            this.$apply();
+            switch (`${action}`) {
+                case 'cancle': // 关闭分享赢大奖弹框
+                    seft.share.hasPromptToday = false;
+                    // clickLog = 'cancle';
+                    break;
+                case 'makemoney': // 去赚钱
+                    seft.share.hasPromptToday = true;
+                    // clickLog = 'makemoney';
+                    break;
+                case 'toeditcard': // 去赚钱
+                    seft.editDialog = {
+                        tip: '您还没有编辑过名片信息，需编辑保存后再分享赚大钱',
+                        action: 'toeditcard',
+                        leftButton: '取消',
+                        rightButton: '去编辑',
+                    };
+                    seft.share.showEditModal = true;
+                    seft.share.hasPromptToday = false;
+                    // clickLog = 'makemoney';
+                    break;
+                case 'toshareprize': // 去瓜分奖金
+                    seft.editDialog = {
+                        tip: '输入"领奖"发送后获取公众号二维码，长按识别关注公众号快速瓜分10W奖金',
+                        action: 'topublic',
+                        leftButton: '取消',
+                        rightButton: '去获取',
+                    };
+                    seft.share.showEditModal = true;
+                    seft.share.hasPromptToday = false;
+                    break;
+                case 'topubnumber': // 去公众号获取更多赚钱机会
+                    seft.share.hasPromptToday = false;
+                    wepy.navigateTo({
+                        url: '/pages/followPublic',
+                    });
+                    break;
+                default:
+                    break;
+            }
         }
-    }
     /**
      * 用户点击右上角分享
      */
-    onShareAppMessage (res) {
-        if (res.from === 'button') {
+        onShareAppMessage (res) {
+            if (res.from === 'button') {
             // 来自页面内转发按钮
+            }
+            return {
+                title: '高效管理商家小程序的一站式服务工具',
+                path: '/pages/home',
+                imageUrl: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/share.png',
+                success (data) {
+                    console.log(data);
+                },
+                fail (err) {
+                    console.log(err);
+                },
+            };
         }
-        return {
-            title: '高效管理商家小程序的一站式服务工具',
-            path: '/pages/home',
-            imageUrl: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/share.png',
-            success (data) {
-                console.log(data);
-            },
-            fail (err) {
-                console.log(err);
-            },
-        };
-    }
     /**
      * 获取分享名片赢大奖弹框接口
      */
-    async loadShareActivity() {
-        const that = this;
-        try {
-            const sendData = {
-                userId: that.business.userId,
-                platform: wepy.getStorageSync('Actfrom') || 'app',
-            };
-            that.Actfrom = wepy.getStorageSync('Actfrom') || '';
-            const { data } = await get(GET_SHARE, sendData);
-            that.share = Object.assign(that.share, data);
-            // 未开奖倒计时开始
-            if (that.share.cashDistance) {
-                setInterval(() => {
-                    that.countDown();
-                }, 1000);
-            } else {
-                clearInterval(() => {
-                    that.countDown();
-                });
-            }
-            that.$apply();
-        } catch (error) {
-            console.log(error);
-        }
-    }
-    async getAssistAuth() {
-        try {
-            const { data } = await get(GET_ASSIST_AUTH);
-            const { isFollow, assistInfo = null } = data;
-            // 9.13 王研需求修改
-            if (assistInfo && assistInfo.wechatUnionId) { // 是否授权
-                this.assistAuth = true;
-            } else {
-                this.assistAuth = false;
-            }
-            this.isFollow = isFollow;
-            this.showModal = true;
-            this.$apply();
-        } catch (e) {
-            console.log(e);
-        }
-    }
-    // 获取授权数据
-    async loadSession(e) {
-        const that = this;
-        if (e.detail.errMsg === 'getUserInfo:ok') {
-            const { iv, encryptedData } = e.detail;
-            that.iv = iv;
-            that.encryptedData = encryptedData;
-            that.$apply();
+        async loadShareActivity() {
+            const that = this;
             try {
-                const { data } = await get(SESSION, { code: that.code });
-                const { sessionKey } = data;
-                const { state, msg } = await get(INSERT_SESSION, { encryptedData: that.encryptedData, iv: that.iv, session: sessionKey });
-                if (state === 100) {
-                    that.getAssistAuth();
+                const sendData = {
+                    userId: that.business.userId,
+                    platform: wepy.getStorageSync('Actfrom') || 'app',
+                };
+                that.Actfrom = wepy.getStorageSync('Actfrom') || '';
+                const { data } = await get(GET_SHARE, sendData);
+                that.share = Object.assign(that.share, data);
+                // 未开奖倒计时开始
+                if (that.share.cashDistance) {
+                    setInterval(() => {
+                        that.countDown();
+                    }, 1000);
+                } else {
+                    clearInterval(() => {
+                        that.countDown();
+                    });
                 }
-                if (state === 0) {
-                    alert(msg);
-                }
+                that.$apply();
             } catch (error) {
                 console.log(error);
             }
-        } else {
-            console.log(e.detail.errMsg);
-            alert('由于您拒绝了授权，后续功能不能使用。');
         }
-    }
-    loadCode() {
-        const that = this;
-        wx.login({
-            success: (res) => {
-                if (res.code) {
-                    that.code = res.code;
-                    // 查看是否授权
+        async getAssistAuth() {
+            try {
+                const { data } = await get(GET_ASSIST_AUTH);
+                const { isFollow, assistInfo = null } = data;
+                // 9.13 王研需求修改
+                if (assistInfo && assistInfo.wechatUnionId) { // 是否授权
+                    this.assistAuth = true;
                 } else {
-                    console.log('获取code失败');
+                    this.assistAuth = false;
                 }
-            },
-        });
-    }
-    getInfo() {
-        const that = this;
-        // 已经授权，可以调用getuseinfo获取头像昵称
-        wx.getUserInfo({
-            success: (res) => {
-                const { iv, encryptedData } = res;
+                this.isFollow = isFollow;
+                this.showModal = true;
+                this.$apply();
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    // 获取授权数据
+        async loadSession(e) {
+            const that = this;
+            if (e.detail.errMsg === 'getUserInfo:ok') {
+                const { iv, encryptedData } = e.detail;
                 that.iv = iv;
                 that.encryptedData = encryptedData;
                 that.$apply();
-            },
-        });
-    }
-    hideMask () {
-        this.business = Object.assign({}, this.business, {
-            changeMP: false,
-            canConfirm: false,
-        });
-        this.$apply();
-    }
-    // 获取当前小程序的extjson
-    async loadExtJson() {
-        const { data } = await get(GET_EXT_JSON, { sceneKey: wx.getStorageSync('current_mpid') });
-        globalData.extConfig = data;
-    }
-    async loadData () {
-        try {
-            const subData = {
-                mpid: wepy.getStorageSync('current_mpid') || '',
-            };
-            const { data } = await post('/mplogic/index', subData);
-            const {
-                username = '',
-                mpinfo = {},
-                unread = 0,
-                unreadOrder = 0,
-                count = 0,
-                nexttask = '',
-                score,
-                cardId = '',
-                productType,
-            } = data;
-            const formatedMpinfo = this.formatedMp(mpinfo);
-            globalData.mpType = mpinfo.app_type;
-            globalData.userLogin = true;
-            this.business = Object.assign({}, this.business, {
-                name: username,
-                miniProgramName: mpinfo.nickName || '您还没购买小程序',
-                unread,
-                unreadOrder,
-                productType,
-                mpCount: count,
-                userId: mpinfo.userid,
-                selected: {
-                    ...formatedMpinfo,
-                    score,
-                    cardId,
+                try {
+                    const { data } = await get(SESSION, { code: that.code });
+                    const { sessionKey } = data;
+                    const { state, msg } = await get(INSERT_SESSION, { encryptedData: that.encryptedData, iv: that.iv, session: sessionKey });
+                    if (state === 100) {
+                        that.getAssistAuth();
+                    }
+                    if (state === 0) {
+                        alert(msg);
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            } else {
+                console.log(e.detail.errMsg);
+                alert('由于您拒绝了授权，后续功能不能使用。');
+            }
+        }
+        loadCode() {
+            const that = this;
+            wx.login({
+                success: (res) => {
+                    if (res.code) {
+                        that.code = res.code;
+                    // 查看是否授权
+                    } else {
+                        console.log('获取code失败');
+                    }
                 },
             });
-            wepy.setStorageSync('current_cardId', cardId);
-            nexttask && this.setNextTask(nexttask);
+        }
+        getInfo() {
+            const that = this;
+            // 已经授权，可以调用getuseinfo获取头像昵称
+            wx.getUserInfo({
+                success: (res) => {
+                    const { iv, encryptedData } = res;
+                    that.iv = iv;
+                    that.encryptedData = encryptedData;
+                    that.$apply();
+                },
+            });
+        }
+        hideMask () {
+            this.business = Object.assign({}, this.business, {
+                changeMP: false,
+                canConfirm: false,
+            });
             this.$apply();
-            if (unreadOrder) { // 未读订单tab
-                wx.setTabBarBadge({
-                    index: 2,
-                    text: unreadOrder.toString(),
+        }
+    // 获取当前小程序的extjson
+        async loadExtJson() {
+            const { data } = await get(GET_EXT_JSON, { sceneKey: wx.getStorageSync('current_mpid') });
+            globalData.extConfig = data;
+        }
+        async loadData () {
+            try {
+                const subData = {
+                    mpid: wepy.getStorageSync('current_mpid') || '',
+                };
+                const { data } = await post('/mplogic/index', subData);
+                const {
+                    username = '',
+                    mpinfo = {},
+                    unread = 0,
+                    unreadOrder = 0,
+                    count = 0,
+                    nexttask = '',
+                    score,
+                    cardId = '',
+                    productType,
+                } = data;
+                const formatedMpinfo = this.formatedMp(mpinfo);
+                globalData.mpType = mpinfo.app_type;
+                globalData.userLogin = true;
+                this.business = Object.assign({}, this.business, {
+                    name: username,
+                    miniProgramName: mpinfo.nickName || '您还没购买小程序',
+                    unread,
+                    unreadOrder,
+                    productType,
+                    mpCount: count,
+                    userId: mpinfo.userid,
+                    selected: {
+                        ...formatedMpinfo,
+                        score,
+                        cardId,
+                    },
                 });
-            } else {
-                wx.removeTabBarBadge({
-                    index: 2,
-                });
+                wepy.setStorageSync('current_cardId', cardId);
+                this.everydayIconShow = !!cardId; // 是否显示每日一言悬浮icon
+                nexttask && this.setNextTask(nexttask);
+                this.$apply();
+                if (unreadOrder) { // 未读订单tab
+                    wx.setTabBarBadge({
+                        index: 2,
+                        text: unreadOrder.toString(),
+                    });
+                } else {
+                    wx.removeTabBarBadge({
+                        index: 2,
+                    });
+                }
+            } catch (e) {
+                globalData.userLogin = false;
+                this.userLogin = false;
+                this.editDialog = {
+                    tip: '您还未登录，登录后能使用更多功能',
+                    action: 'tologin',
+                    leftButton: '再想想',
+                    rightButton: '去登录',
+                };
+                this.share.showEditModal = true;
+                this.$apply();
             }
-        } catch (e) {
-            globalData.userLogin = false;
-            this.userLogin = false;
-            this.editDialog = {
-                tip: '您还未登录，登录后能使用更多功能',
-                action: 'tologin',
-                leftButton: '再想想',
-                rightButton: '去登录',
-            };
-            this.share.showEditModal = true;
+        }
+        setGlobalMpId (id) {
+            if (id) {
+                wepy.setStorageSync('current_mpid', id);
+            }
+        }
+        checkBeforeJump (text) {
+            if (!this.business.mpCount) {
+                alert('您还未购买小程序，请登录e.58.com进行购买', '提示');
+                return;
+            }
+            switch (text) {
+                case '名片管理':
+                    SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_myBizCard');
+                    if (this.business.productType !== '20001') {
+                        alert('您暂无权限使用该功能', '提示');
+                        return;
+                    }
+                    wepy.navigateTo({
+                        url: 'myBizCard',
+                    });
+                    break;
+                case '通知':
+                    SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_noticeList');
+                    wepy.navigateTo({
+                        url: 'noticeList',
+                    });
+                    break;
+                case '访客记录':
+                    SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_visitorLogs');
+                    if (this.business.productType !== '20001') {
+                        alert('您暂无权限使用该功能', '提示');
+                        return;
+                    }
+                    wepy.navigateTo({
+                        url: 'visitorLogs',
+                    });
+                    break;
+                case '收款记录':
+                    SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_paymentRecord');
+                    wepy.navigateTo({
+                        url: 'paymentRecord',
+                    });
+                    break;
+                case '我的小程序':
+                    SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_myMp');
+                    wepy.navigateTo({
+                        url: 'myMp',
+                    });
+                    break;
+                case '小程序制作':
+                    SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_myMp_make');
+                    if (this.business.selected.app_type === 3) {
+                        alert('请升级到优享或企业小程序后使用', '提示');
+                        return;
+                    }
+                    wepy.navigateTo({
+                        url: 'templateList',
+                    });
+                    break;
+                case '素材管理':
+                    SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_resourceManage');
+                    if (this.business.selected.app_type === 3) {
+                        alert('请升级到优享或企业小程序后使用', '提示');
+                        return;
+                    }
+                    wepy.navigateTo({
+                        url: 'resourceManage',
+                    });
+                    break;
+                case '支付开通':
+                    SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_OpenPay');
+                    wepy.navigateTo({
+                        url: 'OpenPay',
+                    });
+                    break;
+                case '服务':
+                    SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_orderComponentGroup');
+                    wepy.navigateTo({
+                        url: 'orderComponentGroup',
+                    });
+                    break;
+                case '商品':
+                    SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_goodsComponentGroup');
+                    wepy.navigateTo({
+                        url: '/pages/goodsComponent/publish',
+                    });
+                    break;
+                case '文章':
+                    SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_articleComponentGroup');
+                    wepy.navigateTo({
+                        url: 'articleComponentGroup',
+                    });
+                    break;
+                case '优惠劵':
+                    SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_couponManage');
+                    wepy.navigateTo({
+                        url: 'couponManage',
+                    });
+                    break;
+                case '注册小程序':
+                    SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_myMp_registed');
+                    if (this.registPrecheck) {
+                        const {
+                            vip, currentAuditStatus, createMp, alreadyAuth,
+                        } = this.registPrecheck;
+
+                        if (currentAuditStatus === 0 && vip) {
+                            wepy.navigateTo({ url: '/pages/regist/index' });
+                            return;
+                        }
+
+                        if (alreadyAuth && !createMp) {
+                            wepy.navigateTo({ url: '/pages/regist/notice' });
+                            return;
+                        }
+
+                        if (vip && createMp) {
+                            alert('您的微信小程序已创建成功，不可重复注册');
+                            return;
+                        }
+                    }
+                    if (this.business.selected.app_type === 1) {
+                        alert('当前小程序为优享小程序，不用提交注册信息', '提示');
+                        return;
+                    }
+                    if (this.business.selected.app_type === 3) {
+                        alert('请升级到优享或企业小程序后使用', '提示');
+                        return;
+                    }
+                    if (this.business.selected.sign === 1) {
+                        wepy.navigateTo({
+                            url: 'registed',
+                        });
+                    } else {
+                        wepy.setStorageSync('registMappid', this.business.selected.id);
+                        wepy.navigateTo({
+                            url: 'registMainAccount',
+                        });
+                    }
+                    break;
+                case '进度查询':
+                    SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_progress');
+                    wepy.navigateTo({
+                        url: 'progress',
+                    });
+                    break;
+                case 6:
+                    wepy.navigateTo({
+                        url: 'templateList',
+                    });
+                    break;
+                default:
+                    break;
+            }
+        }
+        setNextTask (taskNum) {
+            this.business = Object.assign({}, this.business, {
+                nexttask: taskNum,
+            });
+            switch (taskNum) {
+                case 2:
+                    this.business.progressText = '当前小程序未添加小程序信息';
+                    break;
+                case 3:
+                    this.business.progressText = '当前小程序还未上传素材';
+                    break;
+                case 4:
+                    if (this.business.selected.app_type === 1) {
+                        this.business.progressText = '当前小程序信息已完善';
+                    } else {
+                        this.business.progressText = '当前小程序还未填写注册信息';
+                    }
+                    break;
+                case 5: // 跳转我的小程序
+                    if (this.business.selected.app_type === 1) {
+                        this.business.progressText = '当前小程序信息已完善';
+                    } else {
+                        this.business.progressText = '当前小程序还未授权';
+                    }
+                    break;
+                case 6: // 跳转到进度
+                    this.business.progressText = '当前小程序信息已完善';
+                    break;
+                case 7: // 消息列表
+                    this.business.progressText = '当前小程序信息已完善';
+                    break;
+                case 8: // 消息列表
+                    this.business.progressText = '当前小程序信息已完善';
+                    break;
+                case 9: // 完成度
+                    this.business.progressText = '当前小程序信息已完善';
+                    break;
+                default:
+                    break;
+            }
             this.$apply();
         }
-    }
-    setGlobalMpId (id) {
-        if (id) {
-            wepy.setStorageSync('current_mpid', id);
-        }
-    }
-    checkBeforeJump (text) {
-        if (!this.business.mpCount) {
-            alert('您还未购买小程序，请登录e.58.com进行购买', '提示');
-            return;
-        }
-        switch (text) {
-            case '名片管理':
-                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_myBizCard');
-                if (this.business.productType !== '20001') {
-                    alert('您暂无权限使用该功能', '提示');
-                    return;
-                }
-                wepy.navigateTo({
-                    url: 'myBizCard',
-                });
-                break;
-            case '通知':
-                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_noticeList');
-                wepy.navigateTo({
-                    url: 'noticeList',
-                });
-                break;
-            case '访客记录':
-                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_visitorLogs');
-                if (this.business.productType !== '20001') {
-                    alert('您暂无权限使用该功能', '提示');
-                    return;
-                }
-                wepy.navigateTo({
-                    url: 'visitorLogs',
-                });
-                break;
-            case '收款记录':
-                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_paymentRecord');
-                wepy.navigateTo({
-                    url: 'paymentRecord',
-                });
-                break;
-            case '我的小程序':
-                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_myMp');
-                wepy.navigateTo({
-                    url: 'myMp',
-                });
-                break;
-            case '小程序制作':
-                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_myMp_make');
-                if (this.business.selected.app_type === 3) {
-                    alert('请升级到优享或企业小程序后使用', '提示');
-                    return;
-                }
-                wepy.navigateTo({
-                    url: 'templateList',
-                });
-                break;
-            case '素材管理':
-                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_resourceManage');
-                if (this.business.selected.app_type === 3) {
-                    alert('请升级到优享或企业小程序后使用', '提示');
-                    return;
-                }
-                wepy.navigateTo({
-                    url: 'resourceManage',
-                });
-                break;
-            case '支付开通':
-                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_OpenPay');
-                wepy.navigateTo({
-                    url: 'OpenPay',
-                });
-                break;
-            case '服务':
-                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_orderComponentGroup');
-                wepy.navigateTo({
-                    url: 'orderComponentGroup',
-                });
-                break;
-            case '商品':
-                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_goodsComponentGroup');
-                wepy.navigateTo({
-                    url: '/pages/goodsComponent/publish',
-                });
-                break;
-            case '文章':
-                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_articleComponentGroup');
-                wepy.navigateTo({
-                    url: 'articleComponentGroup',
-                });
-                break;
-            case '优惠劵':
-                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_couponManage');
-                wepy.navigateTo({
-                    url: 'couponManage',
-                });
-                break;
-            case '注册小程序':
-                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_myMp_registed');
-                if (this.registPrecheck) {
-                    const {
-                        vip, currentAuditStatus, createMp, alreadyAuth,
-                    } = this.registPrecheck;
-
-                    if (currentAuditStatus === 0 && vip) {
-                        wepy.navigateTo({ url: '/pages/regist/index' });
-                        return;
-                    }
-
-                    if (alreadyAuth && !createMp) {
-                        wepy.navigateTo({ url: '/pages/regist/notice' });
-                        return;
-                    }
-
-                    if (vip && createMp) {
-                        alert('您的微信小程序已创建成功，不可重复注册');
-                        return;
-                    }
-                }
-                if (this.business.selected.app_type === 1) {
-                    alert('当前小程序为优享小程序，不用提交注册信息', '提示');
-                    return;
-                }
-                if (this.business.selected.app_type === 3) {
-                    alert('请升级到优享或企业小程序后使用', '提示');
-                    return;
-                }
-                if (this.business.selected.sign === 1) {
-                    wepy.navigateTo({
-                        url: 'registed',
-                    });
-                } else {
-                    wepy.setStorageSync('registMappid', this.business.selected.id);
-                    wepy.navigateTo({
-                        url: 'registMainAccount',
-                    });
-                }
-                break;
-            case '进度查询':
-                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_progress');
-                wepy.navigateTo({
-                    url: 'progress',
-                });
-                break;
-            case 6:
-                wepy.navigateTo({
-                    url: 'templateList',
-                });
-                break;
-            default:
-                break;
-        }
-    }
-    setNextTask (taskNum) {
-        this.business = Object.assign({}, this.business, {
-            nexttask: taskNum,
-        });
-        switch (taskNum) {
-            case 2:
-                this.business.progressText = '当前小程序未添加小程序信息';
-                break;
-            case 3:
-                this.business.progressText = '当前小程序还未上传素材';
-                break;
-            case 4:
-                if (this.business.selected.app_type === 1) {
-                    this.business.progressText = '当前小程序信息已完善';
-                } else {
-                    this.business.progressText = '当前小程序还未填写注册信息';
-                }
-                break;
-            case 5: // 跳转我的小程序
-                if (this.business.selected.app_type === 1) {
-                    this.business.progressText = '当前小程序信息已完善';
-                } else {
-                    this.business.progressText = '当前小程序还未授权';
-                }
-                break;
-            case 6: // 跳转到进度
-                this.business.progressText = '当前小程序信息已完善';
-                break;
-            case 7: // 消息列表
-                this.business.progressText = '当前小程序信息已完善';
-                break;
-            case 8: // 消息列表
-                this.business.progressText = '当前小程序信息已完善';
-                break;
-            case 9: // 完成度
-                this.business.progressText = '当前小程序信息已完善';
-                break;
-            default:
-                break;
-        }
-        this.$apply();
-    }
 
     // chatLogin 聊天登录
-    async chatLogin() {
-        try {
+        async chatLogin() {
+            try {
             // 清空全局的聊天数据
-            const chat = {
-                unReadCount: 0, // 未读消息总数
-                token: '', // 消息相关接口必传字段
-                nickName: '',
-                headImg: '',
-                currentContactId: '',
-                myId: '', // 当前登录者id
-                contactList: [],
-            };
-            Object.assign(globalData.chat, chat);
+                const chat = {
+                    unReadCount: 0, // 未读消息总数
+                    token: '', // 消息相关接口必传字段
+                    nickName: '',
+                    headImg: '',
+                    currentContactId: '',
+                    myId: '', // 当前登录者id
+                    contactList: [],
+                };
+                Object.assign(globalData.chat, chat);
 
-            const { cardId = '' } = this.business.selected;
-            if (!cardId) return;
-            /**
+                const { cardId = '' } = this.business.selected;
+                if (!cardId) return;
+                /**
                 tim 包含 sdkAppID identifier userSig
                 myInfo 包含 token nickName headImg
                 unReadCount 未读消息数
             */
-            const { data } = await get(CHAT_LOGIN, {
-                channel: 1, // channel 身份 1是名片 2是用户
-                userId: cardId, // userId 该身份对应的识别id，商家传cardId(名片Id)
-            });
+                const { data } = await get(CHAT_LOGIN, {
+                    channel: 1, // channel 身份 1是名片 2是用户
+                    userId: cardId, // userId 该身份对应的识别id，商家传cardId(名片Id)
+                });
 
-            const { tim, myInfo, unReadCount = 20 } = data;
-            const { unReadCount: counts } = globalData.chat;
-            const text = counts && counts > 0 ? (counts + Number(unReadCount)) : unReadCount;
+                const { tim, myInfo, unReadCount = 20 } = data;
+                const { unReadCount: counts } = globalData.chat;
+                const text = counts && counts > 0 ? (counts + Number(unReadCount)) : unReadCount;
 
-            setTabBar(text);
+                setTabBar(text);
 
-            const {
-                token, nickName, headImg, id,
-            } = myInfo;
+                const {
+                    token, nickName, headImg, id,
+                } = myInfo;
 
-            // 设置全局token
-            let tempHeadImg = headImg;
-            if (headImg.indexOf('http') === -1) {
-                tempHeadImg = `https://pic1.58cdn.com.cn${headImg}`;
+                // 设置全局token
+                let tempHeadImg = headImg;
+                if (headImg.indexOf('http') === -1) {
+                    tempHeadImg = `https://pic1.58cdn.com.cn${headImg}`;
+                }
+                Object.assign(globalData.chat, {
+                    userLogin: true,
+                    token,
+                    nickName,
+                    headImg: tempHeadImg,
+                    myId: id,
+                });
+                await chatContactList();
+                // IM 登录，获取实时消息
+                this.initIM(tim);
+            } catch (e) {
+                console.log(e);
             }
-            Object.assign(globalData.chat, {
-                userLogin: true,
-                token,
-                nickName,
-                headImg: tempHeadImg,
-                myId: id,
-            });
-            await chatContactList();
-            // IM 登录，获取实时消息
-            this.initIM(tim);
-        } catch (e) {
-            console.log(e);
         }
-    }
 
-    initIM(tim) {
+        initIM(tim) {
         // 当前用户身份
-        const loginInfo = {
-            accountType: 37611,
-        };
-        Object.assign(loginInfo, tim);
-        // listeners
-        const listeners = {
-            onMsgNotify: onMsgNotify, // 监听新消息
-        };
-        sdkLogin(loginInfo, listeners, {});
-    }
+            const loginInfo = {
+                accountType: 37611,
+            };
+            Object.assign(loginInfo, tim);
+            // listeners
+            const listeners = {
+                onMsgNotify: onMsgNotify, // 监听新消息
+            };
+            sdkLogin(loginInfo, listeners, {});
+        }
 }
 </script>
 
@@ -1824,14 +1862,14 @@ scroll-view {
     z-index: 2;
 }
 .triangle{
-    display:block; 
-    width:0; 
-    height:0; 
+    display:block;
+    width:0;
+    height:0;
     border-width:0 5px 8px;
-    border-style:solid; 
-    border-color:transparent transparent rgba(0, 0, 0, 0.7); 
-    position:absolute; 
-    top:-8px; 
+    border-style:solid;
+    border-color:transparent transparent rgba(0, 0, 0, 0.7);
+    position:absolute;
+    top:-8px;
     right:100rpx;/* 三角形居中显示 */
 }
 .add-myapp-modal{
@@ -1871,5 +1909,106 @@ scroll-view {
     margin-top: 30rpx;
     width: 328rpx;
     height: 89rpx;
+}
+.to-everyday{
+  position: fixed;
+  bottom: 408rpx;
+  right: 30rpx;
+  width: 120rpx;
+  height: 120rpx;
+  background:url("https://img.58cdn.com.cn/lbg/jianzhan/images/youxiang/everyday-word-suspend.png") center no-repeat;
+  background-size: 100% 100%;
+  z-index: 98;
+
+  .unread{
+    position: absolute;
+    top: 5rpx;
+    right: 10rpx;
+    width: 20rpx;
+    height: 20rpx;
+    border-radius: 100%;
+    background: #F43530;
+  }
+}
+.everyday-modal-container {
+  position: fixed;
+  z-index: 99;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 750rpx;
+  background: rgba(0, 0, 0, 0.7);
+
+  .everyday-close {
+    position: absolute;
+    top: 50rpx;
+    right: 50rpx;
+    z-index: 1;
+    width: 58rpx;
+    height: 58rpx;
+    background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/home-cancle-btn.png') center no-repeat;
+    background-size: 58rpx 58rpx;
+  }
+
+  .everyday-section {
+    position: absolute;
+    top: 50rpx;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .everyday-pic, #everyday-canvas {
+    position: relative;
+    width: 450rpx;
+    height: 800rpx;
+  }
+
+  .everyday-banner {
+    width: 463rpx;
+    height: 60rpx;
+    margin: 38rpx auto;
+    background: url('https://img.58cdn.com.cn/lbg/jianzhan/images/youxiang/everyday-word-banner.png') center no-repeat;
+    background-size: 463rpx 60rpx;
+  }
+  .everyday-btns {
+    width: 630rpx;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .everyday-btn {
+    width: 300rpx;
+    height: 80rpx;
+    margin: 0;
+    padding: 0;
+    border: none;
+
+    background: #fff;
+    border-radius: 4rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .text {
+      width: fit-content;
+      padding-left: 50rpx;
+      font-family: PingFangSC-Regular;
+      font-size: 28rpx;
+      color: #666666;
+      letter-spacing: 0;
+      line-height: 80rpx;
+      text-align: center;
+    }
+    &.friend .text {
+      background: url('https://img.58cdn.com.cn/lbg/jianzhan/images/youxiang/icon-share-wx.png') center left no-repeat;
+      background-size: 40rpx 33rpx;
+    }
+    &.moments .text {
+      background: url('https://img.58cdn.com.cn/lbg/jianzhan/images/youxiang/icon-share-pyq.png') center left no-repeat;
+      background-size: 40rpx 40rpx;
+    }
+  }
 }
 </style>
