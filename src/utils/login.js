@@ -13,7 +13,7 @@ const callback = (code) => {
     if (code === 0) {
         const { PPU } = loginPlugin.PPUrequestHeader('58.com', '/');
         wepy.setStorageSync('ppu', PPU);
-        wepy.switchTab({
+        wepy.reLaunch({
             url: '/pages/home',
         });
     }

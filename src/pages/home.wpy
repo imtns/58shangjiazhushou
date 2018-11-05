@@ -129,7 +129,7 @@
                         class="edit-btn"
                         @tap="handleLogin"
                     >
-                        去登陆
+                        去登录
                     </view>
                     <view wx:else="{{editDialog.action!='topublic' && editDialog.action!='tologin'}}" class="edit-btn" @tap="toEdit" data-action="{{editDialog.action}}">{{editDialog.rightButton}}</view>
                 </view>

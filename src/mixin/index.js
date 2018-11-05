@@ -21,13 +21,15 @@ export default class Mixin extends wepy.mixin {
             if (mpId) {
                 // 升级
                 const { data = {} } = await get(`/order/getParam/${mpId}`);
-                const { cityId, cateId, oldOrderId, userId, platform } = data;
-                targetUrl = `${upgradeSrc}productItemCode=861110090334300017&cityId=${cityId}&cateId=${cateId}&newSign=1&oldOrderId=${oldOrderId}&userId=${userId}&source=up_mini_app&os=${platform}#wechat_redirect`;
+                const {
+                    cityId, cateId, oldOrderId, userId, platform: p,
+                } = data;
+                targetUrl = `${upgradeSrc}productItemCode=861110090334300017&cityId=${cityId}&cateId=${cateId}&newSign=1&oldOrderId=${oldOrderId}&userId=${userId}&source=up_mini_app&os=${p}#wechat_redirect`;
             }
 
             const { confirm } = await alertP('购买地址已复制到粘贴板，请您打开浏览器粘贴后进行操作', '提示');
             if (confirm) {
-                wepy.setClipboardData({ data: targetUrl});
+                wepy.setClipboardData({ data: targetUrl });
             }
         } catch (e) {
             console.log(e);
