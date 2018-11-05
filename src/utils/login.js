@@ -5,7 +5,6 @@ const loginPlugin = requirePlugin('loginSdk');
 
 const pwdConfig = loginConfig;
 const jump = (url) => {
-    console.log('jump=====');
     wepy.navigateTo({
         url,
     });
@@ -28,12 +27,12 @@ Object.assign(pwdConfig, {
 export default {
     /**
      * 跳转登录页面
-     * @param {Object} cfg
+     * @param {Object} cfg { username, mobile }
      */
     goLogin(cfg = {}) {
         const {
-            mobilevalue = '',
-            usernamevalue = '',
+            mobile: mobilevalue = '',
+            username: usernamevalue = '',
         } = cfg;
 
         loginPlugin.goLogin({

@@ -1,20 +1,23 @@
 <template lang="wxml">
     <view class="container">
-        <view class="account-list">
-            <navigator
+        <loading wx:if="{{ loading }}"></loading>
+        <view class="account-list" wx:else>
+            <view
                 class="account-item"
                 wx:for="{{ accountList }}"
                 wx:key="index"
+                @tap="handleLogin({{item.username}}, {{item.mobile}})"
+                hover-class="navigator-hover"
             >
                 <image
                     class="account-logo"
-                    src="{{ item.logo }}"
+                    src="{{ item.portrait }}"
                 ></image>
                 <view class="account-info">
                     <view class="account-title overflow-ellipsis">
                         {{ item.title }}
                     </view>
-                    <view class="account-mobile">{{ item.mobile }}</view>
+                    <view class="account-mobile">{{ item.username }}</view>
                     <view class="account-mpinfo">
                         <view class="account-mp-count">
                             小程序数量：{{ item.mpCount }}
@@ -25,30 +28,55 @@
                     </view>
                 </view>
                 <view class="account-arrow"></view>
-            </navigator>
+            </view>
         </view>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
+import * as service from '../../utils/service';
+import Loading from '../../components/Loading';
+import loginHelper from '../../utils/login';
 
 export default class Index extends wepy.page {
     config = {
         navigationBarTitleText: '选择58账号登录',
     };
+    components = {
+        loading: Loading,
+    };
     data = {
         accountList: [
             {
-                logo: '',
+                portrait: '',
                 title: '这是58账号非常长的名字很厉害吧哈哈哈哈哈哈',
                 mobile: '18010882283',
                 mpCount: 1,
                 cardCount: 10,
             },
         ],
+        loading: true,
     };
-    onLoad() {
+    async onLoad() {
+        try {
+            const openId = await service.getOpenId();
+            const accountList = await service.getAssistAuthList(openId);
+            this.accountList = accountList;
+
+            this.loading = false;
+            this.$apply();
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    methods = {
+        handleLogin(username, mobile) {
+            loginHelper.goLogin({
+                username,
+                mobile,
+            });
+        },
     }
 }
 </script>

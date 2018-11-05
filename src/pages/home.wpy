@@ -114,14 +114,6 @@
                 <button class="showModal_cancle" bindtap="hideModal"></button>
             </view>
         </view>
-        <view wx:if="{{showIdentity}}">
-            <view class="showModal_mask" bindtap="hideModal"></view>
-            <view class="showIdentity_modal">
-                <navigator class="switch_btn" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release" hover-class="none">切换账号</navigator>
-                <!-- <view class="switch_btn" @tap="switchIdentity">切换账号</view> -->
-                <view class="show_cancle" @tap="hideIdentityModal">取消</view>
-            </view>
-        </view>
         <!-- 未编辑过名片提示 -->
         <view class="toedit-modal" wx:if="{{share.showEditModal}}">
             <view class="toedit-con">
@@ -132,7 +124,13 @@
                     <!-- 去客服消息公众号 -->
                     <button wx:if="{{editDialog.action=='topublic'}}" open-type="contact" class="edit-btn">{{editDialog.rightButton}}</button>
                     <!-- 去58验证小程序登录 -->
-                    <navigator wx:if="{{editDialog.action=='tologin'}}" class="edit-btn" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release" hover-class="none">去登录</navigator>
+                    <view
+                        wx:if="{{editDialog.action=='tologin'}}"
+                        class="edit-btn"
+                        @tap="handleLogin"
+                    >
+                        去登陆
+                    </view>
                     <view wx:else="{{editDialog.action!='topublic' && editDialog.action!='tologin'}}" class="edit-btn" @tap="toEdit" data-action="{{editDialog.action}}">{{editDialog.rightButton}}</view>
                 </view>
             </view>
@@ -216,6 +214,7 @@ import { CHAT_LOGIN, MY_MPLIST, SESSION, INSERT_SESSION, GET_EXT_JSON, GET_ASSIS
 import { sdkLogin, onMsgNotify, sdkLogout } from '../utils/IM/IM';
 import { chatContactList } from '../store/index';
 import loginHelper from '../utils/login';
+import * as service from '../utils/service';
 
 export default class Home extends wepy.page {
     mixins = [Mixin]
@@ -414,14 +413,15 @@ export default class Home extends wepy.page {
         },
         changeIdentity() {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_switch_Identity');
-            this.showIdentity = true;
-            this.$apply();
+            wepy.navigateTo({
+                url: '/pages/app/accountList',
+            });
         },
         // 切换账号
-        hideIdentityModal() {
-            this.showIdentity = false;
-            this.$apply();
-        },
+        // hideIdentityModal() {
+        //     this.showIdentity = false;
+        //     this.$apply();
+        // },
         // 切换小程序操作
         async confirmAction () {
             // 切换小程序，登出IM
@@ -675,7 +675,7 @@ export default class Home extends wepy.page {
     }
     async getAssistAuth() {
         try {
-            const { data } = await get(GET_ASSIST_AUTH);
+            const data = await service.getAssistAuth();
             const { isFollow, assistInfo = null } = data;
             // 9.13 王研需求修改
             if (assistInfo && assistInfo.wechatUnionId) { // 是否授权
