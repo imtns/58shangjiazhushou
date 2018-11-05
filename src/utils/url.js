@@ -42,7 +42,7 @@ export const MY_MPLIST = '/mplogic/mymplist'; // 小程序列表
 export const SESSION = '/wechat/bizAssistAuth/session'; // 获取SESSION数据
 export const INSERT_SESSION = '/wechat/bizAssistAuth/insert'; // 插入SESSION数据
 export const GET_EXT_JSON = '/mpBusinessRelease/getExtJson'; // 获取ExtJson
-export const GET_ASSIST_AUTH = '/wechat/bizAssistAuth/get'; // 获取关注公众号信息
+export const GET_ASSIST_AUTH = '/wechat/bizAssistAuth/get'; // 获取关注公众号信息，能获取到userinfo、openid、unionid
 
 export const SHARE = '/mplogic/share'; // 分享小程序
 
