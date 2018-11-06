@@ -22,6 +22,7 @@ import wepy from 'wepy';
 import { get } from '../utils/ajax';
 import globalService from '../utils/globalService';
 import { getUid, SendClickLog } from '../utils/maidian';
+import { REGIST_INDUSTRY_CATE } from '../utils/url';
 
 const selectorConfig = {
     region: {
@@ -137,6 +138,8 @@ const selectorConfig = {
     },
 };
 
+let registCates = [];
+
 export default class Index extends wepy.page {
     config = {
         navigationBarTitleText: '选择',
@@ -160,8 +163,15 @@ export default class Index extends wepy.page {
          * conIndex 当前选中的item
          */
         async selectItem(colIdx, conIdx) {
-            console.log(colIdx);
-            console.log(conIdx);
+            if (this.type === 'registCate') {
+                this.handleRegistCateSelect(colIdx, conIdx);
+                this.$apply();
+                if (colIdx === 1) {
+                    this.successAction();
+                }
+                return;
+            }
+
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_multiSelector_${colIdx}`);
             const colIndex = +colIdx;
             const conIndex = +conIdx;
@@ -204,6 +214,18 @@ export default class Index extends wepy.page {
         },
     }
 
+    handleRegistCateSelect(colIdx, conIdx) {
+        this.contentList[colIdx].forEach(item => {
+            const con = item;
+            con.checked = false;
+        });
+        this.contentList[colIdx][conIdx].checked = true;
+        if (colIdx !== 1) {
+            this.contentList[colIdx + 1] = registCates[conIdx].children;
+        }
+        Object.assign(this.result, this.contentList[colIdx][conIdx]);
+    }
+
     successAction() {
         globalService.set('multiSelector', this.result);
         console.log(this.result);
@@ -219,22 +241,50 @@ export default class Index extends wepy.page {
         ];
     }
 
-    async onLoad(options) {
-        const { type = 'region' } = options;
-        this.type = type;
-
-        // 初始化列表
-        for (let i = 0; i < this.columnIds.length; i += 1) {
-            this.contentList[i] = [];
-        }
-
-        this.loadConfig(selectorConfig[type]);
-
-        // 渲染第一个列表，第一个列表总是要渲染的
-        const { data: firstCol } = await get(...this.getHttpParams(0));
-        this.contentList[0] = firstCol;
-
+    async initRegistCate() {
+        const { data } = await get(REGIST_INDUSTRY_CATE);
+        // 比较粗糙的做法，直接条件判断是否快速注册
+        registCates = data.map(cate => {
+            let res = cate;
+            res.children = res.children.map(item => ({
+                ...item,
+                name: item.wubaSecondName,
+            }));
+            return {
+                ...res,
+                name: res.wubaFirstName,
+            };
+        });
+        this.contentList[0] = registCates;
+        this.showProp = 'name',
         this.$apply();
+    }
+
+    async onLoad(options) {
+        try {
+            const { type = 'region' } = options;
+            this.type = type;
+
+            if (type === 'registCate') {
+                this.initRegistCate();
+                return;
+            }
+
+            // 初始化列表
+            for (let i = 0; i < this.columnIds.length; i += 1) {
+                this.contentList[i] = [];
+            }
+
+            this.loadConfig(selectorConfig[type]);
+
+            // 渲染第一个列表，第一个列表总是要渲染的
+            const { data: firstCol } = await get(...this.getHttpParams(0));
+            this.contentList[0] = firstCol;
+
+            this.$apply();
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     loadConfig(subConfig) {

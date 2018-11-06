@@ -97,7 +97,7 @@
 </template>
 <script>
 import wepy from 'wepy';
-import { get, post } from '../utils/ajaxP';
+import { get, post } from '../utils/ajax';
 import { toast } from '../utils';
 import { getUid, SendClickLog } from '../utils/maidian';
 
@@ -144,12 +144,11 @@ export default class OrderDetail extends wepy.page {
         },
         async bindAgreeRefund (o) {
             const orderId = o.currentTarget.dataset.orderid;
-            const [e, data] = await get(`/consumerAppointment/optRefund/${orderId}`, { action: 'agree' });
-            if (e) {
-                toast(e);
+            const { state, msg } = await get(`/consumerAppointment/optRefund/${orderId}`, { action: 'agree' });
+            if (state !== 100) {
+                toast(msg);
                 return;
             }
-            console.log(data);
             wx.showLoading({
                 title: '退款成功',
             });
@@ -163,9 +162,9 @@ export default class OrderDetail extends wepy.page {
         },
         async bindApplyPlat(o) {
             const orderId = o.currentTarget.dataset.orderid;
-            const [e, data] = await get(`/consumerAppointment/optRefund/${orderId}`, { action: 'refuse' });
-            if (e) {
-                toast(e);
+            const { state, msg, data } = await get(`/consumerAppointment/optRefund/${orderId}`, { action: 'refuse' });
+            if (state !== 100) {
+                toast(msg);
                 return;
             }
             console.log(data);
@@ -180,9 +179,9 @@ export default class OrderDetail extends wepy.page {
     }
     async submitOrder () {
         const { id } = this.order;
-        const [e] = await post(`/consumerAppointment/accept/${id}`);
-        if (e) {
-            toast(e);
+        const { state, msg } = await post(`/consumerAppointment/accept/${id}`);
+        if (state !== 100) {
+            toast(msg);
             return;
         }
         this.submitSuccess = true;
@@ -213,9 +212,9 @@ export default class OrderDetail extends wepy.page {
     }
     async getOrder() {
         const id = wx.getStorageSync('orderId');
-        const [e, data] = await get(`/consumerAppointment/get/${id}`);
-        if (e) {
-            toast(e);
+        const { state, msg, data } = await get(`/consumerAppointment/get/${id}`);
+        if (state !== 100) {
+            toast(msg);
             return;
         }
         const order = this.parseOrder(data);

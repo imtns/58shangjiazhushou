@@ -1,0 +1,72 @@
+<template lang="wxml">
+    <view class="help-notice-container" wx:if="{{ show }}">
+        <view class="help-notice-title">{{ title }}</view>
+        <view class="help-notice-content">
+            <slot name="content"></slot>
+        </view>
+        <view class="help-notice-close" @tap="handleHelpModalClose"></view>
+    </view>
+</template>
+
+<script>
+/**
+ * @desc 帮助提示弹窗
+ */
+import wepy from 'wepy';
+
+export default class Index extends wepy.component {
+    props = {
+        title: {
+            type: String,
+            default: '提示',
+        },
+        show: {
+            type: Boolean,
+            default: false,
+            twoWay: true,
+        },
+    }
+    methods = {
+        handleHelpModalClose() {
+            this.show = false;
+        },
+    }
+}
+</script>
+
+<style lang="scss">
+    .help-notice-container {
+        position: fixed;
+        z-index: 1000;
+        top: 0;
+        height: 100vh;
+        width: 750rpx;
+        padding: 100rpx 75rpx 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #fff;
+    }
+    .help-notice-title {
+        line-height: 88rpx;
+        border-bottom: 1rpx solid #e6e6e6;
+        margin-bottom: 52rpx;
+        width: 100%;
+        text-align: center;
+        font-size: 32rpx;
+        color: #333;
+    }
+    .help-notice-content {
+        font-size: 28rpx;
+        color: #666;
+    }
+    .help-notice-close {
+        width: 44rpx;
+        height: 44rpx;
+        background-image: url('/icon-help-modal-close.png');
+        background-size: 44rpx 44rpx;
+        position: absolute;
+        bottom: 102rpx;
+        left: 354rpx;
+    }
+</style>

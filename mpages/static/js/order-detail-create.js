@@ -3,7 +3,7 @@ var $errorPop = $('div.tips-error');
 var Page = {
     ppu: '',
     //id: '',
-    test: 'test',
+    test: '',
     toast: function(tar, cont) {
         var NONE = 'none',
             $ele = $('div.mask,div.win2'),

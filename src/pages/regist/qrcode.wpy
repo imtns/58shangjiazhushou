@@ -22,14 +22,16 @@
 
 <script>
 import wepy from 'wepy';
-import { toast, alert } from '../../utils';
+import { toast, alert } from '../../utils/index';
+import { LOAD_REGIST_QRCODE } from '../../utils/url';
+import { get } from '../../utils/ajax';
 
 export default class Index extends wepy.page {
     config = {
         navigationBarTitleText: '注册二维码',
     }
     data = {
-        src: 'http://pic1.58cdn.com.cn//bizmp/n_v2c28ded7ebd49465f802e3560680175b9_bce1063f4c37be3b.jpg?w=350&h=350&ss=1',
+        src: '',
         tmpPath: '',
         showOpenSetting: false,
     }
@@ -38,12 +40,19 @@ export default class Index extends wepy.page {
             // 只有为false时才代表拒绝授权
             if (await this.checkAuth('scope.writePhotosAlbum') === false) {
                 this.showOpenSetting = true;
+                this.$apply();
             }
 
-            this.$apply();
+            this.loadData();
         } catch (err) {
             console.log(err);
         }
+    }
+
+    async loadData() {
+        const { data: qrcode } = await get(LOAD_REGIST_QRCODE);
+        this.src = qrcode;
+        this.$apply();
     }
 
     async checkAuth(authName) {
@@ -75,6 +84,7 @@ export default class Index extends wepy.page {
                 await wepy.saveImageToPhotosAlbum({
                     filePath,
                 });
+                toast('保存成功');
             } catch (err) {
                 console.log(err);
                 if (err && err.errMsg === 'saveImageToPhotosAlbum:fail:auth denied') {

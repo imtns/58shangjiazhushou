@@ -25,7 +25,7 @@ var Page = {
         },function(res){
             const { data } = JSON.parse(res);
             that.share = data;
-            if(!that.share.hasPerm && that.share.cashDistance > 0) { // 没有资格参加活动
+            if(!that.share.hasPerm) { // 没有资格参加活动
                 $(".prize-result").css("display","block");
                 $(".result-tip").html('有58云名片的商家才能参加这个活动哦，可以去购买名片获取商机、赢大奖');
                 return;
@@ -40,7 +40,11 @@ var Page = {
             if(parseInt(that.share.hasShareDays) >= that.share.needShareDays){
                 $(".result-title").html('领奖成功');
                 $(".result-tip").html('恭喜您！瓜分获得<em>¥' + that.share.cashAmount + '</em>现金奖励');
-                $("._withdraw-btn").css("display","inline-block");
+                if (!that.share.hasCashed) { // 还未提现
+                    $("._withdraw-btn").css("display","inline-block");
+                } else { // 已提现
+                    $("._hascashed-btn").css("display","inline-block");
+                }
             } else{
                 $(".result-title").html('非常遗憾');
                 $(".result-tip").html('您没有达到累计分享'+that.share.needShareDays+'天的活动要求，<br>再接再厉，期待在之后的活动中赢取大奖');
@@ -82,8 +86,21 @@ var Page = {
         $("._dialoge-code").on("click",function(){
             $("._dialoge-code").css("display","none");
         })
+        // 立即提现
         $("._withdraw-btn").on("click",function(){
-            alert('该功能正在开发中！')
+            const unionId = $(".prize-result").attr("data-unionid");
+            const openId = $(".prize-result").attr("data-openid");
+            $.get("/yunying/cash", {
+                unionId,
+                openId,
+            },function(res){
+                const { msg } = JSON.parse(res);
+                if (msg == 'SUCCESS') {
+                    alert('恭喜您提现成功！');
+                    $("._withdraw-btn").css("display","none");
+                    $("._hascashed-btn").css("display","inline-block");
+                }
+            })
         })
     }
 };

@@ -67,3 +67,12 @@ export const READ_GROUND_MSG = '/mplogic/readgroupmsg'; // 消息设置已读
 export const CONSUMERS = '/mpCardBusiness/consumers'; // 通知消息列表
 export const PUSN_SET_UP = '/mpCardBusiness/pushSetup'; // 提醒设置
 export const TO_PUSN_SET_UP = '/mpCardBusiness/toPushSetup'; // 获取当前提醒设置
+
+// 快速注册相关
+export const LOAD_REGIST_QRCODE = '/register/qrcode'; // 获取快速注册入口二维码
+export const CHECK_IS_LOGIN = '/register/isLogin'; // 判断用户是否登录（不仅可用于快速注册）
+export const SAVE_BASICINFO = '/register/basicInfo/insert'; // 填写法人基本信息
+export const SAVE_MPINFO = '/register/mpInfo/insert'; // 创建小程序
+export const REGIST_PRE_CHECK = '/register/preCheck'; // 创建小程序，前置检查
+export const REGIST_INDUSTRY_CATE = '/register/cates'; // 创建小程序，所属行业（需与腾讯提供的行业匹配）
+export const CHECK_IS_SALESMAN = '/register/isSalesman'; // 判断是否为销售人员（非销售人员不展示注册二维码入口）

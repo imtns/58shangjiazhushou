@@ -11,11 +11,29 @@
         </view>
         <view class="index-loaded-header">
             <view class="welcome-block">
-                <view wx:if="{{business.name}}" class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
-                <view wx:else class="welcome-title">欢迎来到58小程序管理平台</text></view>
+                <view wx:if="{{userLogin}}" class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
+                <view wx:else class="welcome-title">欢迎来到58小程序管理平台</view>
                 <view @tap="changeIdentity" class="item-switch">账号切换</view>
             </view>
             <view class="item-detail">
+                <view wx:if="{{userLogin}}">
+                    <view class="item-name" :class="{logoPadding : business.mpCount > 0 }">{{ business.miniProgramName }}</view>
+                    <view class="item-title" :class="{logoPadding : business.mpCount > 0 }">
+                        <view class="star-box" wx:if="{{ business.selected.score }}">
+                            <view class="unstar-list">
+                                <view class="icon-unstar" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
+                            </view>
+                            <view class="star-list"
+                            style="width:{{ 30 * (~~(business.selected.score / 1)) + 22 * (business.selected.score % 1) }}rpx">
+                                <view class="icon-star" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
+                            </view>
+                            <view class="star-box-title" @tap="shopScore">店铺评分</view>
+                        </view>
+                        <view wx:else>可上传素材、提交注册信息到当前小程序</view>
+                    </view>
+                    <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">小程序切换</view>
+                    <image class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+                </view>
                 <view wx:if="{{!userLogin}}" class="unlogin">
                     <text class="login-tip">您还没有登录，授权登录后可管理小程序赚大钱</text>
                     <view
@@ -24,22 +42,6 @@
                         @tap="handleLogin"
                     >立即登录</view>
                 </view>
-                <view wx:if="{{userLogin}}" class="item-name" :class="{logoPadding : business.mpCount > 0 }">{{ business.miniProgramName }}</view>
-                <view wx:if="{{userLogin}}" class="item-title" :class="{logoPadding : business.mpCount > 0 }">
-                    <view class="star-box" wx:if="{{ business.selected.score }}">
-                        <view class="unstar-list">
-                            <view class="icon-unstar" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
-                        </view>
-                        <view class="star-list"
-                        style="width:{{ 30 * (~~(business.selected.score / 1)) + 22 * (business.selected.score % 1) }}rpx">
-                            <view class="icon-star" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
-                        </view>
-                        <view class="star-box-title" @tap="shopScore">店铺评分</view>
-                    </view>
-                    <view wx:else>可上传素材、提交注册信息到当前小程序</view>
-                </view>
-                <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">小程序切换</view>
-                <image class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
                 <view wx:if="{{userLogin}}" class="index-block-body index-item">
                     <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
                         <image src="{{item.iconPath}}" class="item-img"></image>
@@ -218,19 +220,30 @@
 <script>
 import wepy from 'wepy';
 import Mixin from '../mixin';
+import RegistMixin from './regist/mixin';
+
 import { items, nItems } from '../utils/homeList';
 import { alert, formatDuring } from '../utils';
 import { post, get } from '../utils/ajax';
 import { globalData, setTabBar } from '../utils/globalData';
 import { getUid, SendClickLog } from '../utils/maidian';
-import { CHAT_LOGIN, MY_MPLIST, SESSION, INSERT_SESSION, GET_EXT_JSON, GET_SHARE } from '../utils/url';
+
+import {
+    CHAT_LOGIN,
+    MY_MPLIST,
+    SESSION,
+    INSERT_SESSION,
+    GET_EXT_JSON,
+    GET_SHARE,
+} from '../utils/url';
+
 import { sdkLogin, onMsgNotify, sdkLogout } from '../utils/IM/IM';
 import { chatContactList } from '../store/index';
 import loginHelper from '../utils/login';
 import * as service from '../utils/service';
 
 export default class Home extends wepy.page {
-    mixins = [Mixin]
+    mixins = [Mixin, RegistMixin]
     config = {
         navigationBarTitleText: '首页',
     }
@@ -289,6 +302,17 @@ export default class Home extends wepy.page {
         },
         items,
         nItems,
+
+        // 用户注册状态前置检查
+        // 快速注册时添加
+        // {
+        //     vip: false, // 是否购买小程序
+        //     // 注册状态
+        //     // -1资料审核失败 0默认值、未提交过资料 1新提交审核中 2审核通过
+        //     currentAuditStatus: 0,
+        //     createMp: false, // 是否创建了小程序
+        // },
+        registPrecheck: null,
     }
     methods = {
         handleLogin() {
@@ -511,6 +535,16 @@ export default class Home extends wepy.page {
     }
     async onLoad () {
         try {
+            // 快速注册判断跳转
+            // 如果用户在快速注册的流程中，则让用户跳转到注册流程的相应页面
+            this.checkRegistStatus()
+                .then(msg => {
+                    console.log(msg);
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+
             await this.loadData();
             if (!this.userLogin) return;
             // 聊天登录，监控未读消息
@@ -526,6 +560,9 @@ export default class Home extends wepy.page {
             if (!this.isFollow && wepy.getStorageSync('ppu')) {
                 this.showModal = true;
             }
+
+            // wepy在链式更改属性时，在手机预览会出现不生效的情况。
+            this.status.loading = false;
             this.$apply();
         } catch (err) {
             console.log(err);
@@ -533,14 +570,14 @@ export default class Home extends wepy.page {
     }
     async onShow () {
         try {
+            await this.loadData();
+            if (!this.userLogin) return;
             SendClickLog(
                 'wxf03e52adc4b13448',
                 getUid(),
                 '{}',
                 'sjzh_click_home_onload',
             );
-            await this.loadData();
-            if (!this.userLogin) return;
             await this.loadShareActivity();
             this.loadCode();
             this.getInfo();
@@ -804,10 +841,6 @@ export default class Home extends wepy.page {
                     cardId,
                 },
             });
-            // wepy在链式更改属性时，在手机预览会出现不生效的情况。
-            this.setData({
-                'status.loading': false,
-            });
             wepy.setStorageSync('current_cardId', cardId);
             nexttask && this.setNextTask(nexttask);
             this.$apply();
@@ -935,6 +968,26 @@ export default class Home extends wepy.page {
                 break;
             case '注册小程序':
                 SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_myMp_registed');
+                if (this.registPrecheck) {
+                    const {
+                        vip, currentAuditStatus, createMp, alreadyAuth,
+                    } = this.registPrecheck;
+
+                    if (currentAuditStatus === 0 && vip) {
+                        wepy.navigateTo({ url: '/pages/regist/index' });
+                        return;
+                    }
+
+                    if (alreadyAuth && !createMp) {
+                        wepy.navigateTo({ url: '/pages/regist/notice' });
+                        return;
+                    }
+
+                    if (vip && createMp) {
+                        alert('您的微信小程序已创建成功，不可重复注册');
+                        return;
+                    }
+                }
                 if (this.business.selected.app_type === 1) {
                     alert('当前小程序为优享小程序，不用提交注册信息', '提示');
                     return;
@@ -1817,7 +1870,7 @@ scroll-view {
     z-index: 99;
 }
 .add-step{
-    padding-top: 80rpx;
+    padding-top: 40rpx;
     text-align: center;
 }
 .step-text{
@@ -1837,7 +1890,7 @@ scroll-view {
     height: 331rpx;
 }
 .cancle-btn image{
-    margin-top: 50rpx;
+    margin-top: 30rpx;
     width: 328rpx;
     height: 89rpx;
 }

@@ -161,6 +161,7 @@ export const autoFixed = (num) => {
     return num <= 9 ? `0${num}` : num;
 };
 
+// 线上图片 下载到本地
 export const getTmpFilePath = (url) => {
     return new Promise((resolve, reject) => {
         wx.downloadFile({

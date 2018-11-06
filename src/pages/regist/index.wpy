@@ -1,44 +1,77 @@
 <template lang="wxml">
-    <view class="container">
+    <view class="container" wx:if="{{ !loading }}">
         <messageBox
             :show.sync="modalShow"
-            :content="modalContent"
-            :confirmText="modalConfirmText"
-            :onCancel="onCancel"
-            :onConfirm="onConfirm"></messageBox>
-        <form @submit="handleSubmit">
+            :content.sync="modalContent"
+            :confirmText.sync="modalConfirmText"></messageBox>
+        <form @submit="handleSubmit" report-submit>
             <view class="header">
                 <view>注册基本信息</view>
-                <view class="help">?</view>
+                <view class="help" @tap="handleShowHelp">?</view>
             </view>
             <view class="form">
                 <view class="form-item">
                     <view class="label">企业法人姓名</view>
-                    <input class="input" name="name" type="text" maxlength="10" placeholder="请输入"/>
+                    <input class="input" name="legalPerson" type="text" maxlength="10"
+                        placeholder-class="placeholder" placeholder="请输入"/>
                 </view>
                 <view class="form-item">
                     <view class="label">企业法人微信号</view>
-                    <input class="input" name="wechat" type="text" maxlength="20"  placeholder="请输入"/>
+                    <input class="input" name="legalPersonWechat" type="text" maxlength="20"
+                        placeholder-class="placeholder" placeholder="请输入"/>
                 </view>
                 <view class="form-item">
-                    <view class="label">企业姓名</view>
-                    <input class="input" name="bizName" type="text" maxlength="50" placeholder="请输入"/>
+                    <view class="label">企业名称</view>
+                    <input class="input" name="enterpriseName" type="text" maxlength="50"
+                        placeholder-class="placeholder" placeholder="请输入"/>
                 </view>
                 <view class="form-item last">
                     <view class="label">企业代码</view>
-                    <input class="input" name="bizCode" type="text" maxlength="20" placeholder="请输入"/>
+                    <input class="input" name="enterpriseCode" type="text" maxlength="20"
+                        placeholder-class="placeholder" placeholder="请输入"/>
                 </view>
-                <button class="btn-save" :class="{ disabled: !canSubmit }" form-type="submit">保存</button>
+                <button class="btn-save" form-type="submit">下一步</button>
             </view>
         </form>
+        <helpModal
+            :show.sync="helpModalShow">
+            <view class="help-modal-content" slot="content">
+                <view class="notice-item">
+                    <view class="notice-item-value">
+                        <text class="notice-item-value-bold">企业法人姓名：</text>与营业执照法人姓名相同。
+                    </view>
+                </view>
+                <view class="notice-item">
+                    <view class="notice-item-value">
+                        <text class="notice-item-value-bold">企业法人微信号：</text>营业执照法人的微信号，之后会用于认证身份信息，请使用已开通微信支付的微信号。
+                    </view>
+                </view>
+                <view class="notice-item">
+                    <view class="notice-item-value">
+                        <text class="notice-item-value-bold">企业名称：</text>与营业执照的企业名称相同。
+                    </view>
+                </view>
+                <view class="notice-item">
+                    <view class="notice-item-value">
+                        <text class="notice-item-value-bold">企业代码：</text>与营业执照的企业代码相同。
+                    </view>
+                </view>
+                <view class="notice-tips notice-item-value-bold">请确认输入正确后再提交，每天最多可提交5次</view>
+            </view>
+        </helpModal>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
 import MessageBox from '../../components/MessageBox';
+import HelpModal from '../../components/HelpModal';
+import { SAVE_BASICINFO } from '../../utils/url';
+import { post } from '../../utils/ajax';
+import RegistMixin from './mixin';
 
 export default class Index extends wepy.page {
+    mixins = [RegistMixin];
     config = {
         navigationBarTitleText: '注册信息',
     }
@@ -46,30 +79,57 @@ export default class Index extends wepy.page {
         modalShow: false,
         modalContent: '您填写的信息有误。一天内只能提交5次，您还可以提交4次',
         modalConfirmText: '重新填写',
+
+        helpModalShow: false,
+
+        userId: '', // 销售的userId
+        loading: true,
     }
     components = {
         messageBox: MessageBox,
+        helpModal: HelpModal,
     }
-    onLoad() {
-        console.log('onLoad');
-    }
-    computed = {
-        canSubmit() {
-            return true;
-        },
+    onLoad({ userId = '' }) {
+        this.userId = userId;
+        this.checkRegistStatus()
+            .then(() => {
+                this.loading = false;
+                this.$apply();
+            })
+            .catch(err => {
+                this.showModal('网络出错，请稍后再试');
+                console.log(err);
+            });
     }
 
-    onConfirm() {
-        console.log('confirm');
-    }
-    onCancel() {
-        console.log('cancel');
-    }
     methods = {
-        handleSubmit(e) {
-            this.modalShow = true;
-            const { value: data } = e.detail;
-            console.log(data);
+        async handleSubmit(e) {
+            try {
+                const { value: data, formId } = e.detail;
+
+                Object.keys(data).forEach(key => {
+                    if (!data[key]) {
+                        this.showModal('所有信息都必须填写哦~', {
+                            confirmText: '好的',
+                        });
+                        throw new Error('信息填写不完整');
+                    }
+                });
+
+                Object.assign(data, { userId: this.userId, formId });
+
+                await post(SAVE_BASICINFO, data);
+
+                wepy.redirectTo({ url: '/pages/regist/guide' });
+            } catch (err) {
+                this.showModal(typeof err === 'string' ? err : err.msg, {
+                    confirmText: '重新填写',
+                });
+                console.log(err);
+            }
+        },
+        handleShowHelp() {
+            this.helpModalShow = true;
         },
     }
 }
@@ -111,6 +171,8 @@ export default class Index extends wepy.page {
             width: 396rpx;
             color: #333;
             text-align: right;
+            height: 42rpx;
+            min-height: auto;
         }
     }
     .btn-save {
@@ -124,5 +186,20 @@ export default class Index extends wepy.page {
         &.disabled {
             background-color: #DBDBDB;
         }
+    }
+
+    .notice-item-value-bold {
+        font-size: 28rpx;
+        color: #2a2a2a;
+        font-weight: bold;
+    }
+    .notice-tips {
+        margin-top: 40rpx;
+    }
+    .help-modal-content {
+        margin-top: 40rpx;
+    }
+    .placeholder {
+        color: #ccc;
     }
 </style>

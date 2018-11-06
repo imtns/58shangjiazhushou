@@ -36,10 +36,12 @@
                 </view>
                 <view class="btns">
                     <repeat for="{{myCardItems}}" key="index" index="index" item="item">
-                        <view class="item_box" wx:if="{{item.type == 'innerJump'}}"  @tap="toinnerJump({{item.path}})">
-                            <view class="img" style="background:url({{item.src}}) no-repeat center;"></view>
-                            <view class="text">{{item.name}}</view>
-                        </view>
+                        <block wx:if="{{ item.id !== 'regist_qrcode' || (item.id === 'regist_qrcode' && isSalesman) }}">
+                            <view class="item_box" wx:if="{{item.type == 'innerJump'}}"  @tap="toinnerJump({{item.path}})">
+                                <view class="img" style="background:url({{item.src}}) no-repeat center;"></view>
+                                <view class="text">{{item.name}}</view>
+                            </view>
+                        </block>
                         <navigator class="item_box" wx:if="{{item.type == 'mpJump' && item.name === '查看名片'}}" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="{{item.path + cardId }}" extra-data="" version="develop">
                             <view class="img" style="background:url({{item.src}}) no-repeat center;"></view>
                             <view class="text">{{item.name}}</view>
@@ -76,8 +78,8 @@
 
 <script>
 import wepy from 'wepy';
-import { CARD_HAS_CARD, CARD_HAS_DETAIL } from '../utils/url';
-import { get, post } from '../utils/ajax';
+import { CARD_HAS_CARD, CARD_HAS_DETAIL, CHECK_IS_SALESMAN } from '../utils/url';
+import { post, get } from '../utils/ajax';
 import { myCardItems } from '../utils/introData';
 import { getUid, SendClickLog } from '../utils/maidian';
 
@@ -98,6 +100,7 @@ export default class myBizCard extends wepy.page {
         vote: '',
         myCardItems,
         cardId: '',
+        isSalesman: false, // 判断是否为销售
         isShowDialogShare: false,
     }
     methods = {
@@ -146,7 +149,17 @@ export default class myBizCard extends wepy.page {
         },
     };
     onLoad () {
-        console.log('onload');
+        /**
+         * @author zhouwunan
+         */
+        get(CHECK_IS_SALESMAN)
+            .then(({ data }) => {
+                this.isSalesman = data;
+                this.$apply();
+            })
+            .catch(err => {
+                console.log(err);
+            });
     }
     async onShow () {
         const currentMpid = wepy.getStorageSync('current_mpid');

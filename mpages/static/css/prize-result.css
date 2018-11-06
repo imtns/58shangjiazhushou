@@ -36,6 +36,18 @@
     margin-top: .88rem;
     display: none;
 }
+.hascashed-btn{
+    display: inline-block;
+    line-height: .88rem;
+    width: 70%;
+    font-size: .32rem;
+    color: #999;
+    text-decoration:none;
+    background:#cacaca;
+    border-radius: 100px;
+    margin-top: .88rem;
+    display: none;
+}
 .prize-attend{
     height: 100%;
     width: 100%;

@@ -20,7 +20,7 @@
             </view>
         </view>  
     </view>
-    <view wx:if="{{!userLogin}}">
+    <view wx:else="{{!userLogin}}">
         <nologin></nologin>
     </view>
 </template>

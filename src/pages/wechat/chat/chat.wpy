@@ -6,6 +6,7 @@
             scroll-y="{{true}}"
             upper-threshold="500"
             @scrolltoupper="loadMore"
+            style="height:{{scrollHeight}}"
             scroll-with-animation="{{true}}"
             scroll-into-view="{{toView}}">
             <!-- <view class="chat-msg-loading">加载中</view> -->
@@ -30,24 +31,25 @@
                 </view>
             </block>
         </scroll-view>
-        <view class="chat-input-zone">
+        <view class="chat-input-zone" style="margin-bottom: {{keyboardHeight}}rpx">
             <view class="chat-input-view">
                 <input
                 type="text"
                 class="chat-input"
-                placeholder="请输入文字"
-                cursor-spacing="30"
+                placeholder="请输入消息"
+                cursor-spacing="15"
                 @input="input"
-                @focus="closepanel"
+                @focus="showKeyBoard"
+                @blur="closeKeyBoard"
                 confirm-type="send"
                 confirm-hold="true"
                 bindconfirm="sendMsg"
                 data-type="TEXT"
+                adjust-position="{{adjustSet}}"
                 value="{{content}}"/>
             </view>
             <view class="chat-show-upload" @tap="showpanel" wx:if="{{!showpanel}}"></view>
             <view class="chat-show-upload close-upload" @tap="closepanel" wx:else></view>
-            
             <!-- <view class="chat-send-msg {{canIsend ? 'sended' : ''}}" @tap="sendMsg" data-type="TEXT">发送</view> -->
         </view>
         <view class="chat-input-panel" wx:if="{{showpanel}}">
@@ -108,8 +110,11 @@ export default class Chat extends wepy.page {
         progress: 0,
         myId: '',
         toView: '',
+        scrollHeight: 'calc(100vh - 100rpx)',
+        keyboardHeight: 0,
+        adjustSet: false,
     }
-    onLoad(options) {
+    async onLoad(options) {
         const { token, myId } = globalData.chat;
         const { contact, nickName } = options;
         // console.error(options);
@@ -123,9 +128,14 @@ export default class Chat extends wepy.page {
         this.nickName = nickName;
         this.token = token;
         this.myId = myId;
-        this.$apply();
-        this.loadData();
+        await this.loadData();
         this.newMsgs();
+        console.log(this.msgList);
+        if (this.msgList.length > 4) {
+            this.adjustSet = true;
+            this.keyboardHeight = 0;
+        }
+        this.$apply();
     }
     async onUnload() {
         try {
@@ -149,6 +159,22 @@ export default class Chat extends wepy.page {
     }
     showpanel() {
         this.showpanel = true;
+        this.$apply();
+    }
+    showKeyBoard(e) {
+        console.log(this.msgList.length);
+        const { height } = e.detail;
+        this.showpanel = false;
+        if (this.msgList.length > 4) return;
+        this.keyboardHeight = height * 2;
+        // this.scrollHeight = `calc(100vh - ${this.keyboardHeight}rpx)`;
+        // console.log(this.keyboardHeight);
+        console.log(this.scrollHeight);
+        this.$apply();
+    }
+    closeKeyBoard() {
+        this.keyboardHeight = 0;
+        console.log(this.scrollHeight);
         this.$apply();
     }
     closepanel() {
@@ -373,8 +399,8 @@ page{
     display:flex;
     flex-direction:column;
     .chat-zone{
-        min-height: calc(100vh - 6000rpx);
-        height: calc(100vh - 100rpx);
+        /* min-height: calc(100vh - 6000rpx);
+        height: calc(100vh - 100rpx); */
         overflow-y:scroll;
         background:#f2f2f2;
         .chat-msg-body{

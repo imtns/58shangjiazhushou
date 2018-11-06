@@ -10,7 +10,7 @@
             </block>
         </view>
     </view>
-    <view class="orderlist" wx:if="{{!userLogin}}">
+    <view class="orderlist" wx:else>
         <nologin></nologin>
     </view>
 </template>
@@ -78,12 +78,7 @@ export default class OrderList extends wepy.page {
         await this.getOrderList(this.orderType, this.status);
     }
     onLoad() {
-        SendClickLog(
-            'wxf03e52adc4b13448',
-            getUid(),
-            '{}',
-            'sjzh_click_orderList_onload',
-        );
+        console.log('onload');
     }
 }
 </script>
