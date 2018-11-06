@@ -10,6 +10,9 @@ const jump = (url) => {
     });
 };
 const callback = (code) => {
+    // code 0 代表调用登录接口
+    // code 1 调用获取用户信息接口
+    // code 2 获取微信绑定手机号
     if (code === 0) {
         const { PPU } = loginPlugin.PPUrequestHeader('58.com', '/');
         wepy.setStorageSync('ppu', PPU);
