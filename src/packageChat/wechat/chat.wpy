@@ -174,7 +174,7 @@ export default class Chat extends wepy.page {
             } catch (e) {
                 console.log(e);
             }
-        }
+        },
     }
     async onLoad(options) {
         const { token, myId } = globalData.chat;

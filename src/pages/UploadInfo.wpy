@@ -74,7 +74,7 @@
 import wepy from 'wepy';
 
 import { sleep, toast, alert, filteremoji } from '../utils';
-import { get, post } from '../utils/ajaxP';
+import { get, post } from '../utils/ajax';
 import UploadFile from '../components/UploadFile';
 
 const complateApi = '/resource/complete';
@@ -102,13 +102,13 @@ export default class UploadInfo extends wepy.page {
         },
     }
     async getArticles () {
-        const [e, articles = []] = await get(getArticles);
-        if (e) {
-            toast(e);
-            return;
+        try {
+            const { data: articles } = await get(getArticles);
+            this.updateForm({ articles: articles || [] });
+        } catch (err) {
+            toast(err);
+            console.log(err);
         }
-        console.log('articles', articles);
-        this.updateForm({ articles: articles || [] });
     }
     methods = {
         setText (e) {
@@ -120,52 +120,60 @@ export default class UploadInfo extends wepy.page {
             };
         },
         async setImages ({ uploading, images = [] }) {
-            this.updateForm({ uploading });
-            if (uploading || images.length === 0) return;
-            const sendData = { resourceType: 1, resourceUrl: images[images.length - 1], resourceName: '' };
-            const [e] = await get(saveUpload, sendData, false);
-            if (e) {
-                toast(e);
-            } else {
+            try {
+                this.updateForm({ uploading });
+                if (uploading || images.length === 0) return;
+                const sendData = { resourceType: 1, resourceUrl: images[images.length - 1], resourceName: '' };
+                await get(saveUpload, sendData, false);
                 this.updateForm({ images });
+            } catch (err) {
+                toast(err);
+                console.log(err);
             }
         },
         async setVideo ({ uploading, images = [] }) {
-            this.updateForm({ uploading });
-            if (uploading) return;
-            const sendData = { resourceType: 2, resourceUrl: images[images.length - 1], resourceName: '' };
-            const [e] = await get(saveUpload, sendData);
-            if (e) {
-                toast(e);
-            } else {
+            try {
+                this.updateForm({ uploading });
+                if (uploading) return;
+                const sendData = { resourceType: 2, resourceUrl: images[images.length - 1], resourceName: '' };
+                await get(saveUpload, sendData);
                 this.updateForm({ videos: images });
+            } catch (err) {
+                toast(err);
+                console.log(err);
             }
         },
         async bindUploadText () {
-            const { text } = this.form;
-            if (!text) {
-                toast('文本内容不能为空');
-                return;
-            }
-            const [e] = await get(uploadText, { text });
-            if (e) {
-                toast(e);
-            } else {
+            try {
+                const { text } = this.form;
+                if (!text) {
+                    toast('文本内容不能为空');
+                    return;
+                }
+                await get(uploadText, { text });
                 alert('文本上传成功');
                 this.updateForm({ textSize: this.form.textSize += 1 });
+            } catch (err) {
+                toast(err);
+                console.log(err);
             }
         },
         async submitSave () {
-            if (!this.form.enable) return;
-            const url = '/pages/UploadInfoSuccess';
-            const [e] = await post(complateApi, { mpid: this.form.mpid });
-            if (e) {
-                toast(e);
-                return;
+            try {
+                if (!this.form.enable) {
+                    return;
+                }
+
+                const url = '/pages/UploadInfoSuccess';
+                await post(complateApi, { mpid: this.form.mpid });
+
+                wepy.redirectTo({
+                    url,
+                });
+            } catch (err) {
+                toast(err);
+                console.log(err);
             }
-            wepy.redirectTo({
-                url,
-            });
         },
     }
     updateForm (data) {

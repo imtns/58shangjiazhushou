@@ -105,9 +105,6 @@ export default class Index extends wepy.page {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_myapp_decorate_app');
             if (type.target.dataset.address) {
                 const { id, authorizerAppid } = type.target.dataset;
-                // wepy.navigateTo({
-                //     url: `UploadInfo?mpid=${id}`,
-                // });
                 wepy.navigateTo({
                     url: `/pages/templateList?mpid=${id}&appid=${authorizerAppid}`,
                 });
