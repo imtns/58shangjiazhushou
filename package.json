@@ -14,8 +14,9 @@
   "license": "MIT",
   "dependencies": {
     "miniprogram-drawimage": "0.0.3",
-    "wepy": "^1.6.0",
-    "wepy-async-function": "^1.4.5"
+    "wepy": "^1.7.2",
+    "wepy-async-function": "^1.4.5",
+    "wepy-cli": "^1.6.1-alpha4"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.1",

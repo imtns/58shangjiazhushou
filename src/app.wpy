@@ -109,7 +109,6 @@ export default class extends wepy.app {
             'pages/orderDetailSelector', // 服务详情-服务详情编辑
             'pages/shopScore', // 店铺评分
 
-            'pages/wechat/chat/chat', // 聊天
             'pages/chatMessages', // 消息tab 消息列表
 
             'pages/visitorLogs', // 访客记录页面
@@ -129,6 +128,14 @@ export default class extends wepy.app {
             'pages/regist/notice', // 创建小程序提示页
             'pages/regist/edit', // 创建小程序页面
             'pages/regist/guide', // 注册引导
+        ],
+        subPackages: [
+            {
+                root: 'packageChat',
+                pages: [
+                    'wechat/chat', // 聊天
+                ],
+            },
         ],
         window: {
             backgroundTextStyle: 'light',

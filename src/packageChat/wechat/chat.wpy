@@ -79,19 +79,19 @@
 <script>
 import wepy from 'wepy';
 
-import { globalData } from '../../../utils/globalData';
-import { pubsub } from '../../../utils/IM/pubsub';
-import '../../../utils/date';
-import { toast } from '../../../utils';
-import { uploader } from '../../../utils/uploader';
-import { post, get } from '../../../utils/ajax';
+import { globalData } from '../../utils/globalData';
+import { pubsub } from '../../utils/IM/pubsub';
+import '../../utils/date';
+import { toast } from '../../utils';
+import { uploader } from '../../utils/uploader';
+import { post, get } from '../../utils/ajax';
 
-import { getUid, SendClickLog } from '../../../utils/maidian';
-import { MSG_LIST, SEND_MSG } from '../../../utils/url';
-import { msgType } from '../../../utils/msg/msgType';
-import { formatDateTimeLocal } from '../../../utils/dateFomate';
+import { getUid, SendClickLog } from '../../utils/maidian';
+import { MSG_LIST, SEND_MSG } from '../../utils/url';
+import { msgType } from '../../utils/msg/msgType';
+import { formatDateTimeLocal } from '../../utils/dateFomate';
 
-const moment = require('../../../utils/moment');
+const moment = require('../../utils/moment');
 
 let from = '';
 let msgListToken = '';
@@ -113,6 +113,68 @@ export default class Chat extends wepy.page {
         scrollHeight: 'calc(100vh - 100rpx)',
         keyboardHeight: 0,
         adjustSet: false,
+    }
+    methods = {
+        showpanel() {
+            this.showpanel = true;
+            this.$apply();
+        },
+        closepanel() {
+            this.showpanel = false;
+            this.$apply();
+        },
+        // 拍照、上传图片
+        async upload(target) {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_upload');
+            this.showpanel = false;
+            this.$apply();
+            try {
+                const that = this;
+                const { type } = target.currentTarget.dataset;
+                const { contact } = this;
+                const { headImg } = globalData.chat;
+                const msg = {
+                    status: 1,
+                    content: null,
+                    target: contact,
+                    senderId: this.myId,
+                    senderPortrait: headImg,
+                };
+                const { tempFilePaths } = await wepy.chooseImage({
+                    count: 1,
+                    sourceType: [type],
+                });
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_chooseImage');
+                this.msgList.push(Object.assign(msg, {
+                    sendTime: new Date().format('hh:mm'),
+                    portrait: globalData.chat.headImg,
+                }));
+                const uploaded = uploader(tempFilePaths[0], (e, result) => {
+                    this.showpanel = false;
+                    this.$apply();
+                    if (e) {
+                        toast('上传失败，请重试。');
+                        return;
+                    }
+                    // toast('上传成功。');
+                    const url = result.content;
+
+                    msg.content = result.content;
+                    this.$apply();
+
+                    that.sendMsg(url);
+
+                    msg.status = 2;
+                    this.$apply();
+                });
+                uploaded.onProgressUpdate(({ progress }) => {
+                    this.progress = progress;
+                    this.$apply();
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        }
     }
     async onLoad(options) {
         const { token, myId } = globalData.chat;
@@ -157,10 +219,6 @@ export default class Chat extends wepy.page {
             console.log(e);
         }
     }
-    showpanel() {
-        this.showpanel = true;
-        this.$apply();
-    }
     showKeyBoard(e) {
         console.log(this.msgList.length);
         const { height } = e.detail;
@@ -177,67 +235,11 @@ export default class Chat extends wepy.page {
         console.log(this.scrollHeight);
         this.$apply();
     }
-    closepanel() {
-        this.showpanel = false;
-        this.$apply();
-    }
     input(e) {
         SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_input');
         this.content = e.detail.value;
         this.canIsend = this.content.trim().length > 0;
         this.$apply();
-    }
-    // 拍照、上传图片
-    async upload(target) {
-        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_upload');
-        this.showpanel = false;
-        this.$apply();
-        try {
-            const that = this;
-            const { type } = target.currentTarget.dataset;
-            const { contact } = this;
-            const { headImg } = globalData.chat;
-            const msg = {
-                status: 1,
-                content: null,
-                target: contact,
-                senderId: this.myId,
-                senderPortrait: headImg,
-            };
-            const { tempFilePaths } = await wepy.chooseImage({
-                count: 1,
-                sourceType: [type],
-            });
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_chooseImage');
-            this.msgList.push(Object.assign(msg, {
-                sendTime: new Date().format('hh:mm'),
-                portrait: globalData.chat.headImg,
-            }));
-            const uploaded = uploader(tempFilePaths[0], (e, result) => {
-                this.showpanel = false;
-                this.$apply();
-                if (e) {
-                    toast('上传失败，请重试。');
-                    return;
-                }
-                // toast('上传成功。');
-                const url = result.content;
-
-                msg.content = result.content;
-                this.$apply();
-
-                that.sendMsg(url);
-
-                msg.status = 2;
-                this.$apply();
-            });
-            uploaded.onProgressUpdate(({ progress }) => {
-                this.progress = progress;
-                this.$apply();
-            });
-        } catch (e) {
-            console.log(e);
-        }
     }
     async sendMsg(target) {
         SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_sendMsg');

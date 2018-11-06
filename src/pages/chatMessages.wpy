@@ -57,7 +57,7 @@ export default class chatMessages extends wepy.page {
                 const text = totalCount - unReadCount;
                 setTabBar(text);
             }
-            const url = `/pages/wechat/chat/chat?contact=${contactId}&nickName=${nickName}`;
+            const url = `../packageChat/wechat/chat?contact=${contactId}&nickName=${nickName}`;
             wepy.navigateTo({
                 url,
             });
