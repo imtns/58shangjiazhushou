@@ -1,5 +1,5 @@
 <template>
-  <view class="everyday-modal" wx:if="{{ show }}">
+  <view class="everyday-modal" wx:if="{{ show }}" @touchmove.stop="handleStopScroll">
     <view class="everyday-close" @tap="handleClose"/>
     <view class="everyday-section">
       <view class="everyday-pic">
@@ -18,8 +18,8 @@
         <button hover-class="none" class="everyday-btn friend" @tap="handleShareFriend">
           <view class="text">分享给好友</view>
         </button>
-        <button wx:if="{{isOpenWritePhotosAlbum}}" hover-class="none" class="everyday-btn moments"
-                @tap="handleShareMomentsSetting">
+        <button wx:if="{{isOpenWritePhotosAlbum}}" hover-class="none" class="everyday-btn moments" open-type="openSetting"
+                bindopensetting="handleShareMomentsSetting">
           <view class="text">分享朋友圈</view>
         </button>
         <button wx:else hover-class="none" class="everyday-btn moments"
@@ -87,9 +87,9 @@
     };
 
     watch = {
-        show(newValue) {
+        show(newValue, oldValue) {
             const seft = this;
-            console.log('每日一言', 'show=', newValue);
+            console.log('每日一言', 'show=', 'newValue=', newValue, 'oldValue=', oldValue);
             if (newValue) {
                 // 设置未读为已读，并缓存状态
                 if (seft.unread) {
@@ -146,16 +146,19 @@
             seft.trackClickLog('close');
         },
         // 分享好友
-        handleShareFriend() {
+        async handleShareFriend() {
             const seft = this;
             const path = seft.everydayCanvas.imageUrl;
             if (!path) {
                 return;
             }
-            toast('长按图片发送给好友');
-            wx.previewImage({
-                urls: [path],
-            });
+            const duration = 1500;
+            toast('长按图片发送给好友', duration);
+            setTimeout(() => {
+                wepy.previewImage({
+                    urls: [path],
+                });
+            }, duration);
             seft.trackClickLog('sharefriend');
         },
 
@@ -166,20 +169,15 @@
             seft.trackClickLog('sharemoments');
         },
         // 分享朋友圈 下载名片
-        async handleShareMomentsSetting() {
+        async handleShareMomentsSetting(e) {
             const seft = this;
-            try {
-                const res = await wepy.openSetting();
-                if (res && res.authSetting['scope.writePhotosAlbum'] === true) {
-                    seft.isOpenWritePhotosAlbum = false;
-                    seft.$apply();
-                    seft.actionSaveImageToAlbum();
-                } else {
-                    toast('您还未授权，图片无法保存到相册');
-                }
-            } catch (e) {
-                toast('授权失败，图片无法保存到相册，请稍后再试！');
-                console.log(e);
+            const authSetting = e.detail.authSetting;
+            if (authSetting && authSetting['scope.writePhotosAlbum']) {
+                seft.isOpenWritePhotosAlbum = false;
+                seft.$apply();
+                seft.actionSaveImageToAlbum();
+            } else {
+                toast('您还未授权，图片无法保存到相册');
             }
         },
         handleToTempFile(e) {
@@ -187,6 +185,8 @@
             const { tempFilePath } = e.detail;
             seft.everydayCanvas.imageUrl = tempFilePath;
             seft.$apply();
+        },
+        handleStopScroll() {
         },
     };
 
@@ -200,8 +200,6 @@
             filePath: path,
             success() {
                 toast('图片已保存到相册，可将图片分享到朋友圈');
-                seft.show = false;
-                seft.$apply();
             },
             fail(err) {
                 const authFail = ['saveImageToPhotosAlbum:fail auth deny', 'saveImageToPhotosAlbum:fail:auth denied'];
@@ -218,12 +216,10 @@
         const seft = this;
         seft.isLoading = true;
         seft.$apply();
-        console.log('每日一言 initEverydayDay start:', 'seft.isLoading=', seft.isLoading);
         await seft.requestDayBgPic();
         await seft.requestCardQrPic();
         seft.isLoading = false;
         seft.$apply();
-        console.log('每日一言 initEverydayDay end:', 'seft.isLoading=', seft.isLoading);
     }
     // 数据请求：获取背景图片
     async requestDayBgPic() {

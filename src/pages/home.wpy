@@ -1147,10 +1147,6 @@ export default class Home extends wepy.page {
         const seft = this;
         const cardId = wepy.getStorageSync('current_cardId');
         seft.everydayIconShow = !!cardId; // 是否显示每日一言悬浮icon
-        // 关闭每日一言
-        if (seft.everydayShow) {
-            seft.everydayShow = false;
-        }
         seft.$apply();
         console.log('==============>initEveryday = cardId', cardId, 'everydayIconShow=', seft.everydayIconShow);
     }
