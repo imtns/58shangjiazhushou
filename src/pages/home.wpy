@@ -464,7 +464,6 @@ export default class Home extends wepy.page {
         async confirmAction () {
             // 切换小程序，登出IM
             const { cardId = '' } = this.business.selected;
-            console.log('==========>商家助手 confirmAction cardId=', cardId, 'current_cardId=', wepy.getStorageSync('current_cardId'), 'this.business.selected.id=', this.business.selected.id);
             if (cardId) {
                 sdkLogout(() => {
                     console.log('logout success');
@@ -542,7 +541,7 @@ export default class Home extends wepy.page {
         'everyday-modal': EverydayModal,
     }
     async onLoad (options) {
-        console.log('==========>商家助手 onLoad options=', options, 'current_cardId=', wepy.getStorageSync('current_cardId'));
+        const from = options.from || ''; // from=daypic 打开每日一言的弹窗
         try {
             // 快速注册判断跳转
             // 如果用户在快速注册的流程中，则让用户跳转到注册流程的相应页面
@@ -556,6 +555,11 @@ export default class Home extends wepy.page {
 
             await this.loadData();
             if (!this.userLogin) return;
+            // 每日一言 打开弹窗
+            const cardId = wepy.getStorageSync('current_cardId');
+            if (cardId && from === 'daypic') {
+                this.everydayShow = true;
+            }
             // 聊天登录，监控未读消息
             const { token } = globalData.chat;
             if (!token) {
@@ -578,7 +582,6 @@ export default class Home extends wepy.page {
         }
     }
     async onShow () {
-        console.log('==========>商家助手 onShow', 'current_cardId=', wepy.getStorageSync('current_cardId'));
         try {
             await this.loadData();
             if (!this.userLogin) return;
@@ -852,7 +855,6 @@ export default class Home extends wepy.page {
                 },
             });
             wepy.setStorageSync('current_cardId', cardId);
-            console.log('==========>商家助手 loadData=', 'current_cardId=', wepy.getStorageSync('current_cardId'));
             this.initEveryday(); // 每日一言初始化
             nexttask && this.setNextTask(nexttask);
             this.$apply();
@@ -1936,7 +1938,7 @@ scroll-view {
 }
 .everyday-modal {
     position: fixed;
-    z-index: 99;
+    z-index: 100;
     top: 0;
     left: 0;
     height: 100vh;
