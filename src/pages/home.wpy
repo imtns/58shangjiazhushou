@@ -319,11 +319,6 @@ export default class Home extends wepy.page {
         // 每日一言 是否显示每日一言icon
         everydayIconShow: false,
     }
-    watch = {
-        everydayUnread(newValue, oldValue) {
-            console.log('每日一言 everydayUnread', 'newValue=', newValue, 'oldValue=', oldValue);
-        },
-    };
     methods = {
         link(text) {
             if (!this.userLogin) return;
@@ -542,9 +537,9 @@ export default class Home extends wepy.page {
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_toeveryday');
         },
     }
-        components = {
-            'everyday-modal': EverydayModal,
-        }
+    components = {
+        'everyday-modal': EverydayModal,
+    }
         async onLoad () {
             try {
             // 快速注册判断跳转
@@ -1918,106 +1913,106 @@ scroll-view {
     width: 328rpx;
     height: 89rpx;
 }
-.to-everyday{
-  position: fixed;
-  bottom: 408rpx;
-  right: 30rpx;
-  width: 120rpx;
-  height: 120rpx;
-  background:url("https://img.58cdn.com.cn/lbg/jianzhan/images/youxiang/everyday-word-suspend.png") center no-repeat;
-  background-size: 100% 100%;
-  z-index: 98;
+.to-everyday {
+    position: fixed;
+    bottom: 408 rpx;
+    right: 30 rpx;
+    width: 120 rpx;
+    height: 120 rpx;
+    background: url("https://img.58cdn.com.cn/lbg/jianzhan/images/youxiang/everyday-word-suspend.png") center no-repeat;
+    background-size: 100% 100%;
+    z-index: 98;
 
-  .unread{
-    position: absolute;
-    top: 5rpx;
-    right: 10rpx;
-    width: 20rpx;
-    height: 20rpx;
-    border-radius: 100%;
-    background: #F43530;
-  }
+    .unread {
+        position: absolute;
+        top: 5 rpx;
+        right: 10 rpx;
+        width: 20 rpx;
+        height: 20 rpx;
+        border-radius: 100%;
+        background: #F43530;
+    }
 }
 .everyday-modal {
-  position: fixed;
-  z-index: 99;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  width: 750rpx;
-  background: rgba(0, 0, 0, 0.7);
+    position: fixed;
+    z-index: 99;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 750 rpx;
+    background: rgba(0, 0, 0, 0.7);
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  .everyday-close {
-    position: absolute;
-    top: 50rpx;
-    right: 50rpx;
-    z-index: 1;
-    width: 58rpx;
-    height: 58rpx;
-    background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/home-cancle-btn.png') center no-repeat;
-    background-size: 58rpx 58rpx;
-  }
-
-  .everyday-section {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .everyday-pic, #everyday-canvas {
-    position: relative;
-    width: 450rpx;
-    height: 800rpx;
-  }
-
-  .everyday-banner {
-    width: 463rpx;
-    height: 60rpx;
-    margin: 38rpx auto;
-    background: url('https://img.58cdn.com.cn/lbg/jianzhan/images/youxiang/everyday-word-banner.png') center no-repeat;
-    background-size: 463rpx 60rpx;
-  }
-  .everyday-btns {
-    width: 630rpx;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .everyday-btn {
-    width: 300rpx;
-    height: 80rpx;
-    margin: 0;
-    padding: 0;
-    border: none;
-
-    background: #fff;
-    border-radius: 4rpx;
-    display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
 
-    .text {
-      width: fit-content;
-      padding-left: 50rpx;
-      font-family: PingFangSC-Regular;
-      font-size: 28rpx;
-      color: #666666;
-      letter-spacing: 0;
-      line-height: 80rpx;
-      text-align: center;
+    .everyday-close {
+        position: absolute;
+        top: 50 rpx;
+        right: 50 rpx;
+        z-index: 1;
+        width: 58 rpx;
+        height: 58 rpx;
+        background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/home-cancle-btn.png') center no-repeat;
+        background-size: 58 rpx 58 rpx;
     }
-    &.friend .text {
-      background: url('https://img.58cdn.com.cn/lbg/jianzhan/images/youxiang/icon-share-wx.png') center left no-repeat;
-      background-size: 40rpx 33rpx;
+
+    .everyday-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
-    &.moments .text {
-      background: url('https://img.58cdn.com.cn/lbg/jianzhan/images/youxiang/icon-share-pyq.png') center left no-repeat;
-      background-size: 40rpx 40rpx;
+
+    .everyday-pic, #everyday-canvas {
+        position: relative;
+        width: 450 rpx;
+        height: 800 rpx;
     }
-  }
+
+    .everyday-banner {
+        width: 463 rpx;
+        height: 60 rpx;
+        margin: 38 rpx auto;
+        background: url('https://img.58cdn.com.cn/lbg/jianzhan/images/youxiang/everyday-word-banner.png') center no-repeat;
+        background-size: 463 rpx 60 rpx;
+    }
+    .everyday-btns {
+        width: 630 rpx;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .everyday-btn {
+        width: 300 rpx;
+        height: 80 rpx;
+        margin: 0;
+        padding: 0;
+        border: none;
+
+        background: #fff;
+        border-radius: 4 rpx;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .text {
+            width: fit-content;
+            padding-left: 50 rpx;
+            font-family: PingFangSC-Regular;
+            font-size: 28 rpx;
+            color: #666666;
+            letter-spacing: 0;
+            line-height: 80 rpx;
+            text-align: center;
+        }
+        &.friend .text {
+            background: url('https://img.58cdn.com.cn/lbg/jianzhan/images/youxiang/icon-share-wx.png') center left no-repeat;
+            background-size: 40 rpx 33 rpx;
+        }
+        &.moments .text {
+            background: url('https://img.58cdn.com.cn/lbg/jianzhan/images/youxiang/icon-share-pyq.png') center left no-repeat;
+            background-size: 40 rpx 40 rpx;
+        }
+    }
 }
 </style>
