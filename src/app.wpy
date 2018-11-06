@@ -101,7 +101,6 @@ export default class extends wepy.app {
             'pages/couponPreview', // 优惠券预览
             'pages/orderComponentEdit', // 预约编辑
             'pages/OpenPay', // 开通支付
-            'pages/CateSelector', // 类目选择
             'pages/multiSelector', // 多级选择页面
             'pages/followPublic', // 关注公众号页
             'pages/purchase', // 购买
