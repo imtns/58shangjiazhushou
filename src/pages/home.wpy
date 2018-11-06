@@ -730,7 +730,7 @@ export default class Home extends wepy.page {
     async getAssistAuth() {
         try {
             const data = await service.getAssistAuth();
-            const { isFollow, assistInfo = null } = data;
+            const { isFollow, assistInfo } = data;
             // 9.13 王研需求修改
             if (assistInfo && assistInfo.wechatUnionId) { // 是否授权
                 this.assistAuth = true;

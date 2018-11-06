@@ -30,10 +30,12 @@ export const getAssistAuth = async ({ iv = '', encryptedData = '' } = {}) => {
         iv,
         encryptedData,
     });
-    const { assistInfo = {} } = res;
-    const { wechatOpenId, wechatUnionId } = assistInfo;
-    store.openId = wechatOpenId;
-    store.unionId = wechatUnionId;
+    const { assistInfo } = res;
+    if (assistInfo) {
+        const { wechatOpenId, wechatUnionId } = assistInfo;
+        store.openId = wechatOpenId;
+        store.unionId = wechatUnionId;
+    }
     return res;
 };
 
