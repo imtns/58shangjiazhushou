@@ -1,273 +1,286 @@
 <template>
-  <view class="everyday-modal" wx:if="{{ show }}" @touchmove.stop="handleStopScroll">
-    <view class="everyday-close" @tap="handleClose"/>
-    <view class="everyday-section">
-      <view class="everyday-pic">
-        <view class="draw-loading">
-          <view class="spinner">
-              <view class="bounce"/>
-          </view>
+    <view class="everyday-modal" wx:if="{{ show }}" @touchmove.stop="handleStopScroll">
+        <view class="everyday-close" @tap="handleClose"/>
+        <view class="everyday-section">
+            <view class="everyday-pic">
+                <view class="draw-loading">
+                    <view class="spinner">
+                        <view class="bounce"/>
+                    </view>
+                </view>
+                <drawimage wx:if="{{!isLoading}}" bind:toTempFile="handleToTempFile"
+                           class="everyday-pic" id="{{everydayCanvas.canvasId}}" width="{{everydayCanvas.width}}"
+                           height="{{everydayCanvas.height}}" background="{{everydayCanvas.background}}"
+                           layers="{{everydayCanvas.layers}}"/>
+            </view>
+            <view class="everyday-banner"></view>
+            <view class="everyday-btns">
+                <button hover-class="none" class="everyday-btn friend" @tap="handleShareFriend">
+                    <view class="text">分享给好友</view>
+                </button>
+                <button wx:if="{{isOpenWritePhotosAlbum}}" hover-class="none" class="everyday-btn moments"
+                        @tap="handleShareMomentsSetting">
+                    <view class="text">分享朋友圈</view>
+                </button>
+                <button wx:else hover-class="none" class="everyday-btn moments"
+                        @tap="handleShareMoments">
+                    <view class="text">分享朋友圈</view>
+                </button>
+            </view>
         </view>
-        <drawimage wx:if="{{!isLoading}}" bind:toTempFile="handleToTempFile"
-                   class="everyday-pic" id="{{everydayCanvas.canvasId}}" width="{{everydayCanvas.width}}"
-                   height="{{everydayCanvas.height}}" background="{{everydayCanvas.background}}"
-                   layers="{{everydayCanvas.layers}}"/>
-      </view>
-      <view class="everyday-banner"></view>
-      <view class="everyday-btns">
-        <button hover-class="none" class="everyday-btn friend" @tap="handleShareFriend">
-          <view class="text">分享给好友</view>
-        </button>
-        <button wx:if="{{isOpenWritePhotosAlbum}}" hover-class="none" class="everyday-btn moments" open-type="openSetting"
-                bindopensetting="handleShareMomentsSetting">
-          <view class="text">分享朋友圈</view>
-        </button>
-        <button wx:else hover-class="none" class="everyday-btn moments"
-                @tap="handleShareMoments">
-          <view class="text">分享朋友圈</view>
-        </button>
-      </view>
     </view>
-  </view>
 </template>
 
 <script>
-  /**
-   * @desc 每日一言弹窗
-   */
-  import wepy from 'wepy';
-  import { getUid, SendClickLog } from '../utils/maidian';
-  import { get } from '../utils/ajax';
-  import { getTmpFilePath, toast } from '../utils/index';
+    /**
+     * @desc 每日一言弹窗
+     */
+    import wepy from 'wepy';
+    import { getUid, SendClickLog } from '../utils/maidian';
+    import { get } from '../utils/ajax';
+    import { getTmpFilePath, toast } from '../utils/index';
 
-  export default class EverydayModal extends wepy.component {
-    props = {
-        show: {
-            type: Boolean,
-            default: false,
-            twoWay: true,
-        },
-        unread: {
-            type: Boolean,
-            default: true,
-            twoWay: true,
-        },
-    };
-
-    data = {
-        isOpenWritePhotosAlbum: false,
-        // 开始时间
-        everydayStartTime: '',
-        cardId: '',
-        // 请求状态
-        isLoading: false,
-        everydayCanvas: {
-            canvasId: 'everyday-canvas',
-            width: 450, // 450 750
-            height: 800, // 800 1334
-            imageUrl: '',
-            background: {
-                imageResource: '',
-                dx: 0,
-                dy: 0,
-                dWidth: 450,
-                dHeight: 800,
+    export default class EverydayModal extends wepy.component {
+        props = {
+            show: {
+                type: Boolean,
+                default: false,
+                twoWay: true,
             },
-            layers: [
-                {
-                    type: 'image',
+            unread: {
+                type: Boolean,
+                default: true,
+                twoWay: true,
+            },
+        };
+
+        data = {
+            isOpenWritePhotosAlbum: false,
+            // 背景图片
+            everydayPicUrl: '',
+            // 开始时间
+            everydayStartTime: '',
+            // 名片Id
+            cardId: '',
+            // 请求状态
+            isLoading: false,
+            everydayCanvas: {
+                canvasId: 'everyday-canvas',
+                width: 450, // 450 750
+                height: 800, // 800 1334
+                imageUrl: '',
+                background: {
                     imageResource: '',
-                    dx: 177, // 295
-                    dy: 621, // 1034
-                    dWidth: 96, // 160
-                    dHeight: 96, // 160
+                    dx: 0,
+                    dy: 0,
+                    dWidth: 450,
+                    dHeight: 800,
                 },
-            ],
-        },
-    };
+                layers: [
+                    {
+                        type: 'image',
+                        imageResource: '',
+                        dx: 177, // 295
+                        dy: 621, // 1034
+                        dWidth: 96, // 160
+                        dHeight: 96, // 160
+                    },
+                ],
+            },
+        };
 
-    watch = {
-        show(newValue, oldValue) {
-            const seft = this;
-            console.log('每日一言', 'show=', 'newValue=', newValue, 'oldValue=', oldValue);
-            if (newValue) {
-                // 设置未读为已读，并缓存状态
-                if (seft.unread) {
-                    seft.unread = false;
-                    seft.$apply();
-                    wepy.setStorageSync('everydayUnread', { date: seft.getCurrentDateFormat(), unread: false });
+        watch = {
+            show(newValue, oldValue) {
+                const seft = this;
+                console.log('每日一言', 'show=', 'newValue=', newValue, 'oldValue=', oldValue);
+                if (newValue) {
+                    // 设置未读为已读，并缓存状态
+                    if (seft.unread) {
+                        seft.unread = false;
+                        seft.$apply();
+                        wepy.setStorageSync('everydayUnread', { date: seft.getCurrentDateFormat(), unread: false });
+                    }
+                    seft.initEverydayDay();
                 }
-                seft.initEverydayDay();
-            }
-        },
-    };
+            },
+        };
 
-    async onLoad() {
-        const seft = this;
-        // 初始化是否未读
-        const everydayUnread = wepy.getStorageSync('everydayUnread');
-        if (everydayUnread && everydayUnread.date) {
-            if (seft.isToday(everydayUnread.date)) { // 有当前缓存数据
-                seft.unread = false;
-            } else { // 缓存数据非当天，设置为未读，并清空缓存
-                seft.unread = true;
-                wepy.removeStorageSync('everydayUnread');
-            }
-        } else {
-            seft.unread = true;
-        }
-        seft.$apply();
-    }
-
-    // 是否是当天
-    isToday(dateStr) {
-        const d = new Date(dateStr.replace(/-/g, '/'));
-        const todaysDate = new Date();
-        if (d.setHours(0, 0, 0, 0) === todaysDate.setHours(0, 0, 0, 0)) {
-            return true;
-        }
-        return false;
-    }
-
-    // 当前时间yyyy-mm-dd HH:MM:SS
-    getCurrentDateFormat() {
-        const date = new Date();
-        const [y, m, d, hh, mm, ss] = [date.getFullYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()];
-        const dateStr = `${y}-${m < 10 ? `0${m}` : m}-${d < 10 ? `0${d}` : d} ${hh < 10 ? `0${hh}` : hh}:${mm < 10 ? `0${mm}` : mm}:${ss < 10 ? `0${ss}` : ss}`;
-        return dateStr;
-    }
-
-    methods = {
-        // 关闭弹窗
-        handleClose() {
+        async onLoad() {
             const seft = this;
-            seft.show = false;
+            // 初始化是否未读
+            const everydayUnread = wepy.getStorageSync('everydayUnread');
+            if (everydayUnread && everydayUnread.date) {
+                if (seft.isToday(everydayUnread.date)) { // 有当前缓存数据
+                    seft.unread = false;
+                } else { // 缓存数据非当天，设置为未读，并清空缓存
+                    seft.unread = true;
+                    wepy.removeStorageSync('everydayUnread');
+                }
+            } else {
+                seft.unread = true;
+            }
             seft.$apply();
-            seft.trackClickLog('close');
-        },
-        // 分享好友
-        async handleShareFriend() {
+        }
+
+        // 是否是当天
+        isToday(dateStr) {
+            const d = new Date(dateStr.replace(/-/g, '/'));
+            const todaysDate = new Date();
+            if (d.setHours(0, 0, 0, 0) === todaysDate.setHours(0, 0, 0, 0)) {
+                return true;
+            }
+            return false;
+        }
+
+        // 当前时间yyyy-mm-dd HH:MM:SS
+        getCurrentDateFormat() {
+            const date = new Date();
+            const [y, m, d, hh, mm, ss] = [date.getFullYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()];
+            const dateStr = `${y}-${m < 10 ? `0${m}` : m}-${d < 10 ? `0${d}` : d} ${hh < 10 ? `0${hh}` : hh}:${mm < 10 ? `0${mm}` : mm}:${ss < 10 ? `0${ss}` : ss}`;
+            return dateStr;
+        }
+
+        methods = {
+            // 关闭弹窗
+            handleClose() {
+                const seft = this;
+                seft.show = false;
+                seft.$apply();
+                seft.trackClickLog('close');
+            },
+            // 分享好友
+            async handleShareFriend() {
+                const seft = this;
+                const path = seft.everydayCanvas.imageUrl;
+                if (!path) {
+                    return;
+                }
+                const duration = 1500;
+                toast('长按图片发送给好友', duration);
+                setTimeout(() => {
+                    wepy.previewImage({
+                        urls: [path],
+                    });
+                }, duration);
+                seft.trackClickLog('sharefriend');
+            },
+
+            // 分享朋友圈 下载名片
+            async handleShareMoments() {
+                const seft = this;
+                seft.actionSaveImageToAlbum();
+                seft.trackClickLog('sharemoments');
+            },
+            // 分享朋友圈 下载名片
+            async handleShareMomentsSetting() {
+                const seft = this;
+                try {
+                    const res = await wepy.openSetting();
+                    if (res && res.authSetting['scope.writePhotosAlbum'] === true) {
+                        seft.isOpenWritePhotosAlbum = false;
+                        seft.$apply();
+                        toast('授权已开启，请点击分享朋友圈按钮');
+                    } else {
+                        toast('您还未授权，图片无法保存到相册');
+                    }
+                } catch (e) {
+                    toast('授权失败，图片无法保存到相册，请稍后再试！');
+                    console.log(e);
+                }
+            },
+            handleToTempFile(e) {
+                const seft = this;
+                const { tempFilePath } = e.detail;
+                seft.everydayCanvas.imageUrl = tempFilePath;
+                seft.$apply();
+            },
+            handleStopScroll() {
+            },
+        };
+
+        async actionSaveImageToAlbum() {
             const seft = this;
             const path = seft.everydayCanvas.imageUrl;
             if (!path) {
                 return;
             }
-            const duration = 1500;
-            toast('长按图片发送给好友', duration);
-            setTimeout(() => {
-                wepy.previewImage({
-                    urls: [path],
-                });
-            }, duration);
-            seft.trackClickLog('sharefriend');
-        },
+            wx.saveImageToPhotosAlbum({
+                filePath: path,
+                success() {
+                    toast('图片已保存到相册，可将图片分享到朋友圈');
+                },
+                fail(err) {
+                    const authFail = ['saveImageToPhotosAlbum:fail auth deny', 'saveImageToPhotosAlbum:fail:auth denied'];
+                    if (authFail.indexOf(err.errMsg) > -1) {
+                        toast('您拒绝了授权，图片无法保存到相册');
+                        seft.isOpenWritePhotosAlbum = true;
+                        seft.$apply();
+                    }
+                },
+            });
+        }
 
-        // 分享朋友圈 下载名片
-        async handleShareMoments() {
+        async initEverydayDay() {
             const seft = this;
-            seft.actionSaveImageToAlbum();
-            seft.trackClickLog('sharemoments');
-        },
-        // 分享朋友圈 下载名片
-        async handleShareMomentsSetting(e) {
-            const seft = this;
-            const authSetting = e.detail.authSetting;
-            if (authSetting && authSetting['scope.writePhotosAlbum']) {
-                seft.isOpenWritePhotosAlbum = false;
-                seft.$apply();
-                seft.actionSaveImageToAlbum();
-            } else {
-                toast('您还未授权，图片无法保存到相册');
-            }
-        },
-        handleToTempFile(e) {
-            const seft = this;
-            const { tempFilePath } = e.detail;
-            seft.everydayCanvas.imageUrl = tempFilePath;
+            seft.isLoading = true;
             seft.$apply();
-        },
-        handleStopScroll() {
-        },
-    };
-
-    async actionSaveImageToAlbum() {
-        const seft = this;
-        const path = seft.everydayCanvas.imageUrl;
-        if (!path) {
-            return;
+            await seft.requestDayBgPic();
+            await seft.requestCardQrPic();
+            seft.isLoading = false;
+            seft.$apply();
         }
-        wx.saveImageToPhotosAlbum({
-            filePath: path,
-            success() {
-                toast('图片已保存到相册，可将图片分享到朋友圈');
-            },
-            fail(err) {
-                const authFail = ['saveImageToPhotosAlbum:fail auth deny', 'saveImageToPhotosAlbum:fail:auth denied'];
-                if (authFail.indexOf(err.errMsg) > -1) {
-                    toast('您拒绝了授权，图片无法保存到相册');
-                    seft.isOpenWritePhotosAlbum = true;
-                    seft.$apply();
-                }
-            },
-        });
-    }
 
-    async initEverydayDay() {
-        const seft = this;
-        seft.isLoading = true;
-        seft.$apply();
-        await seft.requestDayBgPic();
-        await seft.requestCardQrPic();
-        seft.isLoading = false;
-        seft.$apply();
-    }
-    // 数据请求：获取背景图片
-    async requestDayBgPic() {
-        const seft = this;
-        try {
-            const { data } = await get('/dayPic/get', {});
-            if (data && data.picUrl) {
-                const dayBgPic = `${data.picUrl.indexOf('http') === -1 ? 'https://pic1.58cdn.com.cn' : ''}${data.picUrl}`;
-                const startTime = `${data.startTime ? data.startTime : ''}`; // 2018-11-02 10:01:00
-                seft.everydayCanvas.background.imageResource = await getTmpFilePath(dayBgPic);
-                seft.everydayStartTime = startTime;
-                seft.$apply();
-                console.log('===========>每日一言 requestDayBgPic', 'data=', data, 'seft.everydayCanvas.background=', seft.everydayCanvas.background);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
-    // 数据请求：获取名片二维码
-    async requestCardQrPic() {
-        const seft = this;
-        const cardId = wepy.getStorageSync('current_cardId');
-        const currentCardId = seft.cardId;
-        if (cardId && currentCardId !== cardId) {
+        // 数据请求：获取背景图片
+        async requestDayBgPic() {
+            const seft = this;
             try {
-                const { data } = await get('/share', {
-                    path: 'pages/index58/index58',
-                    sceneId: `card_${cardId}`,
-                    cardId,
-                    from: 'dayPic',
-                });
-                const { url = '' } = data;
-                if (url) {
-                    seft.everydayCanvas.layers[0].imageResource = await getTmpFilePath(url);
-                    seft.cardId = cardId;
+                const { data } = await get('/dayPic/get', {});
+                console.log('===========>每日一言 requestDayBgPic', 'seft.everydayPicUrl=', seft.everydayPicUrl, 'data=', data);
+                if (data && data.picUrl) {
+                    const currentPicUrl = seft.everydayPicUrl;
+                    if (currentPicUrl !== data.picUrl) {
+                        const dayBgPic = `${data.picUrl.indexOf('http') === -1 ? 'https://pic1.58cdn.com.cn' : ''}${data.picUrl}`;
+                        seft.everydayCanvas.background.imageResource = await getTmpFilePath(dayBgPic);
+                    }
+                    seft.everydayStartTime = `${data.startTime ? data.startTime : ''}`; // 时间格式：yyyy-mm-dd HH:MM:SS
+                    seft.everydayPicUrl = data.picUrl;
                     seft.$apply();
-                    console.log('===========>每日一言 requestCardQrPic', 'data=', data, 'seft.everydayCanvas.layers=', seft.everydayCanvas.layers);
                 }
-            } catch (err) {
-                console.log(err);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        // 数据请求：获取名片二维码
+        async requestCardQrPic() {
+            const seft = this;
+            const cardId = wepy.getStorageSync('current_cardId');
+            const currentCardId = seft.cardId;
+            console.log('===========>每日一言 requestCardQrPic', 'currentCardId=', currentCardId, 'cardId=', cardId);
+            if (cardId && currentCardId !== cardId) {
+                try {
+                    const { data } = await get('/share', {
+                        path: 'pages/index58/index58',
+                        sceneId: `card_${cardId}`,
+                        cardId,
+                        from: 'dayPic',
+                    });
+                    const { url = '' } = data;
+                    if (url) {
+                        seft.everydayCanvas.layers[0].imageResource = await getTmpFilePath(url);
+                        seft.cardId = cardId;
+                        seft.$apply();
+                    }
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+        }
+
+        trackClickLog(clickLog) {
+            if (clickLog) {
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_everyday_${clickLog}`);
             }
         }
     }
-
-    trackClickLog(clickLog) {
-        if (clickLog) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_everyday_${clickLog}`);
-        }
-    }
-  }
 </script>

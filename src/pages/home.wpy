@@ -12,7 +12,7 @@
         <view class="index-loaded-header">
             <view class="welcome-block">
                 <view wx:if="{{userLogin}}" class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
-                <view wx:else class="welcome-title">欢迎来到58小程序管理平台</text></view>
+                <view wx:else class="welcome-title">欢迎来到58小程序管理平台</view>
                 <view @tap="changeIdentity" class="item-switch">账号切换</view>
             </view>
             <view class="item-detail">
@@ -464,6 +464,7 @@ export default class Home extends wepy.page {
         async confirmAction () {
             // 切换小程序，登出IM
             const { cardId = '' } = this.business.selected;
+            console.log('==========>商家助手 confirmAction cardId=', cardId, 'current_cardId=', wepy.getStorageSync('current_cardId'), 'this.business.selected.id=', this.business.selected.id);
             if (cardId) {
                 sdkLogout(() => {
                     console.log('logout success');
@@ -540,7 +541,8 @@ export default class Home extends wepy.page {
     components = {
         'everyday-modal': EverydayModal,
     }
-    async onLoad () {
+    async onLoad (options) {
+        console.log('==========>商家助手 onLoad options=', options, 'current_cardId=', wepy.getStorageSync('current_cardId'));
         try {
             // 快速注册判断跳转
             // 如果用户在快速注册的流程中，则让用户跳转到注册流程的相应页面
@@ -576,6 +578,7 @@ export default class Home extends wepy.page {
         }
     }
     async onShow () {
+        console.log('==========>商家助手 onShow', 'current_cardId=', wepy.getStorageSync('current_cardId'));
         try {
             await this.loadData();
             if (!this.userLogin) return;
@@ -849,6 +852,7 @@ export default class Home extends wepy.page {
                 },
             });
             wepy.setStorageSync('current_cardId', cardId);
+            console.log('==========>商家助手 loadData=', 'current_cardId=', wepy.getStorageSync('current_cardId'));
             this.initEveryday(); // 每日一言初始化
             nexttask && this.setNextTask(nexttask);
             this.$apply();
@@ -1607,12 +1611,12 @@ scroll-view {
     position:fixed;
     top:0;
     bottom:0;
-    z-index:1;
+    z-index:60;
  }
  .showModal_modal{
     width:576rpx;
     height: 710rpx;
-    z-index:99;
+    z-index:100;
     position:fixed;
     top:50%;
     left:50%;
@@ -1818,7 +1822,7 @@ scroll-view {
     height: 130rpx;
     background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/zhuanqian_icon.png) no-repeat;
     background-size: 100% 100%;
-    z-index: 99;
+    z-index: 59;
 }
 .share-ending{
     font-size: 28rpx;
@@ -1918,7 +1922,7 @@ scroll-view {
     height: 120rpx;
     background: url("https://img.58cdn.com.cn/lbg/jianzhan/images/youxiang/everyday-word-suspend.png") center no-repeat;
     background-size: 100% 100%;
-    z-index: 98;
+    z-index: 59;
 
     .unread {
         position: absolute;
