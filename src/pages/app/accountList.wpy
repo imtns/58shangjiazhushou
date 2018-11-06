@@ -12,7 +12,7 @@
                 >
                     <image
                         class="account-logo"
-                        src="{{ item.portrait ? item.portrait + '?w=100&ss=1' : '' }}"
+                        src="{{ item.portrait ? item.portrait + '?w=100&h=100&ss=1' : '' }}"
                     ></image>
                     <view class="account-info">
                         <view class="account-title overflow-ellipsis">

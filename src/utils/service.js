@@ -22,9 +22,14 @@ export const getAssistAuthList = async (openId) => {
 
 /**
  * @desc 获取用户是否关注、userinfo、unionId、openId等信息
+ * 传入iv, encryptedData可以获取到对应的openId，
+ * 以往openId是根据userId获取的
  */
-export const getAssistAuth = async () => {
-    const { data: res } = await get(GET_ASSIST_AUTH);
+export const getAssistAuth = async ({ iv = '', encryptedData = '' } = {}) => {
+    const { data: res } = await get(GET_ASSIST_AUTH, {
+        iv,
+        encryptedData,
+    });
     const { assistInfo = {} } = res;
     const { wechatOpenId, wechatUnionId } = assistInfo;
     store.openId = wechatOpenId;

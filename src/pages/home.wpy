@@ -223,7 +223,7 @@ import { alert, formatDuring } from '../utils';
 import { post, get } from '../utils/ajax';
 import { globalData, setTabBar } from '../utils/globalData';
 import { getUid, SendClickLog } from '../utils/maidian';
-import { CHAT_LOGIN, MY_MPLIST, SESSION, INSERT_SESSION, GET_EXT_JSON, GET_ASSIST_AUTH, GET_SHARE } from '../utils/url';
+import { CHAT_LOGIN, MY_MPLIST, SESSION, INSERT_SESSION, GET_EXT_JSON, GET_SHARE } from '../utils/url';
 import { sdkLogin, onMsgNotify, sdkLogout } from '../utils/IM/IM';
 import { chatContactList } from '../store/index';
 import loginHelper from '../utils/login';
