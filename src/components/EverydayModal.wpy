@@ -246,7 +246,8 @@
     async requestCardQrPic() {
         const seft = this;
         const cardId = wepy.getStorageSync('current_cardId');
-        if (cardId) {
+        const currentCardId = seft.cardId;
+        if (cardId && currentCardId !== cardId) {
             try {
                 const { data } = await get('/share', {
                     path: 'pages/index58/index58',
@@ -257,6 +258,7 @@
                 const { url = '' } = data;
                 if (url) {
                     seft.everydayCanvas.layers[0].imageResource = await getTmpFilePath(url);
+                    seft.cardId = cardId;
                     seft.$apply();
                     console.log('===========>每日一言 requestCardQrPic', 'data=', data, 'seft.everydayCanvas.layers=', seft.everydayCanvas.layers);
                 }
