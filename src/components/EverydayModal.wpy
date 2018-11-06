@@ -90,9 +90,8 @@
         };
 
         watch = {
-            show(newValue, oldValue) {
+            show(newValue) {
                 const seft = this;
-                console.log('每日一言', 'show=', 'newValue=', newValue, 'oldValue=', oldValue);
                 if (newValue) {
                     // 设置未读为已读，并缓存状态
                     if (seft.unread) {
