@@ -20,9 +20,6 @@ module.exports = {
   plugins: [
     'html'
   ],
-  globals: {
-    wx: true,
-  },
   settings: {
     "import/resolver": {
       "node": {

@@ -36,7 +36,11 @@
                 </view>
                 <view wx:if="{{!userLogin}}" class="unlogin">
                     <text class="login-tip">您还没有登录，授权登录后可管理小程序赚大钱</text>
-                    <navigator wx:if="{{editDialog.action=='tologin'}}" class="login-btn" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release" hover-class="none">立即登录</navigator>
+                    <view
+                        wx:if="{{editDialog.action=='tologin'}}"
+                        class="login-btn"
+                        @tap="handleLogin"
+                    >立即登录</view>
                 </view>
                 <view wx:if="{{userLogin}}" class="index-block-body index-item">
                     <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
@@ -44,20 +48,29 @@
                         <view class="item-text">{{item.text}}</view>
                     </view>
                 </view>
-                <navigator wx:if="{{!userLogin}}" class="index-block-body index-item" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release" hover-class="none">
+                <view
+                    wx:if="{{!userLogin}}"
+                    class="index-block-body index-item"
+                    @tap="handleLogin"
+                >
                     <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index">
                         <image src="{{item.iconPath}}" class="item-img"></image>
                         <view class="item-text">{{item.text}}</view>
                     </view>
-                </navigator>
+                </view>
                 <view wx:if="{{userLogin}}" bindtap="checkProgress" class="item-detail-progress">
                     <view class="current-progress"></view>
                     <view class="remind-title">{{ business.progressText}}</view>
                 </view>
-                <navigator wx:if="{{!userLogin}}" class="item-detail-progress" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release" hover-class="none">
+
+                <view
+                    wx:if="{{!userLogin}}"
+                    class="item-detail-progress"
+                    @tap="handleLogin"
+                >
                     <view class="current-progress"></view>
                     <view class="remind-title">{{ business.progressText}}</view>
-                </navigator>
+                </view>
             </view>
         </view>
         <view class="index-block"  wx:for="{{nItems}}" wx:for-item="nItem"  wx:key="{{nItem.title}}">
@@ -68,12 +81,16 @@
                     <view class="item-text">{{item.text}}</view>
                 </view>
             </view>
-            <navigator wx:if="{{!userLogin}}" class="index-block-body" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release" hover-class="none">
+            <view
+                wx:if="{{!userLogin}}"
+                class="index-block-body"
+                @tap="handleLogin"
+            >
                 <view class="index-loaded-item new-margin {{item.text === '店铺装修' ? 'shangxin' : ''}}" wx:for="{{nItem.items}}" wx:key="index" bindtap="link({{item.text}})">
                     <image src="{{item.iconPath}}" class="item-img"></image>
                     <view class="item-text">{{item.text}}</view>
                 </view>
-            </navigator>
+            </view>
         </view>
         <view wx:if="{{business.changeMP === true}}" class="mask" @tap="bindHideMask"></view>
         <view wx:if="{{business.changeMP === true }}" class="mpBox">
@@ -112,14 +129,6 @@
                 <button class="showModal_cancle" bindtap="hideModal"></button>
             </view>
         </view>
-        <view wx:if="{{showIdentity}}">
-            <view class="showModal_mask" bindtap="hideModal"></view>
-            <view class="showIdentity_modal">
-                <navigator class="switch_btn" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release" hover-class="none">切换账号</navigator>
-                <!-- <view class="switch_btn" @tap="switchIdentity">切换账号</view> -->
-                <view class="show_cancle" @tap="hideIdentityModal">取消</view>
-            </view>
-        </view>
         <!-- 未编辑过名片提示 -->
         <view class="toedit-modal" wx:if="{{share.showEditModal}}">
             <view class="toedit-con">
@@ -130,7 +139,13 @@
                     <!-- 去客服消息公众号 -->
                     <button wx:if="{{editDialog.action=='topublic'}}" open-type="contact" class="edit-btn">{{editDialog.rightButton}}</button>
                     <!-- 去58验证小程序登录 -->
-                    <navigator wx:if="{{editDialog.action=='tologin'}}" class="edit-btn" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release" hover-class="none">去登录</navigator>
+                    <view
+                        wx:if="{{editDialog.action=='tologin'}}"
+                        class="edit-btn"
+                        @tap="handleLogin"
+                    >
+                        去登录
+                    </view>
                     <view wx:else="{{editDialog.action!='topublic' && editDialog.action!='tologin'}}" class="edit-btn" @tap="toEdit" data-action="{{editDialog.action}}">{{editDialog.rightButton}}</view>
                 </view>
             </view>
@@ -216,7 +231,6 @@ import Mixin from '../mixin';
 import RegistMixin from './regist/mixin';
 
 import { items, nItems } from '../utils/homeList';
-
 import { alert, formatDuring } from '../utils';
 import { post, get } from '../utils/ajax';
 import { globalData, setTabBar } from '../utils/globalData';
@@ -228,13 +242,13 @@ import {
     SESSION,
     INSERT_SESSION,
     GET_EXT_JSON,
-    GET_ASSIST_AUTH,
     GET_SHARE,
 } from '../utils/url';
 
 import { sdkLogin, onMsgNotify, sdkLogout } from '../utils/IM/IM';
-
 import { chatContactList } from '../store/index';
+import loginHelper from '../utils/login';
+import * as service from '../utils/service';
 
 import EverydayModal from '../components/EverydayModal';
 
@@ -320,6 +334,9 @@ export default class Home extends wepy.page {
         everydayIconShow: false,
     }
     methods = {
+        handleLogin() {
+            loginHelper.goLogin();
+        },
         link(text) {
             if (!this.userLogin) return;
             // console.log(text);意见反馈不做判断
@@ -451,15 +468,20 @@ export default class Home extends wepy.page {
             this.$apply();
         },
         changeIdentity() {
+            if (!this.userLogin) {
+                loginHelper.goLogin();
+                return;
+            }
             SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_home_switch_Identity');
-            this.showIdentity = true;
-            this.$apply();
+            wepy.navigateTo({
+                url: '/pages/app/accountList',
+            });
         },
         // 切换账号
-        hideIdentityModal() {
-            this.showIdentity = false;
-            this.$apply();
-        },
+        // hideIdentityModal() {
+        //     this.showIdentity = false;
+        //     this.$apply();
+        // },
         // 切换小程序操作
         async confirmAction () {
             // 切换小程序，登出IM
@@ -742,8 +764,8 @@ export default class Home extends wepy.page {
     }
     async getAssistAuth() {
         try {
-            const { data } = await get(GET_ASSIST_AUTH);
-            const { isFollow, assistInfo = null } = data;
+            const data = await service.getAssistAuth();
+            const { isFollow, assistInfo } = data;
             // 9.13 王研需求修改
             if (assistInfo && assistInfo.wechatUnionId) { // 是否授权
                 this.assistAuth = true;
@@ -874,8 +896,8 @@ export default class Home extends wepy.page {
             this.editDialog = {
                 tip: '您还未登录，登录后能使用更多功能',
                 action: 'tologin',
-                leftButton: '再想想',
-                rightButton: '去登录',
+                leftButton: '取消',
+                rightButton: '去完善',
             };
             this.share.showEditModal = true;
             this.$apply();
