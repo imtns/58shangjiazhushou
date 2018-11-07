@@ -3,3 +3,6 @@ node_modules
 .wepycache
 dist
 package-lock.json
+yarn.lock
+.idea/
+.vscode

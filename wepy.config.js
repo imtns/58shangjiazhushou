@@ -1,5 +1,4 @@
-/*eslint-disable */
-const merge = require('merge');
+const merge = require('merge'); 
 
 const prod = process.env.NODE_ENV === 'production';
 
@@ -12,7 +11,7 @@ const config = {
             outputStyle: 'expanded',
         },
         babel: {
-            sourceMap: true,
+            sourceMap: !prod,
             presets: [
                 'stage-2',
                 'env',
@@ -26,13 +25,13 @@ const config = {
     },
     plugins: {
         parsecss: {
-            filter: /\.(wxss|scss)$/,
+            compress: prod,
             base64Config: {
                 maxSize: 200,
                 basePath: `${__dirname}/bgimages`,
             },
             autoprefixerConfig: {
-                browsers: ['last 10 Chrome versions', 'last 5 Firefox versions', 'Safari >= 6', 'ie > 8'],
+                browsers: ['last 11 iOS versions'],
             },
         },
     },
@@ -43,19 +42,10 @@ const config = {
 
 if (prod) {
     merge.recursive(false, config, {
-        compilers: {
-            sass: {
-                outputStyle: 'compressed',
-            },
-            babel: {
-                sourceMap: false,
-            },
-        },
         plugins: {
             uglifyjs: {
                 filter: /\.js$/,
-                config: {
-                },
+                config: {},
             },
             imagemin: {
                 filter: /\.(jpg|png|jpeg)$/,

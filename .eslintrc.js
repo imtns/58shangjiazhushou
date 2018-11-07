@@ -12,7 +12,7 @@ module.exports = {
     getSystemInfo:true,
     getApp:true,
     wx: true,
-    Page: true, 
+    Page: true,
     Component:true,
     requirePlugin: true,
   },
@@ -49,6 +49,7 @@ module.exports = {
     'no-console': 0,
     'space-before-function-paren': 0,
     'class-methods-use-this': 0,
+    'prefer-destructuring': 0,
     'import/extensions': ['error', 'always', {
       'js': 'never',
       'wpy': 'never'

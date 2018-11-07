@@ -245,7 +245,7 @@ export default class Index extends wepy.page {
         const { data } = await get(REGIST_INDUSTRY_CATE);
         // 比较粗糙的做法，直接条件判断是否快速注册
         registCates = data.map(cate => {
-            let res = cate;
+            const res = cate;
             res.children = res.children.map(item => ({
                 ...item,
                 name: item.wubaSecondName,
@@ -256,7 +256,7 @@ export default class Index extends wepy.page {
             };
         });
         this.contentList[0] = registCates;
-        this.showProp = 'name',
+        this.showProp = 'name';
         this.$apply();
     }
 

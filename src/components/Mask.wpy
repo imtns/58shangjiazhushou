@@ -1,0 +1,41 @@
+<template>
+
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class Mask extends wepy.component {
+  data = {
+      step: '1',
+  };
+  props = {
+      show: {
+          type: Boolean,
+          default: false,
+      },
+      type: String,
+  };
+  methods = {
+      iKnow() {
+          if (this.type === 'home') {
+              // 首页的引导层，mask是设置首页显示的表示，cardMask是名片页显示的表示
+              //   wx.setStorageSync('mask', true);
+              wx.setStorageSync('cardMask', true);
+              this.show = false;
+          }
+          if (this.step === '2') {
+              this.show = false;
+              //   wx.setStorageSync('cardMask', false);
+          }
+          if (this.step === '1' && this.type !== 'home') {
+              this.step = '2';
+          }
+      },
+  };
+}
+</script>
+
+<style lang="scss">
+
+</style>

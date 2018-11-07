@@ -1,5 +1,6 @@
 <template>
     <view class="myBizCard">
+        <mask :show.sync="maskShow" :type="maskType"></mask>
         <view class="tocreatCard" wx:if="{{hasCard === false}}">
             <view class="empty_box">
                 <view class="empty_header"></view>
@@ -82,11 +83,15 @@ import { CARD_HAS_CARD, CARD_HAS_DETAIL, CHECK_IS_SALESMAN } from '../utils/url'
 import { post, get } from '../utils/ajax';
 import { myCardItems } from '../utils/introData';
 import { getUid, SendClickLog } from '../utils/maidian';
+import Mask from '../components/Mask';
 
 
 export default class myBizCard extends wepy.page {
     config = {
         navigationBarTitleText: '我的名片',
+    }
+    components = {
+        mask: Mask,
     }
     data = {
         hasCard: '',
@@ -95,6 +100,8 @@ export default class myBizCard extends wepy.page {
         picImg: '',
         position: '',
         realName: '',
+        maskShow: false,
+        maskType: 'card',
         share: '',
         visit: '',
         vote: '',
@@ -149,6 +156,9 @@ export default class myBizCard extends wepy.page {
         },
     };
     onLoad () {
+        // if (wepy.getStorageSync('cardMask')) {
+        this.maskShow = true;
+        // }
         /**
          * @author zhouwunan
          */
