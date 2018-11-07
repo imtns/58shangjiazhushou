@@ -1533,7 +1533,7 @@ scroll-view {
                 font-size: 18rpx;
                 color: #fff;
                 display: block;
-                content: '';
+                content: '';   
                 width: 52rpx;
                 height:30rpx;
                 line-height: 30rpx;
