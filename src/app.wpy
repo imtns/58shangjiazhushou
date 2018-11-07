@@ -185,8 +185,6 @@ export default class extends wepy.app {
         // 学强的ppu
         // wx.setStorageSync('ppu', 'UID=33433383496455&UN=ydvzv_p7&TT=7f6196408107d1efae4b46f4176a5922&PBODY=M_5BTzt29G2FRuEF1AgmnH4wteNcXaRX4PzJKOGipizKV2fazyLpD6Tj-cYXUmzCF0iXDDscuHy_oOvBg8D2iv1mU1TEAFXmsIZiDxLVZnKREZ4n4qe6Gi_mxyC9MXCKvLaLIgvldvXN8vojQLwo8nLmf2yHAL4Z0I0YssJVOQg&VER=1');
         // wx.setStorageSync('ppu', 'UID=48738323270929&UN=h34xb9&TT=790cd18a7dc07c6c47dd4430561ebe49&PBODY=KxccExLLZL2FwQdhfyCRtfhIXBEY44p0bw8ZrBCn4RtLTpTZh6m_7mdLWlcUP2VkbFI2QrpmszFtZgkuYfta9nFLRbfx1svpxcb0IiDzLQREz_2Z6XwZ5VROQg6X5mFYtIEqmdphcP3q6No3bGp65lRg-TGePKaYq0-BGoov3Lc&VER=1');
-        // hfll
-        // wx.setStorageSync('ppu', 'UID=55436982950166&UN=w86fs5j5i&TT=228e53d8b65abd80e3d239fe041a4e29&PBODY=B6pFTqhvsy8WuuZHLYC4hI2XfNbm8eyEXWSVb7XEZ3GOllYS9sZm2feHe6C_Vo-EUTwFPvt3v3RZFQes4jPJCfNQmpUA9iFpeM3OufnunHuvW87H8WWbMM18Ovpjc83ag4jgteaKCgwE62xPHA8q2mHgm1WKh_4Y6d7Ij6OJpYU&VER=1');
     }
     onShow (options) {
         // 版本更新检查

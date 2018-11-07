@@ -1635,7 +1635,7 @@ scroll-view {
     position:fixed;
     top:0;
     bottom:0;
-    z-index:60;
+    z-index:1;
  }
  .showModal_modal{
     width:576rpx;
