@@ -22,9 +22,10 @@ export default class extends wepy.app {
         pages: [
             'pages/home',
             'pages/app/pickBusinessHour',
+            'pages/app/accountList', // 账号列表
 
             'pages/edit/textEdit',
-            // 登陆之后的主页
+            // 登录之后的主页
             'pages/templateList',
             'pages/index/index',
 
@@ -47,7 +48,7 @@ export default class extends wepy.app {
             'pages/article/article', // 文章
 
 
-            'pages/intro', // 没有登陆的介绍页面
+            'pages/intro', // 没有登录的介绍页面
             'pages/myMp', // 我的小程序
             'pages/AppInfo', // 小程序信息
             'pages/UploadInfo', // 上传素材首页
@@ -161,6 +162,12 @@ export default class extends wepy.app {
                 selectedIconPath: 'pages/assets/tabbar/tabbar_order_selected.png',
             }],
         },
+        plugins: {
+            loginSdk: {
+                version: '2.0.2',
+                provider: 'wxd1d3a59c204109d4',
+            },
+        },
         navigateToMiniProgramAppIdList: [
             'wx2a9c6eeb1c44a284', // 58登录
             'wx86c7b0019914401c', // 同城优选
@@ -224,7 +231,8 @@ export default class extends wepy.app {
 
         // 1037进入 从别的小程序进入
         action = scene === 1037 || scene === '1037' ? CALLBACKAPPS[fromAppId] : action;
-        // 登陆已经上线保持原有判断逻辑
+        // 登录已经上线保持原有判断逻辑
+        // TODO: 全部转为登录插件后删除
         if (scene === 1038 && path === 'pages/intro' && fromAppId === 'wx2a9c6eeb1c44a284') {
             action = 'Login';
         }
