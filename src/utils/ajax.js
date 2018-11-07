@@ -1,7 +1,8 @@
 /* eslint-disable */
 
 import wepy from 'wepy';
-// import { toast } from '../utils';
+import { toast } from '../utils';
+import loginHelper from '../utils/login';
 
 const host = 'https://yaofa.58.com';
 
@@ -43,23 +44,28 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
         },
         success(response) {
             console.log('response', response);
-            const { state, msg, data } = response.data;
+            const { state, msg } = response.data;
+
             if (state === 100) {
                 resolve(response.data);
-                // callback && callback(null, response.data);
+
             } else if (state == -10001) {
-                console.log(url);
-                // toast(msg);
-                // setTimeout(() => {
-                //     wepy.reLaunch({
-                //         url: '../pages/home',
-                //     });
-                // }, 1000);
+                const pages = getCurrentPages();
+                const len = pages.length;
+                const { route } = pages[len - 1];
+
+                console.log('route:', route);
+                if (route !== 'pages/home') {
+                    toast('登录过期，请重新登录');
+                    setTimeout(() => {
+                        loginHelper.goLogin();
+                    }, 1000);
+                }
+
                 reject(msg);
-                // callback && callback(null, response.data);
+
             } else {
                 reject(msg);
-                // callback && callback(msg);
             }
         },
         fail(e) {
