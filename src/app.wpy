@@ -23,6 +23,9 @@ export default class extends wepy.app {
             'pages/home',
             'pages/app/pickBusinessHour',
             'pages/app/accountList', // 账号列表
+            // 登录页面
+            'pages/passport/passport',
+            'pages/passport/login/login',
 
             'pages/edit/textEdit',
             // 登录之后的主页
