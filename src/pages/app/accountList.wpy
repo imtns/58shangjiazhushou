@@ -78,6 +78,10 @@ export default class Index extends wepy.page {
     }
     methods = {
         handleLogin(username, mobile) {
+            // 防止默认传入event对象
+            if (typeof username === 'object') {
+                username = '';
+            }
             loginHelper.goLogin({
                 username,
                 mobile,
