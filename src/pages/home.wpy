@@ -1537,7 +1537,7 @@ scroll-view {
                 width: 52rpx;
                 height:30rpx;
                 line-height: 30rpx;
-                background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/shangxin.png) no-repeat;
+                background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/shangxin-new.png) no-repeat;
                 background-size: 100% 100%;
                 position: absolute;
                 right: 13rpx;
