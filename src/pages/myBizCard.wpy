@@ -156,9 +156,9 @@ export default class myBizCard extends wepy.page {
         },
     };
     onLoad () {
-        // if (wepy.getStorageSync('cardMask')) {
-        this.maskShow = true;
-        // }
+        if (wepy.getStorageSync('cardMask')) {
+            this.maskShow = true;
+        }
         /**
          * @author zhouwunan
          */
@@ -303,16 +303,19 @@ export default class myBizCard extends wepy.page {
                     color: #333333;
                     margin-bottom: 50rpx;
                     width: 56%;
+                    line-height: 58rpx;
                 }
                 .position{
                     padding-left: 50rpx;
                     font-size: 28rpx;
                     color: #333333;
+                    line-height: 40rpx;
                 }
                 .mobile{
                     padding-left: 50rpx;
                     font-size: 28rpx;
                     color: #333333;
+                    line-height: 40rpx;
                 }
                 .picImg{
                     width: 281.2rpx;
@@ -343,10 +346,12 @@ export default class myBizCard extends wepy.page {
                         .num{
                             font-size: 46rpx;
                             color: #333333;
+                            line-height: 64rpx;
                         }
                         .type{
                             font-size: 24rpx;
                             color: #93B0D1;
+                            line-height: 34rpx;
                         }
                     }
                 }
@@ -369,6 +374,7 @@ export default class myBizCard extends wepy.page {
                     .text{
                         font-size: 26rpx;
                         color: #333333;
+                        line-height: 36rpx;
                     }
                 }
             }
