@@ -87,7 +87,6 @@ export default class OrderList extends wepy.page {
     font-family: PingFangSC-Regular;
     .listWrapper {
         margin-top: 176rpx;
-        padding: 20rpx 0;
         background: #f3f3f3;
         position: absolute;
         top: 0;
