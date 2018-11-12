@@ -29,7 +29,7 @@
 import wepy from 'wepy';
 
 import { sleep, toast } from '../utils/index';
-
+import Mixin from '../mixin';
 import { get } from '../utils/ajax';
 
 export default class AccountNoticeList extends wepy.page {
@@ -44,6 +44,7 @@ export default class AccountNoticeList extends wepy.page {
             pageSize: 10,
         },
     }
+    mixins = [Mixin]
     methods = {
         accountListMore() {
             this.sendParams.page = this.sendParams.page + 1;

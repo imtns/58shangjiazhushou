@@ -3,9 +3,11 @@
 </template>
 <script>
 import wepy from 'wepy';
+import Mixin from '../mixin';
 import { getUid, SendClickLog } from '../utils/maidian';
 
 export default class ActivityIntro extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '活动说明',
     }

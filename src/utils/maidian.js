@@ -15,14 +15,16 @@ import { globalData } from './globalData';
  * @example
 
  */
-function SendTrackLog(appid, uid, _trackURL, currentPage) {
+function SendTrackLog(currentPage) {
     console.log(currentPage);
     const appType = 2; // appType:1:优选壳子 2小程序
     // mpType:小程序类型(1优享 2企业)
     const { appScene, mpType } = globalData;
     const mpId = wx.getStorageSync('current_mpid');
     const cardId = wx.getStorageSync('current_cardId') || '';
+    const uid = getUid();
     const paramJson = {
+        pagePath: currentPage,
         appBaseSign: 'LBG_BIZMP_XZS',
         appScene,
         appType,
@@ -33,7 +35,7 @@ function SendTrackLog(appid, uid, _trackURL, currentPage) {
         conKey: uid,
     };
     if (uid) {
-        const url = `https://tracklog.58.com/wx/track/empty.js.gif?wxid=${appid || ''}&uid=${uid}&trackURL=${paramJson || ''}&v=${version}&rand_id=${Math.random()}`;
+        const url = `https://tracklog.58.com/wx/track/empty.js.gif?wxid=${mpId || ''}&uid=${uid}&trackURL=${JSON.stringify(paramJson) || ''}&v=${version}&rand_id=${Math.random()}`;
         wx.request({
             url: url,
             success() {},
