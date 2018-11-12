@@ -116,7 +116,8 @@ export default class ServiceOrder extends wepy.component {
                 }
             }
             &.logo-row {
-                padding: 24rpx 30rpx 20rpx;
+                padding: 0 30rpx;
+                position: relative;
                 display: flex;
                 .order-mplogo {
                     width: 58rpx;
@@ -224,6 +225,17 @@ export default class ServiceOrder extends wepy.component {
     text-align: center;
     font-size: 30rpx;
     color: #ccc;
+}
+.logo-row.unread::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 15rpx;
+    left: 73rpx;
+    width: 20rpx;
+    height: 20rpx;
+    border-radius: 100%;
+    background: #f43530;
 }
 //     /* 下拉刷新 */
 //     .img-no-data {
