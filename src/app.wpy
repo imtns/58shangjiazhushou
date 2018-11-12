@@ -180,7 +180,7 @@ export default class extends wepy.app {
     }
     onLaunch () {
         console.log('onlaunch');
-        wx.setStorageSync('ppu', 'UID=48738323270929&UN=h34xb9&TT=46db95bd08ff17aed4f74a9e1c1ba888&PBODY=WFnnNeXIm9dY3tOwu6eYfH52_kf5_U62WsBMQiUspovzO0RVDm5FIjwIBWA9IhGMMJYwSxThMw9diOnMySSKfme3pcUqS5_owtYxQO3--zOvqTVDXS_neYODpicpJFWPcXA2faeBuyDgd32t7aMf643hlVh1E6Ng5zNgVi6zGZg&VER=1');
+        // wx.setStorageSync('ppu', 'UID=48738323270929&UN=h34xb9&TT=46db95bd08ff17aed4f74a9e1c1ba888&PBODY=WFnnNeXIm9dY3tOwu6eYfH52_kf5_U62WsBMQiUspovzO0RVDm5FIjwIBWA9IhGMMJYwSxThMw9diOnMySSKfme3pcUqS5_owtYxQO3--zOvqTVDXS_neYODpicpJFWPcXA2faeBuyDgd32t7aMf643hlVh1E6Ng5zNgVi6zGZg&VER=1');
     }
     onShow (options) {
         // 版本更新检查

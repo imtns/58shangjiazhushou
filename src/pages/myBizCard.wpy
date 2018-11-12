@@ -82,11 +82,13 @@ import wepy from 'wepy';
 import { CARD_HAS_CARD, CARD_HAS_DETAIL, CHECK_IS_SALESMAN } from '../utils/url';
 import { post, get } from '../utils/ajax';
 import { myCardItems } from '../utils/introData';
+import Mixin from '../mixin';
 import { getUid, SendClickLog } from '../utils/maidian';
 import Mask from '../components/Mask';
 
 
 export default class myBizCard extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '我的名片',
     }
