@@ -1,6 +1,5 @@
 /* eslint-disable */
 
-import wepy from 'wepy';
 import { toast } from '../utils';
 import loginHelper from '../utils/login';
 
@@ -13,12 +12,9 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
         data = {};
     }
     // loadingControl为控制loading的时间和文案的obj
-    // loadingTitle标示loading的文案
     // delay标示 loading关闭时间 需要在请求成功后再次做延迟。
-    let loadingTitle = '';
     let delay = 0;
     if (loadingControl) {
-        loadingTitle = loadingControl.loadingTitle;
         delay = loadingControl.delay;
     }
     // test="test"字段是为切换测试和线上环境的，如果提交审核和发布，将test改为''，标识切换为线上环境
@@ -28,8 +24,7 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
     const ppu = wx.getStorageSync('ppu');
     console.log('请求接口', url);
     console.log('请求参数', sendData);
-    // wx.showLoading && wx.showLoading({ title: loadingTitle || '加载中', mask: true });
-    wepy.showNavigationBarLoading && wepy.showNavigationBarLoading();
+    wx.showNavigationBarLoading && wx.showNavigationBarLoading();
     return wx.request({
         url: host + url + (~url.indexOf('?') ? '' : '?') + (+new Date()).toString(36).substr(3),
         data: sendData,
@@ -75,10 +70,10 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
         complete() {
             if (delay) {
                 setTimeout(() => {
-                    wepy.hideNavigationBarLoading() && wepy.hideNavigationBarLoading();
+                    wx.hideNavigationBarLoading() && wx.hideNavigationBarLoading();
                 }, delay);
             }else {
-                wepy.hideNavigationBarLoading && wepy.hideNavigationBarLoading();
+                wx.hideNavigationBarLoading && wx.hideNavigationBarLoading();
             }
         },
     });
