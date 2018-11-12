@@ -163,7 +163,6 @@ export default class Cropper extends wepy.page {
 
                 // 在线图片，需要下载到本地
                 if (this.onlineImage) {
-                    console.log('=========== download image');
                     this.onlineImage = false;
                     const tempFilePath = await getTmpFilePath(imageSrc);
                     imageSrc = tempFilePath;
