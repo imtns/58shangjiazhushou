@@ -137,7 +137,7 @@ export default class Cropper extends wepy.page {
         drawL: 0,
     }
 
-    onLoad({ url, ratio, onlineImage = 'true' }) {
+    onLoad({ url, ratio, onlineImage }) {
         ctx = wx.createCanvasContext('myCanvas');
         this.onlineImage = onlineImage === 'true';
         this.$emit('crop-loadImage', decodeURIComponent(url), ratio, true);

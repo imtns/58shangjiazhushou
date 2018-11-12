@@ -9,9 +9,9 @@ export default {
             console.log(extraDataJSON);
             console.log(`获取PPU成功！ ${extraDataJSON.ppu}`);
             wepy.setStorageSync('ppu', extraDataJSON.ppu);
-            // wepy.setClipboardData({
-            //     data: extraDataJSON.ppu,
-            // });
+            wepy.setClipboardData({
+                data: extraDataJSON.ppu,
+            });
             const query = wepy.getStorageSync('query');
             const { toRedirect, ParamNames = '' } = query;
             if (query && JSON.stringify(query) !== '{}' && !ParamNames) { // 如果从公众号进来的消息
