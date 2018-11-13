@@ -35,9 +35,11 @@ import wepy from 'wepy';
 
 import { sleep, toast, filteremoji } from '../utils';
 import { post } from '../utils/ajax';
+import Mixin from '../mixin';
 
 const submitApi = '/resource/upload/article';
 export default class UploadArticle extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '上传素材',
 

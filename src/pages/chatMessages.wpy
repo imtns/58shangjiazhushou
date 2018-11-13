@@ -29,6 +29,7 @@
 import wepy from 'wepy';
 import NoLogin from '../components/NoLogin';
 import { post } from '../utils/ajax';
+import Mixin from '../mixin';
 import { globalData, setTabBar } from '../utils/globalData';
 import { pubsub } from '../utils/IM/pubsub';
 import { formatDateTimeLocal } from '../utils/dateFomate';
@@ -37,6 +38,7 @@ import { SendClickLog } from '../utils/maidian';
 
 const newMsgToken = [];
 export default class chatMessages extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '消息',
     }

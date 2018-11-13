@@ -14,8 +14,10 @@
 </template>
 <script>
 import wepy from 'wepy';
+import Mixin from '../mixin';
 
 export default class UploadInfoSuccess extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '上传成功',
     }

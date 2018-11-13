@@ -49,8 +49,10 @@
 import wepy from 'wepy';
 import { business, advantage } from '../utils/introData';
 import { sleep } from '../utils';
+import Mixin from '../mixin';
 
 export default class Index extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '首页',
     };

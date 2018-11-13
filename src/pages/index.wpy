@@ -6,10 +6,11 @@
 
 <script>
 import wepy from 'wepy';
-
+import Mixin from '../mixin';
 import { sleep } from '../utils';
 
 export default class Index extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: 'test',
     }

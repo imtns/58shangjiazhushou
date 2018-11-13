@@ -38,11 +38,13 @@
 import wepy from 'wepy';
 
 import { sleep, toast } from '../utils/index';
+import Mixin from '../mixin';
 
 import { get } from '../utils/ajax';
 import { READ_GROUND_MSG, GET_GROUP_MSG_LIST } from '../utils/url';
 
 export default class OrderNoticeList extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '订单提醒',
         // disableScroll: true,

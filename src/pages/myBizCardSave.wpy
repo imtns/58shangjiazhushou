@@ -14,8 +14,10 @@
 <script>
 import wepy from 'wepy';
 import { SendClickLog } from '../utils/maidian';
+import Mixin from '../mixin';
 
 export default class myBizCardSave extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '选择样式',
     }
