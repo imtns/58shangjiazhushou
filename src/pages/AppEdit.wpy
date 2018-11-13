@@ -89,7 +89,7 @@
 import wepy from 'wepy';
 import { picSrcDomain, filteremoji, toast, globalService, alertP, getNetStatus } from '../utils';
 import { get } from '../utils/ajax';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { SendClickLog } from '../utils/maidian';
 
 const host = 'https://yaofa.58.com';
 const uploadApi = `${host}/fileUpload`;
@@ -208,7 +208,7 @@ export default class AppEdit extends wepy.page {
             this.updateForm({ telphone });
         },
         async setLocation () {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_editapp_location');
+            SendClickLog('sjzh_click_editapp_location');
             const { address, latitude, longitude } = await wepy.chooseLocation();
             this.updateForm({ address, addressLatitude: latitude, addressLongitude: longitude });
         },

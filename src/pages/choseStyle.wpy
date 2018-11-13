@@ -77,7 +77,7 @@
 import wepy from 'wepy';
 import { CARD_FIRST_EDIT, CARD_CREATE_NEW_CARD } from '../utils/url';
 import { post } from '../utils/ajax';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { SendClickLog } from '../utils/maidian';
 // import { myCardItems } from '../utils/introData';
 
 
@@ -107,7 +107,7 @@ export default class choseStyle extends wepy.page {
     methods = {
         selectStyle(e) {
             const { style } = e.currentTarget.dataset;
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_visitorLogs_selectStyle_${style}`);
+            SendClickLog(`sjzh_click_visitorLogs_selectStyle_${style}`);
             this.style = style;
             this.selected1 = false;
             this.selected2 = false;
@@ -116,7 +116,7 @@ export default class choseStyle extends wepy.page {
             console.log(`selected${style}`);
         },
         async saveCard() {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_visitorLogs_saveCard');
+            SendClickLog('sjzh_click_visitorLogs_saveCard');
             const currentMpid = wepy.getStorageSync('current_mpid');
             if (!currentMpid) {
                 return;

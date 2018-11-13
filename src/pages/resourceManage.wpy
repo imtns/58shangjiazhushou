@@ -63,7 +63,7 @@ import uploadImages from '../utils/upload';
 import uploader from '../utils/uploaderP';
 import EmptyPage from '../components/EmptyPage';
 import Pop from '../components/Dialog';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { SendClickLog } from '../utils/maidian';
 
 let pageNum = 1;
 const pageSize = 20;
@@ -206,7 +206,7 @@ export default class Index extends wepy.page {
 
         edit(e) {
             const { status, type } = e.currentTarget.dataset;
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_resourceManage_${type}`);
+            SendClickLog(`sjzh_click_resourceManage_${type}`);
             const dataList = this.groupList;
             if (status) {
                 dataList.forEach(item => {
@@ -239,7 +239,7 @@ export default class Index extends wepy.page {
                     });
                 } else {
                     if (this.curTab === 'image') {
-                        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_resourceManage_deleteImage');
+                        SendClickLog('sjzh_click_resourceManage_deleteImage');
                     }
                     const { cancel } = await alertP(`确认删除所选的${selectedIds.length}项素材？`);
                     if (cancel) {
@@ -449,7 +449,7 @@ export default class Index extends wepy.page {
     }
 
     async uploadImage() {
-        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_resourceManage_uploadImage');
+        SendClickLog('sjzh_click_resourceManage_uploadImage');
         try {
             // 得到上传后的图片地址
             const { msg, result: resourceUrls } = await uploadImages();
@@ -473,7 +473,7 @@ export default class Index extends wepy.page {
     }
 
     async uploadVideo() {
-        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_resourceManage_uploadVideo');
+        SendClickLog('sjzh_click_resourceManage_uploadVideo');
         try {
             const { tempFilePath, size } = await wepy.chooseVideo();
 

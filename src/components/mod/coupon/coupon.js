@@ -6,7 +6,7 @@ module.exports = {
     sendLog () {
         // const app = getApp();
         // const { appid, userid } = app.globalData.extConfig;
-        // SendClickLog(appid, userid, '{}', 'jz_xcx_coupon_receive');
+        // SendClickLog('jz_xcx_coupon_receive');
     },
     receiveCoupon(e) {
         this.sendLog();
