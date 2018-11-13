@@ -1,6 +1,6 @@
 <template>
     <view class="containe">
-        <view class="main-title">常见问题-1</view>
+        <view class="main-title">常见问题-2</view>
         <view class="main-body" wx:for="{{list}}" wx:key="index">
             <view class="main-boy-line">
                 <view class="main-body-item" data-type="{{item.type}}" bindtap="tofeedbackDetail">{{item.text}}</view>
