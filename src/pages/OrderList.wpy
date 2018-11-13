@@ -23,9 +23,10 @@ import ServiceOrder from '../components/order/serviceOrder';
 import { globalData } from '../utils/globalData';
 import { SendClickLog } from '../utils/maidian';
 import mixin from '../components/order/mixin';
+import Mixin from '../mixin';
 
 export default class OrderList extends wepy.page {
-    mixins = [mixin];
+    mixins = [mixin, Mixin];
     config = {
         navigationBarTitleText: '订单管理',
     };

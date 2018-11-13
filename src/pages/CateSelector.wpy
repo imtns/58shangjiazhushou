@@ -25,9 +25,11 @@
 <script>
 import wepy from 'wepy';
 import { toast } from '../utils';
+import Mixin from '../mixin';
 import { get } from '../utils/ajaxP';
 
 export default class CateSelector extends wepy.page {
+    mixins = [Mixin]
     config = { navigationBarTitleText: '选择类目' }
     data = {
         columnNo: 1, // 选中的列宽度加大

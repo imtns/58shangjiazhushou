@@ -48,8 +48,10 @@ import { toast } from '../utils/index';
 import { CONSUMER_INFO } from '../utils/url';
 import { globalData } from '../utils/globalData';
 import { SendClickLog } from '../utils/maidian';
+import Mixin from '../mixin';
 
 export default class visitorInfo extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '访客信息',
     }

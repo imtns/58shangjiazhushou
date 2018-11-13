@@ -72,11 +72,13 @@
 import wepy from 'wepy';
 import { picSrcDomain, toast } from '../utils';
 import { get } from '../utils/ajax';
+import Mixin from '../mixin';
 import { SendClickLog } from '../utils/maidian';
 
 const appinfoApi = '/mplogic/get';
 
 export default class AppInfo extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '小程序信息',
     }

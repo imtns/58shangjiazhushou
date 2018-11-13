@@ -50,8 +50,10 @@ import wepy from 'wepy';
 import { sleep, toast } from '../utils/index';
 
 import { get } from '../utils/ajax';
+import Mixin from '../mixin';
 
 export default class SysNoticeList extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '系统通知',
         // disableScroll: true,

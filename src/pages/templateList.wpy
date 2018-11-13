@@ -31,6 +31,7 @@ import wepy from 'wepy';
 import { get, post } from '../utils/ajax';
 import { toast } from '../utils/index';
 import { globalData } from '../utils/globalData';
+import Mixin from '../mixin';
 
 const basicTemplateUrl = '/business/templateList';
 const myTemplateUrl = '/business/myTemplateList/';
@@ -38,6 +39,7 @@ const getTemplateIdUrl = '/business/init/struct';
 const delTemplateUrl = '/business/myTemplate/del';
 
 export default class Index extends wepy.page {
+  mixins = [Mixin]
   config = {
       navigationBarTitleText: '店铺装修',
   };

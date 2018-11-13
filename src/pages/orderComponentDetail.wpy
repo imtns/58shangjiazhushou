@@ -47,8 +47,10 @@
 import wepy from 'wepy';
 import { get } from '../utils/ajax';
 import { alert } from '../utils';
+import Mixin from '../mixin';
 
 export default class OrderComponentDetail extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '预览详情',
     }

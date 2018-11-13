@@ -76,6 +76,7 @@ import wepy from 'wepy';
 import { sleep, toast, alert, filteremoji } from '../utils';
 import { get, post } from '../utils/ajaxP';
 import UploadFile from '../components/UploadFile';
+import Mixin from '../mixin';
 
 const complateApi = '/resource/complete';
 const uploadText = '/resource/upload/text';
@@ -83,6 +84,7 @@ const getArticles = '/resource/articleList';
 const saveUpload = '/businessResource/insert'; // resourceType  1图片  2视频     resourceUrl  调用/fileUpload之后返回的url   resourceName资源名称
 
 export default class UploadInfo extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '上传素材',
     }

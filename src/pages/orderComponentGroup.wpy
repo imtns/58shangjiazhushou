@@ -40,8 +40,10 @@ import Pop from '../components/Dialog';
 import EmptyPage from '../components/EmptyPage';
 import GroupComponent from '../components/GroupComponent';
 import { SendClickLog } from '../utils/maidian';
+import Mixin from '../mixin';
 
 export default class OrderComponentGroup extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '预约管理',
     }

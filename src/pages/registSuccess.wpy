@@ -20,10 +20,12 @@
 import wepy from 'wepy';
 
 import { sleep } from '../utils';
+import Mixin from '../mixin';
 
 import RemindBar from '../components/RemindBar';
 
 export default class RegistSuccess extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '注册',
     }

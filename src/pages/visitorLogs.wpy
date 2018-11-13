@@ -30,8 +30,10 @@ import { CONSUMER_RECORDS } from '../utils/url';
 import { post } from '../utils/ajax';
 import { alert } from '../utils';
 import { SendClickLog } from '../utils/maidian';
+import Mixin from '../mixin';
 
 export default class visitorLogs extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '访问记录',
     }

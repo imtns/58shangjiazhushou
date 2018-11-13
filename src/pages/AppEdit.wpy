@@ -97,6 +97,7 @@ import {
     uploadImage,
 } from '../utils';
 import { get } from '../utils/ajax';
+import Mixin from '../mixin';
 import { SendClickLog } from '../utils/maidian';
 
 const provinceApi = '/local/provinces';
@@ -105,6 +106,7 @@ const appinfoApi = '/mplogic/get';
 const saveAppApi = '/mplogic/modifympinfo';
 
 export default class AppEdit extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '小程序编辑',
     }

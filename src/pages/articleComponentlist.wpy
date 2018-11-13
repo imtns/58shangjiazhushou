@@ -58,10 +58,12 @@
 import wepy from 'wepy';
 import { alert, toast } from '../utils';
 import { get } from '../utils/ajax';
+import Mixin from '../mixin';
 import EmptyPage from '../components/EmptyPage';
 import { SendClickLog } from '../utils/maidian';
 
 export default class ArticleComponentList extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '文章管理',
         disableScroll: true,
