@@ -60,7 +60,7 @@
 import wepy from 'wepy';
 import { CARD_FIRST_EDIT, CARD_CREATE_NEW_CARD } from '../utils/url';
 import { post } from '../utils/ajax';
-import { getNetStatus, toast } from '../utils';
+import { getNetStatus, toast, alertP, uploadImage } from '../utils';
 import { SendClickLog } from '../utils/maidian';
 import globalService from '../utils/globalService';
 
@@ -102,11 +102,17 @@ export default class newBizCard extends wepy.page {
                     count: 1,
                     sizeType: 'compressed ',
                 });
-                const url = await this.uploadLogo(tempFilePaths[0]);
-                const fullUrl = `https://pic1.58cdn.com.cn${url}`;
-                wepy.navigateTo({
-                    url: `/pages/cropper?url=${fullUrl}`,
-                });
+
+                const { confirm } = await alertP('是否裁剪图片？', '提示');
+
+                if (confirm) {
+                    // 去裁剪
+                    wepy.navigateTo({
+                        url: `/pages/cropper?url=${tempFilePaths[0]}`,
+                    });
+                } else {
+                    this.uploadLogo(tempFilePaths[0]);
+                }
                 // this.picImg = url;
                 // this.headImg = url;
                 // this.$apply();
@@ -306,24 +312,11 @@ export default class newBizCard extends wepy.page {
         });
     }
     async uploadLogo(tempPath) {
-        try {
-            const response = await wepy.uploadFile({
-                url: uploadApi,
-                filePath: tempPath,
-                name: 'content',
-            });
-            const res = JSON.parse(response.data);
-            const { state, msg, data } = res;
-
-            if (state !== 100) {
-                throw new Error(msg);
-            }
-
-            return data.content;
-        } catch ({ errMsg }) {
-            this.toast(errMsg);
-            return '';
-        }
+        const url = await uploadImage(tempPath);
+        console.log(url);
+        this.headImg = url;
+        this.picImg = url;
+        this.$apply();
     }
 }
 </script>

@@ -198,3 +198,26 @@ export const getUrlParams = (url) => {
 
     return result;
 };
+
+/**
+ * 上传图片，临时路径变为永久路径
+ *
+ * @param {string} tmpPath 临时路径
+ * @return {string} 上传完成后的线上路径，不带域名，如
+ * /bizmp/n_v283deb5e639474fbbb779224cc5aeaffa_46c1b2fb24e2d965.jpg
+ */
+export const uploadImage = async (tmpPath) => {
+    const response = await wepy.uploadFile({
+        url: 'https://yaofa.58.com/fileUpload',
+        filePath: tmpPath,
+        name: 'content',
+    });
+    const res = JSON.parse(response.data);
+    const { state, msg, data } = res;
+
+    if (state === 100) {
+        return data.content;
+    }
+
+    throw new Error(msg);
+};
