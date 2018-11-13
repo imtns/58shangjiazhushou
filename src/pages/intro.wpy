@@ -2,16 +2,17 @@
     <view class="intro">
         <view class="header">
             <text selectable="false" class="welcome">欢迎登录</text>
-            <text selectable="false" class="text">58小程序商家助手</text>
-            <button class="btn-login"  bindtap="callPassport">立即登录</button>
+            <text selectable="false" class="text">58商家程序助手</text>
+            <!-- <button class="btn-login"  bindtap="callPassport">立即登录</button> -->
+            <navigator class="btn-login" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release">立即登录</navigator>
         </view>
         <view class="intro-content">
-            <text class="title">小程序四大价值</text>
+            <text class="title">小程序四大价·值</text>
             <view class="box part1">
                 <view class="textbox">
                     <text>重建入口</text>
                     <text>重构关系</text>
-                </view>
+                </view>        
                 <view class="contnet-logo"></view>
                 <view class="textbox">
                     <text>连接一切</text>
@@ -39,14 +40,14 @@
                     </view>
                 </repeat>
             </view>
-            <button class="login" bindtap="callPassport">立即登录</button>
+            <navigator class="login" target="miniProgram" open-type="navigate" url="pages/index/index?source=1" app-id="wx2a9c6eeb1c44a284" path="pages/index/index?source=1" extra-data="" version="release">立即登录</navigator>
         </view>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
-
+import { business, advantage } from '../utils/introData';
 import { sleep } from '../utils';
 
 export default class Index extends wepy.page {
@@ -54,53 +55,8 @@ export default class Index extends wepy.page {
         navigationBarTitleText: '首页',
     };
     data = {
-        business: [{
-            src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code1.png',
-            name: '家装服务',
-        }, {
-            src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code2.png',
-            name: '会展策划',
-        }, {
-            src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code3.png',
-            name: '健身培训',
-        }, {
-            src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code4.png',
-            name: '货运物流',
-        }, {
-            src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code5.png',
-            name: '艺术培训',
-        }, {
-            src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code6.png',
-            name: '电脑租赁',
-        }, {
-            src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code7.png',
-            name: '维修服务',
-        }, {
-            src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code8.png',
-            name: '家政保洁',
-        }, {
-            src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/code9.png',
-            name: '商务服务',
-        }],
-        advantage: [{
-            title: '自带流量',
-            text: '微信超9亿日活，聚拢大量潜在用户',
-        }, {
-            title: '便捷入口',
-            text: '50+入口，微信内轻松跳转小程序',
-        }, {
-            title: '突破地域',
-            text: '附近5km自动客流，扩大辐射范围',
-        }, {
-            title: '社交裂变',
-            text: '基于微信社交，实现广传播和涨用户',
-        }, {
-            title: '微信生态',
-            text: '公众号小程序连通，流量增长多途径',
-        }, {
-            title: '使用无门槛',
-            text: '无需下载无需注册，即开即用难度低',
-        }],
+        business,
+        advantage,
     };
     methods = {
         callPassport() {
@@ -136,6 +92,26 @@ export default class Index extends wepy.page {
         await sleep();
         console.log('onLoad');
     }
+    /**
+     * 用户点击右上角分享
+     */
+    onShareAppMessage(res) {
+        if (res.from === 'button') {
+            // 来自页面内转发按钮
+            console.log(res.target);
+        }
+        return {
+            title: '高效管理商家小程序的一站式服务工具',
+            path: '/pages/intro',
+            imageUrl: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/share.png',
+            success(data) {
+                console.log(data);
+            },
+            fail (err) {
+                console.log(err);
+            },
+        };
+    }
 }
 </script>
 <style lang="scss">
@@ -166,6 +142,9 @@ export default class Index extends wepy.page {
                 line-height: 45rpx;
             }
             .btn-login{
+                display:block;
+                text-align:center;
+                margin:0 auto;
                 background: #FFFFFF;
                 box-shadow: 0 0 12rpx 0 rgba(164,170,190,0.40), inset 0 0 10rpx 0 rgba(164,170,190,0.20);
                 border-radius: 100rpx;
@@ -250,11 +229,13 @@ export default class Index extends wepy.page {
                 width: 550rpx;
                 height: 88rpx;
                 background: #FFFFFF;
-                box-shadow: 0 0 12rpx 0 rgba(164,170,190,0.20), inset 0 0 10rpx 0 rgba(164,170,190,0.10);
+                box-shadow: 0 0 20rpx 0 rgba(164,170,190,0.20), inset 0 0 15rpx 0 rgba(164,170,190,0.10);
                 border-radius: 100rpx;
                 margin: 96rpx auto 91rpx auto;
                 font-size: 32rpx;
                 color: #5F62F9;
+                text-align: center;
+                line-height: 88rpx;
             }
             .title{
                 font-size: 34rpx;

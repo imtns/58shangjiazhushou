@@ -1,0 +1,30 @@
+<template>
+    <web-view src="{{url}}"></web-view>
+</template>
+<script>
+import wepy from 'wepy';
+
+export default class orderDetailCreate extends wepy.page {
+    config = {
+        navigationBarTitleText: '编辑文章',
+    };
+    data = {
+        url: '',
+    };
+    onLoad(option) {
+        console.log('create', option);
+        const ppu = encodeURIComponent(wx.getStorageSync('ppu'));
+        const { id = '', group = '', name = '' } = option;
+        // wepy.setNavigationBarTitle({
+        //     title: id ? '文章编辑' : '文章添加',
+        // });
+        const v = (+new Date() * 1).toString(36);
+        this.url = `http://yaofa.58.com/uhtml/orderDetailCreate?v=${v}&ppu=${ppu}&group=${group}&id=${id}&name=${encodeURIComponent(name)}`;
+        this.$apply();
+        console.log(this.url);
+    }
+}
+</script>
+<style lang="scss">
+    
+</style>

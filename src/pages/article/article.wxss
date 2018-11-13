@@ -1,0 +1,46 @@
+/* pages/article/article.wxss */
+.mod-article-view {
+    min-height: 100vh;
+    margin: 0;
+}
+
+.mod-article-head {
+    font-size: 40rpx;
+    line-height: 56rpx;
+    color: #353538;
+    letter-spacing: 0;
+    text-align: left;
+    margin-bottom: 20rpx;
+}
+
+.mod-desc {
+    display: flex;
+    font-size: 28rpx;
+    color: #aaa;
+    letter-spacing: 0;
+    line-height: 40rpx;
+    margin-bottom: 12rpx;
+}
+
+.mod-desc-author {
+    margin-left: 42rpx;
+}
+
+.mod-content {
+    width: 690rpx;
+    overflow: hidden;
+    font-size: 28rpx;
+    color: #353538;
+    letter-spacing: 0;
+    line-height: 60rpx;
+}
+
+.mod-article-img {
+    display: block;
+    width: 690rpx;
+    margin: 24rpx 0 0;
+}
+
+.mod-article-p {
+    margin: 24rpx 0;
+}

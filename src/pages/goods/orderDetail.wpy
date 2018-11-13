@@ -1,0 +1,459 @@
+<template>
+    <block>
+        <loading wx:if="{{ loading }}" :show="loading"></loading>
+        <view class="container" wx:else>
+            <view class="status">
+                <block wx:if="{{ order.status === 10 && order.applyStatus !== 0 }}">
+                    <view class="status-title">退款中</view>
+                    <view class="status-subtitle">您已申请平台介入</view>
+                </block>
+                <block wx:else>
+                    <view class="status-title">{{ statusDesc[order.status][0] }}</view>
+                    <view class="status-subtitle">{{ statusDesc[order.status][1] }}</view>
+                </block>
+            </view>
+            <view class="order-info">
+                <view class="user-info" @tap="handleCall({{ order.telephone }})">
+                    <view class="user-name">{{ order.name }}</view>
+                    <view class="user-phone">{{ order.telephone }}</view>
+                    <view class="icon-phone"></view>
+                </view>
+                <view class="order-wrap">
+                    <view class="order-detail">
+                        <view class="order-detail-item">
+                            <view class="order-detail-label">下单时间</view>
+                            <view class="order-detail-value">{{ order.createTime }}</view>
+                        </view>
+                        <view class="order-detail-item">
+                            <view class="order-detail-label">配送地址</view>
+                            <!-- 按理来说是不应该加这个样式的，这样会导致用户的输入的英文单词或者一串数字被强制切割换行
+                            但QA拿长度100的连续数字和我说不行，我能怎么办 -->
+                            <view
+                                class="order-detail-value"
+                                style="word-break: break-all;">{{ order.fullAddress }}</view>
+                        </view>
+                        <view class="order-detail-item">
+                            <view class="order-detail-label">预计送达时间</view>
+                            <view class="order-detail-value">{{ order.arriveTime }}</view>
+                        </view>
+                        <view class="order-detail-item">
+                            <view class="order-detail-label">配送方式</view>
+                            <view class="order-detail-value">商家配送</view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+            <view class="goods-info">
+                <view class="goods-title {{ showGoodsList ? '' : 'hide-goods-list' }}" @tap="handleTriggerShowGoodsList">{{ order.mpName }}</view>
+                <view class="goods-list {{ showGoodsList ? '' : 'hidden' }}">
+                    <view class="goods-item" wx:for="{{ goodsList }}" wx:key="index">
+                        <image src="{{ item.pics }}" class="goods-img"/>
+                        <view class="goods-detail-info">
+                            <view class="goods-name">{{ item.title }}</view>
+                            <view class="goods-amount">x {{ item.total }}</view>
+                        </view>
+                        <view class="goods-price">￥{{ item.price }}</view>
+                    </view>
+                </view>
+                <view class="order-detail">
+                    <view class="order-detail-item">
+                        <view class="order-detail-label">包装费</view>
+                        <view class="order-detail-value">￥{{ order.packingFee || 0 }}</view>
+                    </view>
+                    <view class="order-detail-item">
+                        <view class="order-detail-label">配送费</view>
+                        <view class="order-detail-value">{{ order.distributionFee ? '￥' + order.distributionFee : '免配送费' }}</view>
+                    </view>
+                    <view class="order-detail-item" wx:if="{{ order.couponAmount }}">
+                        <view class="order-detail-label">优惠券</view>
+                        <view class="order-detail-value">-￥{{ order.couponAmount || 0 }}</view>
+                    </view>
+                </view>
+                <view class="goods-total">
+                    总计<text class="bold">￥{{ order.realAmount || 89.8 }}</text>
+                </view>
+            </view>
+            <view class="extra-info">
+                <view class="order-detail" style="border-top: none;">
+                    <view class="order-detail-item">
+                        <view class="order-detail-label">订单编号</view>
+                        <view class="order-detail-value">{{ orderId }}</view>
+                    </view>
+                </view>
+                <view class="order-detail">
+                    <view class="order-detail-item">
+                        <view class="order-detail-label">支付方式</view>
+                        <view class="order-detail-value">{{ order.payType || '线上支付' }}</view>
+                    </view>
+                </view>
+                <view class="order-detail">
+                    <view class="order-detail-item">
+                        <view class="order-detail-label">备注</view>
+                        <view class="order-detail-value"></view>
+                    </view>
+                    <view class="order-textarea-value">{{ order.remark }}</view>
+                </view>
+            </view>
+            <view class="options">
+                <block wx:if="{{ order.status === 0 }}">
+                    <button
+                        class="button cancel"
+                        @tap="handleRefuseOrder({{ orderId}})"
+                        >取消订单</button>
+                    <button
+                        class="button primary accept"
+                        @tap="handleAcceptOrder({{ orderId}})"
+                        >立即接单</button>
+                </block>
+                <block wx:elif="{{ order.status === 1 }}">
+                    <button
+                        class="button primary"
+                        @tap="handleStartDeliver({{ orderId}})"
+                        >开始配送</button>
+                </block>
+                <block wx:elif="{{ order.status === 10 && order.applyStatus === 0 }}">
+                    <button
+                        class="button"
+                        @tap="handlePlatformIn({{ orderId}})"
+                        >申请平台介入</button>
+                    <button
+                        class="button primary"
+                        @tap="handleAcceptRefund({{ orderId}})"
+                        >同意退款</button>
+                </block>
+                <block wx:elif="{{ order.status === 13 }}">
+                    <button
+                        class="button primary"
+                        @tap="handleConfirm({{ orderId}})"
+                        >确认配送到达</button>
+                </block>
+            </view>
+        </view>
+    </block>
+</template>
+
+<script>
+/**
+ * 商品订单详情
+ */
+import wepy from 'wepy';
+import Loading from '../../components/Loading';
+import { goodsOrderDetail as goodsOrderDetailConfig } from '../../utils/config';
+import { get } from '../../utils/ajax';
+import { alert } from '../../utils';
+import * as _ from '../../utils/lodash';
+import { LOAD_ORDER_DETAIL } from '../../utils/url';
+import OrderMixin from '../../components/order/mixin';
+
+export default class Index extends wepy.page {
+    components = {
+        loading: Loading,
+    }
+    mixins = [OrderMixin]
+    config = {
+        navigationBarTitleText: '订单详情',
+    }
+    data = {
+        order: {
+            status: 0, // 订单状态
+            mpLogo: '', // 小程序Logo
+            mpName: '', // 小程序名称
+            mpId: '',
+            packingFee: 0, // 打包费
+            distributionFee: 0, // 配送费
+            couponAmount: 0, // 优惠券金额
+            realAmount: 0, // 实际支付价格
+            createTime: '', // 下单时间
+            arriveTime: '', // 送达时间
+            remark: '', // 订单备注
+
+            name: '', // 收货人
+            telephone: '', // 收货人电话
+            fullAddress: '', // 收货人地址
+            applyStatus: 0, // 退款状态
+        },
+        statusDesc: [],
+        showGoodsList: true,
+        goodsList: [],
+        orderId: '',
+        loading: true,
+    }
+    onLoad({ id }) {
+        this.statusDesc = goodsOrderDetailConfig.statusDesc;
+        this.orderId = id;
+        this.loadData();
+    }
+    loadData() {
+        this.getOrderDetail();
+        this.getGoodsList();
+    }
+    async getGoodsList() {
+        try {
+            const { orderId } = this;
+            const { data } = await get(`/consumerAppointment/getGoodsSnapshots/${orderId}`);
+            this.goodsList = data;
+            this.$apply();
+        } catch (err) {
+            alert('数据加载失败，请稍后再试~');
+            console.log('获取商品列表失败', err);
+        }
+    }
+    async getOrderDetail() {
+        try {
+            const { orderId } = this;
+            const { data } = await get(`${LOAD_ORDER_DETAIL}${orderId}`);
+
+            const {
+                status,
+                mpLogo,
+                mpName,
+                mpId,
+                packingFee,
+                distributionFee,
+                couponAmount = 0,
+                realAmount,
+
+                consumerAddressJson,
+
+                createTime,
+                arriveTime,
+                remark,
+                applyStatus,
+
+                startTime, // 商家配送时间
+            } = data;
+
+            const {
+                name,
+                telephone,
+                fullAddress,
+            } = consumerAddressJson ? JSON.parse(consumerAddressJson) : {};
+
+            this.order = {
+                status,
+                mpLogo,
+                mpName,
+                mpId,
+                packingFee,
+                distributionFee,
+                couponAmount,
+                realAmount,
+                createTime,
+                arriveTime,
+                remark,
+                name,
+                telephone,
+                fullAddress,
+                applyStatus,
+            };
+
+            const newDesc = _.cloneDeep(this.statusDesc);
+            newDesc[13][1] = newDesc[13][1].replace('$$', startTime ? `于${startTime}` : '');
+            this.statusDesc = newDesc;
+            this.loading = false;
+            this.$apply();
+        } catch (err) {
+            console.log(err);
+            alert('数据加载失败，请稍后再试~');
+        }
+    }
+    methods = {
+        handleCall(phoneNumber) {
+            wepy.makePhoneCall({ phoneNumber })
+                .catch(() => {});
+        },
+        handleTriggerShowGoodsList() {
+            this.showGoodsList = !this.showGoodsList;
+        },
+    }
+}
+</script>
+
+<style lang="scss">
+.container {
+    width: 100%;
+    background: url('https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/order-goods-detail-rectangle.png') no-repeat;
+    background-size: 750rpx 348rpx;
+    overflow: hidden;
+}
+.status {
+    width: 690rpx;
+    margin: 30rpx auto 20rpx;
+    color: #fff;
+    .status-title {
+        font-size: 38rpx;
+        font-weight: bold;
+        line-height: 53rpx;
+        margin-bottom: 10rpx;
+    }
+    .status-subtitle {
+        font-size: 26rpx;
+        line-height: 37rpx;
+    }
+}
+
+.order-info {
+    width: 720rpx;
+    margin: 0 auto 20rpx;
+    background-color: #fff;
+    border-radius: 10rpx;
+    box-shadow: 0 4rpx 20rpx 0 rgba(200,218,255,0.50);
+    font-size: 30rpx;
+    color: #333;
+    overflow: hidden;
+    .user-info {
+        padding: 0 30rpx;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 102rpx;
+        .user-name {
+            font-weight: bold;
+        }
+        .user-phone {
+            flex-grow: 1;
+            margin-left: 20rpx;
+        }
+        .icon-phone {
+            width: 40rpx;
+            height: 40rpx;
+            background: url('/icon-call.png') no-repeat;
+            background-size: 100%
+        }
+    }
+    .order-wrap {
+        padding: 0 20rpx;
+    }
+}
+
+.goods-info {
+    padding: 0 30rpx;
+    background-color: #fff;
+    font-size: 30rpx;
+    color: #333;
+    .goods-title {
+        font-weight: bold;
+        height: 85rpx;
+        line-height: 85rpx;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        &::after {
+            display: block;
+            content: '';
+            width: 15rpx;
+            height: 26rpx;
+            background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png') no-repeat center;
+            background-size: 100%;
+            transform: rotate(270deg);
+        }
+        &.hide-goods-list::after {
+            transform: rotate(90deg);
+        }
+    }
+    .goods-list {
+        padding-top: 30rpx;
+        border-top: 1rpx solid #f3f3f3;
+    }
+    .goods-item {
+        display: flex;
+        margin-bottom: 30rpx;
+        line-height: 42rpx;
+        .goods-img {
+            width: 94rpx;
+            height: 94rpx;
+            background-color: #f3f3f3;
+        }
+        .goods-detail-info {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin-left: 20rpx;
+            .goods-name {
+                margin-bottom: 10rpx;
+            }
+        }
+    }
+    .goods-total {
+        font-size: 26rpx;
+        line-height: 100rpx;
+        text-align: right;
+        .bold {
+            display: inline-block;
+            font-size: 34rpx;
+            color: #ff552e;
+            margin-left: 20rpx;
+        }
+    }
+}
+
+.extra-info {
+    background-color: #fff;
+    padding: 0 30rpx;
+    margin: 20rpx 0 40rpx;
+}
+
+.order-detail {
+    padding: 30rpx 0 0;
+    border-top: 1rpx solid #f3f3f3;
+    font-size: 30rpx;
+    color: #333;
+    overflow: hidden;
+    .order-detail-item {
+        margin-bottom: 30rpx;
+        display: flex;
+        justify-content: space-between;
+        .order-detail-label {
+            color: #999;
+            min-width: 140rpx;
+            flex-grow: 1;
+        }
+        .order-detail-value {
+            text-align: right;
+        }
+    }
+    .order-textarea-value {
+        height: 198rpx;
+        margin-bottom: 30rpx;
+        word-break:break-all;
+    }
+}
+
+.options {
+    display: flex;
+    font-size: 34rpx;
+    letter-spacing: 0.51px;
+    width: 100%;
+    box-shadow: 0 -1px 17px -1px rgba(202,202,202,0.50);
+
+    .button {
+        flex-grow: 1;
+        height:102rpx;
+        font-size: 34rpx;
+        line-height: 102rpx;
+        border-radius: 0;
+        background-color: #fff;
+        color: #4E88FF;
+
+        &.primary {
+            background-color: #4E88FF;
+            color: #fff;
+        }
+
+        &::after {
+            content: none;
+        }
+
+        &.cancel {
+            flex-grow: 0;
+            width: 240rpx;
+            color: #666;
+        }
+    }
+}
+
+.hidden {
+    display: none;
+}
+</style>

@@ -1,6 +1,6 @@
 <template lang="wxml">
     <view class="container">
-        Hello world
+        Hello world 6
     </view>
 </template>
 
@@ -15,7 +15,4 @@ export default class Index extends wepy.component {
 </script>
 
 <style lang="scss">
-.container{
-    background: url(/bg.png) no-repeat;
-}
 </style>

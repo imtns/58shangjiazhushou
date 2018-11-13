@@ -1,0 +1,36 @@
+/* pages/tabBar/tabBar.wxss */
+.tab-bar {
+    width: 100%;
+    height: 98rpx;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    padding-top: 10rpx;
+    background-color: #FFFFFF;
+    border-top: 1rpx solid #EEEEEE;
+}
+.tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.tab-item-icon {
+    width: 54rpx;
+    height: 54rpx;
+    margin-bottom: 2rpx;
+}
+.tab-item-text {
+    font-size: 20rpx;
+    line-height: 28rpx;
+    letter-spacing: 0.3rpx;
+    color: #999999;
+}
+.current .tab-item-text {
+    color: #FF552E;
+}
+.tab-bar.iphonex {
+    height: 166rpx;
+    padding-bottom: 68rpx;
+}

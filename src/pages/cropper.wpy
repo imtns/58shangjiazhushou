@@ -1,0 +1,964 @@
+<template>
+    <view class="wx-content-info" wx:if="{{ imageSrc }}">
+        <view wx:if="{{ isShowImg }}" class="wx-corpper" style="width:{{cropperInitW}}rpx;height:{{cropperInitH}}rpx;">
+            <view
+                class="wx-corpper-content"
+                style="width:{{cropperW}}rpx;height:{{cropperH}}rpx;left:{{cropperL}}rpx;top:{{cropperT}}rpx">
+                <image
+                    src="{{ imageSrc }}"
+                    style="width:{{cropperW}}rpx;height:{{cropperH}}rpx;"></image>
+                <view
+                    class="wx-corpper-crop-box"
+                    bindtouchstart="contentStartMove"
+                    bindtouchmove="contentMoving"
+                    style="width:{{cutW}}rpx;height:{{cutH}}rpx;left:{{cutL}}rpx;top:{{cutT}}rpx;">
+                    <view class="wx-cropper-view-box">
+                        <block wx:if="{{ !ratio }}">
+                            <view class="wx-cropper-dashed-h"></view>
+                            <view class="wx-cropper-dashed-v"></view>
+                        </block>
+                        <view class="wx-cropper-line-t" data-drag="top" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
+                        <view class="wx-cropper-line-r" data-drag="right" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
+                        <view class="wx-cropper-line-b" data-drag="bottom" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
+                        <view class="wx-cropper-line-l" data-drag="left" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
+                        <block wx:if="{{ !ratio }}">
+                            <view class="wx-cropper-point point-t" data-drag="top" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
+                            <view class="wx-cropper-corner-point point-tr" data-drag="topTight"></view>
+                            <view class="wx-cropper-point point-r" data-drag="right" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
+                            <view class="wx-cropper-point point-b" data-drag="bottom" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
+                            <view class="wx-cropper-corner-point point-bl" data-drag="bottomLeft"></view>
+                            <view class="wx-cropper-point point-l" data-drag="left" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
+                            <view class="wx-cropper-corner-point point-lt" data-drag="leftTop"></view>
+                        </block>
+                        <view class="wx-cropper-corner-point point-rb" data-drag="rightBottom" catchtouchstart="dragStart" catchtouchmove="dragMove"></view>
+                    </view>
+                </view>
+                <view
+                    class="crop-mask"
+                    style="border-top-width:{{cutT - cropperT}}rpx;border-right-width:{{(cropperL + cropperW) - (cutL + cutW)}}rpx;border-bottom-width:{{(cropperT + cropperH) - (cutT + cutH)}}rpx;border-left-width:{{cutL - cropperL}}rpx;"></view>
+            </view>
+        </view>
+        <canvas canvas-id="myCanvas" style="position:absolute;border: 1px solid red; width:{{qualityWidth}}px;height:{{qualityWidth / innerAspectRadio}}px;top:900rpx;left:-9999px"></canvas>
+        <canvas canvas-id="myCanvas2" style="position:absolute;border: 1px solid red; width:{{canvasWidth}}px;height:{{canvasWidth}}px;top:600rpx;right:-9999px;"></canvas>
+        <view class="options">
+            <view class="option-item restore" @tap="restore">还原</view>
+            <view class="option-item rotate" @tap="rotateImage">旋转</view>
+            <view class="option-item cancel" @tap="cancel">取消</view>
+            <view class="option-item crop" @tap="getImageInfo">裁剪</view>
+        </view>
+    </view>
+</template>
+
+<script>
+/**
+ * 使用方法：
+ * 将<cropper>组件插入到父组件，在父组件中$broadcast事件’crop-loadImage’
+ * 并在父组件中添加事件'after-crop'，接收裁剪后的图片临时地址
+ *
+ * 'crop-loadImage'参数：
+ * imageSrc {String} 图片链接，必须为临时地址，或者已下载的图片
+ * ratio {String} 裁剪比例，没有则自由裁剪
+ * first {Boolean} 是否为第一次加载图片
+ *
+ * 'after-crop'参数：
+ * tempFilePath {String} 裁剪后的图片临时地址
+ */
+
+import wepy from 'wepy';
+import { getTmpFilePath, alert } from '../utils';
+import { uploadResource } from '../utils/upload';
+import globalService from '../utils/globalService';
+
+const { pixelRatio } = wx.getSystemInfoSync();
+const windowWidth = 750;
+const windowHeight = 1206;
+
+// pages/wx-cropper/index.js
+// 手机的宽度
+const windowWRPX = windowWidth;
+// 拖动时候的 pageX
+let pageX = 0;
+// 拖动时候的 pageY
+let pageY = 0;
+
+// 调整大小时候的 pageX
+let sizeConfPageX = 0;
+// 调整大小时候的 pageY
+let sizeConfPageY = 0;
+
+let initDragCutW = 0;
+let initDragCutL = 0;
+let initDragCutH = 0;
+let initDragCutT = 0;
+// 移动时 手势位移与 实际元素位移的比
+const dragScaleP = 2;
+let ctx = null;
+const cutCoefficient = 1; // 裁剪系数
+let originSrc = '';
+
+let rotateCount = 0; // 旋转次数
+
+const getFixedNum = (num, digit = 4) => Math.ceil(num * (10 ** digit)) / (10 ** digit);
+
+export default class Cropper extends wepy.page {
+    config = {
+        navigationBarTitleText: '图片裁剪',
+    }
+    data = {
+        imageSrc: '',
+        isShowImg: false,
+        ratio: '',
+        cutRatio: '',
+        canvasWidth: windowWRPX,
+        // 初始化的宽高
+        cropperInitW: windowWidth,
+        cropperInitH: windowHeight,
+        // 动态的宽高
+        cropperW: windowWRPX,
+        cropperH: windowWRPX,
+        // 动态的left top值
+        cropperL: 0,
+        cropperT: 0,
+
+        // 图片缩放值
+        scaleP: 0,
+        imageW: 0,
+        imageH: 0,
+
+        // 裁剪框 宽高
+        cutW: 0,
+        cutH: 0,
+        cutL: 0,
+        cutT: 0,
+        qualityWidth: 720,
+        innerAspectRadio: 1,
+
+        drawT: 0,
+        drawL: 0,
+    }
+
+    onLoad({ url, ratio, onlineImage }) {
+        ctx = wx.createCanvasContext('myCanvas');
+        this.onlineImage = onlineImage === 'true';
+        this.$emit('crop-loadImage', decodeURIComponent(url), ratio, true);
+    }
+
+    events = {
+        async 'after-crop'(tempFilePath) {
+            const resourceUrl = await uploadResource(tempFilePath, 'image');
+            globalService.set('cropperUrl', resourceUrl);
+            globalService.set('afterCrop', true);
+            wepy.navigateBack();
+        },
+        async 'crop-loadImage'(iSrc, ratio = '1,1', first = false) {
+            try {
+                const { qualityWidth } = this;
+                let { innerAspectRadio } = this;
+                let imageSrc = iSrc;
+                let cutRatio = null;
+
+                wx.showLoading({
+                    title: '图片加载中...',
+                });
+
+                // 在线图片，需要下载到本地
+                if (this.onlineImage) {
+                    this.onlineImage = false;
+                    const tempFilePath = await getTmpFilePath(imageSrc);
+                    imageSrc = tempFilePath;
+                }
+
+                this.imageSrc = imageSrc;
+                this.ratio = ratio; // 通过ratio控制是否可以自由拉伸
+
+                if (first === true) {
+                    // 保存原始数据
+                    originSrc = imageSrc;
+                }
+                const res = await wepy.getImageInfo({ src: imageSrc });
+                innerAspectRadio = getFixedNum(res.width / res.height);
+
+                // 用于canvas2
+                const canvasWidth = Math.max(qualityWidth, qualityWidth / innerAspectRadio);
+                this.canvasWidth = canvasWidth;
+
+                // 处理裁剪比例
+                if (typeof ratio === 'string' && ratio) {
+                    const [width, height] = ratio.split(',');
+                    cutRatio = +width / +height;
+                } else {
+                    cutRatio = innerAspectRadio;
+                }
+                this.cutRatio = cutRatio;
+
+
+                // 根据图片的宽高显示不同的效果   保证图片可以正常显示
+
+                // width较大
+                if (innerAspectRadio >= 1) {
+                    const cropperW = windowWRPX;
+                    const cropperH = cropperW / innerAspectRadio;
+                    const cropperL = 0;
+                    const cropperT = Math.ceil((windowHeight - cropperH) / 2) - 88;
+                    this.cropperW = cropperW;
+                    this.cropperH = cropperH;
+                    this.cropperL = cropperL;
+                    this.cropperT = cropperT;
+                    // 裁剪框宽高
+                    // 宽>高，高度填满，宽度根据高度，按照裁剪比例来
+                    // 还需要排除过长过宽的情况
+                    // const tempCutW = windowWRPX * cutCoefficient;
+                    // const tempCutH = (windowWRPX * cutCoefficient) / cutRatio;
+
+                    // 根据产品的要求，裁剪框每次满足短边
+                    let cutH = cropperH * cutCoefficient;
+                    let cutW = cutH * cutRatio;
+
+                    // 还需要处理裁剪比例大于图片宽高比的情况
+                    if (cutW > cropperW) {
+                        cutW = cropperW;
+                        cutH = cropperW / cutRatio;
+                    }
+
+                    this.cutH = cutH;
+                    this.cutW = cutW;
+
+
+                    // (图片宽度 - 裁剪框宽度) / 2
+                    this.cutL = Math.ceil((cropperW - cutW) / 2) + cropperL;
+                    this.cutT = Math.ceil((cropperH - cutH) / 2) + cropperT;
+
+                    // 目前没用
+                    this.scaleP = getFixedNum((res.width * pixelRatio) / windowWRPX);
+                    this.imageW = res.width * pixelRatio;
+                    this.imageH = res.height * pixelRatio;
+                    // ============
+
+                    // 用于canvas2
+                    const drawT = getFixedNum((canvasWidth -
+                        (qualityWidth / innerAspectRadio)) / 2);
+                    this.drawT = drawT;
+                    this.drawL = 0;
+
+                // height 较大
+                } else {
+                    const cropperH = windowWRPX;
+                    const cropperW = cropperH * innerAspectRadio;
+                    const cropperL = Math.ceil((windowWRPX - cropperW) / 2);
+                    const cropperT = Math.ceil((windowHeight - cropperH) / 2) - 88;
+                    this.cropperW = cropperW;
+                    this.cropperH = cropperH;
+                    this.cropperL = cropperL;
+                    // 图片区域top值，(屏幕高度 - 图片高度) / 2
+                    this.cropperT = cropperT;
+                    // 裁剪框宽高
+                    // 宽<高，宽度填满，高度根据高度，按照裁剪比例来
+                    let cutW = cropperW * cutCoefficient;
+                    let cutH = cutW / cutRatio;
+
+                    // 还需要处理裁剪比例大于图片宽高比的情况
+                    if (cutH > cropperH) {
+                        cutH = cropperH;
+                        cutW = cutH * cutRatio;
+                    }
+
+                    this.cutW = cutW;
+                    this.cutH = cutH;
+
+                    this.cutL = Math.ceil((cropperW - cutW) / 2) + cropperL;
+                    // (图片高度 - 裁剪框高度) / 2
+                    this.cutT = Math.ceil((cropperH - cutH) / 2) + cropperT;
+
+                    // 目前没用
+                    this.scaleP = getFixedNum((res.width * pixelRatio) / windowWRPX);
+                    this.imageW = res.width * pixelRatio;
+                    this.imageH = res.height * pixelRatio;
+                    // ===================
+
+                    // 用于canvas2
+                    const drawL = getFixedNum((canvasWidth - qualityWidth) / 2);
+                    this.drawL = drawL;
+                    this.drawT = 0;
+                }
+                this.isShowImg = true;
+
+                ctx.drawImage(
+                    imageSrc,
+                    0,
+                    0,
+                    qualityWidth,
+                    qualityWidth / innerAspectRadio,
+                );
+                this.innerAspectRadio = innerAspectRadio;
+                wx.hideLoading();
+                this.$apply();
+            } catch (err) {
+                console.log(err);
+                wx.hideLoading();
+                alert('图片加载失败');
+            }
+        },
+    }
+
+    methods = {
+
+        cancel() {
+            // this.closeCrop();
+            wepy.navigateBack();
+        },
+
+        restore() {
+            this.$emit('crop-loadImage', originSrc, this.ratio, false);
+        },
+
+        // 拖动时候触发的touchStart事件
+        contentStartMove(e) {
+            [{ pageX, pageY }] = e.touches;
+        },
+
+        // 拖动时候触发的touchMove事件
+        contentMoving(e) {
+            // const dragLengthX = (pageX - e.touches[0].pageX) * dragScaleP;
+            // const dragLengthY = (pageY - e.touches[0].pageY) * dragScaleP;
+            // 计算裁剪框的坐标
+            // 不让x小于0，即不然裁剪框跑出屏幕
+            // const minX = Math.max(this.cutL - dragLengthX, 0);
+            // const minY = Math.max(this.cutT - dragLengthY, 0);
+            // const maxX = this.cropperW - this.cutW;
+            // const maxY = this.cropperH - this.cutH;
+            // this.cutL = Math.min(maxX, minX);
+            // this.cutT = Math.min(maxY, minY);
+
+            const deltaX = (e.touches[0].pageX - pageX) * dragScaleP;
+            const deltaY = (e.touches[0].pageY - pageY) * dragScaleP;
+            // 移动不能脱离裁剪框
+            const minX = Math.max(
+                getFixedNum(this.cropperL + deltaX),
+                getFixedNum((this.cutL + this.cutW) - this.cropperW),
+            );
+            const minY = Math.max(
+                getFixedNum(this.cropperT + deltaY),
+                getFixedNum((this.cutT + this.cutH) - this.cropperH),
+            );
+            const maxX = this.cutL;
+            const maxY = this.cutT;
+            this.cropperL = Math.min(maxX, minX);
+            this.cropperT = Math.min(maxY, minY);
+            this.$apply();
+            // console.log(`${maxX} ----- ${minX}`);
+            [{ pageX, pageY }] = e.touches;
+        },
+
+        // 设置大小的时候触发的touchStart事件
+        dragStart(e) {
+            sizeConfPageX = e.touches[0].pageX;
+            sizeConfPageY = e.touches[0].pageY;
+            initDragCutW = this.cutW;
+            initDragCutL = this.cutL;
+            initDragCutT = this.cutT;
+            initDragCutH = this.cutH;
+        },
+
+        // 设置大小的时候触发的touchMove事件
+        dragMove(e) {
+            const that = this;
+            const dragType = e.target.dataset.drag;
+            const { cutRatio, ratio } = that;
+
+            if (~['right', 'left', 'top', 'bottom'].indexOf(dragType)) {
+                return;
+            }
+
+            let dragLength;
+            switch (dragType) {
+                case 'right':
+                    dragLength = (sizeConfPageX - e.touches[0].pageX) * dragScaleP;
+                    if (initDragCutW >= dragLength) {
+                        // 如果 移动小于0 说明是在往下啦  放大裁剪的高度  这样一来 图片的高度  最大 等于 图片的top值加 当前图片的高度  否则就说明超出界限
+                        if (
+                            dragLength < 0 &&
+                            that.cropperW > initDragCutL + that.cutW
+                        ) {
+                            this.cutW = initDragCutW - dragLength;
+                        }
+                        // 如果是移动 大于0  说明在缩小  只需要缩小的距离小于原本裁剪的高度就ok
+                        if (dragLength > 0) {
+                            this.cutW = initDragCutW - dragLength;
+                        } else {
+                            return;
+                        }
+
+                        this.$apply();
+                    }
+                    break;
+                case 'left':
+                    dragLength =
+                        (dragLength = sizeConfPageX - e.touches[0].pageX) *
+                        dragScaleP;
+                    // console.log(dragLength);
+                    if (initDragCutW >= dragLength && initDragCutL > dragLength) {
+                        if (dragLength < 0 && Math.abs(dragLength) >= initDragCutW) {
+                            return;
+                        }
+                        this.cutL = initDragCutL - dragLength;
+                        this.cutW = initDragCutW + dragLength;
+                        this.$apply();
+                    }
+                    break;
+                case 'top':
+                    dragLength =
+                        (sizeConfPageY - e.touches[0].pageY) * dragScaleP;
+                    if (initDragCutH >= dragLength && initDragCutT > dragLength) {
+                        if (dragLength < 0 && Math.abs(dragLength) >= initDragCutH) {
+                            return;
+                        }
+                        this.cutT = initDragCutT - dragLength;
+                        this.cutH = initDragCutH + dragLength;
+                        this.$apply();
+                    }
+                    break;
+                case 'bottom':
+                    dragLength =
+                        (sizeConfPageY - e.touches[0].pageY) * dragScaleP;
+                    // 必须是 dragLength 向上缩小的时候必须小于原本的高度
+                    if (initDragCutH >= dragLength) {
+                        // 如果 移动小于0 说明是在往下啦  放大裁剪的高度  这样一来 图片的高度  最大 等于 图片的top值加 当前图片的高度  否则就说明超出界限
+                        if (
+                            dragLength < 0 &&
+                            that.cropperH > initDragCutT + that.cutH
+                        ) {
+                            this.cutH = initDragCutH - dragLength;
+                        }
+                        // 如果是移动 大于0  说明在缩小  只需要缩小的距离小于原本裁剪的高度就ok
+                        if (dragLength > 0) {
+                            this.cutH = initDragCutH - dragLength;
+                        } else {
+                            return;
+                        }
+
+                        this.$apply();
+                    }
+                    break;
+                case 'rightBottom': {
+                    const dragLengthX =
+                        (sizeConfPageX - e.touches[0].pageX) * dragScaleP;
+                    const dragLengthY =
+                        (sizeConfPageY - e.touches[0].pageY) * dragScaleP;
+                    if (
+                        initDragCutH >= dragLengthY &&
+                        initDragCutW >= dragLengthX
+                    ) {
+                        // bottom 方向的变化
+                        if (
+                            (dragLengthY < 0 &&
+                                that.cropperH >
+                                    initDragCutT + that.cutH) ||
+                            dragLengthY > 0
+                        ) {
+                            this.cutH = initDragCutH - dragLengthY;
+
+                            if (ratio) {
+                                this.cutW = (initDragCutH - dragLengthY) * cutRatio;
+                            }
+                        }
+
+                        // right 方向的变化
+                        if (
+                            (dragLengthX < 0 &&
+                                that.cropperW >
+                                    initDragCutL + that.cutW) ||
+                            dragLengthX > 0
+                        ) {
+                            this.cutW = initDragCutW - dragLengthX;
+
+                            if (ratio) {
+                                this.cutH = (initDragCutW - dragLengthX) / cutRatio;
+                            }
+                        } else {
+                            return;
+                        }
+
+                        this.$apply();
+                    }
+                    break;
+                }
+                default:
+                    break;
+            }
+        },
+
+        // 通过canvas2专门处理图片旋转
+        rotateImage() {
+            const that = this;
+            const { qualityWidth, innerAspectRadio } = that;
+            const x = qualityWidth / 2;
+            const y = (qualityWidth / innerAspectRadio) / 2;
+            const ctx2 = wx.createCanvasContext('myCanvas2');
+
+            rotateCount += 1;
+
+            wx.showLoading({
+                title: '图片加载中...',
+            });
+
+            ctx2.save();
+            // 旋转坐标系，仅适用于每次旋转90度
+            ctx2.translate(x, y);
+            // 以坐标系原点为圆心旋转
+            ctx2.rotate((90 * Math.PI) / 180);
+            ctx2.translate(-x, -y);
+
+            let { drawT, drawL } = this;
+            // 交换drawT drawL
+            const temp = drawT;
+            drawT = drawL;
+            drawL = temp;
+
+            Object.assign(this, {
+                drawT,
+                drawL,
+            });
+
+            ctx2.drawImage(
+                that.imageSrc,
+                drawL,
+                -drawT,
+                qualityWidth,
+                qualityWidth / innerAspectRadio,
+            );
+            ctx2.draw(false, () => {
+                wx.canvasToTempFilePath({
+                    x: drawL,
+                    y: drawT,
+                    width: qualityWidth / innerAspectRadio,
+                    height: qualityWidth,
+                    quality: 1,
+                    canvasId: 'myCanvas2',
+                    success(res) {
+                        that.qualityWidth = qualityWidth / innerAspectRadio;
+                        that.$apply();
+                        let url = res.tempFilePath;
+
+                        // 旋转第四次就用原图，防止图片质量损失
+                        if (rotateCount % 4 === 0) {
+                            url = originSrc;
+                        }
+                        that.$emit('crop-loadImage', url, that.ratio, false);
+                    },
+                });
+            });
+        },
+
+        // 获取图片
+        getImageInfo() {
+            const that = this;
+            const { qualityWidth, innerAspectRadio } = that;
+
+            wx.showLoading({
+                title: '图片生成中...',
+            });
+            ctx.draw(false, () => {
+                // 获取画布要裁剪的位置和宽度   均为百分比 * 画布中图片的宽度    保证了在微信小程序中裁剪的图片模糊
+                // 位置不对的问题 canvasT = (that.cutT / that.cropperH) * (that.imageH / pixelRatio)
+                const canvasW = that.cutW * (qualityWidth / that.cropperW);
+                const canvasH = (that.cutH * (qualityWidth / that.cropperH)) / innerAspectRadio;
+                const canvasL = (that.cutL - that.cropperL) * (qualityWidth / that.cropperW);
+                const canvasT = ((that.cutT - that.cropperT) *
+                    (qualityWidth / that.cropperH)) / innerAspectRadio;
+                // console.log(`canvasW:${canvasW} --- canvasH: ${canvasH} --- canvasL:
+                // ${canvasL} --- canvasT: ${canvasT} -------- that.imageW: ${
+                //     that.imageW
+                // }  ------- that.imageH: ${
+                //     that.imageH
+                // } ---- pixelRatio ${pixelRatio}`);
+                wx.canvasToTempFilePath({
+                    x: canvasL,
+                    y: canvasT,
+                    width: canvasW,
+                    height: canvasH,
+                    destWidth: canvasW,
+                    destHeight: canvasH,
+                    quality: 0.5,
+                    canvasId: 'myCanvas',
+                    success(res) {
+                        wx.hideLoading();
+                        // 成功获得地址的地方
+                        that.$emit('after-crop', res.tempFilePath);
+                        // that.closeCrop();
+                        wx.previewImage({
+                            urls: [res.tempFilePath], // 需要预览的图片http链接列表
+                        });
+                    },
+                    fail(err) {
+                        console.log(err);
+                    },
+                });
+            });
+        },
+    }
+
+    closeCrop() {
+        this.imageSrc = '';
+        this.isShowImg = false;
+        this.$apply();
+    }
+}
+</script>
+
+<style lang="scss">
+/* pages/wx-cropper/index.wxss */
+.wx-content-info {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #000;
+    z-index: 999;
+}
+
+.wx-corpper {
+    position: relative;
+    overflow: hidden;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    box-sizing: border-box;
+}
+
+.wx-corpper-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.wx-corpper-content image {
+    display: block;
+    width: 100%;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 100%;
+    min-height: 0 !important;
+    max-height: none !important;
+    image-orientation: 0deg !important;
+    margin: 0 auto;
+}
+
+/* 移动图片效果 */
+.wx-cropper-drag-box {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    cursor: move;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1;
+}
+
+/* 内部的信息 */
+.wx-corpper-crop-box {
+    position: fixed;
+    width: 500rpx;
+    height: 500rpx;
+    z-index: 2;
+}
+
+.wx-corpper-crop-box .wx-cropper-view-box {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    box-shadow: inset 0 0 10rpx 0 rgba(0,0,0,0.88);
+    border: 2rpx solid #FFFFFF;
+}
+
+.crop-mask {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-top: 50rpx;
+    border-right: 80rpx;
+    border-bottom: 100rpx;
+    border-left: 120rpx;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.8);
+}
+
+$cropper-border: 2rpx solid rgba(255, 255, 255, 0.5);
+/* 横向虚线 */
+.wx-cropper-dashed-h {
+    position: absolute;
+    top: 33.33333333%;
+    left: 0;
+    width: 100%;
+    height: 33.33333333%;
+    border-top: $cropper-border;
+    border-bottom: $cropper-border;
+}
+
+/* 纵向虚线 */
+.wx-cropper-dashed-v {
+    position: absolute;
+    left: 33.33333333%;
+    top: 0;
+    width: 33.33333333%;
+    height: 100%;
+    border-left: $cropper-border;
+    border-right: $cropper-border;
+}
+
+/* 四个方向的线  为了之后的拖动事件*/
+.wx-cropper-line-t {
+    position: absolute;
+    display: block;
+    width: 100%;
+    // background-color: #FFF;
+    top: 0;
+    left: 0;
+    height: 1px;
+    opacity: 0.1;
+    cursor: n-resize;
+}
+
+.wx-cropper-line-t::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 0rpx;
+    width: 100%;
+    -webkit-transform: translate3d(0, -50%, 0);
+    transform: translate3d(0, -50%, 0);
+    bottom: 0;
+    height: 41rpx;
+    background: transparent;
+    z-index: 11;
+}
+
+.wx-cropper-line-r {
+    position: absolute;
+    display: block;
+    // background-color: #FFF;
+    top: 0;
+    right: 0px;
+    width: 1px;
+    opacity: 0.1;
+    height: 100%;
+    cursor: e-resize;
+}
+.wx-cropper-line-r::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 41rpx;
+    -webkit-transform: translate3d(-50%, 0, 0);
+    transform: translate3d(-50%, 0, 0);
+    bottom: 0;
+    height: 100%;
+    background: transparent;
+    z-index: 11;
+}
+
+.wx-cropper-line-b {
+    position: absolute;
+    display: block;
+    width: 100%;
+    // background-color: #fff;
+    bottom: 0;
+    left: 0;
+    height: 1px;
+    opacity: 0.1;
+    cursor: s-resize;
+}
+
+.wx-cropper-line-b::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 0rpx;
+    width: 100%;
+    -webkit-transform: translate3d(0, -50%, 0);
+    transform: translate3d(0, -50%, 0);
+    bottom: 0;
+    height: 41rpx;
+    background: transparent;
+    z-index: 11;
+}
+
+.wx-cropper-line-l {
+    position: absolute;
+    display: block;
+    // background-color: #fff;
+    top: 0;
+    left: 0;
+    width: 1px;
+    opacity: 0.1;
+    height: 100%;
+    cursor: w-resize;
+}
+.wx-cropper-line-l::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 41rpx;
+    -webkit-transform: translate3d(-50%, 0, 0);
+    transform: translate3d(-50%, 0, 0);
+    bottom: 0;
+    height: 100%;
+    background: transparent;
+    z-index: 11;
+}
+
+.wx-cropper-point {
+    width: 5px;
+    height: 5px;
+    background-color: #fff;
+    opacity: 0.75;
+    position: absolute;
+    z-index: 3;
+}
+.wx-cropper-corner-point {
+    cursor:n-resize;
+    width:24rpx;
+    height:24rpx;
+    position: absolute;
+    z-index: 3;
+}
+
+.point-t {
+    top: -3px;
+    left: 50%;
+    cursor: n-resize;
+}
+
+.point-tr {
+    top: -6rpx;
+    right: -6rpx;
+    border-top: 6rpx solid #fff;
+    border-right: 6rpx solid #fff;
+}
+
+.point-r {
+    top: 50%;
+    left: 100%;
+    margin-left: -3px;
+    margin-top: -3px;
+    cursor: n-resize;
+}
+
+.point-rb {
+    display: none;
+    bottom: -6rpx;
+    right: -6rpx;
+    border-bottom: 6rpx solid #fff;
+    border-right: 6rpx solid #fff;
+}
+
+.point-b {
+    left: 50%;
+    top: 100%;
+    margin-top: -3px;
+    cursor: n-resize;
+}
+
+.point-bl {
+    bottom: -6rpx;
+    left: -6rpx;
+    border-bottom: 6rpx solid #fff;
+    border-left: 6rpx solid #fff;
+}
+
+.point-l {
+    left: 0%;
+    top: 50%;
+    margin-left: -3px;
+    margin-top: -3px;
+    cursor: n-resize;
+}
+
+.point-lt {
+    top: -6rpx;
+    left: -6rpx;
+    border-top: 6rpx solid #fff;
+    border-left: 6rpx solid #fff;
+}
+
+/* 裁剪框预览内容 */
+.wx-cropper-viewer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.wx-cropper-viewer image {
+    position: absolute;
+    z-index: 2;
+}
+
+.picker {
+    width: 300rpx;
+}
+
+.options {
+    .option-item {
+        color: #fff;
+        font-size: 34rpx;
+        line-height: 48rpx;
+        position: fixed;
+    }
+
+    .restore,.rotate {
+        bottom: 128rpx;
+    }
+    .restore {
+        left: 250rpx;
+        &::before {
+            content: '';
+            display: block;
+            position: absolute;
+            left: -40rpx;
+            top: 9rpx;
+            width: 30rpx;
+            height: 30rpx;
+            background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/crop-restore.png');
+            background-size: 30rpx 30rpx;
+        }
+    }
+    .rotate {
+        right: 210rpx;
+        &::before {
+            content: '';
+            display: block;
+            position: absolute;
+            left: -40rpx;
+            top: 9rpx;
+            width: 30rpx;
+            height: 30rpx;
+            background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/crop-rotate.png');
+            background-size: 30rpx 30rpx;
+        }
+    }
+
+    .cancel,.crop {
+        bottom: 40rpx;
+    }
+    .cancel {
+        left: 40rpx;
+    }
+    .crop {
+        right: 40rpx;
+    }
+}
+</style>

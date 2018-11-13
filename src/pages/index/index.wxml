@@ -1,0 +1,44 @@
+<import src="../../components/mod/information/information.wxml" />
+<import src="../../components/mod/imageSwiper/imageSwiper.wxml" />
+<import src="../../components/mod/images/images.wxml" />
+<import src="../../components/mod/text/text.wxml" />
+<import src="../../components/mod/goods/goods.wxml" />
+<import src="../../components/mod/title/title.wxml" />
+<import src="../../components/mod/video/video.wxml" />
+<import src="../../components/mod/call/call.wxml" />
+<import src="../../components/mod/article/article.wxml" />
+<import src="../../components/mod/services/services.wxml" />
+<import src="../../components/mod/evaluation/evaluation.wxml" />
+<import src="../../components/mod/reserve/reserve.wxml" />
+<import src="../../components/mod/coupon/coupon.wxml" />
+<import src="../../components/mod/me/me.wxml" />
+<import src="../../components/mod/pay/pay.wxml" />
+<import src="../../components/mod/branch/branch.wxml" />
+<import src="../../components/mod/tabBar/tabBar.wxml" />
+<view class="container">
+  <view class="btn-area"> 
+      <view class="cancel" bindtap="cancelClick" >{{isEditing?'取消':'发布'}}</view>
+      <view class="save" bindtap="editClick">{{isEditing?'保存':'编辑'}}</view> 
+  </view>
+  <block wx:for="{{page_data}}" wx:for-item="component"  wx:key="{{component.name}}">
+     <view class="preview-container" catchtap="showEdit" data-title="{{component.name}}" data-name="{{component.id}}" >
+        <template is="{{component.name}}"  data="{{...component.props, index, env58, tabBarItems, isIphoneX}}" />  
+        <view class="layer" hidden="{{!layer}}"></view>
+        <view class="edit-wrapper"  hidden="{{!editLayer[component.id]}}"  >
+            <view class="edit-btn" capture-catch:tap="goEdit" data-name="{{component.name}}" data-id="{{component.id}}">{{noEdit?'暂时不能编辑':'去编辑'}}</view>
+        </view>   
+     </view>
+  </block>
+  <!-- <view class="userinfo-authorize-mask" wx:if="{{showUserinfoAuthorize}}"></view>
+  <view class="userinfo-authorize-container" wx:if="{{showUserinfoAuthorize}}">
+    <view class="userinfo-authorize-title">微信授权</view>
+    <view class="userinfo-authorize-content">
+      <view class="userinfo-authorize-content-title">{{title}}申请获得一下权限：</view>
+      <view class="userinfo-authorize-content-text">获取你的公开信息（昵称、头像等）</view>
+    </view>
+    <view class="userinfo-authorize-footer">
+      <button class="userinfo-authorize-footer-allow" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">允许</button>
+    </view> 
+  </view> -->
+</view>
+<template is="tabBar" data="{{tabBarItems, pageType, isIphoneX}}" wx:if="{{ env58 && tabBarItems.length > 1 }}"/>

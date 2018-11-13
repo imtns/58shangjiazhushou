@@ -1,0 +1,215 @@
+<template>
+    <view class="containe">
+        <view class="banner">
+            <image class="banner-icon" src="./assets/banner-icon.png"></image>
+        </view>
+        <view class="items-body">
+            <view class="article-header">
+                <view class="line"></view>
+                <view class="article-header-text">{{name}}</view>
+                <view class="line"></view>
+            </view>
+            <scroll-view
+                class="article-list {{isEditing ? 'edit' : ''}}"
+                style="height:{{height}};"
+                scroll-y="true"
+                wx:if="{{listData.length>0}}">
+                <view
+                    wx:for="{{listData}}"
+                    wx:key="index"
+                    class="list-item article-item"
+                    :class="{ selected: item.choseStatu}"
+                    data-item="{{item}}"
+                    @tap.stop="editChose({{ item.id }}, {{ index }})">
+                    <view class="article-title">{{item.title}}</view>
+                    <view class="article-detail">
+                        <view class="article-detail-flex">
+                            <view class="article-base">作者：</view>
+                            <view class="base-text base-over">{{item.author || '未知'}}</view>
+                        </view>
+                        <view class="article-detail-flex middle">
+                            <view class="article-base">来源：</view>
+                            <view class="base-text base-over">{{item.source || '未知'}}</view>
+                        </view>
+                        <view class="article-detail-flex">
+                            <view class="article-base">时间：</view>
+                            <view class="base-text">{{item.updateTime || item.createTime}}</view>
+                        </view>
+                    </view>
+                    <rich-text nodes="{{item.intro}}" class="article-preview-con"></rich-text>
+                    <!-- <view class="article-preview-con">{{item.intro}}</view> -->
+                </view>
+            </scroll-view>
+            <EmptyPage wx:if="{{listData.length===0}}" :title.sync="title"></EmptyPage>
+        </view>
+    </view>
+    <view class="block"></view>
+    <view class="options" wx:if="{{!isEditing}}">
+        <view class="button edit" bindtap="edit" wx:if="{{listData.length > 0}}">编辑</view>
+        <view class="button" bindtap="addArticle">添加文章</view>
+    </view>
+    <view class="options" wx:if="{{isEditing}}">
+        <view class="button edit" bindtap="cancle">取消</view>
+        <view class="button" bindtap="toDelete">删除</view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { alert, toast } from '../utils';
+import { get } from '../utils/ajax';
+import EmptyPage from '../components/EmptyPage';
+import { getUid, SendClickLog } from '../utils/maidian';
+
+export default class ArticleComponentList extends wepy.page {
+    config = {
+        navigationBarTitleText: '文章管理',
+        disableScroll: true,
+    }
+    components = {
+        EmptyPage,
+    }
+    data = {
+        height: '',
+        editStatus: false,
+        listData: [],
+        delList: [],
+        id: '',
+        group: '',
+        name: '',
+        title: '没有文章~',
+        pageNum: 1,
+        pageSize: 20,
+        isLoading: true,
+        isEditing: false,
+    }
+    onLoad(option) {
+        console.log('list', option);
+        try {
+            const { group = '', name = '' } = option;
+            this.group = group;
+            this.name = name;
+            const { windowHeight } = wepy.getSystemInfoSync();
+            const height = windowHeight;
+            this.height = `${(height * 2) - (88 * 2) - (40 * 2) - 96}rpx`;
+            this.$apply();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    onShow() {
+        this.loadList();
+    }
+    onReachBottom() {
+        if (!this.isloading) return;
+        const pageNum = this.pageNum + 1;
+        this.pageNum = pageNum;
+        this.$apply();
+        this.loadList();
+    }
+    methods = {
+        editChose(id, index) {
+            if (this.isEditing) {
+                const item = this.listData[index];
+                const itemIndex = this.delList.length === 0 ? -2 : this.delList.indexOf(id);
+                if (item) {
+                    item.choseStatu = !item.choseStatu;
+                }
+                if (itemIndex < 0) {
+                    this.delList.push(id);
+                } else {
+                    this.delList.splice(itemIndex, 1);
+                }
+                this.$apply();
+                return;
+            }
+            // 点击跳转文章详情页面
+            wepy.navigateTo({
+                url: `articleComponentDetail?group=${this.group}&id=${id}&name=${this.name}`,
+            });
+        },
+    }
+    async loadList() {
+        try {
+            const { pageSize, pageNum, group } = this;
+            const { data } = await get('/businessArticle/list', {
+                pageSize,
+                pageNum,
+                group,
+            });
+            const nData = data.data;
+            if (this.pageNum === 1 && (nData.length === 0 || !nData)) {
+                this.isLoading = false;
+                this.listData = [];
+                this.$apply();
+                // toast('没有数据');
+                return;
+            }
+            if (this.pageNum > 1 && nData.length < this.pageSzie) {
+                this.isLoading = false;
+                toast('没有更多数据');
+            }
+            nData.forEach(item => {
+                Object.assign(item, {
+                    choseStatu: false,
+                });
+            });
+            this.listData = this.pageNum === 1 ? nData : this.listData.concat(nData);
+            this.$apply();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    edit() {
+        this.isEditing = !this.isEditing;
+        this.delList = [];
+        this.$apply();
+    }
+    async toDelete() {
+        try {
+            const { delList } = this;
+            if (delList.length === 0) {
+                alert('请选择要删除的文章');
+                return;
+            }
+            const ids = delList.join();
+            await get('/businessArticle/delete/0', {
+                ids: ids,
+            });
+            alert('删除成功！');
+            this.loadList();
+            this.delList = [];
+            this.isEditing = false;
+            this.$apply();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    cancle() {
+        const dataList = this.listData;
+        dataList.forEach(item => {
+            Object.assign(item, {
+                choseStatu: false,
+            });
+        });
+        this.isEditing = false;
+        this.listData = dataList;
+        this.$apply();
+    }
+    addArticle() {
+        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_articleComponentlist_addArticle');
+        wepy.navigateTo({
+            url: `articleComponentCreate?group=${this.group}&name=${this.name}`,
+        });
+    }
+}
+</script>
+
+<style lang="scss">
+@import '../css/btn.scss';
+@import '../css/list.scss';
+    page{
+        position:relative;
+    }
+</style>

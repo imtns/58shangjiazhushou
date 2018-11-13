@@ -1,0 +1,638 @@
+<template>
+    <view class="containe" :class="{ 'choose-modal': chooseModal }">
+        <view class="tabs-wrap" wx:if="{{ !chooseModal }}">
+            <view wx:for="{{ tabbarItems }}"
+            wx:key="name"
+            class="tab-box"
+            :class="{ selected: curTab === item.name }"
+            @tap="selectTab({{ item.name }})">{{ item.label }}</view>
+        </view>
+        <!--<EmptyPage wx:if="{{curTab === 'article' && !groupList.length}}" :title.sync="title"></EmptyPage>-->
+        <view class="work-list" wx:if="{{ (curTab === 'image' || curTab === 'video') && works.length }}">
+            <view class="content">
+                <view class="work-box" wx:for="{{ works }}" wx:key="id">
+                    <image
+                    class="item"
+                    :class="{ 'video': curTab === 'video' }"
+                    mode="aspectFill"
+                    src="{{ item.imageUrl }}"
+                    @tap="previewResource({{ item.previewUrl }})"></image>
+                    <view class="work-mask"
+                    :class="{ checked: item.checked }"
+                    wx:if="{{ isEditing }}"
+                    @tap.stop="selectItem({{ item.id }}, {{ index }})"></view>
+                </view>
+            </view>
+            <!-- <view wx:else style="margin:30rpx;text-align:center;color:#bdbdbd;">啥也没有</view> -->
+        </view>
+        <view class="block"></view>
+        <view class="options">
+            <block wx:if="{{ chooseModal }}">
+                <button class="button" @tap="chooseModalConfirm">确认</button>
+            </block>
+            <block wx:else>
+                <button class="button edit" @tap="edit" wx:if="{{groupList.length > 0 || works.length > 0}}" data-type="{{curTab}}" data-status="{{isEditing}}">{{ isEditing ? '取消' : '编辑' }}</button>
+                <button class="button" wx:if="{{ isEditing }}" @tap="deleteItem">删除</button>
+                <button class="button" wx:else @tap="uploadFile({{ curTab }})">{{ optionNames[curTab] }}</button>
+            </block>
+        </view>
+        <Pop wx:if="{{showPop}}" @close.user="close" @addGroup.user="addGroup"></Pop>
+    </view>
+</template>
+
+<script>
+
+/**
+ * 素材选择模式：
+ * 1. 选择图片，返回数组存入globalData.selectedResource中
+ * [{previewUrl: ...}, ...]
+ * previewUrl 图片地址
+ * 2. 选择视频，返回数组存入globalData.selectedResource中
+ * [{previewUrl: ..., imageUrl: ..., ...}]
+ * previewUrl 视频地址
+ * imageUrl 视频封面地址
+ */
+
+import wepy from 'wepy';
+import Mixin from '../mixin';
+import { LOAD_RESOURCE_URL, DELETE_RESOURCE, SAVE_RESOURCE_URL } from '../utils/url';
+import { get } from '../utils/ajax';
+import { toast, alert, alertP, picSrcDomain, sleep, getNetStatus } from '../utils';
+import { globalData } from '../utils/globalData';
+import uploadImages from '../utils/upload';
+import uploader from '../utils/uploaderP';
+import EmptyPage from '../components/EmptyPage';
+import Pop from '../components/Dialog';
+import { getUid, SendClickLog } from '../utils/maidian';
+
+let pageNum = 1;
+const pageSize = 20;
+let urls = [];
+let selectedIds = []; // 已选择作品
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '素材管理',
+    }
+
+    components = {
+        EmptyPage,
+        Pop,
+    }
+    mixins = [Mixin]
+
+    data = {
+        curTab: 'image',
+        tabbarItems: [
+            {
+                label: '图片',
+                name: 'image',
+            },
+            {
+                label: '视频',
+                name: 'video',
+            },
+        ],
+        // 按钮文字
+        optionNames: {
+            image: '上传图片',
+            video: '上传视频',
+        },
+        // 展示时用的works
+        works: [],
+        groupList: [],
+        title: '没有图片~',
+        isEditing: false,
+        showPop: false,
+        name: '',
+        id: '',
+        delList: [],
+        mpId: '',
+
+        // 素材选择模式
+        chooseModal: false,
+    }
+
+    async onLoad({ limit, type = 'image' }) {
+        const mpId = wepy.getStorageSync('current_mpid');
+        this.mpId = mpId;
+
+        // 开启素材选择模式
+        if (limit) {
+            this.limit = +limit;
+            this.curTab = type;
+            this.isEditing = true;
+            this.chooseModal = true;
+        }
+        this.$apply();
+
+        this.initData();
+        await this.loadData(this.curTab);
+    }
+    async onShow() {
+        if (this.curTab === 'article') {
+            await this.loadData(this.curTab);
+        }
+    }
+    methods = {
+        chooseModalConfirm() {
+            globalData.selectedResource = selectedIds.map(id => this.works.find(v => v.id === id));
+            wepy.navigateBack();
+        },
+
+        selectTab(name) {
+            this.initData();
+            this.curTab = name;
+            if (name === 'image') {
+                this.title = '没有图片~';
+            } else if (name === 'video') {
+                this.title = '没有视频~';
+            } else if (name === 'article') {
+                console.log(name);
+                this.title = '没有文章分组~';
+            }
+            this.$apply();
+            this.loadData(name);
+        },
+
+        /**
+         * 选择作品
+         * id用于删除作品
+         * index用于找到作品，标记check
+         */
+        selectItem(id, index) {
+            const { chooseModal, limit, works } = this;
+            const work = works[index];
+
+            if (!work) {
+                return;
+            }
+
+            if (!work.checked) {
+                // 选中
+                if (chooseModal && selectedIds.length >= limit) {
+                    alert(`只能选择${limit}张照片`);
+                    return;
+                }
+
+                if (selectedIds.length >= 10) {
+                    alert('一次只能删除10条素材！');
+                    return;
+                }
+
+                selectedIds.push(id);
+            } else {
+                // 去除选项
+                selectedIds.splice(selectedIds.findIndex(v => (v === id)), 1);
+            }
+
+            work.checked = !work.checked;
+        },
+
+        previewResource(url) {
+            if (this.curTab === 'image') {
+                wx.previewImage({
+                    current: url,
+                    urls,
+                });
+            }
+
+            if (this.curTab === 'video') {
+                wx.navigateTo({
+                    url: `/pages/VideoPlay?url=${url}`,
+                });
+            }
+        },
+
+        edit(e) {
+            const { status, type } = e.currentTarget.dataset;
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_resourceManage_${type}`);
+            const dataList = this.groupList;
+            if (status) {
+                dataList.forEach(item => {
+                    Object.assign(item, {
+                        choseStatu: false,
+                    });
+                });
+                this.groupList = dataList;
+            }
+            selectedIds = [];
+            this.delList = [];
+            this.isEditing = !this.isEditing;
+            this.$apply();
+        },
+
+        /**
+         * 删除作品
+         * 批量删除，通过Promise.all实现，目前无批量删除接口
+         */
+        async deleteItem() {
+            try {
+                if (this.curTab === 'article') {
+                    if (!this.delList.length) {
+                        alert('请选择要删除的分组！');
+                        return;
+                    }
+                    const ids = this.delList.join();
+                    await get('/businessArticle/delgroup/0', {
+                        ids,
+                    });
+                } else {
+                    if (this.curTab === 'image') {
+                        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_resourceManage_deleteImage');
+                    }
+                    const { cancel } = await alertP(`确认删除所选的${selectedIds.length}项素材？`);
+                    if (cancel) {
+                        this.isEditing = false;
+                        this.$apply();
+                        this.selectedIds = [];
+                        this.works.forEach((...props) => {
+                            const [item] = props;
+                            item.checked = false;
+                        });
+                        return;
+                    }
+
+                    await Promise.all(selectedIds.map(id => get(DELETE_RESOURCE + id)));
+                }
+                toast('删除成功！');
+                this.isEditing = false;
+                this.$apply();
+
+                this.initData();
+                this.loadData(this.curTab);
+            } catch (e) {
+                this.errorHandler(e);
+                toast('删除失败！');
+                this.isEditing = false;
+                this.$apply();
+            }
+        },
+
+        /**
+         * 上传素材
+         */
+        async uploadFile(type) {
+            try {
+                const netStatus = await getNetStatus();
+
+                if (netStatus === 0) {
+                    toast('无网络');
+                    return;
+                }
+
+                if (netStatus === 2 && type === 'video') {
+                    const { cancel } = await alertP('确定在移动网络下上传视频？', '提示');
+                    if (cancel) {
+                        return;
+                    }
+                }
+
+                switch (type) {
+                    case 'image':
+                        await this.uploadImage();
+                        // 延迟2秒
+                        await sleep(3000);
+                        break;
+
+                    case 'video':
+                        await this.uploadVideo();
+                        // 上传视频延迟3秒刷新，配合toast的3秒延迟
+                        await sleep(3000);
+                        break;
+
+                    case 'article':
+                        await this.showDialog();
+                        break;
+
+                    default:
+                        break;
+                }
+                if (type === 'article') return;
+                this.initData();
+                this.loadData(this.curTab);
+            } catch (e) {
+                console.log(e);
+            }
+        },
+        async addGroup(content) {
+            try {
+                let url = '';
+                if (this.name) {
+                    url = `/businessArticle/updategroup/${this.id}`;
+                } else {
+                    url = '/businessArticle/addgroup';
+                }
+                this.showPop = false;
+                this.isEditing = false;
+                this.name = '';
+                this.id = '';
+                this.$apply();
+                await get(url, {
+                    name: content,
+                });
+                toast('操作成功！');
+                this.loadData(this.curTab);
+            } catch (e) {
+                this.showPop = false;
+                this.isEditing = false;
+                toast(e);
+            }
+            this.$apply();
+        },
+        close() {
+            this.showPop = false;
+            this.$apply();
+        },
+        editChose(id, index, name) {
+            if (this.isEditing) {
+                const item = this.groupList[index];
+                const itemIndex = this.delList.length === 0 ? -2 : this.delList.indexOf(id);
+                if (item) {
+                    item.choseStatu = !item.choseStatu;
+                }
+                if (itemIndex < 0) {
+                    this.delList.push(id);
+                } else {
+                    this.delList.splice(itemIndex, 1);
+                }
+                this.$apply();
+                return;
+            }
+            // 点击跳转文章详情页面
+            wepy.navigateTo({
+                url: `articleComponentlist?group=${id}&name=${name}`,
+            });
+        },
+        showDialog(id = '', name = '') {
+            this.showDialog(id, name);
+        },
+    }
+
+    initData() {
+        // 初始化数据
+        this.works = [];
+        this.$apply();
+        pageNum = 1;
+        urls = [];
+        selectedIds = [];
+    }
+
+    async loadData(type) {
+        let resourceType = 1;
+
+        switch (type) {
+            case 'image':
+            case 'video':
+                resourceType = ({
+                    image: 1,
+                    video: 2,
+                })[type];
+                await this.loadResource(resourceType);
+                break;
+            default:
+                break;
+        }
+    }
+
+    async loadResource(resourceType) {
+        const postData = {
+            resourceType,
+        };
+
+        Object.assign(postData, {
+            pageNum,
+            pageSize,
+        });
+        pageNum += 1;
+
+        try {
+            const { data } = await get(LOAD_RESOURCE_URL, postData);
+            if ((!data || !data.length) && this.works.length) {
+                toast('已经到底了');
+            }
+
+            data.forEach(item => {
+                const workItem = Object.assign({}, item);
+
+                // 加载图片，url加上宽度，加上前置域名
+                if (resourceType === 1) {
+                    workItem.previewUrl = `${picSrcDomain()}${workItem.resourceUrl}?w=375`; // 预览图片
+                    workItem.imageUrl = `${picSrcDomain()}${workItem.resourceUrl}?w=100`;
+                }
+
+                // 加载视频
+                if (resourceType === 2) {
+                    workItem.previewUrl = workItem.resourceUrl;
+                    let imageUrl = '';
+
+                    // 在这里添加try catch是有必要的，若不添加，报错了会终止循环
+                    try {
+                        if (workItem.extend) {
+                            const extend = JSON.parse(workItem.extend);
+                            imageUrl = `${extend.sourceCoverUrl}?w=100`; // 封面图片
+                        }
+                    } catch (e) {
+                        this.errorHandler(e);
+                    }
+
+                    workItem.imageUrl = imageUrl;
+                }
+
+                this.works.push(workItem);
+                urls.push(workItem.previewUrl);
+            });
+            this.$apply();
+        } catch (e) {
+            this.errorHandler(e);
+        }
+    }
+
+    async uploadImage() {
+        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_resourceManage_uploadImage');
+        try {
+            // 得到上传后的图片地址
+            const { msg, result: resourceUrls } = await uploadImages();
+
+            // 将资源插入到对应资源库
+            await Promise.all(resourceUrls.map(resourceUrl => get(SAVE_RESOURCE_URL, {
+                resourceUrl,
+                resourceType: 1,
+            })));
+
+            if (msg) {
+                toast(msg, 3000);
+            } else {
+                toast('上传成功');
+            }
+        } catch (e) {
+            console.log(e);
+            this.errorHandler('上传失败', e);
+            toast('上传失败');
+        }
+    }
+
+    async uploadVideo() {
+        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_resourceManage_uploadVideo');
+        try {
+            const { tempFilePath, size } = await wepy.chooseVideo();
+
+            // 大于50M不让上传
+            if (size > 50 * 1000 * 1024) {
+                toast('视频大小需小于50M', 3000);
+                return;
+            }
+            await this.uploadResource(tempFilePath, 'video');
+            toast('上传成功', 3000);
+        } catch (e) {
+            this.errorHandler('上传失败', e);
+            toast('上传失败', 3000);
+        }
+    }
+
+    /**
+     * @desc 上传素材
+     */
+    async uploadResource(path, type) {
+        // 上传资源
+        const { content: resourceUrl } = await uploader(path, {
+            type,
+        });
+
+        // 将资源插入到对应资源库
+        await get(SAVE_RESOURCE_URL, {
+            resourceUrl,
+            resourceType: type === 'image' ? 1 : 2,
+        });
+    }
+    showDialog(id = '', name = '') {
+        console.log(name, id);
+        const { groupList } = this;
+        if (!name && groupList && groupList.length >= 10) {
+            toast(' 分组数量达到最大（10个），无法创建更多。');
+            return;
+        }
+        this.name = name;
+        this.id = id;
+        this.$broadcast('postData', name);
+        this.showPop = true;
+        this.$apply();
+    }
+    errorHandler(e) {
+        console.log('ERROR:', e);
+    }
+
+    onReachBottom() {
+        this.loadData(this.curTab);
+    }
+}
+</script>
+
+<style lang="scss">
+@import '../css/group.scss';
+@import '../css/btn.scss';
+$workWidth: 200rpx;
+$workHeight: 200rpx;
+.containe{
+    margin-top: 110rpx;
+    width:100%;
+    height:100%;
+
+    &.choose-modal {
+        margin-top: 0;
+    }
+}
+.tabs-wrap {
+    display: table;
+    width: 100%;
+    background: #fff;
+    position: fixed;
+    top: 0;
+    z-index: 100;
+    border-top: 2rpx solid #f3f3f3;
+    font-size: 30rpx;
+}
+.tabs-wrap > .tab-box {
+    display: table-cell;
+    text-align: center;
+    line-height: 88rpx;
+    color: #666666;
+    &.selected {
+        color: #4e88ff;
+    }
+    &.selected::after {
+        display: block;
+        content: '';
+        width: 60rpx;
+        height: 6rpx;
+        margin: 0 auto;
+        background: #4e88ff;
+        border-radius: 42rpx;
+    }
+}
+
+.work-list {
+    background-color: #FFFFFF;
+    padding: 45rpx 15rpx 102rpx 45rpx;
+    min-height: 1098rpx;
+
+    .content {
+        display: flex;
+        flex-wrap: wrap;
+
+        .work-box {
+            position: relative;
+            margin: 0 30rpx 30rpx 0;
+
+            .work-mask {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: $workWidth;
+                height: $workHeight;
+
+                &::after {
+                    content: ' ';
+                    display: block;
+                    background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png');
+                    background-size: 39rpx 39rpx;
+                    width: 39rpx;
+                    height: 39rpx;
+                    position: absolute;
+                    right: 20rpx;
+                    bottom: 20rpx;
+                }
+
+                &.checked::after {
+                    background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/selected-icon.png');
+                }
+            }
+        }
+
+        .item {
+            width: $workWidth;
+            height: $workHeight;
+            background-color: #000000;
+
+            &.video::after {
+                content: ' ';
+                display: block;
+                background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/resource-video-play.png');
+                background-size: 60rpx 60rpx;
+                width: 60rpx;
+                height: 60rpx;
+                margin: auto;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
+        }
+    }
+}
+.block{
+    width:100%;
+    height:102rpx;
+}
+</style>

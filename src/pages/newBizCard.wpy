@@ -1,0 +1,487 @@
+<template>
+    <view class="newBizCard">
+        <view class="from">
+            <view class="header flex_box" @tap="setLogo">
+                <view class="flex_item header_text">头像</view>
+                <view class="img" style="background:url(https://pic1.58cdn.com.cn{{headImg}}?w=400) no-repeat center"></view>
+                <view class="jiantou"></view>
+            </view>
+            <view class="flex_box border_bottom">
+                <view class="text must">姓名</view>
+                <input type="text" class="flex_item text_right" placeholder="请输入真实姓名" placeholder-style="font-size:30rpx;color:#CCCCCC"  maxlength="10" bindinput="bindKeyInput" data-option="realName" value="{{realName}}"/>
+            </view>
+            <view class="flex_box border_bottom">
+                <view class="text must">手机号码</view>
+                <input type="number" class="flex_item text_right" placeholder="请填写手机号码" placeholder-style="font-size:30rpx;color:#CCCCCC"  maxlength="11"  bindinput="bindKeyInput" data-option="mobile" value="{{mobile}}"/>
+            </view>
+            <view class="flex_box border_bottom">
+                <view class="text">微信号</view>
+                <input type="text" class="flex_item text_right" placeholder="请填写微信号" placeholder-style="font-size:30rpx;color:#CCCCCC" maxlength="20" bindinput="bindKeyInput" data-option="wxCode" value="{{wxCode}}"/>
+            </view>
+            <view class="marker">
+                <view class="flex_box border_bottom">
+                    <view class="text service_title must">服务标签</view>
+                    <view class="flex_item text_right service_tip">服务概括</view>
+                </view>
+                <view class="marker_box">
+                    <repeat for="{{serviceTagArr}}" key="index" index="index" item="item">
+                       <view wx:if="{{item !== ''}}" class="tagSure">
+                           {{item}}
+                           <view class="delet_tag" @tap="deleteTag({{index}})"></view>
+                        </view>
+                       <input wx:else type="text" value="{{item}}" class="tagNew" auto-focus="true" bindconfirm="comfirmTag" bindblur="comfirmTag" maxlength="6"/>
+                    </repeat>
+                    <view wx:if="{{serviceTagArr.length < 4}}" class="addTag" @tap="addNewTag">+ 添加</view>
+                </view>
+            </view>
+            <view class="flex_box sign">
+                <view class="text">个性签名</view>
+                <input type="text" class="flex_item text_right" placeholder="填写签名" placeholder-style="font-size:30rpx;color:#CCCCCC" maxlength="20" bindinput="bindKeyInput" data-option="sign" value="{{sign}}"/>
+            </view>
+            <view class="flex_box border_bottom">
+                <view class="text must">公司名称</view>
+                <input type="text" class="flex_item text_right" placeholder="请填写公司名称" placeholder-style="font-size:30rpx;color:#CCCCCC" maxlength="20" bindinput="bindKeyInput" data-option="company" value="{{company}}" disabled="{{hasCompany}}"/>
+            </view>
+            <view class="flex_box border_bottom">
+                <view class="text">职位</view>
+                <input type="text" class="flex_item text_right" placeholder="默认为公司职员" placeholder-style="font-size:30rpx;color:#CCCCCC" maxlength="10" bindinput="bindKeyInput" data-option="position"  value="{{position}}"/>
+            </view>
+            <view class="flex_box border_bottom">
+                <view class="text must">联系地址</view>
+                <input type="text" class="flex_item text_right address" placeholder="选择联系地址" placeholder-style="font-size:30rpx;color:#CCCCCC" value="{{address}}" disabled wx:if="{{isAuthLocation === 1 || isAuthLocation === 2}}" @tap="setLocation"/>
+                <button wx:if="{{isAuthLocation === 3}}" class="flex_item text_right address" bindtap="opensetting">{{address}}</button>
+            </view>
+        </view>
+        <view class="btn" @tap="creatCard">下一步</view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { CARD_FIRST_EDIT, CARD_CREATE_NEW_CARD } from '../utils/url';
+import { post } from '../utils/ajax';
+import { getNetStatus, toast } from '../utils';
+import { getUid, SendClickLog } from '../utils/maidian';
+import globalService from '../utils/globalService';
+
+const host = 'https://yaofa.58.com';
+const uploadApi = `${host}/fileUpload`;
+
+export default class newBizCard extends wepy.page {
+    config = {
+        navigationBarTitleText: '名片编辑',
+    }
+    data = {
+        picImg: '', // 头图
+        headImg: '', // 头图，带domain
+        realName: '', // 真实姓名
+        mobile: '', // 手机号码
+        wxCode: '', // 微信号
+        serviceTag: '', // 服务标签
+        sign: '', // 个性签名
+        company: '', // 公司名称
+        position: '', // 职位
+        address: '', // 联系地址
+        addressLongitude: '', // 地址经度
+        addressLatitude: '', // 地址纬度
+        serviceTagArr: [], // 服务标签数组
+        hasCompany: false, // 页面有无公司名称，disable input 用,
+        isAuthLocation: 1, // 1、授权状态未知 2、授权成功  3、拒绝授权
+    }
+    methods = {
+        async setLogo () {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_setLogo');
+            try {
+                const netStatus = await getNetStatus();
+
+                if (netStatus === 0) {
+                    toast('无网络');
+                    return;
+                }
+                const { tempFilePaths } = await wepy.chooseImage({
+                    count: 1,
+                    sizeType: 'compressed ',
+                });
+                const url = await this.uploadLogo(tempFilePaths[0]);
+                const fullUrl = `https://pic1.58cdn.com.cn${url}`;
+                wepy.navigateTo({
+                    url: `/pages/cropper?url=${fullUrl}`,
+                });
+                // this.picImg = url;
+                // this.headImg = url;
+                // this.$apply();
+            } catch (e) {
+                console.log(e);
+            }
+        },
+        addNewTag() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_addNewTag');
+            const len = this.serviceTagArr.length;
+            if (len === 0 || this.serviceTagArr[len - 1]) {
+                this.serviceTagArr.push('');
+            }
+        },
+        bindKeyInput(e) {
+            const { value } = e.detail;
+            const { option } = e.target.dataset;
+            this[option] = value.trim();
+        },
+        comfirmTag(e) {
+            const { value } = e.detail;
+            const len = this.serviceTagArr.length - 1;
+            if (value.trim()) {
+                this.serviceTagArr.splice(len, 1, value);
+            } else {
+                this.toast('请完善添加的标签名称～');
+                return;
+            }
+            this.serviceTag = this.serviceTagArr.join(',');
+        },
+        deleteTag(index) {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_deleteTag');
+            this.serviceTagArr.splice(index, 1);
+            this.serviceTag = this.serviceTagArr.join(',');
+        },
+        async creatCard() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_creatCard');
+            const currentMpid = wepy.getStorageSync('current_mpid');
+            if (!currentMpid) {
+                return;
+            }
+            const subData = {
+                picImg: this.picImg,
+                realName: this.realName, // 真实姓名
+                mobile: this.mobile, // 手机号码
+                wxCode: this.wxCode, // 微信号
+                serviceTag: this.serviceTag, // 服务标签
+                sign: this.sign, // 个性签名
+                company: this.company, // 公司名称
+                position: this.position || '公司职员', // 职位
+                address: this.address, // 联系地址
+                addressLongitude: this.addressLongitude, // 地址经度
+                addressLatitude: this.addressLatitude, // 地址纬度
+                mpId: currentMpid,
+            };
+            if (!this.isFullyFilled(subData)) {
+                wepy.showModal({
+                    title: '提示',
+                    content: '需要先完善带有*号的必填项哦',
+                    confirmText: '知道了',
+                    confirmColor: '#4E88FF',
+                    showCancel: false,
+                });
+                return;
+            }
+            const { data } = await post(CARD_CREATE_NEW_CARD, subData);
+            if (data.mpCard.id) {
+                wepy.navigateTo({
+                    url: 'choseStyle',
+                });
+            }
+        },
+        async setLocation () {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_setLocation');
+            this.setUserLocation();
+        },
+        async opensetting() {
+            // try {
+            //     let isAuth;
+            //     const { cancel, confirm } = await alertP('需要获取您的位置信息，请到小程序的设置中打开授权', '是否要打开设置页面', {
+            //         showCancel: true,
+            //     });
+            //     if (confirm) {
+            //         isAuth = 2;
+            //         this.authSetting();
+            //     } else if (cancel) {
+            //         isAuth = 3;
+            //     }
+            //     this.isAuthLocation = isAuth;
+            //     this.$apply();
+            // } catch (e) {
+            //     console.log(e);
+            // }
+            try {
+                const res = await wepy.openSetting();
+                if (!res.authSetting['scope.userLocation']) {
+                    // 授权地理位置信息失败
+                    this.isAuthLocation = 3;
+                    this.$apply();
+                    return;
+                }
+
+                setTimeout(() => {
+                    this.setUserLocation();
+                }, 500);
+            } catch (e) {
+                this.isAuthLocation = 3;
+                this.$apply();
+                console.log(e);
+            }
+        },
+    }
+    async authSetting() {
+        try {
+            const res = await wepy.openSetting();
+            if (!res.authSetting['scope.userLocation']) {
+                // 授权地理位置信息失败
+                this.isAuthLocation = 3;
+                this.$apply();
+                return;
+            }
+
+            setTimeout(() => {
+                this.setUserLocation();
+            }, 500);
+        } catch (e) {
+            this.isAuthLocation = 3;
+            this.$apply();
+            console.log(e);
+        }
+    }
+    async setUserLocation() {
+        try {
+            const res = await wepy.chooseLocation();
+            const { address = '', latitude = '', longitude = '' } = res;
+            this.address = address;
+            this.addressLongitude = longitude;
+            this.addressLatitude = latitude;
+            this.isAuthLocation = 2;
+            this.$apply();
+        } catch (e) {
+            console.log(e);
+            await this.settingLocation();
+        }
+    }
+    isFullyFilled(subData) {
+        let result = false;
+        if (subData.picImg && subData.realName && subData.mobile && subData.company && subData.address && subData.serviceTag) {
+            result = true;
+        }
+        return result;
+    }
+    async settingLocation() {
+        const res = await wepy.getSetting();
+        this.isAuthLocation = res.authSetting['scope.userLocation'] !== false ? 2 : 3;
+        this.$apply();
+    }
+    async onLoad () {
+        await this.settingLocation();
+        await this.loadData();
+    }
+    onShow () {
+        if (globalService.get('afterCrop')) {
+            const url = globalService.get('cropperUrl');
+            this.headImg = url;
+            this.picImg = url;
+        }
+    }
+    async loadData() {
+        const currentMpid = wepy.getStorageSync('current_mpid');
+        if (!currentMpid) {
+            return;
+        }
+        const { data } = await post(CARD_FIRST_EDIT, {
+            mpId: currentMpid,
+        });
+        Object.assign(this, data);
+        if (this.serviceTag) {
+            this.serviceTagArr = this.serviceTag.split(',');
+            if (this.serviceTagArr.length > 4) {
+                this.serviceTagArr.length = 4;
+                this.serviceTag = this.serviceTagArr.join(',');
+            }
+        }
+        if (this.company) {
+            this.hasCompany = true;
+        }
+        this.headImg = this.picImg;
+        this.$apply();
+    }
+    toast (...params) {
+        const [title, duration = 2000] = params;
+        return wepy.showToast({
+            title,
+            icon: 'none',
+            duration,
+        });
+    }
+    async uploadLogo(tempPath) {
+        try {
+            const response = await wepy.uploadFile({
+                url: uploadApi,
+                filePath: tempPath,
+                name: 'content',
+            });
+            const res = JSON.parse(response.data);
+            const { state, msg, data } = res;
+
+            if (state !== 100) {
+                throw new Error(msg);
+            }
+
+            return data.content;
+        } catch ({ errMsg }) {
+            this.toast(errMsg);
+            return '';
+        }
+    }
+}
+</script>
+
+<style lang="scss">
+.newBizCard{
+    .from{
+        .marker{
+            margin: 20rpx 0;
+            .service_title{
+                font-size: 30rpx !important;
+                color: #333333 !important;
+            }
+            .service_tip{
+                font-size: 30rpx !important;
+                color: #999999 !important;
+            }
+            .marker_box{
+                background: white;
+                display: flex;
+                flex-wrap: wrap;
+                padding: 0 30rpx;
+                padding-bottom: 30rpx;
+                .tagSure{
+                    background: rgba(78,136,255,0.20);
+                    border-radius: 4rpx;
+                    height: 60rpx;
+                    line-height: 60rpx;
+                    text-align: center;
+                    padding: 0 20rpx;
+                    color: #4E88FF;
+                    font-size: 28rpx;
+                    margin-top: 30rpx;
+                    margin-right:50rpx;
+                    position: relative;
+                    .delet_tag{
+                        width: 44rpx;
+                        height: 44rpx;
+                        border-radius: 100%;
+                        background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_delete_tag.png') no-repeat center;
+                        background-size: 44rpx 44rpx;
+                        top: -22rpx;
+                        right: -22rpx;
+                        position: absolute;
+                    }
+                }
+                .tagNew{
+                    background: rgba(78,136,255,0.20);
+                    border-radius: 4rpx;
+                    height: 60rpx;
+                    line-height: 60rpx;
+                    text-align: center;
+                    color: #4E88FF;
+                    font-size: 28rpx;
+                    margin-top: 30rpx;
+                    margin-right:50rpx;
+                    width: 200rpx;
+                }
+                .addTag{
+                    background: #F3F3F3;
+                    border-radius: 4rpx;
+                    height: 60rpx;
+                    line-height: 60rpx;
+                    text-align: center;
+                    padding: 0 20rpx;
+                    color: #999999;
+                    font-size: 28rpx;
+                    margin-top: 30rpx;
+                    margin-right:50rpx;
+                }
+            }
+        }
+        .address{
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: right;
+            padding-left: 10rpx;
+        }
+        button.address{
+            background: #fff;
+            padding-right:0;
+        }
+        .border_bottom{
+            border-bottom: 1rpx solid #F3F3F3;
+        }
+        .flex_box{
+            display: flex;
+            padding: 0 30rpx;
+            background: white;
+            height: 89rpx;
+            line-height: 89rpx;
+            .text{
+                font-size: 30rpx;
+                color: #999999;
+            }
+            .must{
+                position: relative;
+            }
+            .must::before{
+                content: "*";
+                color:#FFA100;
+                font-size: 18rpx;
+                left: -15rpx;
+                line-height: 80rpx;
+                position: absolute;
+            }
+            .flex_item{
+                flex: 1;
+                display: block;
+                line-height: 89rpx;
+                height: 89rpx;
+                font-size: 30rpx;
+                color: #333333;
+            }
+            .text_right{
+                text-align: right;
+            }
+        }
+        .header{
+            height: 110rpx;
+            line-height: 110rpx;
+            font-size: 30rpx;
+            color: #333333;
+            margin: 20rpx 0;
+            .header_text, .img, .jiantou{
+                line-height: 110rpx;
+                height: 110rpx;
+            }
+            .img{
+                width: 72rpx;
+                height: 72rpx;
+                border-radius: 100%;
+                background-size: cover !important;
+                margin: 19rpx 0;
+            }
+            .jiantou{
+                width: 44rpx;
+                background: url(https://static.58.com/lbg/mengchong/image/icon/arrow-right.png) no-repeat center;
+                background-size: 18rpx 32rpx;
+            }
+        }
+        .sign{
+            margin-bottom: 20rpx;
+        }
+    }
+    .btn{
+        background: #4E88FF;
+        border-radius: 4rpx;
+        width: 690rpx;
+        height: 94rpx;
+        margin: 0 auto;
+        text-align: center;
+        line-height: 94rpx;
+        font-size: 32rpx;
+        color: #FFFFFF;
+        margin-top: 60rpx;
+        margin-bottom: 20rpx;
+    }
+}
+</style>

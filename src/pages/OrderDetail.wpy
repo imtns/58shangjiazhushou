@@ -1,0 +1,410 @@
+<template>
+    <view class="orderdetail">
+        <view class="order-wrap" wx:if = "{{!submitSuccess}}">
+            <view class="order-table">
+                <view class="order-row">
+                    <view class="left-label">订单号</view>
+                    <view class="right-text">{{order.id}}</view>
+                </view>
+                <view class="order-row">
+                    <view class="left-label">服务名称</view>
+                    <view class="right-text">{{order.serviceName}}</view>
+                </view>
+                <view class="order-row">
+                    <view class="left-label">服务联系人</view>
+                    <view class="right-text">{{order.consumerName}}</view>
+                </view>
+                <!-- <view class="order-row">
+                    <view class="left-label">联系电话</view>
+                    <view class="right-text">{{order.consumerMobile}}</view>
+                </view> -->
+                <view class="order-row" wx:if="{{order.status!=3}}" >
+                    <view class="left-label">服务地址</view>
+                    <view class="right-text">{{order.consumerAddress}}</view>
+                </view>
+                <view class="order-row">
+                    <view class="left-label">服务时间</view>
+                    <view class="right-text servicetime">{{order.startTime}} 至 {{order.endTime}}</view>
+                </view>
+                <view class="order-row none-border">
+                    <view class="left-label">支付方式</view>
+                    <view wx:if="{{order.payType==1}}" class="right-text {{fontClass[order.status] || ''}}">免费预约</view>
+                    <view wx:if="{{order.payType==2}}" class="right-text {{fontClass[order.status] || ''}}">线上支付</view>
+                    <view wx:if="{{order.payType==3}}" class="right-text {{fontClass[order.status] || ''}}">线上支付订金</view>
+                </view>
+            </view>
+            <view class="order-status">
+                <view class="left-label">当前状态</view>
+                <view class="right-text {{fontClass[order.status] || ''}}">
+                    {{statusSet[order.status]}}
+                </view>
+            </view>
+            <view class="order-table">
+                <view class="order-row">
+                    <view wx:if="{{order.payType==1}}" class="left-label">订单总价</view>
+                    <view wx:if="{{order.payType==2}}" class="left-label">一口价</view>
+                    <view wx:if="{{order.payType==3}}" class="left-label">订金价格</view>
+                    <view wx:if="{{order.payType==1}}" class="right-text">{{order.originalAmount}}元</view>
+                    <view wx:if="{{order.payType!=1}}" class="right-text">{{order.earnestMoney}}元</view>
+                </view>
+                <view class="order-row" wx:if="{{order.couponAmount!=null}}">
+                    <view class="left-label">优惠券</view>
+                    <view class="right-text">{{order.couponAmount}}元</view>
+                </view>
+                <view class="order-row none-border" wx:if="{{order.payType!=1}}">
+                    <view class="left-label"></view>
+                    <view class="right-text">实际支付 <view class="{{fontClass[order.status] || ''}}">{{order.realAmount}}元</view></view>
+                </view>
+            </view>
+            <view class="order-desc" wx:if="{{contentSet[order.status]}}">{{contentSet[order.status]}}</view>
+            <block wx:if="{{order.status==9}}">
+                <view class="order-evaluate">
+                    <view class="left-label">服务评分</view>
+                    <view class="right-text">
+                        <i class="star {{order.stars>=1?'selected':''}}"></i>
+                        <i class="star {{order.stars>=2?'selected':''}}"></i>
+                        <i class="star {{order.stars>=3?'selected':''}}"></i>
+                        <i class="star {{order.stars>=4?'selected':''}}"></i>
+                        <i class="star {{order.stars>=5?'selected':''}}"></i>
+                    </view>
+                </view>
+            </block>
+            <block wx:if="{{order.status==0}}">
+                <view class="order-confirm" @tap="bindSubmitOrder('ask')">确认订单</view>
+            </block>
+            <block wx:if="{{order.status==1}}">
+                <view class="order-finish">已确认订单</view>
+            </block>
+            <block wx:if="{{order.status==10 && order.applyStatus==0}}">
+                <view class="order-confirm" @tap="bindAgreeRefund" data-orderid="{{order.id}}">同意退款</view>
+            </block>
+            <block wx:if="{{order.status==9}}">
+                <view class="order-evaluated">已评价</view>
+            </block>
+            <view wx:if="{{order.status!=3}}" class="order-contact" @tap="bindPhoneCall({{order.consumerMobile}})">联系顾客</view>
+            <view wx:if="{{order.status==10 && order.applyStatus==0}}" class="order-apply" @tap="bindApplyPlat" data-orderId="{{order.id}}">申请平台介入</view>
+            <view wx:if="{{order.status==10 && order.applyStatus!=0}}" class="order-apply">已申请平台介入</view>
+        </view>
+        <view class="ordersuccess" wx:if = "{{submitSuccess}}">
+            <view class="ordersuccess-container">
+                <image class="ordersuccess-icon" src="https://img.58cdn.com.cn/lbg/jianzhan/images/paysuccess-icon.png"/>
+                <view class="ordersuccess-title">接单成功</view> 
+            </view>
+            <navigator class="ordersuccess-other" open-type="navigateBack">其他订单</navigator>
+            <navigator class="ordersuccess-home" url='/pages/home' open-type="navigateBack" delta="2">返回首页</navigator>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+import { get, post } from '../utils/ajax';
+import { toast } from '../utils';
+import { getUid, SendClickLog } from '../utils/maidian';
+
+export default class OrderDetail extends wepy.page {
+    config = {
+        navigationBarTitleText: '订单管理',
+    }
+    data = {
+        fontClass: ['active', 'active', 'active', 'active', 'active', 'cancel', 'cancel', 'cancel', 'cancel', 'active', 'active', 'active', 'active'],
+        statusSet: ['已支付，待接单', '已接单，待服务', '已完成', '已取消', '已删除', '已下单，待支付', '退款成功', '退款失败', '已取消,系统自动取消', '已评价', '退款中', '', '退款中'],
+        contentSet: ['顾客已支付订单，请尽快确认订单',
+            '您已接单，请在约定时间联系顾客',
+            '服务已经结束，订单费用已成功打入您的收款账户，谢谢您的服务',
+            '顾客已取消订单',
+            '系统已删除订单',
+            '顾客已下单，还未支付订单',
+            '订单已退款',
+            '订单退款失败',
+            '由于您长时间未接单，系统自动取消订单',
+            '服务已经结束,订单费用已成功打入您的收款账户，谢谢您的服务',
+            '用户申请取消订单,并退款。请确认是否同意用户申请。',
+            '',
+            '用户申请取消订单,并退款。已同意用户申请退款。'],
+        order: {},
+        submitSuccess: false,
+    }
+    methods = {
+        async bindPhoneCall (mobile) {
+            console.log(getUid());
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderDetail_phoneCall');
+            // const { userid } = this.order;
+            // const sendParams = { sign: `${userid}#${mobile}`, from: 'OrderDetail' };
+            // const [e, phoneNumber] = await get('/other/encrypt/phone', sendParams);
+            // if (e) {
+            //     toast(e);
+            //     return;
+            // }
+            // wepy.makePhoneCall({ phoneNumber });
+            wepy.makePhoneCall({ phoneNumber: mobile });
+        },
+        bindSubmitOrder () {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderDetail_submitOrder');
+            this.submitOrder();
+        },
+        async bindAgreeRefund (o) {
+            const orderId = o.currentTarget.dataset.orderid;
+            const { state, msg } = await get(`/consumerAppointment/optRefund/${orderId}`, { action: 'agree' });
+            if (state !== 100) {
+                toast(msg);
+                return;
+            }
+            wx.showLoading({
+                title: '退款成功',
+            });
+            setTimeout(() => {
+                wx.hideLoading();
+                this.getOrder();
+                // wx.navigateBack({
+                //     delta: 0,
+                // });
+            }, 2000);
+        },
+        async bindApplyPlat(o) {
+            const orderId = o.currentTarget.dataset.orderid;
+            const { state, msg, data } = await get(`/consumerAppointment/optRefund/${orderId}`, { action: 'refuse' });
+            if (state !== 100) {
+                toast(msg);
+                return;
+            }
+            console.log(data);
+            wx.showLoading({
+                title: '您拒绝申请退款成功',
+            });
+            setTimeout(() => {
+                wx.hideLoading();
+                this.getOrder();
+            }, 2000);
+        },
+    }
+    async submitOrder () {
+        const { id } = this.order;
+        const { state, msg } = await post(`/consumerAppointment/accept/${id}`);
+        if (state !== 100) {
+            toast(msg);
+            return;
+        }
+        this.submitSuccess = true;
+        this.$apply();
+    }
+    parseOrder (data) {
+        const ret = data || {};
+        try {
+            const adressJson = JSON.parse(data.consumerAddressJson);
+            const serviceAddress = JSON.parse(data.serviceAddress);
+            const reg = /(\d{4})-([0-1]{0,1}\d{1})-([0-3]{0,1}\d{1}) ([0-6]{0,1}\d{1}):([0-6]{0,1}\d{1}):([0-6]{0,1}\d{1}).+/;
+            ret.createTime = data.createTime.replace(reg, '$2.$3 $4:$5');
+            ret.startTime = data.startTime.replace(reg, '$2.$3 $4:$5');
+            ret.endTime = data.endTime.replace(reg, '$2.$3 $4:$5');
+            ret.consumerName = adressJson.name;
+            ret.consumerMobile = adressJson.telephone;
+            ret.consumerAddress = `${serviceAddress.provinceStr || ''} ${serviceAddress.cityStr || ''} ${serviceAddress.areaStr || ''} ${adressJson.address || ''}`;
+        } catch (e) {
+            toast(e);
+        }
+        return ret;
+    }
+    async onLoad (options) {
+        const { id } = options;
+        console.log(id);
+        wx.setStorageSync('orderId', id);
+        await this.getOrder();
+    }
+    async getOrder() {
+        const id = wx.getStorageSync('orderId');
+        const { state, msg, data } = await get(`/consumerAppointment/get/${id}`);
+        if (state !== 100) {
+            toast(msg);
+            return;
+        }
+        const order = this.parseOrder(data);
+        this.order = Object.assign({}, order);
+        this.$apply();
+    }
+}
+</script>
+<style lang="scss">
+.orderdetail {
+    font-family: PingFangSC-Regular;
+    .order-wrap {
+        background: #f6f6f6;
+        .order-table {
+            background: #fff;
+            padding: 0 30rpx;
+            border-top: 2rpx solid #f3f3f3;
+            .order-row {
+                display: table;
+                width: 100%;
+                border-bottom: 2rpx solid #f3f3f3;
+                .left-label,
+                .right-text {
+                    display: table-cell;
+                    height: 88rpx;
+                    vertical-align: middle;
+                }
+                .left-label {
+                    font-size: 28rpx;
+                    color: #999999;
+                    min-width: 60rpx;
+                }
+                .right-text {
+                    font-size: 28rpx;
+                    color: #333333;
+                    text-align: right;
+                    max-width: 280rpx;
+                    &.servicetime {
+                        font-family: PingFangSC-Semibold;
+                    }
+                    view{
+                        display: inline;
+                    }
+                    .active{
+                        display: inline;
+                        color: #ff552e;
+                    }
+                    .cancel {
+                        display: inline;
+                    }
+                    &.active{
+                        color: #ff552e;
+                    }
+                }
+                &.none-border {
+                    border: none;
+                }
+            }
+        }
+        .order-status,
+        .order-price,
+        .order-evaluate {
+            display: table;
+            width: 100%;
+            padding: 0 30rpx;
+            background: #fff;
+            box-sizing: border-box;
+            .left-label,
+            .right-text {
+                display: table-cell;
+                height: 88rpx;
+                vertical-align: middle;
+            }
+            .left-label {
+                font-size: 28rpx;
+                color: #999999;
+                min-width: 60rpx;
+            }
+            .right-text {
+                font-size: 28rpx;
+                color: #333333;
+                text-align: right;
+                max-width: 280rpx;
+                &.active {
+                    color: #ff552e;
+                }
+                &.cancel {
+                    color: #333333;
+                }
+            }
+        }
+        .order-status {
+            margin: 20rpx 0;
+        }
+        .order-desc {
+            padding: 0 30rpx;
+            line-height: 38rpx;
+            margin: 10rpx 0 20rpx;
+            font-size: 26rpx;
+            color: #999999;
+        }
+        .order-confirm,
+        .order-finish,
+        .order-evaluated,
+        .order-contact {
+            margin: 0 30rpx;
+            line-height: 94rpx;
+            border-radius: 4rpx;
+            text-align: center;
+        }
+        .order-apply{
+            font-size: 30rpx;
+            color: #576B95;
+            margin: 32rpx 0 50rpx;
+            text-align: center;
+        }
+        .order-confirm {
+            margin-top: 60rpx;
+            background: #4e88ff;
+            font-size: 32rpx;
+            color: #ffffff;
+        }
+        .order-finish,
+        .order-evaluated {
+            margin-top: 60rpx;
+            background: #cccccc;
+            font-size: 32rpx;
+            color: #ffffff;
+        }
+        .order-contact {
+            margin-top: 30rpx;
+            background: #ffffff;
+            font-size: 32rpx;
+            color: #333333;
+        }
+    }
+
+    /* 评星 */
+    .star {
+        display: inline-block;
+        margin-right: 20rpx;
+        width: 40rpx;
+        height: 40rpx;
+        background: url('https://static.58.com/lbg/businessorder/dist/images/ico-star.png')
+            no-repeat top left;
+        background-size: 100%;
+        vertical-align: middle;
+    }
+    .star.selected {
+        background: url('https://static.58.com/lbg/businessorder/dist/images/ico-star-light.png')
+            no-repeat top left;
+        background-size: 100%;
+    }
+}
+.ordersuccess {
+    font-family: PingFangSC-Regular;
+    height: 100vh;
+    background: #f6f6f6;
+    .ordersuccess-container {
+        padding: 80rpx 0;
+        background: #fff;
+    }
+    .ordersuccess-icon {
+        display: block;
+        width: 144rpx;
+        height: 144rpx;
+        margin: 0 auto 30rpx;
+    }
+    .ordersuccess-title {
+        text-align: center;
+        font-size: 32rpx;
+        color: #333333;
+    }
+    .ordersuccess-home,
+    .ordersuccess-other {
+        margin: 0 30rpx;
+        border-radius: 4rpx;
+        line-height: 94rpx;
+        font-size: 32rpx;
+        text-align: center;
+    }
+    .ordersuccess-other {
+        margin-top: 80rpx;
+        background: #4e88ff;
+        color: #fff;
+    }
+    .ordersuccess-home {
+        margin-top: 30rpx;
+        background: #fff;
+        color: #333;
+    }
+}
+</style>

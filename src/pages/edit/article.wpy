@@ -1,0 +1,377 @@
+<template>
+    <view class="article-container">
+        <view class="list">
+            <repeat for="{{list}}" index="index" item="item">
+                <view class="item" style="{{!item.checked?'display:none;':''}}">
+                    <view class="thumb"><image mode="aspectFill" src="{{item.cover}}"></image></view>
+                    <view class="articleDesc">
+                        <view class="title">{{item.title}}</view>
+                        <view class="desc">{{item.intro}}</view>
+                    </view>
+                </view>
+            </repeat>
+        </view>
+    </view>
+    <view class="article-editLayer">
+        <view class="saveBar">
+            <text class="label" @tap="addArticle">+添加文章</text>
+            <text class="save" @tap="save">保存</text>
+        </view>
+        <view class="edit-cell">
+            <view class="edit-label" @tap="showGroup">{{articleGroupName || '请选择分组'}}<view class="arrow"></view></view>
+            <view class="edit-input">
+                <checkbox-group bindchange="selectAll">
+                    <label class="checkbox">
+                        <checkbox class="checkSqure" value="全选当前分组" checked="{{false}}" />全选当前分组
+                    </label>
+                </checkbox-group>
+            </view>
+        </view>
+        <view class="noArticle" wx:if="{{list.length==0}}">
+            您还没有文章哦, 赶快去添加吧~
+        </view>
+        <scroll-view wx:else scroll-y class="article-scroll">
+            <checkbox-group bindchange="checkboxChange">
+                <repeat for="{{list}}" index="index" item="item">
+                    <label class="article-checkbox">
+                        <checkbox class="checkSqure" value="{{item.id}}" checked="{{item.checked}}" />{{item.title}}
+                    </label>
+                </repeat>
+            </checkbox-group>
+        </scroll-view>
+    </view>
+    <view class="article-group" hidden="{{!showGroup}}">
+        <scroll-view scroll-y>
+            <repeat for="{{group}}" index="index" item="item">
+                <view class="group" @tap="selectGroup" data-name="{{item.name}}" data-id="{{item.id}}">{{item.name}}</view>    
+            </repeat>
+        </scroll-view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+import Mixin from './mixin';
+import { picSrcDomain, toast } from '../../utils';
+import { globalData } from '../../utils/globalData';
+
+const { get } = require('../../utils/ajax');
+
+export default class Article extends wepy.page {
+  config = {
+      navigationBarTitleText: '文章',
+  };
+  mixins = [Mixin];
+  data = {
+      list: {},
+      showGroup: false,
+      group: {},
+      articleGroupName: '',
+      params: {
+          articleGroupId: '0',
+          articlePage: '1',
+          articleSize: '4',
+          articleIds: '0',
+      },
+  };
+  methods = {
+      addArticle() {
+          wepy.navigateTo({
+              url: `../articleComponentAdd?id=${this.pageId}`,
+          });
+      },
+      showGroup() {
+          this.showGroup = !this.showGroup;
+      },
+      async selectGroup(e) {
+          const { id, name } = e.currentTarget.dataset;
+          this.articleGroupName = name;
+          this.params.articleGroupId = id;
+          await this.loadArticleList();
+          this.showGroup = false;
+          this.$apply();
+      },
+      selectAll(e) {
+          console.log(e);
+          this.list.forEach(item => {
+              item.checked = e.detail.value.length !== 0;
+          });
+      },
+      checkboxChange(e) {
+          console.log(e.detail.value);
+          this.list.map(item => {
+              if (e.detail.value.indexOf(item.id) === -1) {
+                  item.checked = false;
+              } else {
+                  item.checked = true;
+              }
+              return item;
+          });
+      },
+      save() {
+          const selectArticles = this.list.filter(obj => obj.checked === true);
+          if (selectArticles.length === 0) {
+              toast('至少选择一篇文章');
+              return;
+          }
+          this.params.articleIds = selectArticles.map(art => art.id).join(',');
+          this.pageData[0].props.data = {};
+          selectArticles.forEach((item, index) => {
+              this.pageData[0].props.data[index] = item;
+          });
+          console.log(JSON.stringify(this.params));
+          this.pageModule.params = this.params;
+          globalData.pageData[this.pageIndex].props = this.pageData[0].props;
+          globalData.modules[this.pageIndex] = this.pageModule;
+          toast('已保存');
+          setTimeout(() => {
+              wx.navigateBack({
+                  delta: 1,
+              });
+          }, 1000);
+      },
+  };
+  async onLoad() {
+      await this.loadArticleGroup();
+      this.loadArticleList();
+      [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
+      console.log(this.pageModule);
+  }
+  async loadArticleList() {
+      const { data } = await get('/businessArticle/list', {
+          appid: this.extConfig.appId, group: this.params.articleGroupId, pageNum: 1, pageSize: 30,
+      });
+      console.log(data);
+      data.data.forEach(item => {
+          item.cover = picSrcDomain() + item.cover;
+      });
+      this.list = data.data;
+      this.list.forEach(item => {
+          item.checked = true;
+      });
+      this.params.articleIds = this.list.map(art => art.id).join(',');
+      this.$apply();
+  }
+  async loadArticleGroup() {
+      try {
+          const { data } = await get('/businessArticle/groups', { appid: this.extConfig.appId });
+          this.group = data;
+          if (this.pageData.params && Object.keys(JSON.parse(this.pageData.params)).length !== 0) {
+              this.articleGroupName = this.group.find(obj => obj.id === JSON.parse(this.pageData.params).articleGroupId).name;
+              this.params.articleGroupId = this.group.find(obj => obj.id === JSON.parse(this.pageData.params).articleGroupId).id;
+          }
+      } catch (err) {
+          console.log(err);
+      }
+      this.$apply();
+  }
+}
+</script>
+<style lang="scss">
+.article-group {
+  width: 296rpx;
+  height: 363rpx;
+  border-radius: 8rpx;
+  background: white;
+  z-index: 999;
+  white-space: nowrap;
+  overflow: scroll;
+  position: absolute;
+  left: 30rpx;
+  bottom: 60rpx;
+  .group {
+    width: 256rpx;
+    margin: 0 auto;
+    font-size: 28rpx;
+    color: #666;
+    padding: 20rpx 0;
+    border-bottom: 1rpx solid #f3f3f3;
+  }
+}
+.noArticle {
+  width: 100%;
+  height: 393rpx;
+  text-align: center;
+  line-height: 393rpx;
+  color: #999;
+  font-size: 30rpx;
+}
+
+.article-editLayer {
+  width: 100%;
+  box-sizing: border-box;
+  height: 594rpx;
+  position: fixed;
+  bottom: 0;
+  background: rgb(91, 93, 95);
+  z-index: 10;
+  padding: 0 30rpx;
+  .saveBar {
+    height: 86rpx;
+    box-sizing: border-box;
+    margin: 0 -30rpx;
+    padding-right: 30rpx;
+    background: #46484a;
+    color: white;
+    line-height: 86rpx;
+    font-size: 32rpx;
+    .label {
+      width: 200rpx;
+      margin-left: 30rpx;
+      text-align: left;
+    }
+    .save {
+      width: 100rpx;
+      float: right;
+      text-align: right;
+    }
+  }
+  .edit-cell {
+    height: 88rpx;
+    display: flex;
+    font-size: 30rpx;
+    background: #545658;
+    columns: #333333;
+    align-items: center;
+    margin: 0 -30rpx;
+    padding: 0 30rpx;
+    border-bottom: 1rpx solid #585d5f;
+    .edit-label {
+      width: 324rpx;
+      color: #999;
+      .arrow {
+        position: relative;
+        top: -4rpx;
+        display: inline-block;
+        width: 0;
+        height: 0;
+        margin-left: 10rpx;
+        border-style: solid;
+        border-width: 10rpx 10rpx 0 10rpx;
+        border-color: #ffffff transparent transparent transparent;
+      }
+    }
+    .edit-input {
+      width: 396rpx;
+      color: #d8d8d8;
+      text-align: right;
+      checkbox .wx-checkbox-input {
+        background: transparent;
+        border: 1rpx solid #bdbdbd;
+      }
+      checkbox .wx-checkbox-input.wx-checkbox-input-checked {
+        background: #4e88ff;
+      }
+      checkbox .wx-checkbox-input.wx-checkbox-input-checked::before {
+        font-size: 30rpx;
+        color: transparent;
+        position: relative;
+        border:0;
+        top:-1rpx;
+        left:-1rpx;
+        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAAAXNSR0IArs4c6QAAAfFJREFUSA3tls8rBGEYx78zfrfUrhKhyAnl4k4pJ0opm7ODu3Vz8PPCCTflD1DsYU+kOIn2tg5K2oOiiMiqtQc/1/M1M1nTO7N2m3HyHN55fz6feb7P29ujQSy8nG16fsUKsuiXYYhzHlgKGvYryhCJTmpXmgk5EUiNOC/1AJDr4k1gaYF16WYkfkAILGUAZOimXF5HkhsVYf26zHiVk1zn9n6IoD+xf5CjzB3NwNo4MNan3uKJdK11wPQI0FgL9HT4BGoIAvOjQKDCAGzFfQCFAsCCQILypW0eAbvHRt/eKqWjztSbujsZI2Ak9RIRbScBbBwafVWrBFFn6k3dqb/dyuUdmQkDLebawSmwvmff9XOsBFk6W3/NPFhWIiemhoH2JmMmcQ6sbkNeGXdTgqgz9aZRf+aB+dBkPDEIdLd9LeHsCliMAe8fxtitdXxMqXdNFTDQbeSB+UheA72dhruLO/mBKPDy5ub+e80RxC3UvbrScM58WDm5fQTmtoDM87ejfD2ldNYh6k79mQfLHjNyETaBhydr5ndfVxBdUH/mIZ4ELu+BWYHcSESFmja0lM13YQr1qdyfNyLlqSImCUoVca7QIymdJZGc+uUlLdT/135WQvs66y7ppH2CWeVWRGdxx7pLYHK3PJWRBWSMvsn4BExhe3rzGZlEAAAAAElFTkSuQmCC');
+        background-size: cover;
+      }
+    }
+  }
+  .article-scroll {
+    background: #545658;
+    height: 328rpx;
+    padding: 0 30rpx 30rpx;
+    margin: 20rpx -30rpx 0;
+    .article-checkbox {
+      width: 640rpx;
+      display: flex;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color:#dbdbdb;
+      height:82rpx;
+      border-bottom: 1rpx solid #5b5d5f;
+      font-size:30rpx;
+      align-items: center;
+      checkbox{
+          margin-right:10rpx;
+      }
+      checkbox .wx-checkbox-input {
+        width: 36rpx;
+        height: 36rpx;
+        background: transparent;
+        border: 1rpx solid #bdbdbd;
+        border-radius: 50%;
+      }
+      checkbox .wx-checkbox-input.wx-checkbox-input-checked {
+        background: #4e88ff;
+      }
+      checkbox .wx-checkbox-input.wx-checkbox-input-checked::before {
+        font-size: 40rpx;
+        color: transparent;
+        position: relative;
+        border:0;
+        top:-1rpx;
+        left:-1rpx;
+        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAAXNSR0IArs4c6QAAAxBJREFUSA3Fl01oE0EUx/+zUdSDHz0YtSBWQSkqingRP6rVnlQwUkEFBbV68GC1CKnH4BdJQLSCtkVBLyKKQgS1thVUBEWw1vp10KNgNR4snrw04/tvdpPdbDaNMUsHNjvz5s37zZt5M/uiUEaJaW0MJbB6VCGiNFbKkFrr4ehvfLTCQEgjtbwdL2JKZdhRqqhSnfuu6ckjP9AqRo9rjXApXbtPKaRlcudmzMLF6/vVH1te+PYFR5K6WWDn5ZlbOKictkzgqzxtqai6W0zfKBRqrdW2uD6TyeBOpVDa5FjaoC3aLOS4BFSIJHFTBu0sVPyftnh+KxXFbqVkE6zi8jiSwOlqQ8mhTdq2oXznPOaecmmcndWuGwZ22Htughm9v9L4zH2pNsxpjwFXE8YiRru51OaRCRjKCdAxslg3eDnwnLJRrbJ+MXD1MLC3wWuRLDLV9rheOwo896pUJtm4FDiyWTySTfz5GzjY6bUTAtYZvAa9XZVJGh1QWVbc8HGHTMO6eysjOUY1LgFaLU8JvdwLPPngUHBUyWRw8cL3FC7VqV1AxwFgwRi39AZCt2SXl9DOPqBvyGPSKaj1BYenA8vmAXUzgZMygfk+cAbSUQe0S6C9b52MonUTXLTn+wjQ/y7bNXVK1vtCOKHHtuY97eoHHo0N5bWl6TG/p0XLpZ78PhFOz7kCLA0OT9nuJnSQtTKKxnCovinWLKp1fuqvvgCza0RBlnrSRGBNPTBBpnuoCQhx2lK6ZXl7yoWKvoTPe14eA+Zonx+JFVy4Dzz9mFWYJp7vkYshBxVPH/4D1LRi4LXBdMWHmRMT3vEAePYpJzIrVx4L9I1bVk7LyOCe4vU1mMSwHAOfuM2b4hFr2QSsWgjcfllW9OYHWzX5UKRXRDFHTAGRuI5KdpbwaAUgkLBoT51QSTM8mJjxkxUAx2WSDLIoNMH8PoqwzaUVQIMMO/O0DgTAzEDW/WwAPNMkbdvZBwXmHtuwcUv2mAWa2WAVPc966s4wPR7bnvMddELvWmonmPVx+QvjnAQvmWr/afsLtJkfavwu5egAAAAASUVORK5CYII=');
+        background-size: cover;
+      }
+    }
+  }
+}
+checkbox .wx-checkbox-input {
+  width: 25rpx;
+  height: 25rpx;
+  position: relative;
+  top:-1rpx;
+}
+.space {
+  margin-top: 20rpx !important;
+}
+.article-container {
+  height: 100%;
+  overflow: hidden;
+  background: white;
+  margin-top: 20rpx;
+  padding-bottom: 570rpx;
+  .list {
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 30rpx;
+    background: wihte;
+    .item {
+      display: flex;
+      margin-bottom: 0;
+      padding: 30rpx 0;
+      position: relative;
+      border-bottom: 1rpx solid #f3f3f3;
+      .thumb {
+        width: 192rpx;
+        height: 144rpx;
+        image {
+          width: 100%;
+          overflow: hidden;
+          height: 100%;
+        }
+      }
+      .articleDesc {
+        width: 470rpx;
+        margin-left: 26rpx;
+        .title {
+          font-size: 28rpx;
+          color: #353538;
+        }
+        .desc {
+          width: 470rpx;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          font-size: 24rpx;
+          color: #aaa;
+          margin-top: 9rpx;
+        }
+      }
+    }
+  }
+}
+</style>
+
+

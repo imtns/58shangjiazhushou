@@ -1,0 +1,295 @@
+<template>
+    <view class="text-container">
+        <view class="list">
+            <view class="desc">
+                <image src="../assets/radio.png" hidden="{{!editMultiple}}"></image>
+                <swiper wx:if="{{editMultiple}}" class="swiper" style="width:600rpx" current="{{current}}" vertical="{{true}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}">
+                    <repeat for="{{pageData[0].props.cfg.texts}}" item="item">
+                        <swiper-item>{{item.text}}</swiper-item>
+                    </repeat>
+                </swiper>
+                <view wx:else style="width:700rpx;margin-left:40rpx;padding-top:0;" class="swiper">{{pageData[0].props.cfg.texts[0].text}}</view>
+            </view>
+        </view>
+    </view>
+    <view class="text-editLayer">
+        <view class="saveBar">
+            <text class="save" @tap="save">保存</text>
+        </view>
+        <view class="edit-cell">
+            <view class="edit-label">文本展示</view>
+            <view class="edit-input">
+                <radio-group bindchange="radioBoxChange">
+                    <label class=".radio">
+                        <radio value="single" checked="{{!editMultiple}}" />静态展示一条
+                    </label>
+                    <label class=".radio">
+                        <radio value="multiple"  checked="{{editMultiple}}" />动态展示多条
+                    </label>
+                </radio-group>
+            </view>
+        </view>
+    </view>
+    <view class="text-edit-content" wx:if="{{!editMultiple}}">
+        <view class="edit-text-section">
+            <view class="label">文本内容</view>
+            <view class="text-content">
+                <textarea maxlength="100" value="{{pageData[0].props.cfg.texts[0].text}}" bindinput="textSingleInput" />
+                <text class="textLimit">{{textLimit['single'] || 0}}/100</text>
+            </view>
+        </view>
+    </view>
+    <view class="text-edit-content" wx:else>
+        <view class="edit" @tap="editText">+去添加多条文本</view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+import Mixin from './mixin';
+import { toast } from '../../utils';
+import { globalData } from '../../utils/globalData';
+
+export default class EditText extends wepy.page {
+  config = {
+      navigationBarTitleText: '文本',
+      disableScroll: true,
+  };
+  mixins = [Mixin];
+
+  data = {
+      list: [1],
+      editMultiple: true,
+      textLimit: {},
+      theme: '',
+      autoplay: true,
+      interval: 2500,
+      duration: 500,
+      current: 0,
+  };
+  onLoad() {
+      [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
+      this.editMultiple = this.pageData[0].props.cfg.theme === '2';
+      if (Object.keys(this.pageData[0].props.cfg).length === 0) {
+          this.pageData[0].props.cfg = {};
+          this.pageData[0].props.cfg.texts = [];
+          this.pageData[0].props.cfg.texts.push({
+              text: '',
+          });
+      }
+      if (!this.editMultiple && Object.keys(this.pageData[0].props.cfg).length > 0) {
+          this.textLimit.single = this.pageData[0].props.cfg.texts[0].text.length;
+      }
+  }
+
+  onShow() {
+      [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
+      const result = globalData.pageData.filter(obj => obj.id === this.pageId);
+      if (Object.keys(result[0].props.cfg).length > 0) {
+          this.pageData = JSON.parse(JSON.stringify(result));
+          if (this.pageData[0].props.cfg.texts.length === 1) {
+              this.editMultiple = false;
+          }
+          this.current = 0;
+      }
+  }
+  methods = {
+      radioBoxChange(e) {
+          this.editMultiple = e.detail.value !== 'single';
+          this.theme = this.editMultiple ? '2' : '1';
+          if (this.editMultiple) {
+              this.pageData[0].props.cfg.texts.forEach((item, index) => {
+                  this.textLimit[index] = item.text.length;
+              });
+          }
+      },
+      textSingleInput(e) {
+          this.textLimit.single = e.detail.value.length;
+          this.pageData[0].props.cfg.texts[0].text = e.detail.value;
+      },
+      editText() {
+          wepy.navigateTo({
+              url: `textEdit?id=${this.pageId}`,
+          });
+      },
+
+      save() {
+          if (!this.editMultiple && !this.pageData[0].props.cfg.texts[0].text.trim()) {
+              toast('内容不能为空');
+              return;
+          }
+          this.pageData[0].props.cfg.theme = this.editMultiple ? '2' : '1';
+          this.pageModule.cfg = this.pageData[0].props.cfg;
+          [globalData.pageData[this.pageIndex]] = this.pageData;
+          globalData.modules[this.pageIndex] = this.pageModule;
+          toast('已保存');
+          setTimeout(() => {
+              wx.navigateBack({
+                  delta: 1,
+              });
+          }, 1000);
+      },
+  };
+}
+</script>
+<style lang="scss">
+.text-edit-content {
+    width: 100vw;
+    min-height:400rpx;
+    position: fixed;
+    bottom:0;
+    z-index: 99;
+    background:rgb(91,93,95);
+    .edit {
+        color: white;
+        position:absolute;
+        left:50%;
+        top:50%;
+        transform: translate(-50%,-50%);
+        font-size:32rpx;
+      }
+    .edit-text-section {
+      margin-top: 20rpx;
+      font-size: 30rpx;
+      position: relative;
+      background: #545658;
+      padding: 30rpx;
+      .label {
+        color: #999;
+        padding: 20rpx 0;
+      }
+      .text-content {
+        width: 690rpx;
+        height: 166rpx;
+        color: #dbdbdb;
+        textarea {
+          height: 110rpx;
+          width: 100%;
+        }
+      }
+      .textLimit {
+        font-size: 24rpx;
+        color: #999;
+        position: absolute;
+        right: 30rpx;
+        bottom: 20rpx;
+      }
+    }
+  }
+.text-container {
+  margin-top: 20rpx;
+  background: white;
+  position: fixed;
+  top:10rpx;
+  width:100%;
+  z-index: 10000;
+  .list {
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    background: wihte;
+    .desc {
+      width: 100%;
+      padding-right: 30rpx;
+      height: 132rpx;
+      font-size: 24rpx;
+      background: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #aaa;
+      .single {
+        margin-left: 30rpx;
+      }
+      image {
+        margin-left: 30rpx;
+        flex: 0 0 60rpx;
+        width: 60rpx;
+        height: 60rpx;
+      }
+      .swiper {
+        height: 80rpx;
+        padding-top: 20rpx;
+        font-size: 28rpx;
+        color: #666;
+      }
+    }
+  }
+}
+.text-editLayer {
+  width: 100%;
+  height:570rpx;
+  box-sizing: border-box;
+  position: fixed;
+  bottom:0;
+  background: rgb(91, 93, 95);
+  z-index: 9;
+  padding: 0 30rpx;
+  .radio {
+    font-size: 28rpx;
+    radio .wx-radio-input {
+      width: 36rpx;
+      height: 36rpx;
+      top:-2rpx;
+      background: transparent;
+      border: 1rpx solid #bdbdbd;
+      border-radius: 50%;
+    }
+    radio .wx-radio-input.wx-radio-input-checked {
+      background: #4e88ff !important;
+    }
+    radio .wx-radio-input.wx-radio-input-checked::before {
+      font-size: 40rpx;
+      color: transparent;
+      position: relative;
+      border:0;
+      top:-1rpx;
+      left:-1rpx;
+      background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAAXNSR0IArs4c6QAAAxBJREFUSA3Fl01oE0EUx/+zUdSDHz0YtSBWQSkqingRP6rVnlQwUkEFBbV68GC1CKnH4BdJQLSCtkVBLyKKQgS1thVUBEWw1vp10KNgNR4snrw04/tvdpPdbDaNMUsHNjvz5s37zZt5M/uiUEaJaW0MJbB6VCGiNFbKkFrr4ehvfLTCQEgjtbwdL2JKZdhRqqhSnfuu6ckjP9AqRo9rjXApXbtPKaRlcudmzMLF6/vVH1te+PYFR5K6WWDn5ZlbOKictkzgqzxtqai6W0zfKBRqrdW2uD6TyeBOpVDa5FjaoC3aLOS4BFSIJHFTBu0sVPyftnh+KxXFbqVkE6zi8jiSwOlqQ8mhTdq2oXznPOaecmmcndWuGwZ22Htughm9v9L4zH2pNsxpjwFXE8YiRru51OaRCRjKCdAxslg3eDnwnLJRrbJ+MXD1MLC3wWuRLDLV9rheOwo896pUJtm4FDiyWTySTfz5GzjY6bUTAtYZvAa9XZVJGh1QWVbc8HGHTMO6eysjOUY1LgFaLU8JvdwLPPngUHBUyWRw8cL3FC7VqV1AxwFgwRi39AZCt2SXl9DOPqBvyGPSKaj1BYenA8vmAXUzgZMygfk+cAbSUQe0S6C9b52MonUTXLTn+wjQ/y7bNXVK1vtCOKHHtuY97eoHHo0N5bWl6TG/p0XLpZ78PhFOz7kCLA0OT9nuJnSQtTKKxnCovinWLKp1fuqvvgCza0RBlnrSRGBNPTBBpnuoCQhx2lK6ZXl7yoWKvoTPe14eA+Zonx+JFVy4Dzz9mFWYJp7vkYshBxVPH/4D1LRi4LXBdMWHmRMT3vEAePYpJzIrVx4L9I1bVk7LyOCe4vU1mMSwHAOfuM2b4hFr2QSsWgjcfllW9OYHWzX5UKRXRDFHTAGRuI5KdpbwaAUgkLBoT51QSTM8mJjxkxUAx2WSDLIoNMH8PoqwzaUVQIMMO/O0DgTAzEDW/WwAPNMkbdvZBwXmHtuwcUv2mAWa2WAVPc966s4wPR7bnvMddELvWmonmPVx+QvjnAQvmWr/afsLtJkfavwu5egAAAAASUVORK5CYII=');
+      background-size: cover;
+    }
+  }
+  .saveBar {
+    height: 86rpx;
+    box-sizing: border-box;
+    margin: 0 -30rpx;
+    padding-right: 30rpx;
+    background: #46484a;
+    color: white;
+    line-height: 86rpx;
+    font-size: 32rpx;
+    .label {
+      width: 200rpx;
+      margin-left: 30rpx;
+      text-align: left;
+    }
+    .save {
+      width: 100rpx;
+      float: right;
+      text-align: right;
+    }
+  }
+  .edit-cell {
+    height: 88rpx;
+    display: flex;
+    font-size: 30rpx;
+    background: #545658;
+    columns: #333333;
+    align-items: center;
+    margin: 0 -30rpx;
+    padding: 0 30rpx;
+    border-bottom: 1rpx solid #585d5f;
+    .edit-label {
+      width: 224rpx;
+      color: #999;
+    }
+    .edit-input {
+      width: 496rpx;
+      color: #d8d8d8;
+      text-align: right;
+    }
+  }
+}
+</style>
+
+

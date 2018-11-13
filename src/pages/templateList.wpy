@@ -1,0 +1,372 @@
+<template>
+<view class="tabContainer">
+    <view class="tabs">
+        <view class="tab {{tabSelect == 1?'active':''}}" @tap="tabClick" data-distance='160' data-id='1'>我的模板</view>
+        <view class="tab {{tabSelect == 2?'active':''}}" @tap="tabClick" data-distance='532' data-id='2'>基础模板</view>
+    </view>
+    <view style="left:{{left}}rpx" class="tabs-underline"></view>
+</view>
+<view class="list" wx:if="{{list.length}}">
+    <repeat for="{{list}}" item="item" index="index">
+        <view class="item" @tap="goEdit" data-cate="{{item.cate}}" data-releaseId="{{item.releaseId}}" data-status="{{item.status}}" data-index="{{index}}" data-id="{{item.id}}">
+            <view wx:if="my" @tap.stop="closeLayer" data-index="{{index}}"  class="mySetting {{delLayer[index]?'delLayer':''}}">   
+                <view class="delBtn left " wx:if="{{item.cate===0}}" data-templateId="{{item.id}}" data-index="{{index}}" @tap.stop="publish" hidden="{{!delLayer[index]}}">发布</view>
+                <view class="delBtn {{item.cate===0?'right':''}}" data-releaseId="{{item.releaseId}}" data-index="{{index}}" @tap.stop="del" hidden="{{!delLayer[index]}}">删除</view>     
+            </view>
+            <view class="tip" hidden="{{!my || hideTag[item.releaseId]}}">{{status[item.status]}}</view>
+            <view class="delTip" hidden="{{!my}}" data-index="{{index}}" @tap.stop="showDelLayer">...</view>
+            <view class="thumb"><image mode="aspectFill" src="{{item.image}}"></image></view>
+            <view class="desc">{{item.userDesc}}</view>
+        </view>
+    </repeat>
+</view>
+<view wx:else class="emptyLayer">
+    <view class="icon"><image mode="aspectFill" src="assets/empty.png"></image></view>
+    <text class="noTemplateText">您还没有制作模板哦</text>
+</view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { get, post } from '../utils/ajax';
+import { toast } from '../utils/index';
+import { globalData } from '../utils/globalData';
+
+const basicTemplateUrl = '/business/templateList';
+const myTemplateUrl = '/business/myTemplateList/';
+const getTemplateIdUrl = '/business/init/struct';
+const delTemplateUrl = '/business/myTemplate/del';
+
+export default class Index extends wepy.page {
+  config = {
+      navigationBarTitleText: '店铺装修',
+  };
+  data = {
+      left: 160,
+      isVerify: {},
+      tabSelect: 1,
+      pageNum: 1,
+      my: true,
+      delLayer: {},
+      list: [],
+      status: {
+          '-2': '删除',
+          '-1': '初始化',
+          0: '未审核',
+          1: '审核中',
+          2: '审核成功',
+          3: '审核失败',
+          4: '已上线',
+          5: '新',
+          6: '',
+      },
+      myTemplateFull: false,
+      noMore: false,
+      hideTag: {
+
+      },
+      id: '',
+      appid: '',
+  };
+  async onLoad(options) {
+      if (options.mpid) {
+          this.id = options.mpid;
+      }
+      //   this.loadMyTemplate();
+  }
+  methods = {
+      tabClick(e) {
+          this.list = [];
+          this.delLayer = {};
+          const { distance, id } = e.target.dataset;
+          this.left = distance;
+          console.log(id);
+          this.tabSelect = id;
+          this.my = id === '1';
+          this.pageNum = 1;
+          if (this.my) { this.loadMyTemplate(); } else { this.loadBasicTemplate(); }
+      },
+      showDelLayer(e) {
+          this.delLayer = {};
+          const { index } = e.currentTarget.dataset;
+          this.delLayer[index] = true;
+      },
+      async del(e) {
+          const { releaseid, index } = e.currentTarget.dataset;
+          try {
+              await get(delTemplateUrl, { releaseId: releaseid });
+              this.list.splice(index, 1);
+              this.delLayer = {};
+              this.myTemplateFull = false;
+              this.$apply();
+              toast('删除成功');
+          } catch (ee) {
+              toast(ee);
+          }
+      },
+      closeLayer(e) {
+          const { index } = e.currentTarget.dataset;
+          this.delLayer[index] = false;
+      },
+      async goEdit(e) {
+          const {
+              releaseid, status, id, cate,
+          } = e.currentTarget.dataset;
+          this.delLayer = {};
+          if (cate === 0) {
+              toast('此模板不可编辑');
+              return;
+          }
+          if (this.my) {
+              if (this.isVerify[releaseid]) {
+                  toast('此模板正在审核, 不可编辑');
+                  return;
+              }
+              if (status === 5) {
+                  wx.setStorageSync(`hideTag_${releaseid}_${status}`, true);
+                  this.hideTag[releaseid] = true;
+              }
+              wx.setStorageSync('releaseId', releaseid);
+          } else {
+              if (this.myTemplateFull) { toast('您保存的模板不能超过10个,请删除部分模板后添加'); return; }
+              const { data } = await get(getTemplateIdUrl, {
+                  templeteid: id,
+                  mpId: wx.getStorageSync('current_mpid'),
+              });
+              wx.setStorageSync('releaseId', data.id);
+          }
+          wx.navigateTo({
+              url: 'index/index',
+          });
+      },
+      async publish(e) {
+          const { templateid, index } = e.currentTarget.dataset;
+          this.delLayer[index] = false;
+
+          if (wx.getStorageSync('verify')) {
+              toast('有模板正在审核,不可发布');
+              return;
+          }
+          try {
+              await post('/business/templete/releasebg', {
+                  templateId: templateid,
+                  mpId: wx.getStorageSync('current_mpid'),
+              });
+              toast('发布成功');
+          } catch (err) {
+              toast(err);
+          }
+      },
+  };
+  onReachBottom() {
+      if (this.noMore) return;
+      this.pageNum = this.pageNum + 1;
+      if (this.my) {
+          this.loadMyTemplate();
+      } else {
+          this.loadBasicTemplate();
+      }
+  }
+  async loadBasicTemplate() {
+      const { data } = await get(basicTemplateUrl, {
+          pageNum: this.pageNum,
+          pageSize: 10,
+          mpId: wx.getStorageSync('current_mpid'),
+          cate: -1,
+      });
+      if (data.length === 0) {
+          this.noMore = true;
+          return;
+      }
+      this.list.push(...data);
+      this.$apply();
+  }
+  onShow() {
+      if (this.my) { this.loadMyTemplate(); }
+  }
+  async loadMyTemplate() {
+      console.log(globalData.extConfig);
+      const url = this.id || wx.getStorageSync('current_mpid');
+      const { data } = await get(myTemplateUrl + url, {
+          pageNum: 1,
+          pageSize: 10,
+          v: 2,
+          appid: this.appid || globalData.extConfig.appId,
+      });
+      this.list = data;
+      this.list.forEach((item) => {
+          const hideTag = wx.getStorageSync(`hideTag_${item.releaseId}_${item.status}`);
+          this.hideTag[item.releaseId] = !!hideTag;
+      });
+      // 判断是否有正在审核的模板，如果有审核的模板，则审核的模板不能编辑，并且其他模板不能发布
+      const filter = this.list.filter(x => x.status === 1);
+      if (filter.length > 0) {
+          this.isVerify[filter[0].releaseId] = true;
+          wx.setStorageSync('verify', true);
+      } else {
+          wx.setStorageSync('verify', false);
+      }
+      if (this.list.length >= 10) {
+          this.myTemplateFull = true;
+      }
+      this.$apply();
+  }
+}
+</script>
+<style lang="scss">
+.emptyLayer{
+    position:absolute;
+    transform: translate(-50%,-50%);
+    left:50%;
+    top:50%;
+    text-align: center;
+    .icon{
+        width:209rpx;
+        height:209rpx;
+        margin:0 auto;
+        image{
+            width:100%;
+            height:100%;
+        }
+    }
+    .noTemplateText{
+        color:#bdbdbd;
+        display:block;
+        font-size:28rpx;
+        margin-top:30rpx;
+    }
+}
+.list {
+  width: 100%;
+  margin: 0 auto;
+  padding-left:18rpx;
+  margin-top:88rpx;
+  .item {
+    margin: 20rpx;
+    width: 320rpx;
+    height: 248rpx;
+    position: relative;
+    float:left;
+    // margin-left:auto;
+    // margin-right:auto;
+    .mySetting {
+      width: 100%;
+      height: 248rpx;
+      position: absolute;
+      z-index: 199;
+      display:none;
+      left: 0;
+      top: 0;
+      .delBtn {
+        width: 94rpx;
+        height: 46rpx;
+        position: absolute;
+        transform: translate(-50%, -50%);
+        left: 50%;
+        top: 50%;
+        color: white;
+        background: #4e88ff;
+        border-radius: 4rpx;
+        font-size: 26rpx;
+        text-align: center;
+        line-height: 46rpx;
+        &.left{
+            left:30%;
+        }
+        &.right{
+            left:70%;
+        }
+      }
+      &.delLayer {
+        background: rgba(0, 0, 0, 0.3);
+        display:block;
+      }
+    }
+    .tip {
+      height: 40rpx;
+      padding: 4rpx 20rpx;
+      position: absolute;
+      top: 10rpx;
+      right: 0;
+      font-size: 24rpx;
+      line-height: 40rpx;
+      text-align: center;
+      color: white;
+      background-image: linear-gradient(-122deg, #3fb8ff 0%, #4e88ff 100%);
+      border-radius: 18rpx;
+    }
+    .delTip {
+      position: absolute;
+      right: 20rpx;
+      bottom: 20rpx;
+      color: #d8d8d8;
+      font-size: 45rpx;
+      z-index: 99;
+    }
+
+    .thumb {
+      width: 100%;
+      height: 180rpx;
+      image {
+        width: 100%;
+        overflow: hidden;
+        height: 100%;
+      }
+    }
+    .desc {
+      position: relative;
+      bottom: 0;
+      height: 68rpx;
+      background: white;
+      line-height: 68rpx;
+      color: #333;
+      font-size: 28rpx;
+      padding-left: 20rpx;
+    }
+    // &:nth-child(odd) {
+    //   margin-left: 20rpx;
+    // }
+    // &:nth-child(even) {
+    //   margin-right: 20rpx;
+    // }
+  }
+}
+.tabContainer {
+  border-top: 1rpx solid #f3f3f3;
+  border-bottom: 1rpx solid #f3f3f3;
+  position: fixed;
+  width: 100%;
+  height: 88rpx;
+  top: 0;
+  z-index: 999;
+  background: white;
+  .tabs {
+    height: 88rpx;
+    display: flex;
+    align-items: center;
+    .tab {
+      flex: 1;
+      text-align: center;
+      margin: auto;
+      font-size: 30rpx;
+      color: #666;
+      &.active {
+        color: #4e88ff;
+      }
+    }
+  }
+}
+.tabs-underline {
+  text-align: center;
+  bottom: 1rpx;
+  width: 60rpx;
+  transition: 0.4s;
+  position: absolute;
+  height: 6rpx;
+  border-radius: 2rpx;
+  background-color: #4e88ff;
+}
+.list {
+}
+</style>
+

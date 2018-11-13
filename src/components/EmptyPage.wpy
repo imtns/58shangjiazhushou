@@ -1,0 +1,41 @@
+<template lang="wxml">
+    <view class="empty-box">
+        <image class="empty-icon" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/emptyIcon.png"></image>
+        <view class="empty-text" wx:if="{{ title }}">{{title}}</view>
+        <slot name="content"></slot>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class EmptyPage extends wepy.component {
+    props = {
+        title: {
+            type: String,
+            default: null,
+        },
+    };
+    onLoad() {
+        console.log('--------', this.title);
+    }
+}
+</script>
+
+<style lang="scss">
+.empty-box{
+    width:100%;
+    height:50%;
+    text-align:center;
+    margin:250rpx auto 0;
+    .empty-icon{
+        width:209rpx;
+        height:187rpx;
+    }
+    .empty-text{
+        margin-top: 20rpx;
+        color:#999999;
+        font-size:30rpx;
+    }
+}
+</style>

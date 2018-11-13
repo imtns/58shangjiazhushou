@@ -1,0 +1,475 @@
+<template lang="wxml">
+<view class="order-view">
+    <block wx:if="{{!noOrder}}">
+     <scroll-view  lower-threshold="70" scroll-top="{{scrollValue}}"  @scrolltolower="bindLoadDown" style="height:82vh" scroll-y="true"> 
+          <navigator wx:for="{{orderList}}" wx:for-index="index" wx:key="item.id" url="/pages/goods/orderDetail?id={{item.id}}">
+        <view class="mod-view mod-order">
+                <view data-item="{{item}}"   >
+                    <view class="order-orderNo">
+                        <view class="order-No">订单号: {{item.id}}</view>
+                        <view class="order-status cancel" wx:if="{{item.status==3}}">{{statusSet[item.status]}}</view>
+                        <view class="order-status complete" wx:elif="{{item.status==2 || item.status == 6}}">{{statusSet[item.status]}}</view>
+                        <view class="order-status finish" wx:elif="{{item.status==14}}">{{statusSet[item.status]}}</view>
+                        <view class="order-status active" wx:else>{{statusSet[item.status]}}</view>
+                    </view>
+                    <view class="order-line"></view>
+                    <view class="order-info {{ item.read === false ? 'unread' : '' }}">
+                        <view class="order-info-detail">
+                            <image class="icon" src="{{item.mpLogo}}?w=29"></image><text class="name">{{item.mpName}}</text>
+                        </view> 
+                        <view class="order-info-detail"><text class="item">商品名称：</text> {{item.description}}</view>
+                        <view class="order-info-detail order-info-detail-address"><text class="item">配送地址：</text> {{item.consumerAddressJson.fullAddress}}</view>
+                        <view class="order-info-detail"><text class="item">预计送达时间：</text> {{item.arriveTime}}</view>
+                    </view>
+                    <view class="order-price">
+                        <text class="order-price-name">共计费用</text>
+                        <text class="order-price-value cancel" wx:if="{{item.status==3}}">￥<text class="price">{{item.originalAmount}}</text></text>
+                        <text class="order-price-value complete" wx:elif="{{item.status==2}}">￥<text class="price">{{item.originalAmount}}</text></text>
+                        <text class="order-price-value active" wx:else>￥<text class="price">{{item.realAmount}}</text></text>
+                    </view>
+
+                <view class="order-line"></view>
+                <view class="order-buttons" @tap.stop="handleAcceptOrder({{item.id}},{{index}})" wx:if="{{ item.status === 0 }}">
+                    <view class="button">立刻接单</view>
+                </view>
+                <view class="order-buttons" @tap.stop="handleStartDeliver({{item.id}},{{index}})" wx:if="{{ item.status === 1 }}">
+                    <view class="button">开始配送</view>
+                </view>
+                <view class="order-buttons" @tap.stop="handleConfirm({{item.id}},{{index}})" wx:if="{{ item.status === 13 }}">
+                    <view class="button">已送达</view>
+                </view>
+                <view class="order-buttons" wx:if="{{ item.status === 10 && item.applyStatus === 0 }}">
+                    <view class="button" @tap.stop="handlePlatformIn({{item.id}},{{index}})" >平台介入</view>
+                    <view class="button" @tap.stop="handleAcceptRefund({{item.id}},{{index}})" >同意</view>
+                </view>
+            </view>
+        </view>
+          </navigator>
+        <view class="order-list-nomore" wx:if="{{noMore}}">
+            ╮(￣▽￣)╭已经到底了
+        </view>
+    </scroll-view>
+    </block>
+     <view class="empty-wrap" wx:else>
+        <image class="img-no-data" src="/pages/assets/empty.png"/>
+        <view class="txt-no-data">您还没有订单哦</view>
+        <view class="noOrder-frame">
+            “想获得更多订单和客户? 您可以：”
+            <view class="b">
+                <navigator class="btn" url="/pages/orderWebpage">
+                <view >赚钱秘籍</view>
+                </navigator>
+                <button class="btn" plain="{{true}}" open-type="getUserInfo" bindgetuserinfo="onReadytoShare">分享店铺</button>
+            </view>
+        </view>
+    </view>
+</view>
+</template>
+<script>
+import wepy from 'wepy';
+import { toast } from '../../utils';
+import { post } from '../../utils/ajax';
+import {
+    ACCEPT_ORDER,
+    DELIVER_ORDER,
+    REFUSE_ORDER,
+    WHETHER_ACCEPT_REFUND,
+    ARRIVE_ORDER,
+} from '../../utils/url';
+
+export default class ProductOrder extends wepy.component {
+    props = {
+        orderList: Object,
+        statusSet: Object,
+        noMore: Boolean,
+        noOrder: Boolean,
+    };
+    async getMpShareImg(id, nickName) {
+        const subData = {
+            mpId: id,
+            nickName,
+        };
+        // 延迟时间，让用户感知loading文案，故意为之。
+        const delay = 1500;
+        const { data } = await post('/mplogic/share', subData, '', {
+            loadingTitle: '图片生成...',
+            delay,
+        });
+        const url = `http://pic1.58cdn.com.cn/${data}`;
+        setTimeout(() => {
+            wepy.previewImage({
+                current: url, // 当前显示图片的http链接
+                urls: [url], // 需要预览的图片http链接列表
+            });
+        }, delay);
+        console.log(data);
+    }
+    methods = {
+        bindLoadDown() {
+            this.$emit('bindLoadDown');
+        },
+        onReadytoShare(e) {
+            const id = wepy.getStorageSync('current_mpid');
+            const { userInfo } = e.detail;
+            // 分享会先授权
+            if (!userInfo) {
+                toast('您未授权，商家助手不能为您生成分享图片哦', '提示');
+                return;
+            }
+            const { nickName } = userInfo;
+            this.getMpShareImg(id, nickName);
+        },
+
+        // 商家的各种按钮操作事件处理
+
+        // 拒绝接单
+        async handleRefuseOrder(orderId, index) {
+            try {
+                const { state } = await post(`${REFUSE_ORDER}${orderId}`);
+
+                if (state !== 100) {
+                    throw new Error('取消订单失败');
+                }
+                this.orderList.splice(index, 1);
+                toast('取消订单成功');
+                this.checkList();
+                this.$apply();
+            } catch (err) {
+                console.log(err);
+                toast('取消订单失败，请稍后再试');
+            }
+        },
+        // 接单
+        async handleAcceptOrder(orderId, index) {
+            console.log(orderId);
+            try {
+                const { state } = await post(`${ACCEPT_ORDER}${orderId}`);
+
+                if (state !== 100) {
+                    throw new Error('接单失败');
+                }
+
+                this.orderList.splice(index, 1);
+                toast('接单成功');
+                this.checkList();
+                this.$apply();
+            } catch (err) {
+                console.log(err);
+                toast('接单失败，请稍后再试');
+            }
+        },
+        // 开始配送
+        async handleStartDeliver(orderId, index) {
+            try {
+                const { state } = await post(`${DELIVER_ORDER}${orderId}`);
+
+                if (state !== 100) {
+                    throw new Error('开始配送失败');
+                }
+                this.orderList.splice(index, 1);
+                toast('开始配送成功');
+                this.checkList();
+                this.$apply();
+            } catch (err) {
+                console.log(err);
+                toast('开始配送失败，请稍后再试');
+            }
+        },
+        // 平台介入
+        async handlePlatformIn(orderId, index) {
+            try {
+                const { state } = await post(`${WHETHER_ACCEPT_REFUND}${orderId}`, {
+                    action: 'refuse',
+                });
+
+                if (state !== 100) {
+                    throw new Error('平台介入失败');
+                }
+                this.orderList.splice(index, 1);
+                toast('平台介入成功');
+                this.checkList();
+                this.$apply();
+            } catch (err) {
+                console.log(err);
+                toast('平台介入失败');
+            }
+        },
+        // 同意退款
+        async handleAcceptRefund(orderId, index) {
+            try {
+                const { state } = await post(`${WHETHER_ACCEPT_REFUND}${orderId}`, {
+                    action: 'agree',
+                });
+
+                if (state !== 100) {
+                    throw new Error('退款失败');
+                }
+                this.orderList.splice(index, 1);
+                toast('退款成功');
+                this.checkList();
+                this.$apply();
+            } catch (err) {
+                console.log(err);
+                toast('退款失败');
+            }
+        },
+        // 已送达
+        async handleConfirm(orderId, index) {
+            try {
+                const { state } = await post(`${ARRIVE_ORDER}${orderId}`);
+
+                if (state !== 100) {
+                    throw new Error('');
+                }
+                this.orderList.splice(index, 1);
+                toast('操作成功');
+                this.checkList();
+                this.$apply();
+            } catch (err) {
+                console.log(err);
+                toast('操作失败');
+            }
+        },
+    };
+    checkList() {
+        if (this.orderList.length === 0) {
+            this.noOrder = true;
+            this.noMore = false;
+        }
+        this.$apply();
+    }
+}
+</script>
+<style lang="scss">
+.order-view {
+    z-index: 1;
+    position: relative;
+}
+.noOrder-frame {
+    width: 620rpx;
+    height: 260rpx;
+    border: 1rpx solid #ccc;
+    text-align: center;
+    border-radius: 4rpx;
+    margin: 100rpx auto 0;
+    color: rgb(102, 102, 102);
+    padding-top: 50rpx;
+    font-size: 35rpx;
+    .b {
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+        margin-top: 40rpx;
+        .btn {
+            width: 178rpx;
+            height: 60rpx;
+            border: 1rpx solid #ccc;
+            border-radius: 4rpx;
+            text-align: center;
+            line-height: 60rpx;
+            font-size: 31rpx;
+            background: rgb(243, 243, 243);
+            color: rgb(102, 102, 102) !important;
+            &:nth-child(1) {
+                margin-left: 80rpx;
+            }
+        }
+    }
+}
+.order-tabs {
+    z-index: 99;
+}
+
+.mod-order {
+    background: white;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+
+.order-orderNo {
+    font-size: 30rpx;
+    float: left;
+    width: 100%;
+    margin-bottom: 30rpx;
+}
+
+.order-No {
+    float: left;
+    /* text-indent:30rpx; */
+}
+
+.order-status {
+    text-align: right;
+    color: #ff552e;
+    &.active {
+        color: #ff552e;
+    }
+    &.cancel {
+        color: #bdbdbd;
+    }
+    &.finish {
+        color: #333;
+    }
+    &.complete {
+        color: #999;
+    }
+}
+
+.order-line {
+    position: relative;
+    width: 110%;
+    display: inline-block;
+    background: rgb(236, 236, 236);
+    height: 1rpx;
+    margin: 0rpx -30rpx 1rpx;
+}
+
+.order-info {
+    padding-top: 20rpx;
+    width: 100%;
+    position: relative;
+    &.unread::after {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 25rpx;
+        left: 43rpx;
+        width: 20rpx;
+        height: 20rpx;
+        border-radius: 100%;
+        background: #f43530;
+    }
+}
+.order-info-detail {
+    width: 100%;
+    display: inline-block;
+    font-size: 28rpx;
+    margin-top: 10rpx;
+    color: #333;
+    &:first-child {
+        padding-bottom: 15rpx;
+    }
+    .icon {
+        width: 58rpx;
+        height: 58rpx;
+        border-radius: 50%;
+        vertical-align: middle;
+        margin-right: 20rpx;
+    }
+    .name {
+        font-size: 32rpx;
+        color: #333;
+        font-weight: bold;
+    }
+}
+.order-info-detail .item {
+    color: #999 !important;
+}
+.order-info-detail-address {
+    width: 600rpx;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.order-price {
+    font-size: 28rpx;
+    display: flex;
+    width: 100%;
+    padding: 30rpx 0;
+    align-items: center;
+}
+
+.order-price-name {
+    flex: 1;
+    text-align: left;
+}
+
+.order-price-value {
+    flex: 1;
+    text-align: right;
+    .price {
+        font-size: 34rpx;
+    }
+    &.finish {
+        color: #333;
+    }
+    &.complete {
+        color: #999;
+    }
+}
+.order-buttons {
+    display: flex;
+    align-items: center;
+    padding: 30rpx 0;
+    width: 100%;
+    height: 100rpx;
+    justify-content: flex-end;
+    font-size: 28rpx;
+    .button {
+        width: 177rpx;
+        height: 60rpx;
+        line-height: 60rpx;
+        text-align: center;
+        color: #4e88ff;
+        border: 1rpx solid #4e88ff;
+        border-radius: 4rpx;
+        margin-left: 30rpx;
+    }
+}
+.order-empty {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    margin-top: 200rpx;
+    font-size: 30rpx;
+    color: #ccc;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+}
+.order-empty-icon {
+    width: 260rpx;
+    height: 260rpx;
+}
+/*  加载更多   */
+
+.weui-loading {
+    margin: 0 5px;
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    vertical-align: middle;
+    -webkit-animation: weuiLoading 1s steps(12, end) infinite;
+    animation: weuiLoading 1s steps(12, end) infinite;
+    background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggZmlsbD0ibm9uZSIgZD0iTTAgMGgxMDB2MTAwSDB6Ii8+PHJlY3Qgd2lkdGg9IjciIGhlaWdodD0iMjAiIHg9IjQ2LjUiIHk9IjQwIiBmaWxsPSIjRTlFOUU5IiByeD0iNSIgcnk9IjUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgLTMwKSIvPjxyZWN0IHdpZHRoPSI3IiBoZWlnaHQ9IjIwIiB4PSI0Ni41IiB5PSI0MCIgZmlsbD0iIzk4OTY5NyIgcng9IjUiIHJ5PSI1IiB0cmFuc2Zvcm09InJvdGF0ZSgzMCAxMDUuOTggNjUpIi8+PHJlY3Qgd2lkdGg9IjciIGhlaWdodD0iMjAiIHg9IjQ2LjUiIHk9IjQwIiBmaWxsPSIjOUI5OTlBIiByeD0iNSIgcnk9IjUiIHRyYW5zZm9ybT0icm90YXRlKDYwIDc1Ljk4IDY1KSIvPjxyZWN0IHdpZHRoPSI3IiBoZWlnaHQ9IjIwIiB4PSI0Ni41IiB5PSI0MCIgZmlsbD0iI0EzQTFBMiIgcng9IjUiIHJ5PSI1IiB0cmFuc2Zvcm09InJvdGF0ZSg5MCA2NSA2NSkiLz48cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSIyMCIgeD0iNDYuNSIgeT0iNDAiIGZpbGw9IiNBQkE5QUEiIHJ4PSI1IiByeT0iNSIgdHJhbnNmb3JtPSJyb3RhdGUoMTIwIDU4LjY2IDY1KSIvPjxyZWN0IHdpZHRoPSI3IiBoZWlnaHQ9IjIwIiB4PSI0Ni41IiB5PSI0MCIgZmlsbD0iI0IyQjJCMiIgcng9IjUiIHJ5PSI1IiB0cmFuc2Zvcm09InJvdGF0ZSgxNTAgNTQuMDIgNjUpIi8+PHJlY3Qgd2lkdGg9IjciIGhlaWdodD0iMjAiIHg9IjQ2LjUiIHk9IjQwIiBmaWxsPSIjQkFCOEI5IiByeD0iNSIgcnk9IjUiIHRyYW5zZm9ybT0icm90YXRlKDE4MCA1MCA2NSkiLz48cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSIyMCIgeD0iNDYuNSIgeT0iNDAiIGZpbGw9IiNDMkMwQzEiIHJ4PSI1IiByeT0iNSIgdHJhbnNmb3JtPSJyb3RhdGUoLTE1MCA0NS45OCA2NSkiLz48cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSIyMCIgeD0iNDYuNSIgeT0iNDAiIGZpbGw9IiNDQkNCQ0IiIHJ4PSI1IiByeT0iNSIgdHJhbnNmb3JtPSJyb3RhdGUoLTEyMCA0MS4zNCA2NSkiLz48cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSIyMCIgeD0iNDYuNSIgeT0iNDAiIGZpbGw9IiNEMkQyRDIiIHJ4PSI1IiByeT0iNSIgdHJhbnNmb3JtPSJyb3RhdGUoLTkwIDM1IDY1KSIvPjxyZWN0IHdpZHRoPSI3IiBoZWlnaHQ9IjIwIiB4PSI0Ni41IiB5PSI0MCIgZmlsbD0iI0RBREFEQSIgcng9IjUiIHJ5PSI1IiB0cmFuc2Zvcm09InJvdGF0ZSgtNjAgMjQuMDIgNjUpIi8+PHJlY3Qgd2lkdGg9IjciIGhlaWdodD0iMjAiIHg9IjQ2LjUiIHk9IjQwIiBmaWxsPSIjRTJFMkUyIiByeD0iNSIgcnk9IjUiIHRyYW5zZm9ybT0icm90YXRlKC0zMCAtNS45OCA2NSkiLz48L3N2Zz4=);
+    background-size: 100%;
+}
+
+.weui-loadmore {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    font-size: 26rpx;
+    text-align: center;
+    padding: 6rpx 0;
+    background: rgb(238, 238, 238);
+}
+
+.weui-loadmore__tips {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.order-mplogo {
+    width: 58rpx;
+    height: 58rpx;
+    border-radius: 100%;
+    margin: 21rpx 20rpx 21rpx 0;
+}
+.order-mpname {
+    font-size: 32rpx;
+    color: #333;
+}
+</style>

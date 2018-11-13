@@ -1,5 +1,5 @@
 <template>
-    <view class="container">
+    <view class="containe">
         <view class="feedback-title">{{text}}小程序介绍</view>
         <view class="feedback-li {{type === '2' ? 'lo-circle' : ''}}">什么是{{text}}小程序？</view>
         <view class="feedback-text" wx:if="{{type === '1'}}">优享小程序是58同城为了帮广大商家更便捷快速地拥有自己的微信小程序，同时享受微信小程序开放的支付等功能推出的一款服务，购买优享小程序的用户将共享[同城优选服务]小程序的功能。适用于不会管理小程序、希望快速上线、需要操作便捷、享受功能自动更新的商家。</view>
@@ -56,7 +56,6 @@ export default class FeedbackDetail extends wepy.page {
         text: '',
     }
     onLoad(option) {
-        console.log('onLoad');
         const { type } = option;
         this.text = type === '1' ? '优享' : '微信';
         this.type = type;

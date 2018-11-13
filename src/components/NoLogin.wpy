@@ -1,0 +1,52 @@
+<template lang="wxml">
+    <view class="no-login">
+        <image class="login-icon" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/empty.png"></image>
+        <text class="login-text">您还没有登录哦，请点击按钮登录</text>
+        <view
+            class="login-btn"
+            hover-class="navigator-hover"
+            @tap="handleLogin"
+        >
+            去登录
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import loginHelper from '../utils/login';
+
+export default class Index extends wepy.component {
+    methods = {
+        handleLogin() {
+            loginHelper.goLogin();
+        },
+    }
+}
+</script>
+
+<style lang="scss">
+.no-login{
+    text-align: center;
+    .login-icon{
+        width: 209rpx;
+        height: 187rpx;
+        display: block;
+        margin: 250rpx auto 30rpx;
+    }
+    .login-text{
+        font-size: 26rpx;
+        color: #999;
+    }
+    .login-btn{
+        font-size: 28rpx;
+        color:  #4E88FF;
+        width: 117rpx;
+        line-height: 60rpx;
+        background: #FFFFFF;
+        border: 1px solid #4E88FF;
+        border-radius: 4px;
+        margin: 70rpx auto;
+    }
+}
+</style>

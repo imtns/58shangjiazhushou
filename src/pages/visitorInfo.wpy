@@ -1,0 +1,304 @@
+<template>
+    <scroll-view class="visitor-container" scroll-y bindscrolltolower="loadMore" style="height:100vh" >
+        <image class="visitor-bg" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor-bg.png" mode="aspectFit"/>
+        <view class="visitor-card">
+            <view class="visitor-info">
+                <image class="avator" wx:if="{{visitInfo.portrait}}" src="{{visitInfo.portrait}}" />
+                <!-- <image class="avator" wx:if="{{!visitInfo.portrait}}" src="{{visitInfo.otherInfo.gender === 1 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/portrait-man.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/portrait-woman.png'}} " /> -->
+                <view class="name">{{visitInfo.nickName}}</view>
+                <text class="other">
+                    <text class="location">{{visitInfo.otherInfo.city}}</text>
+                    <text class="sex {{ visitInfo.otherInfo.gender === 1 ? 'man' : 'woman' }}">{{visitInfo.otherInfo.gender === 1 ? '男' : '女'}}</text>
+                </text>
+                <view class="actions">
+                    <view class="action">
+                        <view class="num">{{visitInfo.visit > 9999 ? '9999+' : visitInfo.visit}}</view>
+                        <view class="title">访问次数</view>
+                    </view>
+                    <view class="action">
+                        <view class="num">{{visitInfo.share > 9999 ? '9999+' : visitInfo.share }}</view>
+                        <view class="title">转发次数</view>
+                    </view>
+                    <view class="action">
+                        <view class="num">{{visitInfo.vote === '0' ? visitInfo.vote : '+' + visitInfo.vote }}</view>
+                        <view class="title">点赞</view>
+                    </view>
+                </view>
+            </view>
+        </view>
+        <view class="visitor-action">
+            <view class="has-mobile" wx:if="{{visitInfo.mobile}}" @tap="bindPhoneCall({{visitInfo.mobile}})">拨打电话</view>
+            <view class="call" wx:else>拨打电话</view>
+            <navigator url="../packageChat/wechat/chat?contact={{visitInfo.chatToken}}&nickName={{visitInfo.nickName}}" class="send-msg" open-type="navigate" hover-class="none" @tap="sendMsg">发送信息</navigator>
+        </view>
+        <view class="visitor-log" wx:if="{{visitInfo.actions.length > 0}}">当前访客的行为记录</view>
+        <view class="visitor-list" wx:if="{{visitInfo.actions.length > 0}}">
+            <view class="item" wx:for="{{visitInfo.actions}}">
+                <text class="time">{{item.createTime}}</text>
+                <text class="action">{{item.action}}</text>
+            </view>
+        </view>
+    </scroll-view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { get } from '../utils/ajax';
+import { toast } from '../utils/index';
+import { CONSUMER_INFO } from '../utils/url';
+import { globalData } from '../utils/globalData';
+import { getUid, SendClickLog } from '../utils/maidian';
+
+export default class visitorInfo extends wepy.page {
+    config = {
+        navigationBarTitleText: '访客信息',
+    }
+    data = {
+        cardId: '',
+        consumerId: '',
+        sendParams: {
+            pageNum: 1,
+            pageSize: 10,
+        },
+        visitInfo: {
+            actions: [],
+            chatToken: '',
+            mobile: '',
+            nickName: '',
+            otherInfo: '',
+            portrait: '',
+            share: 0,
+            visit: 0,
+            vote: 0,
+        },
+    }
+    methods = {
+        async bindPhoneCall (mobile) {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_visitorInfo_call');
+            const sendData = { mobile: mobile, cardid: this.cardId };
+            const { data, msg, state } = await get('/other/encrypt/phone', sendData);
+            if (state !== 100) {
+                toast(msg);
+                return;
+            }
+            wepy.makePhoneCall({ phoneNumber: data });
+        },
+        sendMsg() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_visitorInfo_sendMsg');
+        },
+    }
+    onLoad (option) {
+        const { cardId, consumerId } = option;
+        this.cardId = cardId;
+        this.consumerId = consumerId;
+        this.$apply();
+    }
+    onShow () {
+        this.loadInfo();
+        console.log('onshow');
+    }
+    loadMore() {
+        this.sendParams.pageNum = this.sendParams.pageNum + 1;
+        this.sendParams = Object.assign({}, this.sendParams, this.sendParams.pageNum);
+        this.loadInfo();
+    }
+    async loadInfo() {
+        try {
+            const { token } = globalData.chat;
+            this.sendParams = Object.assign(this.sendParams, { cardId: this.cardId, consumerId: this.consumerId, token });
+            const { data } = await get(CONSUMER_INFO, this.sendParams);
+            const {
+                actions, chatToken, mobile, nickName, otherInfo, portrait, share, visit, vote,
+            } = data;
+            this.visitInfo.chatToken = chatToken;
+            this.visitInfo.mobile = mobile;
+            this.visitInfo.nickName = nickName;
+            this.visitInfo.otherInfo = otherInfo;
+            this.visitInfo.portrait = portrait;
+            this.visitInfo.share = share;
+            this.visitInfo.visit = visit;
+            this.visitInfo.vote = vote;
+            this.$apply();
+            if (actions.length === 0) {
+                this.visitInfo.actions = this.visitInfo.actions;
+                toast('没有更多行为记录啦');
+                return;
+            }
+            this.visitInfo.actions = this.visitInfo.actions.concat(actions);
+            this.$apply();
+        } catch (e) {
+            toast(e);
+            console.log(e);
+        }
+    }
+}
+</script>
+
+<style lang="scss">
+page {
+    width: 100%;
+    height: 100%;
+    background: #fff;
+}
+view,scroll-view{
+    box-sizing:border-box;
+}
+.visitor-container{
+    width:100%;
+    height:100%;
+    position: relative;
+    overflow: hidden;
+}
+.visitor-bg{
+    width: 100%;
+    height: 300rpx;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.visitor-card{
+    margin:50rpx 10rpx 0 10rpx;
+    padding:75rpx 0;
+    position:relative;
+    z-index:9;
+    background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor-infobg.png) no-repeat;
+    background-size:100% 100%;
+    overflow: hidden;
+}
+.visitor-info{
+    text-align: center;
+    border-radius: 4rpx;
+    .avator{
+        width: 120rpx;
+        height: 120rpx;
+        border-radius: 100%;
+    }
+    .name{
+        font-size: 32rpx;
+        color: #333;
+        margin:20rpx 0;
+    }
+    .other{
+        font-size: 24rpx;
+        color: #93B0D1;
+        height: 30rpx;
+        line-height: 30rpx;
+        padding: 10rpx 30rpx;
+        background: #F5F9FF;
+        margin: 0 auto;
+        border-radius: 30rpx;
+    }
+    .location{
+        padding-right: 22rpx;
+        border-right: 2rpx solid #C7E1FF;
+        &:before{
+            display: inline-block;
+            content: '';
+            width: 21rpx;
+            height: 26rpx;
+            margin:0 8rpx -3rpx 0;
+            background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/location-icon.png) no-repeat;
+            background-size: 100% 100%;
+        }
+    }
+    .sex{
+        padding-left: 22rpx;
+    }
+    .man:before{
+        display: inline-block;
+        content: '';
+        width: 26rpx;
+        height: 26rpx;
+        margin: 0 8rpx -3rpx 0;
+        background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/man-icon.png) no-repeat;
+        background-size: 100% 100%;
+    }
+    .woman:before{
+        display: inline-block;
+        content: '';
+        width:15rpx;
+        height: 26rpx;
+        margin: 0 8rpx -3rpx 0;
+        background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/woman-icon.png) no-repeat;
+        background-size: 100% 100%;
+    }
+    .actions{
+        display: flex;
+        margin-top: 40rpx;
+        .action{
+            flex:1;
+            position: relative;
+            &:after{
+                display: block;
+                content: '';
+                position: absolute;
+                width: 2rpx;
+                height: 30rpx;
+                background: #C7E1FF;
+                top: 35rpx;
+                right: 0;
+            }
+            &:last-child::after{
+                display: none;
+            }
+            .num{
+                font-size: 46rpx;
+                color: #333;
+                line-height: 65rpx;
+            }
+            .title{
+                font-size: 24rpx;
+                color: #93B0D1;
+                line-height: 33rpx;
+            }
+        }
+    }
+}
+.visitor-list{
+    padding: 0 30rpx;
+    .item{
+        line-height: 88rpx;
+        border-bottom: 1rpx solid #F3F3F3;
+        .time{
+            font-size: 28rpx;
+            color: #999;
+        }
+        .action{
+            font-size: 28rpx;
+            color: #333;
+            float: right;
+        }
+    }
+}
+.visitor-log{
+    font-size: 26rpx;
+    color: #999;
+    text-indent: 30rpx;
+    line-height: 80rpx;
+    background: #F6F6F6;
+}
+.visitor-action{
+    font-size: 34rpx;
+    line-height: 88rpx;
+    text-align: center;
+    padding: 0 30rpx 30rpx 30rpx;
+    display: flex;
+    position: relative;
+    z-index: 9;
+    .send-msg,
+    .has-mobile{
+        flex: 1;
+        color: #fff;
+        background: #4E88FF;
+    }
+    .has-mobile{
+        margin-right: 30rpx;
+    }
+    .call {
+        flex: 1;
+        color: #666;
+        background: #f6f6f6;
+        margin-right: 30rpx;
+    }
+}
+</style>

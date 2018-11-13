@@ -1,0 +1,104 @@
+<template name="images">
+    <view class="mod-view mod-images {{cfg.showMore===false?'index'+index+' padding-bottom-30':'index'+index}}">
+        <view class="mod-head mod-head-images" wx:if="{{cfg.title && cfg.title.length>0}}">
+            {{cfg.title}}
+        </view>
+        <view class="mod-list-images">
+            <!-- 一行2张显示 -->
+            <block wx:if="{{cfg.theme==2}}">
+                <block wx:for="{{cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                    <view class="mod-li-box-2 {{~idx%2==0?'mod-li-box-last':''}}" data-index="{{idx}}"
+                        data-current="{{index}}" data-pagekey="{{item.pageKey}}" data-action="{{cfg.action}}" bindtap="onImageClick">
+                        <image class="mod-li-image-2" mode="aspectFill" src="{{item.src}}?w=336&h=252"></image>
+                        <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-2">{{item.title}}</text>
+                    </view>
+                </block>
+            </block>
+            <!-- 一行3张显示 -->
+            <block wx:elif="{{cfg.theme==3}}">
+                <block wx:for="{{cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                    <view  class="mod-li-box-3 {{~idx%3==0?'mod-li-box-last':''}}" data-index="{{idx}}"
+                        data-current="{{index}}" data-pagekey="{{item.pageKey}}" data-action="{{cfg.action}}" bindtap="onImageClick">
+                        <image class="mod-li-image-3" mode="aspectFill" src="{{item.src}}?w=220&h=164"></image>
+                        <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-3">{{item.title}}</text>
+                    </view>
+                </block>
+            </block>
+            <!-- 一左两右 -->
+            <block wx:elif="{{cfg.theme==4}}">
+                <block wx:for="{{cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                    <block wx:if="{{cfg.images[0].title}}">
+                        <view  class="mod-li-box-4sub-{{idx%3+1}}" data-index="{{idx}}" data-current="{{index}}"
+                            data-pagekey="{{item.pageKey}}" data-action="{{cfg.action}}" bindtap="onImageClick">
+                            <image class="mod-li-image-4sub-{{idx%3+1}}" mode="aspectFill" src="{{item.src}}?w=388&h=514" wx:if="{{idx%3==0}}"></image>
+                            <image class="mod-li-image-4sub-{{idx%3+1}}" mode="aspectFill" src="{{item.src}}?w=284&h=214" wx:else></image>
+                            <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-4sub-{{idx%3+1}}">{{item.title}}</text>
+                        </view>
+                    </block>
+                    <block wx:else>
+                        <view class="mod-li-box-4-{{idx%3+1}}" data-index="{{idx}}" data-current="{{index}}"
+                            data-pagekey="{{item.pageKey}}" data-action="{{cfg.action}}" bindtap="onImageClick">
+                            <image class="mod-li-image-4-{{idx%3+1}}" mode="aspectFill" src="{{item.src}}?w=363&h=482" wx:if="{{idx%3==0}}"></image>
+                            <image class="mod-li-image-4-{{idx%3+1}}" mode="aspectFill" src="{{item.src}}?w=309&h=231" wx:else></image>
+                        </view>
+                    </block>
+                </block>
+            </block>
+            <!-- 一上两下 -->
+            <block wx:elif="{{cfg.theme==5}}">
+                <block wx:for="{{cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                    <view  class="mod-li-box-5-{{idx%3+1}} {{~idx%3==0?'mod-li-box-last':''}}" data-index="{{idx}}"
+                        data-action="{{cfg.action}}" data-current="{{index}}" data-pagekey="{{item.pageKey}}" bindtap="onImageClick">
+                        <image class="mod-li-image-5-{{idx%3+1}}" mode="aspectFill" src="{{item.src}}?w=690&h=388" wx:if="{{idx%3==0}}"></image>
+                        <image class="mod-li-image-5-{{idx%3+1}}" mode="aspectFill" src="{{item.src}}?w=336&h=252" wx:else></image>
+                        <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-5-{{idx%3+1}}">{{item.title}}</text>
+                    </view>
+                </block>
+            </block>
+            <!-- 一上三下 -->
+            <block wx:elif="{{cfg.theme==6}}">
+                <block wx:for="{{cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                    <view class="mod-li-box-6-{{idx%4+1}} {{~idx%4==0?'mod-li-box-last':''}}" data-index="{{idx}}"
+                        data-action="{{cfg.action}}" data-current="{{index}}" data-pagekey="{{item.pageKey}}" bindtap="onImageClick">
+                        <image class="mod-li-image-6-{{idx%4+1}}" mode="aspectFill" src="{{item.src}}?w=345&h=194" wx:if="{{idx%4==0}}"></image>
+                        <image class="mod-li-image-6-{{idx%4+1}}" mode="aspectFill" src="{{item.src}}?w=109&h=82" wx:else></image>
+                        <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-6-{{idx%4+1}}">{{item.title}}</text>
+                    </view>
+                </block>
+            </block>
+            <!-- 一行4张显示 -->
+            <block wx:elif="{{cfg.theme==7}}">
+                <block wx:for="{{cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                    <view class="mod-li-box-7 {{~idx%4==0?'mod-li-box-last':''}}" data-index="{{idx}}"
+                        data-current="{{index}}" data-action="{{cfg.action}}" data-pagekey="{{item.pageKey}}" bindtap="onImageClick">
+                        <image class="{{'mod-li-image-'+cfg.theme}}" mode="aspectFill" src="{{item.src}}?w=160&h=160"></image>
+                        <text wx:if="{{item.title && item.title.length>0}}" class="{{'mod-li-text-'+cfg.theme}}">{{item.title}}</text>
+                    </view>
+                </block>
+            </block>
+            <!-- 双图 -->
+            <block wx:elif="{{cfg.theme==8}}">
+                <block wx:for="{{cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                    <view  class="mod-li-box-8 {{~idx%2==0?'mod-li-box-last':''}}" data-index="{{idx}}"
+                        data-current="{{index}}" data-action="{{cfg.action}}" data-pagekey="{{item.pageKey}}" bindtap="onImageClick">
+                        <image class="mod-li-image-8" mode="aspectFill" src="{{item.src}}?w=336&h=448"></image>
+                        <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-8">{{item.title}}</text>
+                    </view>
+                </block>
+            </block>
+            <!-- 一行1张显示:默认 -->
+            <block wx:else>
+                <block wx:for="{{cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                    <view class="mod-li-box-1" data-index="{{idx}}" data-current="{{index}}" data-pagekey="{{item.pageKey}}"
+                        data-action="{{cfg.action}}" bindtap="onImageClick">
+                        <image class="mod-li-image-1" mode="aspectFill" src="{{item.src}}?w=690&h=510"></image>
+                        <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-1">{{item.title}}</text>
+                    </view>
+                </block>
+            </block>
+        </view>
+        <view class="mod-more mod-more-images {{cfg.showAll?'mod-more-up':''}}" data-index="{{index}}" bindtap='loadMore' wx:if="{{cfg.images.length < cfg.maxNum}}">
+            {{cfg.showAll ? '收起':'查看更多'}}
+        </view>
+    </view>
+</template>

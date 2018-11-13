@@ -1,0 +1,204 @@
+<template lang="wxml">
+<view class="tab-main">
+    <view class="switch-bar">
+        <view class="switch-button"><view class="active {{currentSwitch==1?'active-move':''}}"></view>
+            <view class="switch-button-case {{currentSwitch==0?'active-case':''}}" @tap="switch(0,'service')">服务订单</view>
+            <view class="switch-button-case {{currentSwitch==1?'active-case':''}}" @tap="switch(1,'product')">商品订单</view>
+        </view>
+    </view>
+    <view class="tabs-container">
+       <repeat for="{{tabList[currentSwitch]}}" index="index">
+            <view @tap="tabClick" data-id="{{item.id}}" data-index="{{index}}"  class="tabs-tab {{currentTab===index ?'tabs-active':''}}">
+                 {{item.name}}
+            </view>
+        </repeat>
+        <view style="left:{{tabList[currentSwitch][currentTab].left}}rpx" class="tabs-underline"></view>
+    </view>
+</view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class Tabs extends wepy.component {
+  data = {
+      tabList: [[
+          {
+              name: '待接单',
+              id: '0',
+              selected: false,
+              left: 60,
+          },
+          {
+              name: '待服务',
+              id: '1',
+              selected: false,
+              left: 239,
+          },
+          {
+              name: '已完成',
+              id: '2',
+              selected: false,
+              left: 438,
+          },
+          {
+              id: '',
+              name: '全部',
+              selected: false,
+              left: 627,
+          },
+      ], [
+          {
+              name: '待接单',
+              id: '0',
+              selected: false,
+              left: 50,
+          },
+          {
+              name: '待配送',
+              id: '1',
+              selected: false,
+              left: 199,
+          },
+          {
+              name: '配送中',
+              id: '13',
+              selected: false,
+              left: 347,
+          },
+          {
+              id: '2',
+              name: '已完成',
+              selected: false,
+              left: 495,
+          },
+          {
+              id: '',
+              name: '全部',
+              selected: false,
+              left: 645,
+          },
+      ],
+      ],
+      currentSwitch: 0,
+      scrollValue: 0,
+      currentTab: 3,
+  };
+  props = {
+      title: {
+          type: String,
+          default: null,
+      },
+  };
+  onLoad() {
+
+  }
+  methods = {
+      tabClick(e) {
+          const { id, index } = e.currentTarget.dataset;
+          if (index === this.currentTab) return;
+          this.currentTab = index;
+          this.$emit('getStatus', id);
+      },
+      switch(num, type) {
+          if (this.currentSwitch === num) return;
+          this.currentSwitch = num;
+          this.currentTab = num === '0' ? 3 : 4;
+          this.$emit('switchType', type);
+      },
+  };
+}
+</script>
+
+<style lang="scss">
+.tab-main {
+  width: 100%;
+  background: white;
+  position: fixed;
+  top: 0;
+  z-index: 100;
+  .switch-bar {
+    border-top: 1px solid rgb(236, 236, 236);
+    display: flex;
+    width: 100%;
+    height: 88rpx;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    .switch-button {
+      width: 400rpx;
+      height: 60rpx;
+      line-height: 55rpx;
+      text-align: center;
+      position: absolute;
+      background: #f6f6f6;
+      left: 50%;
+      top: 50%;
+      border-radius: 100rpx;
+      transform: translate3D(-50%, -50%, 0);
+      will-change: transform;
+      z-index: 197 !important;
+      transition: 0.3s ease all;
+      &-case {
+        display: inline-block;
+        background: none;
+        width: 200rpx;
+        height: 60rpx;
+        color: #333;
+        font-size: 30rpx;
+        position: relative;
+        border: none;
+        transition: 0.3s ease all;
+      }
+      .active {
+        color: white;
+        background: #4e88ff;
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-radius: 100rpx;
+        width: 50%;
+        height: 100%;
+        z-index: -1;
+        transition: 0.3s ease-out all;
+        &-case {
+          color: white;
+        }
+        &-move {
+          left: 50%;
+        }
+      }
+    }
+  }
+  .tabs-container {
+    display: flex;
+    height: 88rpx;
+    align-items: center;
+    background: white;
+
+    width: 100%;
+    z-index: 2;
+  }
+  .tabs-tab {
+    justify-content: center;
+    flex: 1;
+    text-align: center;
+    font-size: 30rpx;
+    line-height: 88rpx;
+    height: 88rpx;
+    position: relative;
+  }
+  .tabs-active {
+    color: #4e88ff;
+  }
+  .tabs-underline {
+    text-align: center;
+    bottom: 0px;
+    height: 5rpx;
+    width: 60rpx;
+    transition: 0.4s;
+    position: absolute;
+    background: #4e88ff;
+  }
+}
+</style>

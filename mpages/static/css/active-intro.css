@@ -1,0 +1,34 @@
+@charset "UTF-8";
+.active-intro{
+    overflow-y:scroll;
+}
+.active-intro .intro-pic{
+    display: block;
+    width: 100%;
+    font-size: 0;
+}
+.share-pic{
+    position: relative;
+}
+.share-pic .share-btn-top{
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left:15%;
+    width: 70%;
+    height: 1.2rem;
+    z-index: 99;
+}
+.share-pic .share-btn-btm{
+    display: block;
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    margin-left: -1.07rem;
+    width: 2.14rem;
+    height: .68rem;
+    line-height: .68rem;
+    background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/active_btn.png) no-repeat;
+    background-size: 100% 100%;
+    z-index: 99;
+}

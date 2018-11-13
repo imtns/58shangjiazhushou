@@ -7,6 +7,15 @@ module.exports = {
   env: {
     browser: true
   },
+  globals: {
+    globalData:true,
+    getSystemInfo:true,
+    getApp:true,
+    wx: true,
+    Page: true,
+    Component:true,
+    requirePlugin: true,
+  },
   extends: 'airbnb-base',
   plugins: [
     'html'
@@ -23,8 +32,10 @@ module.exports = {
     'html/html-extensions': ['.html', '.wpy']
   },
   'rules': {
+    "no-param-reassign": 0,
     'linebreak-style': 0,
     'indent': [2, 4, {"SwitchCase": 1}],
+    'max-len': [2, 300, 4, {"ignoreUrls": true}],
     'radix': ['error', 'as-needed'],
     'no-bitwise': ['error', { 'allow': ['~'] }],
     'object-shorthand': ['error', 'methods'],
@@ -38,6 +49,7 @@ module.exports = {
     'no-console': 0,
     'space-before-function-paren': 0,
     'class-methods-use-this': 0,
+    'prefer-destructuring': 0,
     'import/extensions': ['error', 'always', {
       'js': 'never',
       'wpy': 'never'

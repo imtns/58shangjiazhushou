@@ -1,0 +1,211 @@
+.containe{
+    width:100%;
+    height:100%;
+    background:#f6f6f6;
+    box-sizing:border-box;
+    .banner{
+        width:100%;
+        height:170rpx;
+        background:url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/article-banner.png');
+        background-size:100% 100%;
+        position:relative;
+        .banner-icon{
+            width:49rpx;
+            height:52rpx;
+            position:absolute;
+            left:50%;
+            margin-left:-20rpx;
+            bottom:45rpx;
+            z-index:2;
+        }
+    }
+    .items-body{
+        // padding:0 20rpx;
+        .article-header{
+            margin:0 20rpx;
+            width:710rpx;
+            height:100rpx;
+            background: #FFFFFF;
+            box-shadow: 2px 6px 6px 0 rgba(213,219,255,0.50);
+            border-radius: 8rpx;
+            position:relative;
+            top:-50rpx;
+            z-index:1;
+            text-align:center;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            line-height:100rpx;
+            .line{
+                width:50rpx;
+                height:4rpx;
+                background:#1F499E;
+            }
+            .article-header-text{
+                box-sizing:border-box;
+                max-width:500rpx;
+                margin:0 30rpx;
+                white-space:nowrap;
+                overflow:hidden;
+                text-overflow:ellipsis;
+                font-family: PingFangSC-Medium;
+                font-size: 36rpx;
+                color: #1F499E;
+                letter-spacing: 0.54rpx;
+                position:relative;
+            }
+        }
+        .article-list{
+            position:relative;
+            top:-30rpx;
+        }
+    }
+    .list-item{
+        margin:0 20rpx 20rpx;
+        width:710rpx;
+        background: #FFFFFF;
+        box-shadow: 2px 6px 6px 0 rgba(213,219,255,0.30);
+        border-radius: 8rpx;
+        padding:30rpx 20rpx;
+        box-sizing:border-box;
+        position:relative;
+        .article-title{
+            font-family: PingFangSC-Medium;
+            font-size: 32rpx;
+            color: #333333;
+            letter-spacing: 0.48rpx;
+            width:670rpx;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+        .article-detail{
+            width:100%;
+            border-bottom:1rpx solid #f3f3f3;
+            .article-detail-flex{
+                display:inline-block;
+                // margin-right:10rpx;
+                line-height:50rpx;
+                .article-base,.base-text{
+                    float:left;
+                    font-family: PingFangSC-Regular;
+                    font-size: 26rpx;
+                    letter-spacing: 0;
+                }
+                .article-base{
+                    color: #666666;
+                }
+                .base-text{
+                    color: #3F3F3F;
+                }
+                .base-over.base-text{
+                    max-width:156rpx;
+                    white-space:nowrap;
+                    overflow:hidden;
+                    text-overflow:ellipsis;
+                }
+            }
+            .article-detail-flex.middle{
+                margin:0 130rpx 0 40rpx;
+            }
+        }
+        .article-preview-con{
+            max-width:670rpx;
+            width:670px;
+            max-height:90px;
+            line-height:30px;
+            display:flex;
+            line-clamp: 3;
+            flex-direction: column;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            font-family: PingFangSC-Regular;
+            font-size: 30rpx;
+            color: #666666;
+            letter-spacing: 0;
+        }
+        .list-image{
+            width:120rpx;
+            height:120rpx;
+            position:absolute;
+            left:-20rpx;
+            top:50%;
+            margin-top:-60rpx;
+            border-radius:8rpx;
+        }
+        .list-detail{
+            padding:0 130rpx 0 110rpx;
+            .list-title{
+                font-family: PingFangSC-Medium;
+                font-size: 32rpx;
+                color: #333333;
+                letter-spacing: 0.48rpx;
+                max-width:390rpx;
+                white-space:nowrap;
+                overflow:hidden;
+                text-overflow:ellipsis;
+                height:45rpx;
+                line-height:45rpx;
+            }
+            .list-intro{
+                font-family: PingFangSC-Regular;
+                font-size: 30rpx;
+                color: #666666;
+                letter-spacing: 0;
+                height:42rpx;
+                line-height:42rpx;
+                text{
+                    font-family: PingFangSC-Medium;
+                    font-size: 34rpx;
+                    color: #FF937B;
+                    letter-spacing: 0;
+                }
+            }
+        }
+        .border-btn{
+            border: 2rpx solid #83ABFF;
+            border-radius: 4rpx;
+            width:110rpx;
+            height:50rpx;
+            text-align:center;
+            line-height:50rpx;
+            font-family: PingFangSC-Regular;
+            font-size: 30rpx;
+            color: #83ABFF;
+            letter-spacing: 0.45rpx;
+            position:absolute;
+            right:20rpx;top:50%;
+            margin-top:-25rpx;
+        }
+        .xiajia.border-btn{
+            border-color:#27BC28;
+            color: #27BC28;
+        }
+    }
+    .edit .list-item{
+        position:relative;
+        left:100rpx;
+        &::before{
+            width:40rpx;
+            height:40rpx;
+            content: '';
+            position:absolute;
+            left:-100rpx;
+            top:50%;
+            margin-top:-20rpx;
+            background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png) no-repeat;
+            background-size:40rpx 40rpx;
+        }
+    }
+    .edit .selected.list-item{
+        &::before{
+            background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/selected-icon.png) no-repeat;
+            background-size:40rpx 40rpx;
+        }
+    }
+
+}
+.block{
+    width:100%;
+    height:132rpx;
+}

@@ -6,7 +6,8 @@
             <view class="nameBox">
                 <view class="name">{{business.current.nickName}}</view>
                 <view class="type">
-                    <image class="logo" mode="{{aspectFit}}" src="{{business.current.app_type === 1 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png'}}"></image>
+                    <image class="logo" mode="aspectFit" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png"></image>
+                    <image class="logo" mode="aspectFit" wx:if="{{ business.current.app_type === 2 }}" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png"></image>
                 </view>
             </view>
             <view class="date">有效期至 {{business.current.expiryDate}}</view>
@@ -112,14 +113,13 @@ export default class Index extends wepy.page {
                     white-space: nowrap;
                 }
                 .type{
-                    float: right;
-                    width: 54rpx;
-                    height: 37rpx;
+                    display: flex;
+                    padding: 35rpx 35rpx 0 0;
                 }
                 .logo{
-                    display: inline-block;
-                    width: 54rpx;
-                    height: 37rpx;
+                    width:66rpx;
+                    height:38rpx;
+                    margin-left:6rpx;
                 }
             }
         }
@@ -174,7 +174,7 @@ export default class Index extends wepy.page {
                     .text{
                         font-size: 30rpx;
                         color: #666666;
-                        width: 210rpx;
+                        width: 280rpx;
                         text-align: right;
                         padding-right: 70rpx;
                     }

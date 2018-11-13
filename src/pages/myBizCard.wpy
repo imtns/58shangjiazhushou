@@ -1,0 +1,431 @@
+<template>
+    <view class="myBizCard">
+        <mask :show.sync="maskShow" :type="maskType"></mask>
+        <view class="tocreatCard" wx:if="{{hasCard === false}}">
+            <view class="empty_box">
+                <view class="empty_header"></view>
+                <view class="empty_tips">您还没有名片，赶快创建名片吧</view>
+                <view class="empty_goto_neww" @tap="createCard()">创建名片</view>
+            </view>
+        </view>
+        <view class="mycard_box" wx:else>
+            <view class="cardInfo">
+                <view class="card_box">
+                    <view class="company">{{company}}</view>
+                    <view class="realName">{{realName}}</view>
+                    <view class="position">{{position}}</view>
+                    <view class="mobile">{{mobile}}</view>
+                    <view class="picImg" style="background:url(https://pic1.58cdn.com.cn{{picImg}}) no-repeat center">
+                        <view class="empty_bg"></view>
+                    </view>
+                    <view class="other_entery">
+                        <view class="otherbox">
+                            <view class="num vote">{{vote}}</view>
+                            <view class="type">点赞</view>
+                        </view>
+                        <view class="line"></view>
+                        <view class="otherbox">
+                            <view class="num vote">{{visit}}</view>
+                            <view class="type">访问</view>
+                        </view>
+                        <view class="line"></view>
+                        <view class="otherbox">
+                            <view class="num share">{{share}}</view>
+                            <view class="type">转发</view>
+                        </view>
+                    </view>
+                </view>
+                <view class="btns">
+                    <repeat for="{{myCardItems}}" key="index" index="index" item="item">
+                        <block wx:if="{{ item.id !== 'regist_qrcode' || (item.id === 'regist_qrcode' && isSalesman) }}">
+                            <view class="item_box" wx:if="{{item.type == 'innerJump'}}"  @tap="toinnerJump({{item.path}})">
+                                <image class="img" src="{{ item.src + '?w=64&h=64&ss=1' }}"></image>
+                                <view class="text">{{item.name}}</view>
+                            </view>
+                        </block>
+                        <navigator class="item_box" wx:if="{{item.type == 'mpJump' && item.name === '查看名片'}}" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="{{item.path + cardId }}" extra-data="" version="develop">
+                            <image class="img" src="{{ item.src + '?w=64&h=64&ss=1' }}"></image>
+                            <view class="text">{{item.name}}</view>
+                        </navigator>
+                        <navigator class="item_box" wx:if="{{item.type == 'mpJump' && item.name === '线下物料'}}" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="{{item.path + '1042759818970558464'}}" extra-data="" version="develop">
+                            <image class="img" src="{{ item.src + '?w=64&h=64&ss=1' }}"></image>
+                            <view class="text">{{item.name}}</view>
+                        </navigator>
+                    </repeat>
+                </view>
+            </view>
+            <view class="card_tips">
+                <view class="tips_header">大数据表明</view>
+                <view class="tips_rules">1. 分享10次可带来一个订单</view>
+                <view class="tips_rules">2. 用户回访一次则为您的潜在用户</view>
+                <view class="tips_rules">3. 点赞个数越多用户信任度越高</view>
+            </view>
+        </view>
+        <view wx:if="{{isShowDialogShare}}" class="mycard-share-mask">
+            <view class="mycard-share">
+                <form report-submit="true" bindsubmit="handleFormidCollect">
+                    <navigator class="item_box" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="/pages/index58/index58?mpcardId={{cardId}}&from=zhushou_myBizCard" extra-data="" version="develop">
+                        <button hover-class="none" form-type="submit" class='dialog-share-item'>分享给好友</button>
+                    </navigator>
+                </form>
+                <form report-submit="true" bindsubmit="handleFormidCollect">
+                    <button hover-class="none" class='dialog-share-item line' bindtap="choseStyle">生成图片分享</button>
+                </form>
+                <button hover-class="none" class='dialog-share-item cancel' bindtap='dialogShareCancel'>取消</button>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { CARD_HAS_CARD, CARD_HAS_DETAIL, CHECK_IS_SALESMAN } from '../utils/url';
+import { post, get } from '../utils/ajax';
+import { myCardItems } from '../utils/introData';
+import Mixin from '../mixin';
+import { getUid, SendClickLog } from '../utils/maidian';
+import Mask from '../components/Mask';
+
+
+export default class myBizCard extends wepy.page {
+    mixins = [Mixin]
+    config = {
+        navigationBarTitleText: '我的名片',
+    }
+    components = {
+        mask: Mask,
+    }
+    data = {
+        hasCard: '',
+        company: '',
+        mobile: '',
+        picImg: '',
+        position: '',
+        realName: '',
+        maskShow: false,
+        maskType: 'card',
+        share: '',
+        visit: '',
+        vote: '',
+        myCardItems,
+        cardId: '',
+        isSalesman: false, // 判断是否为销售
+        isShowDialogShare: false,
+    }
+    methods = {
+        toinnerJump(path) {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_myBizCard_${path}`);
+            if (!path) {
+                this.isShowDialogShare = true;
+                return;
+            }
+            if (path === 'chatMessages') {
+                wepy.switchTab({
+                    url: path,
+                });
+                return;
+            }
+            wepy.navigateTo({
+                url: path,
+            });
+        },
+        createCard() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_myBizCard_createCard');
+            wepy.navigateTo({
+                url: 'newBizCard',
+            });
+        },
+        /**
+        * 事件操作：表单提交 收集formId
+        * 收集formid操作：保存、复制、点赞vote、关注favorite、分享share、拨打电话phone、在线咨询chat、买单pay
+        */
+        handleFormidCollect(e) {
+            const { formId } = e.detail;
+            const {
+                action,
+            } = e.detail.target.dataset;
+            console.log('handleFormidCollect', 'action=', action, 'formId=', formId);
+            this.requestFormidCollect(formId);
+        },
+        dialogShareCancel() {
+            this.isShowDialogShare = false;
+        },
+        choseStyle() {
+            this.isShowDialogShare = false;
+            wepy.navigateTo({
+                url: 'choseImageStyle',
+            });
+        },
+    };
+    onLoad () {
+        if (wepy.getStorageSync('cardMask')) {
+            this.maskShow = true;
+        }
+        /**
+         * @author zhouwunan
+         */
+        get(CHECK_IS_SALESMAN)
+            .then(({ data }) => {
+                this.isSalesman = data;
+                this.$apply();
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+    async onShow () {
+        const currentMpid = wepy.getStorageSync('current_mpid');
+        if (!currentMpid) {
+            return;
+        }
+        const hasCard = await this.loadData(currentMpid);
+        if (hasCard) {
+            this.loadCard(currentMpid);
+        }
+    }
+    async loadData(currentMpid) {
+        // data是true 或者 false 表示有无名片
+        const { data } = await post(CARD_HAS_CARD, {
+            mpId: currentMpid,
+        });
+        this.hasCard = data;
+        this.$apply();
+        return data;
+    }
+    async loadCard(currentMpid) {
+        // data是object，是
+        const { data } = await post(CARD_HAS_DETAIL, {
+            mpId: currentMpid,
+        });
+        const {
+            company,
+            mobile,
+            picImg,
+            position,
+            realName,
+            share,
+            visit,
+            vote,
+            cardId,
+        } = data;
+        Object.assign(this, {
+            company,
+            mobile,
+            picImg,
+            position,
+            realName,
+            share,
+            visit,
+            vote,
+            cardId,
+        });
+        this.$apply();
+    }
+    /**
+     * 数据请求：收集FormID,用于给用户推送服务通知
+     */
+    requestFormidCollect(formId) {
+        if (formId) {
+            get('/formidcollect/collect', {
+                consumerId: wx.getStorageSync('ppu').split('UID=')[1].split('&')[0] || '', // 当前用户 ID
+                formId,
+            });
+        }
+    }
+}
+</script>
+
+<style lang="scss">
+.myBizCard{
+    .tocreatCard{
+        background: white;
+        margin: 30rpx;
+        height: 440rpx;
+        box-shadow: 0 4rpx 10rpx 0 rgba(0,0,0,0.15);
+        border-radius: 10rpx;
+        padding: 20rpx;
+        .empty_box{
+            border: 2rpx solid #F3F3F3;
+            border-radius: 8rpx;
+            height: 400rpx;
+            padding-top: 60rpx;
+            .empty_header{
+                background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/bizcard_empty_header.png) no-repeat center;
+                width: 112rpx;
+                height: 112rpx;
+                background-size: 100%;
+                margin: 0rpx auto;
+            }
+            .empty_tips{
+                font-size: 28rpx;
+                color: #AAAAAA;
+                text-align: center;
+                margin-top: 22rpx;
+                margin-bottom: 40rpx;
+            }
+            .empty_goto_neww{
+                background: #4E88FF;
+                border-radius: 44rpx;
+                width: 480rpx;
+                height: 88rpx;
+                line-height: 88rpx;
+                text-align: center;
+                font-size: 32rpx;
+                color: #FFFFFF;
+                margin: 0 auto;
+            }
+        }
+    }
+    .mycard_box{
+        .cardInfo{
+            background: white url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycar_bg.png) no-repeat center 0;
+            background-size: contain;
+            padding-top: 30rpx;
+            .card_box{
+                background: #FFFFFF;
+                box-shadow: 0 4rpx 20rpx 0 rgba(200,218,255,0.50);
+                border-radius: 10rpx;
+                margin: 0 auto;
+                width: 690rpx;
+                padding: 30rpx 0;
+                position: relative;
+                .company{
+                    line-height: 80rpx;
+                    font-size: 28rpx;
+                    color: #333333;
+                    width: 336rpx;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    padding-left: 50rpx;
+                }
+                .realName{
+                    padding-left: 50rpx;
+                    font-size: 42rpx;
+                    color: #333333;
+                    margin-bottom: 50rpx;
+                    width: 56%;
+                    line-height: 58rpx;
+                }
+                .position{
+                    padding-left: 50rpx;
+                    font-size: 28rpx;
+                    color: #333333;
+                    line-height: 40rpx;
+                }
+                .mobile{
+                    padding-left: 50rpx;
+                    font-size: 28rpx;
+                    color: #333333;
+                    line-height: 40rpx;
+                }
+                .picImg{
+                    width: 281.2rpx;
+                    height: 245rpx;
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    background-size: 100% 100% !important;
+                    .empty_bg{
+                        width: 281.2rpx;
+                        height: 281.2rpx;
+                        background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_white_empty_02.png') no-repeat center;
+                        background-size: 100% 100%;
+                    }
+                }
+                .other_entery{
+                    display: flex;
+                    margin-top: 40rpx;
+                    .line{
+                        height: 30rpx;
+                        width: 2rpx;
+                        background: #C7E1FF;
+                        margin-top: 35rpx;
+                    }
+                    .otherbox{
+                        flex: 1;
+                        text-align: center;
+                        .num{
+                            font-size: 46rpx;
+                            color: #333333;
+                            line-height: 64rpx;
+                        }
+                        .type{
+                            font-size: 24rpx;
+                            color: #93B0D1;
+                            line-height: 34rpx;
+                        }
+                    }
+                }
+            }
+            .btns{
+                display: flex;
+                white-space: warp;
+                flex-wrap: wrap;
+                padding: 10rpx 20rpx;
+                .item_box{
+                    width: 25%;
+                    text-align: center;
+                    padding-top: 10rpx;
+                    .img{
+                        width: 64rpx;
+                        height: 64rpx;
+                    }
+                    .text{
+                        font-size: 26rpx;
+                        color: #333333;
+                        line-height: 36rpx;
+                    }
+                }
+            }
+        }
+        .card_tips{
+            margin-top: 20rpx;
+            padding-left: 30rpx;
+            .tips_header{
+                height: 80rpx;
+                font-size: 28rpx;
+                color: #333333;
+                line-height: 80rpx;
+            }
+            .tips_rules{
+                font-size: 28rpx;
+                color: #999999;
+                line-height: 40rpx;
+            }
+        }
+    }
+    .mycard-share-mask{
+        position: fixed;
+        width: 100%;
+        min-height: 100vh;
+        top: 0;
+        left: 0;
+        z-index: 99;
+        text-align:center;
+        background:rgba(0, 0, 0, 0.7);
+        transition:all 0.6s ease-in-out;
+    }
+    .mycard-share{
+        position: fixed;
+        left: 0;
+        bottom: 0;
+    }
+    .dialog-share-item{
+        line-height: 100rpx;
+        width: 100vw;
+        height: 100rpx;
+        background: #fff;
+        border-radius: 0;
+        text-align: center;
+        font-size: 36rpx;
+        color: #000;
+    }
+    .dialog-share-item.line{
+        border-top: 1rpx solid #f3f3f3;
+    }
+    .dialog-share-item.cancel{
+        margin-top: 12rpx;
+    }
+}
+</style>

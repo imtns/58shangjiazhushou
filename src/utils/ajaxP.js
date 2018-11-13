@@ -1,16 +1,16 @@
 import wepy from 'wepy';
 import { toast } from './index';
 
-const test = 'test';
+const test = '';
 const host = 'https://yaofa.58.com';
 const http = (method, ...props) => {
     const [url, param, showLoading = true] = props;
-    const sendData = Object.assign({}, param);
+    const sendData = Object.assign({}, param, { test });
     // ppu加入header
     const ppu = wepy.getStorageSync('ppu');
     console.log('请求接口', url);
-    console.log('请求参数', param);
-    showLoading && wepy.showLoading && wepy.showLoading({ title: '加载中', mask: true });
+    console.log('请求参数', sendData);
+    showLoading && wepy.showLoadishowNavigationBarLoadingng && wepy.showNavigationBarLoading({ title: '加载中', mask: true });
     return new Promise((resolve) => {
         wepy.request({
             url: host + url + (~url.indexOf('?') ? '' : '?') + (+new Date()).toString(36).substr(3),
@@ -24,7 +24,7 @@ const http = (method, ...props) => {
             },
         }).then((response) => {
             console.log('response', response);
-            showLoading && wepy.hideLoading && wepy.hideLoading();
+            showLoading && wepy.hideNavigationBarLoading && wepy.hideNavigationBarLoading();
             const { state, msg, data } = response.data;
             if (state === 100) {
                 resolve([null, data]);
@@ -39,7 +39,7 @@ const http = (method, ...props) => {
                 resolve([msg]);
             }
         }).catch((err) => {
-            showLoading && wepy.hideLoading && wepy.hideLoading();
+            showLoading && wepy.hideNavigationBarLoading && wepy.hideNavigationBarLoading();
             resolve([err.errMsg]);
         });
     });

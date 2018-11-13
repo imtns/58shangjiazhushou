@@ -1,4 +1,50 @@
 import wepy from 'wepy';
+import globalService from './globalService';
+
+module.exports.globalService = globalService;
+
+export const getNetStatus = () => new Promise((resolve, reject) => {
+    wx.getNetworkType({
+        success({ networkType }) {
+            /**
+                 * 0 网络不可用
+                 * 1 wifi条件下，可以直接播放、上传
+                 * 2 移动网络环境
+                 */
+            let status = 0;
+
+            if (~['unknown', 'none'].indexOf(networkType)) {
+                status = 0;
+            } else if (~['wifi'].indexOf(networkType)) {
+                status = 1;
+            } else if (~['2g', '3g', '4g'].indexOf(networkType)) {
+                status = 2;
+            }
+
+            resolve(status);
+        },
+        fail(err) {
+            reject(err);
+        },
+    });
+});
+
+export const isEmpty = v => {
+    if (v === '' || v === null || v === undefined) {
+        return true;
+    }
+
+    return false;
+};
+
+// 倒计时
+export const formatDuring = (mss) => {
+    const days = parseInt(mss / (1000 * 60 * 60 * 24));
+    const hours = parseInt((mss % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = parseInt((mss % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = parseInt((mss % (1000 * 60)) / 1000);
+    return [days > 9 ? days : `0${days}`, hours > 9 ? hours : `0${hours}`, minutes > 9 ? minutes : `0${minutes}`, seconds > 9 ? seconds : `0${seconds}`];
+};
 
 export const sleep = (time = 300) => new Promise((resolve) => {
     setTimeout(() => { resolve(); }, time);
@@ -6,9 +52,10 @@ export const sleep = (time = 300) => new Promise((resolve) => {
 
 // alert
 export const alert = (content, title, callBack) => {
+    // showCancel设为false，然后在success里判断用户点的确定还是取消？
     wepy.showModal({
         showCancel: false,
-        title: title || '注意',
+        title: title || '提示',
         content,
         success(res) {
             if (res.confirm) {
@@ -21,12 +68,35 @@ export const alert = (content, title, callBack) => {
     });
 };
 
-// toast
-export const toast = (title) => {
-    wepy.showToast({
+// alert的Promise版本
+export const alertP = (content, title = '提示', extraCfg) => new Promise((resolve, reject) => {
+    wx.showModal({
         title,
-        icon: 'none',
-        duration: 2000,
+        content,
+        success(res) {
+            resolve(res);
+        },
+        fail(err) {
+            reject(err);
+        },
+        ...extraCfg,
+    });
+});
+
+// toast
+export const toast = (title, duration = 1500) => wepy.showToast({
+    title,
+    icon: 'none',
+    duration,
+});
+    // 不支持提示
+export const notSupportTips = () => {
+    wx.showModal({
+        title: '提示',
+        content: '此微信版本过低，请先升级微信。',
+        success(res) {
+            wx.setEnableDebug({ enableDebug: !res.confirm });
+        },
     });
 };
 export const toastSync = (title) => wepy.showToast({
@@ -40,7 +110,16 @@ export const picSrcDomain = () => {
     const n = parseInt(Math.random() * 8) + 1;
     return `https://pic${n}.58cdn.com.cn`;
 };
-
+export const previewImage = (imgs, index) => {
+    if (typeof imgs === 'object' && !Array.isArray(imgs)) {
+        imgs = imgs.map((obj) => obj.src);
+    }
+    const urls = imgs.map(img => {
+        const url = img.split('?')[0];
+        return `${url}?w=750&h=1000`;
+    });
+    wx.previewImage({ current: urls[index], urls });
+};
 // 过滤微信表情
 export const filteremoji = (content) => {
     const ranges = [
@@ -50,4 +129,49 @@ export const filteremoji = (content) => {
     ];
     const emojireg = content.replace(new RegExp(ranges.join('|'), 'g'), '');
     return emojireg;
+};
+
+const formatNumber = (n) => {
+    n = n.toString();
+    return n[1] ? n : `0${n}`;
+};
+
+export const formatTime = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    return [year, month, day].map(formatNumber).join('-');
+};
+
+
+export const withHttp = (list) => {
+    list.forEach((item) => {
+        const ele = item;
+        if (ele.headImg && ele.headImg.indexOf('http') === -1) {
+            ele.headImg = `https://pic1.58cdn.com.cn${headImg}`;
+        } else if (ele.senderPortrait && ele.senderPortrait.indexOf('http') === -1) {
+            ele.senderPortrait = `https://pic1.58cdn.com.cn${ele.senderPortrait}`;
+        }
+    });
+    return list;
+};
+
+export const autoFixed = (num) => {
+    return num <= 9 ? `0${num}` : num;
+};
+
+// 线上图片 下载到本地
+export const getTmpFilePath = (url) => {
+    return new Promise((resolve, reject) => {
+        wx.downloadFile({
+            url,
+            success(res) {
+                resolve(res.tempFilePath);
+            },
+            fail(err) {
+                reject(err);
+            },
+        });
+    });
 };

@@ -1,0 +1,513 @@
+<template>
+    <view class="containe">
+        <view class="section">
+            <view class="item required border-bottom">
+                <text>优惠券标题</text>
+                <input
+                type="text"
+                placeholder="最多可输入10个字"
+                placeholder-class="placeholder"
+                value="{{ form.title }}"
+                @input="setFormData('title')"/>
+            </view>
+            <view class="item required">
+                <text>优惠券副标题</text>
+                <input
+                type="text"
+                placeholder="可用优惠券亮点吸引用户"
+                placeholder-class="placeholder"
+                value="{{ form.subTitle }}"
+                @input="setFormData('subTitle')"/>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required">
+                <text>优惠券类型</text>
+                <navigator
+                :class="{ placeholder: couponType === '' }"
+                url="/pages/couponType">
+                    {{ couponType && (couponType === 1 ? '代金券' : '折扣券') || '去选择' }}<view class="icon more"></view>
+                </navigator>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required">
+                <text>生效时间</text>
+                <navigator
+                :class="{ placeholder: validType === '' }"
+                url="/pages/couponValidTime">
+                    {{ validType && (validType === 1 ? '固定时间' : '领取后生效') || '去选择' }}<view class="icon more"></view>
+                </navigator>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required border-bottom">
+                <text>库存</text>
+                <input
+                type="number"
+                placeholder="请输入库存数量"
+                placeholder-class="placeholder"
+                value="{{ form.totalCount }}"
+                @input="setFormData('totalCount')"/>
+            </view>
+            <view class="item">
+                <text>每人限领</text>
+                <input
+                type="number"
+                placeholder="若不填默认为1"
+                placeholder-class="placeholder"
+                value="{{ form.limitCount }}"
+                @input="setFormData('limitCount')"/>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item">
+                <text>快速买单</text>
+                <switch
+                    checked="{{ form.mdStatus == 1 ? true : false }}"
+                    @change="setFormData('mdStatus')"
+                    color="#4E88FF"></switch>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required">
+                <text>优惠券使用产品</text>
+                <view
+                    :class="{ placeholder: form.applyType === '' }"
+                    @tap="handleChooseApplyType">
+                    {{ applyTypeMap[form.applyType] || '去选择' }}<view class="icon more"></view>
+                </view>
+            </view>
+        </view>
+
+        <button class="save" :class="{ disabled: !canSubmit }" @tap="save">保存</button>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import Mixin from '../mixin';
+import { get, post } from '../utils/ajax';
+import { LOAD_COUPON, SAVE_COUPON } from '../utils/url';
+import { alert, isEmpty, toast, formatTime } from '../utils';
+import { getUid, SendClickLog } from '../utils/maidian';
+
+import globalService from '../utils/globalService';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '优惠券内容',
+    }
+
+    data = {
+        first: true,
+        couponType: 1,
+        validType: 1,
+        applyType: 1,
+        applyTypeMap: {
+            1: '所有预约服务',
+            2: '指定预约服务',
+            3: '所有商品和预约服务',
+            4: '所有商品',
+        },
+        form: {
+            id: '',
+            mpId: '',
+            title: '满20减4元',
+            subTitle: '满20减4元优惠券',
+            couponType: 1,
+            totalCount: 100, // 库存
+            limitCount: '', // 每人限领
+            validType: 1, // 1 固定时间，2 领取后生效
+            validDays: null,
+            validAfterDays: null,
+            validStarttime: formatTime(new Date()),
+            validEndtime: formatTime(new Date(Date.now() + (30 * 24 * 60 * 60 * 1000))),
+            applyType: 1,
+            serviceIds: '',
+            limitAmount: 20, // 满多少使用
+            reliefAmount: 4, // 满减
+            couponDiscard: '', // 打几折，需要，50表示5折
+            mdStatus: 1, // 是否支持快速买单
+        },
+        canSubmit: false,
+    }
+
+    computed = {
+        canSubmit() {
+            let result = true;
+            const { couponType, validType, applyType } = this.form;
+            const requiredFields = ['title', 'subTitle', 'couponType', 'limitAmount',
+                'validType', 'totalCount', 'applyType'];
+
+            // 优惠券类型和生效时间，选中其中一种类型，另一种类型的字段不需要填写
+            // 优惠券类型
+            if (couponType === 1) {
+                // 代金券
+                requiredFields.push('reliefAmount');
+            } else if (couponType === 2) {
+                // 折扣券
+                requiredFields.push('couponDiscard');
+            }
+            // 生效时间
+            if (validType === 1) {
+                // 固定时间
+                requiredFields.push('validStarttime', 'validEndtime');
+            } else if (validType === 2) {
+                // 领取后生效
+                requiredFields.push('validDays', 'validAfterDays');
+            }
+
+            // 选择适用产品，选择全部产品时，serviceIds不填
+            if (applyType === 2) {
+                requiredFields.push('serviceIds');
+            }
+
+            requiredFields.forEach(key => {
+                if (isEmpty(this.form[key])) {
+                    result = false;
+                }
+            });
+
+            return result;
+        },
+    }
+
+    mixins = [Mixin]
+
+    methods = {
+        async handleChooseApplyType() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_couponEdit_handleChooseApplyType');
+            const { applyTypeMap } = this;
+
+            try {
+                const { tapIndex } = await wepy.showActionSheet({
+                    itemList: Object.keys(applyTypeMap).map(key => applyTypeMap[key]),
+                });
+                const index = tapIndex + 1;
+
+                if (index === 2) {
+                    wepy.navigateTo({
+                        url: '/pages/couponService',
+                    });
+                } else {
+                    this.form.applyType = index;
+                    this.$apply();
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        },
+        async save() {
+            if (!this.canSubmit) {
+                return;
+            }
+
+            try {
+                // 数据过滤，过滤未提交的数据
+                const { form } = this;
+                const postData = this.formatData(form);
+
+                this.validator(postData);
+
+                await post(SAVE_COUPON, postData);
+                globalService.set('refresh', true);
+                wepy.navigateBack();
+            } catch (e) {
+                if (typeof e === 'object') {
+                    alert(e.message);
+                } else {
+                    alert(e);
+                }
+                this.errorHandler(e);
+            }
+        },
+
+        setFormData(prop, e) {
+            let { value } = e.detail;
+
+            // 不超过十个字
+            if (~['title', 'subTitle'].indexOf(prop)) {
+                if (value.length > 10) {
+                    toast('只能输入10个字');
+                    value = value.slice(0, 10);
+                }
+            }
+
+            if (prop === 'mdStatus') {
+                value = value ? 1 : 0;
+            }
+
+            this.form[prop] = value;
+            return value;
+        },
+    }
+
+    formatData(data) {
+        const postData = Object.assign({}, data);
+        const {
+            limitCount, reliefAmount, limitAmount, couponDiscard,
+        } = postData;
+        const formatData = {};
+
+        // 字符串转数字
+        Object.keys({
+            limitCount, reliefAmount, limitAmount, couponDiscard,
+        }).forEach(key => {
+            postData[key] = +postData[key];
+        });
+
+        if (limitCount === '') {
+            postData.limitCount = 1;
+        }
+
+        // 清除掉为空的数据
+        Object.keys(postData).forEach(key => {
+            if (postData[key]) {
+                formatData[key] = postData[key];
+            }
+        });
+
+        return formatData;
+    }
+
+    validator(data) {
+        const {
+            couponDiscard, validType, limitAmount, reliefAmount,
+        } = data;
+        let msg = '';
+
+        if (couponDiscard < 0 || couponDiscard > 99) {
+            msg = '享受折扣应该介于0至9.9折';
+        }
+
+        if (validType === 1 && limitAmount < reliefAmount) {
+            msg = '满减金额应当小于消费金额';
+        }
+
+        if (msg) {
+            throw new Error(msg);
+        }
+    }
+
+    async onLoad(options) {
+        const { id } = options;
+
+        if (id) {
+            await this.loadData(id);
+        }
+
+        const mpId = wepy.getStorageSync('current_mpid');
+        this.form.mpId = mpId;
+        this.updateData();
+        this.$apply();
+    }
+
+    onShow() {
+        if (this.first) {
+            this.first = false;
+            return;
+        }
+        // 每次onShow同步数据
+        // 只同步跳转到编辑页修改的字段
+        const {
+            // 优惠券类型
+            couponType,
+            limitAmount,
+            reliefAmount,
+            couponDiscard,
+
+            // 生效时间
+            validType,
+            validDays,
+            validAfterDays,
+            validStarttime,
+            validEndtime,
+
+            // 适用产品
+            applyType,
+            serviceIds,
+        } = globalService.get('couponManage');
+
+        Object.assign(this, {
+            couponType,
+            validType,
+            applyType,
+        });
+
+        Object.assign(this.form, {
+            couponType,
+            limitAmount,
+            reliefAmount,
+            couponDiscard,
+            validType,
+            validDays,
+            validAfterDays,
+            validStarttime,
+            validEndtime,
+            applyType,
+            serviceIds,
+        });
+    }
+
+    async loadData(id) {
+        try {
+            const { data: coupon } = await get(LOAD_COUPON + id);
+            let { couponCondition } = coupon;
+
+            if (couponCondition) {
+                try {
+                    couponCondition = JSON.parse(couponCondition);
+                    Object.assign(coupon, couponCondition);
+                } catch (e) {
+                    this.errorHandler(e);
+                }
+            }
+
+            const {
+                title,
+                subTitle,
+                couponType,
+                totalCount,
+                limitCount,
+                limitAmount,
+                couponDiscard,
+                reliefAmount,
+                validType,
+                validDays,
+                validAfterDays,
+                validStarttime,
+                validEndtime,
+                applyType,
+                services,
+            } = coupon;
+            let serviceIds = '';
+
+            if (services && services.length) {
+                serviceIds = services.map(item => item.id).join(',');
+            }
+
+            Object.assign(this.form, {
+                id,
+                title,
+                subTitle,
+                couponType,
+                totalCount,
+                limitCount,
+                limitAmount,
+                couponDiscard,
+                reliefAmount,
+                validType,
+                validDays,
+                validAfterDays,
+                validStarttime,
+                validEndtime,
+                applyType,
+                serviceIds,
+            });
+
+            Object.assign(this, {
+                couponType,
+                validType,
+                applyType,
+            });
+
+            this.$apply();
+        } catch (e) {
+            this.errorHandler(e);
+        }
+    }
+
+    updateData() {
+        const couponManage = globalService.get('couponManage');
+        globalService.set('couponManage', Object.assign(couponManage, this.form));
+    }
+}
+</script>
+
+<style lang="scss">
+view {
+    box-sizing: border-box;
+}
+.containe {
+    font-size: 28rpx;
+}
+
+.section {
+    margin-top: 20rpx;
+    background-color: #FFFFFF;
+    overflow: hidden;
+
+    .item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 23rpx 0;
+        margin: 0 30rpx;
+        position: relative;
+        height: 89rpx;
+
+        &.border-bottom {
+            border-bottom: 1rpx solid #f3f3f3;
+        }
+        &.required::before {
+            display: block;
+            content: '*';
+            width: 14rpx;
+            height: 37rpx;
+            font-size: 26rpx;
+            color: #FFA100;
+            position: absolute;
+            left: -15rpx;
+        }
+
+        input {
+            width: 396rpx;
+            height: 30rpx;
+            line-height: 30rpx;
+            text-align: right;
+        }
+
+        text {
+            color: #BDBDBD;
+            font-size: 30rpx;
+        }
+    }
+}
+
+button.save {
+    height: 102rpx;
+    background-color: #4e88ff;
+    color: #fff;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 0;
+
+    &.disabled {
+        background-color: #C5C5C5;
+    }
+
+    &::after {
+        content: none;
+    }
+}
+
+.placeholder {
+    font-size: 28rpx;
+    color: #BDBDBD;
+}
+
+.icon {
+    display: inline-block;
+
+    &.more {
+        width: 25rpx;
+        height: 25rpx;
+        background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/coupon-more.png') no-repeat;
+        background-size: auto 25rpx;
+        background-position: right;
+    }
+}
+</style>

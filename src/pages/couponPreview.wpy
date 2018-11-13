@@ -1,0 +1,184 @@
+<template>
+    <view class="containe">
+        <scroll-view class="preview-scroll" scroll-y>
+            <view class="previewer"
+            :class="{ row: type === 'row' }">
+                <couponView
+                :coupons.sync="previewList"
+                :viewType.sync="previewType"></couponView>
+            </view>
+        </scroll-view>
+        <scroll-view class="select-scroll" scroll-y>
+            <view class="options">
+                <navigator url="/pages/couponEdit">+添加优惠券</navigator>
+                <view class="save" @tap="save">保存</view>
+            </view>
+            <couponList
+            :coupons.sync="coupons"
+            :isEditing="isEditing"
+            size="small"
+            :chooseCoupon="chooseCoupon"></couponList>
+        </scroll-view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import couponList from '../components/CouponList';
+import couponView from '../components/Coupon';
+
+import CouponMixin from '../mixin/coupon';
+
+const pageSize = 10;
+let pageNum = 1;
+let noMore = false;
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '优惠券',
+    }
+
+    data = {
+        coupons: [],
+        isEditing: true,
+        previewList: [],
+        previewType: '', // 实际展现形式
+        type: 'row', // 需要展现的形式
+    }
+
+    mixins = [CouponMixin]
+
+    components = {
+        couponList,
+        couponView,
+    }
+
+    computed = {
+        previewType() {
+            if (this.type === 'column' || this.previewList.length < 2) {
+                return 'column';
+            }
+
+            return 'row';
+        },
+    }
+
+    async onLoad() {
+        try {
+            const mpId = wepy.getStorageSync('current_mpid');
+            const coupons = await this.getCoupons({
+                pageNum: 1,
+                pageSize: 10,
+                mpId,
+            });
+
+            // 筛选出有库存的，并且可用的
+            this.coupons = coupons.filter(item => item.usable && +item.totalCount > 0);
+            this.$apply();
+        } catch (e) {
+            this.errorHandler(e);
+        }
+    }
+
+    reloadData() {
+        this.init();
+        this.loadData();
+    }
+
+    init() {
+        noMore = false;
+        pageNum = 1;
+        this.coupons = [];
+    }
+
+    updated() {
+        pageNum += 1;
+    }
+
+    async loadData() {
+        try {
+            const { mpId } = this;
+            const data = await this.getCoupons({
+                pageNum,
+                pageSize,
+                mpId,
+            });
+
+            if (data && data.length) {
+                this.coupons.push(...data);
+            }
+
+            if (data && (data.length < pageSize)) {
+                noMore = true;
+            }
+
+            this.$apply();
+        } catch (e) {
+            this.errorHandler(e);
+        }
+    }
+
+    onReachBottom() {
+        if (noMore) {
+            return;
+        }
+
+        this.updated();
+        this.loadData();
+    }
+
+    chooseCoupon(coupon) {
+        const that = this.$parent;
+        const { id } = coupon;
+        if (coupon.checked) {
+            that.previewList && that.previewList.unshift(coupon);
+        } else {
+            // 从列表中删除
+            that.previewList.splice(that.previewList.findIndex(item => item.id === id), 1);
+        }
+        that.$apply();
+    }
+}
+</script>
+
+<style lang="scss">
+$radius: 3.2rpx;
+
+.preview-scroll {
+    height: 492rpx;
+    width: 750rpx;
+
+    .previewer {
+        background-color: #fff;
+        margin-top: 30rpx;
+        padding: 0 20rpx;
+        overflow: hidden;
+
+        &.row {
+            background-color: inherit;
+            margin-top: 150rpx;
+        }
+    }
+}
+
+.options {
+    width: 100%;
+    height: 86rpx;
+    color: #fff;
+    font-size: 32rpx;
+    line-height: 86rpx;
+    display: flex;
+    justify-content: space-between;
+    background-color: #46484A;
+    padding: 0 30rpx;
+    position: fixed;
+    bottom: 628rpx;
+}
+
+.select-scroll {
+    height: 628rpx;
+    background-color: #5b5d5f;
+    position: fixed;
+    bottom: 0;
+}
+</style>

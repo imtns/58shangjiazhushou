@@ -1,0 +1,657 @@
+<template>
+    <view class="chat-container">
+        <scroll-view
+            class="chat-zone"
+            id="chat-zone"
+            scroll-y="{{true}}"
+            upper-threshold="500"
+            @scrolltoupper="loadMore"
+            style="height:{{scrollHeight}}"
+            scroll-with-animation="{{true}}"
+            scroll-into-view="{{toView}}">
+            <!-- <view class="chat-msg-loading">加载中</view> -->
+            <!-- <view class="chat-msg-body">
+                <image class="chat-msg-avatar" src="{{item.portrait}}"></image>
+                <view class="chat-msg-content">
+                    <view class="chat-msg-title">您可以通过一下方式和我沟通</view>
+                    <view class="chat-msg-btn">加微信</view>
+                    <view class="chat-msg-btn">留下联系方式</view>
+                    <view class="chat-msg-btn">电话咨询</view>
+                </view>
+            </view> -->
+            <block wx:for="{{msgList}}" wx:key="index">
+                <view class="chat-msg-body {{item.senderId === myId ? 'chat-right' : ''}}" id="toview-{{index}}">
+                    <view class="chat-msg-time" wx:if="{{item.isTimeVisible}}">{{item.nSendTime}}</view>
+                    <image class="chat-msg-avatar" mode="aspectFill" src="{{item.senderPortrait}}?w=80&h=80&ss=1" bindtap="toDetail" data-item="{{item}}"></image>
+                    <view class="chat-msg-content" wx:if="{{item.type === '0' || item.type === 0}}">{{item.content}}</view>
+                    <view class="chat-img-box" wx:else>
+                        <image class="chat-msg-img" mode="aspectFill" src="https://pic1.58cdn.com.cn{{item.content}}?w=400&h=300&ss=1" bindtap="previewImage" data-url="{{item.content}}"></image>
+                        <view class="chat-img-mask" wx:if="{{item.status === 1}}">{{progress}}%</view>
+                    </view>
+                </view>
+            </block>
+        </scroll-view>
+        <view class="chat-input-zone" style="margin-bottom: {{keyboardHeight}}rpx">
+            <view class="chat-input-view">
+                <input
+                type="text"
+                class="chat-input"
+                placeholder="请输入消息"
+                cursor-spacing="15"
+                @input="input"
+                @focus="showKeyBoard"
+                @blur="closeKeyBoard"
+                confirm-type="send"
+                confirm-hold="true"
+                bindconfirm="sendMsg"
+                data-type="TEXT"
+                adjust-position="{{adjustSet}}"
+                value="{{content}}"/>
+            </view>
+            <view class="chat-show-upload" @tap="showpanel" wx:if="{{!showpanel}}"></view>
+            <view class="chat-show-upload close-upload" @tap="closepanel" wx:else></view>
+            <!-- <view class="chat-send-msg {{canIsend ? 'sended' : ''}}" @tap="sendMsg" data-type="TEXT">发送</view> -->
+        </view>
+        <view class="chat-input-panel" wx:if="{{showpanel}}">
+            <view class="chat-btn" @tap="upload" data-type="camera">
+                拍照
+            </view>
+            <view class="chat-btn upload-pic" @tap="upload" data-type="album">
+                照片
+            </view>
+        </view>
+    </view>
+    <view class="chat-mask" wx:if="{{showMask}}">
+        <view class="chat-dialog">
+            <view class="chat-dialog-title">填写联系方式</view>
+            <view class="chat-dialog-close">×</view>
+            <view class="chat-dialog-body">
+                <view class="chat-dialog-body-title">填写完成后，我会尽快联系您</view>
+                <input type="number" placeholder="请输入电话号码…" class="chat-dialog-input"/>
+            </view>
+            <view class="chat-dialog-foot">
+                <!-- <view class="chat-btn">关闭</view> -->
+                <view class="chat-btn chat-btn-sure">确定</view>
+            </view>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+
+import { globalData } from '../../utils/globalData';
+import { pubsub } from '../../utils/IM/pubsub';
+import '../../utils/date';
+import { toast } from '../../utils';
+import { uploader } from '../../utils/uploader';
+import { post, get } from '../../utils/ajax';
+
+import { getUid, SendClickLog } from '../../utils/maidian';
+import { MSG_LIST, SEND_MSG } from '../../utils/url';
+import { msgType } from '../../utils/msg/msgType';
+import { formatDateTimeLocal } from '../../utils/dateFomate';
+
+const moment = require('../../utils/moment');
+
+let from = '';
+let msgListToken = '';
+let isEnd = false;
+const pageSize = 20;
+export default class Chat extends wepy.page {
+    data = {
+        height: '',
+        showpanel: false,
+        canIsend: false,
+        contact: '',
+        nickName: '',
+        msgList: [],
+        content: '',
+        token: '',
+        progress: 0,
+        myId: '',
+        toView: '',
+        scrollHeight: 'calc(100vh - 100rpx)',
+        keyboardHeight: 0,
+        adjustSet: false,
+    }
+    methods = {
+        showpanel() {
+            this.showpanel = true;
+            this.$apply();
+        },
+        closepanel() {
+            this.showpanel = false;
+            this.$apply();
+        },
+        // 拍照、上传图片
+        async upload(target) {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_upload');
+            this.showpanel = false;
+            this.$apply();
+            try {
+                const that = this;
+                const { type } = target.currentTarget.dataset;
+                const { contact } = this;
+                const { headImg } = globalData.chat;
+                const msg = {
+                    status: 1,
+                    content: null,
+                    target: contact,
+                    senderId: this.myId,
+                    senderPortrait: headImg,
+                };
+                const { tempFilePaths } = await wepy.chooseImage({
+                    count: 1,
+                    sourceType: [type],
+                });
+                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_chooseImage');
+                this.msgList.push(Object.assign(msg, {
+                    sendTime: new Date().format('hh:mm'),
+                    portrait: globalData.chat.headImg,
+                }));
+                const uploaded = uploader(tempFilePaths[0], (e, result) => {
+                    this.showpanel = false;
+                    this.$apply();
+                    if (e) {
+                        toast('上传失败，请重试。');
+                        return;
+                    }
+                    // toast('上传成功。');
+                    const url = result.content;
+
+                    msg.content = result.content;
+                    this.$apply();
+
+                    that.sendMsg(url);
+
+                    msg.status = 2;
+                    this.$apply();
+                });
+                uploaded.onProgressUpdate(({ progress }) => {
+                    this.progress = progress;
+                    this.$apply();
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        },
+    }
+    async onLoad(options) {
+        const { token, myId } = globalData.chat;
+        const { contact, nickName } = options;
+        // console.error(options);
+
+        wepy.setNavigationBarTitle({
+            title: nickName,
+        });
+
+        globalData.chat.currentContactId = contact;
+        this.contact = contact;
+        this.nickName = nickName;
+        this.token = token;
+        this.myId = myId;
+        await this.loadData();
+        this.newMsgs();
+        console.log(this.msgList);
+        if (this.msgList.length > 4) {
+            this.adjustSet = true;
+            this.keyboardHeight = 0;
+        }
+        this.$apply();
+    }
+    async onUnload() {
+        try {
+            // 取消订阅
+            pubsub.unsubscribe(msgListToken);
+            globalData.chat.currentContactId = '';
+            msgListToken = '';
+            // 更改未读消息状态为已读
+            const {
+                contact,
+                token,
+            } = this;
+            await get(MSG_LIST, {
+                contact,
+                token,
+                from: 1, // 更改未读消息状态为已读
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    showKeyBoard(e) {
+        console.log(this.msgList.length);
+        const { height } = e.detail;
+        this.showpanel = false;
+        if (this.msgList.length > 4) return;
+        this.keyboardHeight = height * 2;
+        // this.scrollHeight = `calc(100vh - ${this.keyboardHeight}rpx)`;
+        // console.log(this.keyboardHeight);
+        console.log(this.scrollHeight);
+        this.$apply();
+    }
+    closeKeyBoard() {
+        this.keyboardHeight = 0;
+        console.log(this.scrollHeight);
+        this.$apply();
+    }
+    input(e) {
+        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_input');
+        this.content = e.detail.value;
+        this.canIsend = this.content.trim().length > 0;
+        this.$apply();
+    }
+    async sendMsg(target) {
+        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_sendMsg');
+        try {
+            const type = target.currentTarget ? target.currentTarget.dataset.type : 'IMAGE';
+            const content = type === 'TEXT' ? this.content.trim() : target;
+            type === 'TEXT' && this.clearInput();
+            if (!content) return;
+
+            const { contact, token } = this;
+            const { headImg } = globalData.chat;
+            const msg = {
+                type: msgType[type],
+                status: 1, // 发送中
+                content,
+                contact,
+                token,
+                senderId: this.myId,
+                senderPortrait: headImg,
+            };
+            const newMsg = Object.assign({
+                sendTime: new Date().format('hh:mm'),
+                portrait: globalData.chat.headImg,
+            }, msg);
+            if (type === 'TEXT') {
+                this.msgList.push(newMsg);
+                this.$apply();
+            }
+            this.toView = `toview-${this.msgList.length - 1}`;
+            console.log(this.toView);
+            await post(SEND_MSG, msg);
+            newMsg.status = 2; // 发送成功
+            this.$apply();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    async loadData() {
+        try {
+            const { contact, token } = this;
+            const { data } = await post(MSG_LIST, {
+                token,
+                contact,
+            });
+            if (!data || data.length <= 0) return;
+            isEnd = data.length < pageSize;
+            const formateData = this.formateData(data);
+            this.msgList = formateData;
+            from = data[0].id;
+            this.toView = `toview-${data.length - 1}`;
+            this.$apply();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    async loadMore() {
+        if (isEnd) return;
+        const { token } = this;
+        const { data } = await post(MSG_LIST, {
+            token,
+            contact: this.contact,
+            from,
+        });
+        if (data.length) {
+            isEnd = data.length < pageSize;
+            from = data[0].id;
+            const { msgList } = this;
+            const formateData = this.formateData(data);
+            this.msgList = formateData.concat(msgList);
+            this.$apply();
+        }
+    }
+    /*
+    消息时间格式化 以及展示规则
+    当天展示时分   隔天展示月日时分   隔年展示年月日时分
+    如果当前消息时间与上一条消息时间相差超过10分钟 则展示消息时间  否则不展示消息时间
+    */
+    formateData(list) {
+        if (!list.length) return [];
+        const nList = list;
+        nList.forEach((msg, index) => {
+            if (index === 0) {
+                msg.isTimeVisible = true;
+            } else {
+                const lastTime = list[index - 1].sendTime;
+                const currentSendTime = msg.sendTime;
+                const gap = moment(currentSendTime) - moment(lastTime);
+                if (gap / 1000 / 60 >= 5) {
+                    msg.isTimeVisible = true;
+                } else {
+                    msg.isTimeVisible = false;
+                }
+            }
+            msg.nSendTime = formatDateTimeLocal(msg.sendTime);
+
+            if (msg.senderPortrait && msg.senderPortrait.indexOf('http') === -1) {
+                msg.senderPortrait = `https://pic1.58cdn.com.cn${msg.senderPortrait}`;
+            }
+            return msg;
+        });
+        return nList;
+    }
+    clearInput() {
+        this.content = '';
+        this.canIsend = false;
+        this.$apply();
+    }
+    newMsgs() {
+        const { contact } = this;
+        // 订阅当前联系人的未读消息
+        msgListToken = pubsub.subscribe(contact, (...props) => {
+            const newMsgs = props[0];
+            [newMsgs].forEach((msg) => {
+                msg.sendTime = formatDateTimeLocal(msg.sendTime);
+                this.msgList.push(msg);
+                this.toView = `toview-${this.msgList.length - 1}`;
+                this.$apply();
+            });
+        });
+    }
+    toDetail(e) {
+        // 点击头像
+        const { senderId, senderConsumerId } = e.currentTarget.dataset.item;
+        console.log(e.currentTarget.dataset.item);
+        const { myId } = this.data;
+        let url = '';
+        if (senderId === myId) {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_business_toDetail');
+            // 当前商家,进商家名片页面
+            url = '/pages/myBizCard';
+        } else {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_consumer_toDetail');
+            const cardId = wepy.getStorageSync('current_cardId');
+            // 用户的，进访客详情页面
+            url = `/pages/visitorInfo?cardId=${cardId}&consumerId=${senderConsumerId}`;
+        }
+
+        wepy.navigateTo({
+            url,
+        });
+    }
+    previewImage(e) {
+        const { url } = e.currentTarget.dataset;
+        wepy.previewImage({
+            urls: [`https://pic1.58cdn.com.cn${url}`],
+        });
+    }
+}
+</script>
+
+<style lang="scss">
+page{
+    width:100%;
+    height:100%;
+}
+.chat-container{
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    .chat-zone{
+        /* min-height: calc(100vh - 6000rpx);
+        height: calc(100vh - 100rpx); */
+        overflow-y:scroll;
+        background:#f2f2f2;
+        .chat-msg-body{
+            display:flow-root;
+            overflow:hidden;
+            padding: 20rpx 30rpx;
+            .chat-msg-time{
+                font-family: PingFangSC-Regular;
+                font-size: 24rpx;
+                color: #999999;
+                letter-spacing: 0;
+                text-align: center;
+                margin-bottom:20rpx;
+            }
+            .chat-msg-avatar{
+                width:80rpx;
+                height:80rpx;
+                border-radius:50%;
+                float:left;
+            }
+            .chat-msg-content{
+                float:left;
+                margin:0 20rpx;
+                padding:18rpx 20rpx;
+                background:#fff;
+                border-radius:0 20rpx 20rpx 20rpx;
+                max-width:490rpx;
+                font-family: PingFangSC-Regular;
+                font-size: 32rpx;
+                color: #333333;
+                letter-spacing: 0;
+                word-break:break-all;
+                line-height:50rpx;
+                .chat-msg-title{
+                    text-align:left;
+                }
+                .chat-msg-btn{
+                    width:442rpx;
+                    height:68rpx;
+                    border-radius:4rpx;
+                    border: 2rpx solid #DDDDDD;
+                    margin-top:20rpx;
+                    text-align:center;
+                    line-height:68rpx;
+                    font-size: 28rpx;
+                }
+            }
+            .chat-img-box{
+                position:relative;
+                font-family: PingFangSC-Regular;
+                font-size: 32rpx;
+                color: #FFFFFF;
+                text-align: center;
+                line-height:300rpx;
+                margin:0 20rpx;
+            }
+            .chat-img-box,.chat-msg-img{
+                width:400rpx;
+                border-radius:0 20rpx 20rpx 20rpx;
+                float:left;
+            }
+            .chat-img-mask{
+                width:400rpx;
+                height:300rpx;
+                border-radius:0 20rpx 20rpx 20rpx;
+                background:rgba(0,0,0,.5);
+                position:absolute;
+                left:20rpx;
+                top:0;
+            }
+            &.chat-right .chat-msg-avatar{
+                float:right;
+            }
+            &.chat-right .chat-msg-content{
+                float:right;
+                border-radius:20rpx 0 20rpx 20rpx;
+                background-image: linear-gradient(-180deg, #008DFF 0%, #30B2DC 100%);
+                color: #FFFFFF;
+            }
+            &.chat-right .chat-img-box{
+                border-radius:20rpx 0 20rpx 20rpx;
+                float:right;
+            }
+            &.chat-right .chat-img-box .chat-msg-img{
+                border-radius:20rpx 0 20rpx 20rpx;
+                float:right;
+            }
+        }
+    }
+    .chat-input-zone{
+        width:100%;
+        min-height:100rpx;
+        background:#ffffff;
+        padding:18rpx 30rpx;
+        position: relative;
+        .chat-input-view{
+            background: #F2F2F2;
+            border-radius: 4px;
+            width:616rpx;
+            min-height:64rpx;
+            max-height:320rpx;
+            line-height:64rpx;
+            overflow-y:auto;
+            float:left;
+            padding:10rpx 20rpx;
+            box-sizing:border-box;
+        }
+        .chat-input{
+            font-family: PingFangSC-Regular;
+            font-size: 32rpx;
+            color: #333333;
+            letter-spacing: 0;
+        }
+        .chat-show-upload{
+            width:48rpx;
+            height:48rpx;
+            border-radius:50%;
+            position: absolute;
+            right: 30rpx;
+            top:26rpx;
+            background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/chat-msg-upload.png);
+            background-size:48rpx;
+            &.close-upload{
+                background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/chat-close-panel.png);
+                background-size:48rpx;
+            }
+        }
+        .chat-send-msg{
+            float:left;
+            width:90rpx;
+            height:54rpx;
+            margin-top:8rpx;
+            text-align:center;
+            line-height:54rpx;
+            background: #DBDBDB;
+            border-radius: 8rpx;
+            font-family: PingFangSC-Regular;
+            font-size: 28rpx;
+            color: #FFFFFF;
+            letter-spacing: 0;
+            &.sended{
+                background: #4E88FF;
+                color:#fff;
+            }
+        }
+    }
+    .chat-input-panel{
+        width:100%;
+        height:252rpx;
+        background:#ffffff;
+        .chat-btn{
+            margin:20rpx 0 0 62rpx;
+            float:left;
+            font-family: PingFangSC-Regular;
+            font-size: 24rpx;
+            color: #888888;
+            letter-spacing: 0;
+            text-align: center;
+            width:110rpx;
+            height:153rpx;
+            line-height:260rpx;
+            text-align:center;
+            background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/chat-take-pic.png) no-repeat center top;
+            background-size:110rpx 110rpx;
+            &.upload-pic{
+                background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/chat-upload-pic.png) no-repeat center top;
+                background-size:110rpx 110rpx;
+            }
+        }
+    }
+}
+
+.chat-mask{
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.5);
+    position:fixed;
+    left:0;
+    top:0;
+    .chat-dialog{
+        width:540rpx;
+        height:384rpx;
+        background: #fff;
+        border-radius:4rpx;
+        position:absolute;
+        left:0;
+        top:0;
+        bottom:0;
+        right:0;
+        margin:auto;
+        .chat-dialog-close{
+            width:24rpx;
+            height:24rpx;
+            text-align:center;
+            line-height:24rpx;
+            color:#cacaca;
+            font-size:40rpx;
+            font-weight:bold;
+            position:absolute;
+            right:28rpx;
+            top:28rpx;
+
+        }
+        .chat-dialog-title{
+            font-family: PingFangSC-Regular;
+            font-size: 32rpx;
+            color: #333333;
+            padding: 0 28rpx;
+            height:88rpx;
+            line-height:88rpx;
+            border-bottom: 1rpx solid #E6E6E6;
+        }
+        .chat-dialog-body{
+            padding:32rpx 30rpx 40rpx;
+            height:208rpx;
+            .chat-dialog-body-title{
+                font-family: PingFangSC-Regular;
+                font-size: 28rpx;
+                color: #666666;
+            }
+            .chat-dialog-input{
+                height:80rpx;
+                background: #F9F9F9;
+                border: 1rpx solid #E6E6E6;
+                border-radius: 4rpx;
+                padding:0 20rpx;
+                font-family: PingFangSC-Regular;
+                font-size: 26rpx;
+                color: #333333;
+                margin-top:16rpx;
+            }
+        }
+        .chat-dialog-foot{
+            height:88rpx;
+            border-top:1rpx solid #E6E6E6;
+            display:flex;
+            .chat-btn{
+                flex:1;
+                line-height:88rpx;
+                text-align:center;
+                font-family: PingFangSC-Regular;
+                font-size: 32rpx;
+                color: #333333;
+                text-align: center;
+                &.chat-btn-sure{
+                    color: #FF552E;
+                }
+            }
+        }
+    }
+}
+</style>

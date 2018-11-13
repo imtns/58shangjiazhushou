@@ -1,22 +1,31 @@
 <template>
     <view class='mod-upload'>
         <view class="main-body">
-            <view class="main-title">上传{{titleStatus[uploadtype-1]}}</view>
-            <view class="main-boy-line main-body-flex">
-                <view class="main-upload"  @tap='bindUploadImage' wx:if="{{uploadtype=='1' && vm.length<maxCount-0}}"></view>
-                <view class="main-upload"  @tap='bindUploadVideo' wx:if="{{uploadtype=='2' && vm.length<maxCount-0}}"></view>
-                <view class="main-show-image" wx:for='{{vm}}' wx:key='index'>
-                    <image class="main-upload-image" data-index='{{index}}' src="{{item}}" @tap="bindPreviewImage({{index}})" wx:if="{{uploadtype==='1'}}"/>
-                    <view class="main-upload-video" data-index='{{index}}' @tap="bindPlayVideo({{item}})" wx:else><image class="main-upload-video-arrow" src="https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/img/video-play.png"/></view>
-                    <view class="main-del-image" hidden="{{loading}}" @tap.stop="onCancelImage" wx:if="{{showDelete}}"></view>
+            <view class="main-title" wx:if="{{ showType === 'normal' }}">上传{{titleStatus[uploadtype-1]}}</view>
+            <view class="main-body-flex" :class="{ 'main-boy-line': showType === 'normal' }">
+                <view class="main-upload-order" :class="{ 'show-add': vm.length === 0 }" @tap='bindUploadImage' wx:if="{{ showType === 'order' }}">
+                    <view class="inner-title" wx:if="{{ vm.length === 0 }}">添加图片</view>
+                    <block wx:if="{{ showType === 'order' && vm.length > 0 }}">
+                        <image class="image-preview" mode="aspectFill" src="{{ vm[0] }}"/>
+                        <view class="replace-image">替换图片</view>
+                    </block>
                 </view>
+                <block wx:if="{{ showType === 'normal' }}">
+                    <view class="main-upload" @tap='bindUploadImage' wx:if="{{uploadtype=='1' && vm.length<maxCount-0}}"></view>
+                    <view class="main-upload" @tap='bindUploadVideo' wx:if="{{uploadtype=='2' && vm.length<maxCount-0}}"></view>
+                    <view class="main-show-image" wx:for='{{vm}}' wx:key='index'>
+                        <image class="main-upload-image" data-index='{{index}}' src="{{item}}" @tap="bindPreviewImage({{index}})" wx:if="{{uploadtype==='1'}}"/>
+                        <view class="main-upload-video" data-index='{{index}}' @tap="bindPlayVideo({{item}})" wx:else><image class="main-upload-video-arrow" src="https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/img/video-play.png"/></view>
+                        <view class="main-del-image" hidden="{{loading}}" @tap.stop="onCancelImage" wx:if="{{showDelete}}"></view>
+                    </view>
+                </block>
             </view>
         </view>
     </view>
 </template>
 <script>
 import wepy from 'wepy';
-import { toastSync } from '../utils';
+import { toast, getNetStatus } from '../utils';
 
 const host = 'https://yaofa.58.com';
 export default class Uploader extends wepy.component {
@@ -30,6 +39,10 @@ export default class Uploader extends wepy.component {
         uploadtype: String,
         maxSize: String,
         maxCount: String,
+        defaultImages: { // 默认图片
+            type: Array,
+            default: [],
+        },
         showDelete: {
             type: Boolean,
             default: true,
@@ -46,20 +59,46 @@ export default class Uploader extends wepy.component {
             type: String,
             default: '/wosFileUpload',
         },
+        // normal 大图，order 预约组件中需要的样式
+        showType: {
+            type: String,
+            default: 'normal',
+        },
     }
     computed = {
         currentCount () {
+            if (this.showType === 'order') {
+                return 1;
+            }
+
             const count = this.maxCount - this.vm.length;
             return count > 0 ? count : 0;
         },
     }
+    watch = {
+        defaultImages(v) {
+            this.vm = v;
+            this.$apply();
+        },
+    }
     methods = {
         async bindUploadImage () {
-            if (this.uploading) return;
+            if (this.uploading) {
+                return;
+            }
+
             const self = this;
-            const start = this.data.vm.length || 0;
             const { tempFilePaths } = await wepy.chooseImage({ count: this.currentCount, sizeType: 'compressed' });
+
+            if (self.showType === 'order' && self.vm.length) {
+                self.vm = [];
+                self.images = [];
+                self.$apply();
+            }
+
+            const start = this.data.vm.length || 0;
             const fileSize = tempFilePaths.length;
+
             let sfileset = [...self.vm];
             const simages = [...self.images];
             sfileset = self.batchAddArray(
@@ -80,7 +119,7 @@ export default class Uploader extends wepy.component {
             tempFilePaths.map(async (file, i) => {
                 const [e, data] = await self.uploadImage(file);
                 if (e) {
-                    await toastSync(e);
+                    await toast(e);
                     sfileset.splice(start + i, 1); // 失败删除
                 } else {
                     sfileset.splice(start + i, 1, file); // 成功替换
@@ -90,11 +129,13 @@ export default class Uploader extends wepy.component {
                 self.images = [...simages];
                 self.vm = [...sfileset];
                 // 所有图片上传完成
+                console.log(file, i);
                 if (fileSize - 1 === i) {
                     self.$emit('changeimages', {
                         uploading: false,
                         images: self.images,
                     });
+                    self.uploading = false;
                 }
                 self.$apply();
                 return file;
@@ -129,7 +170,7 @@ export default class Uploader extends wepy.component {
             tempFilePaths.map(async (file, i) => {
                 const [e, data] = await self.uploadVideo(file);
                 if (e) {
-                    await toastSync(e);
+                    await toast(e);
                     sfileset.splice(start + i, 1); // 失败删除
                 } else {
                     sfileset.splice(start + i, 1, file); // 成功替换
@@ -181,7 +222,7 @@ export default class Uploader extends wepy.component {
         },
     }
     uploadImage (file) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             wepy.uploadFile({
                 url: host + this.uploadImageApi,
                 filePath: file,
@@ -192,47 +233,53 @@ export default class Uploader extends wepy.component {
                     const res = JSON.parse(response.data);
                     const { state, msg, data } = res;
                     if (state === 100) {
-                        resolve([null, data]);
-                    } else {
-                        resolve([msg]);
+                        return resolve([null, data]);
                     }
                     console.log(res);
+                    return resolve([msg]);
                 } catch (e) {
                     console.log(e);
-                    resolve([e]);
+                    return resolve([e]);
                 }
             }).catch((e) => {
                 console.log(e);
                 const { errMsg } = e;
-                resolve([errMsg]);
+                return resolve([errMsg]);
             });
         });
     }
     uploadVideo (file) {
-        return new Promise((resolve) => {
-            wepy.uploadFile({
-                url: host + this.uploadVideoApi,
-                filePath: file,
-                name: 'content',
-            }).then((response) => {
-                try {
-                    console.log(response);
-                    const res = JSON.parse(response.data);
-                    const { state, msg, data } = res;
-                    if (state === 100) {
-                        resolve([null, data]);
-                    } else {
-                        resolve([msg]);
+        return getNetStatus().then(netStatus => {
+            // 只有wifi环境下才能上传视频
+            if (netStatus !== 1) {
+                return toast('请切换到wifi环境下上传视频');
+            }
+
+            return new Promise((resolve) => {
+                wepy.uploadFile({
+                    url: host + this.uploadVideoApi,
+                    filePath: file,
+                    name: 'content',
+                }).then((response) => {
+                    try {
+                        console.log(response);
+                        const res = JSON.parse(response.data);
+                        const { state, msg, data } = res;
+                        if (state === 100) {
+                            resolve([null, data]);
+                        } else {
+                            resolve([msg]);
+                        }
+                        console.log(res);
+                    } catch (e) {
+                        console.log(e);
+                        resolve([e]);
                     }
-                    console.log(res);
-                } catch (e) {
+                }).catch((e) => {
                     console.log(e);
-                    resolve([e]);
-                }
-            }).catch((e) => {
-                console.log(e);
-                const { errMsg } = e;
-                resolve([errMsg]);
+                    const { errMsg } = e;
+                    resolve([errMsg]);
+                });
             });
         });
     }
@@ -256,6 +303,45 @@ export default class Uploader extends wepy.component {
 <style lang="scss">
 /* 上传区 */
 @import '../css/regist.scss';
+
+.main-upload-order {
+    width: 120rpx;
+    height: 120rpx;
+    border-radius: 8px;
+    margin-bottom: 20rpx;
+    overflow: hidden;
+    position: relative;
+
+    &.show-add {
+        border: 1px solid #CCCCCC;
+        background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/order-edit-add.png') no-repeat;
+        background-size: 60rpx 60rpx;
+        background-position: 30rpx 14rpx;
+    }
+    .inner-title {
+        margin: 84rpx 20rpx 8rpx;
+        font-size: 20rpx;
+        color: #999;
+        white-space: nowrap;
+    }
+    .image-preview {
+        width: 120rpx;
+        height: 120rpx;
+    }
+    .replace-image {
+        width:100%;
+        height: 45rpx;
+        position: absolute;
+        bottom: 0;
+        color: #fff;
+        font-size: 24rpx;
+        letter-spacing: .36rpx;
+        background: rgba(0,0,0,0.50);
+        box-shadow: 2rpx 6rpx 6rpx 0 rgba(213,219,255,0.50);
+        text-align:center;
+        line-height:45rpx;
+    }
+}
 .uploadInfo {
     padding-bottom: 70rpx;
     .article {

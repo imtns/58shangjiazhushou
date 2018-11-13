@@ -1,26 +1,70 @@
 <script>
 import wepy from 'wepy';
 import 'wepy-async-function';
-// import { alert } from './utils';
+import DoMiniProgramBack from './utils/scene';
+import { globalData } from './utils/globalData';
+
+// 回调小程序类型
+const CALLBACKAPPS = {
+    wx2a9c6eeb1c44a284: 'Login', // 从58验证
+    wx67b75e86c9daef45: 'OpenPay', // 开通支付小程序
+    wxee214e01d07c9db0: 'ToMymp', // 从同镇小程序个人中心-> 管理我的小程序
+    wxf03e52adc4b13448: 'Login', // 从58验证
+};
 
 export default class extends wepy.app {
     constructor() {
         super();
         this.use('promisify');
     }
+
     config = {
         pages: [
-            'pages/home', // 登陆之后的主页
-            'pages/intro', // 没有登陆的介绍页面
+            'pages/home',
+            'pages/app/pickBusinessHour',
+            'pages/app/accountList', // 账号列表
+            // 登录页面
+            'pages/passport/passport',
+            'pages/passport/login/login',
+
+            'pages/edit/textEdit',
+            // 登录之后的主页
+            'pages/templateList',
+            'pages/index/index',
+
+            // 模板编辑页面
+            'pages/edit/coupon', // 优惠券编辑
+            'pages/edit/consumer', // 个人中心编辑
+            'pages/edit/text', // 文本编辑
+            'pages/edit/order', // 订单标记
+            'pages/edit/imageSwiper', // 轮播图编辑
+            'pages/edit/video', // 门店视频编辑
+            'pages/edit/title', // 标题编辑
+            'pages/edit/article', // 文章编辑
+            'pages/edit/images', // 预览图编辑
+            'pages/edit/goods', // 商品编辑
+            // 底部tab页面
+            'pages/contact/contact', // 关于我们
+            'pages/news/news', // 新闻介绍
+            'pages/product/product', // 产品预览
+            'pages/custom/custom', // 用户自定义界面
+            'pages/article/article', // 文章
+
+
+            'pages/intro', // 没有登录的介绍页面
             'pages/myMp', // 我的小程序
             'pages/AppInfo', // 小程序信息
             'pages/UploadInfo', // 上传素材首页
+            'pages/resourceManage', // 素材管理
             'pages/send', // 测试授权页面专用，勿删
             'pages/progress', // 完成度页面
             'pages/AppEdit', // 小程序编辑
+            'pages/app/businessInfo', // 营业信息编辑
             'pages/buy', // 购买页面
             'pages/index',
+            'pages/noticeSet', // 消息通知设置页面
             'pages/noticeList', // 消息通知页面
+            'pages/sysNoticeList', // 系统通知页面
             'pages/registed', // 当前小程序已注册
             'pages/registMainAccount', // 主体账户信息
             'pages/registManage', // 管理员信息
@@ -31,6 +75,70 @@ export default class extends wepy.app {
             'pages/UploadArticle', // 上传文章
             'pages/UploadInfoSuccess', // 素材上传成功
             'pages/VideoPlay', // 视频播放页面
+            'pages/orderNoticeList', // 订单提醒页面
+            'pages/accountNoticeList', // 入账提醒页面
+            'pages/OrderList', // 订单列表
+            'pages/OrderDetail', // 订单详情
+
+            'pages/goodsComponentlist', // 商品列表
+            'pages/goodsComponentGroup', // 商品分组
+            'pages/goodsComponentAdd', // 商品添加
+            'pages/goodsComponentDetail', // 商品详情
+            'pages/goodsComponent/publish', // 商品发布
+            'pages/goods/orderDetail', // 商品订单
+
+            'pages/articleComponentCreate', // 文章添加(不选分组)
+            'pages/articleComponentAdd', // 文章添加(选分组)
+            'pages/articleComponentlist', // 文章列表
+            'pages/articleComponentDetail', // 文章详情
+            'pages/orderComponentDetail', // 预约预览页面
+            'pages/paymentRecord', // 收款记录
+            'pages/payChoseTime', // 选择时间
+            'pages/orderComponentlist', // 预约列表
+            'pages/orderComponentGroup', // 预约分组
+            'pages/couponManage', // 优惠券管理
+            'pages/couponEdit', // 优惠券编辑页
+            'pages/couponType', // 优惠券类型
+            'pages/couponValidTime', // 优惠券生效时间
+            'pages/couponService', // 优惠券适用产品
+            'pages/couponPreview', // 优惠券预览
+            'pages/orderComponentEdit', // 预约编辑
+            'pages/OpenPay', // 开通支付
+            'pages/CateSelector', // 类目选择
+            'pages/multiSelector', // 多级选择页面
+            'pages/followPublic', // 关注公众号页
+            'pages/purchase', // 购买
+            'pages/cropper', // 图片裁剪
+            'pages/orderDetailSelector', // 服务详情-服务详情编辑
+            'pages/shopScore', // 店铺评分
+
+            'pages/chatMessages', // 消息tab 消息列表
+
+            'pages/visitorLogs', // 访客记录页面
+            'pages/visitorInfo', // 访客信息页面
+            'pages/myBizCard', // 我的名片页面
+            'pages/myBizCardSave', // 我的名片保存页面
+            'pages/articleComponentGroup', // 文章分组页面
+            'pages/newBizCard', // 新建名片页面
+            'pages/choseStyle', // 名片样式选择
+            'pages/choseImageStyle', // 名片保存图片样式选择
+            'pages/activityIntro', // 分享名片赢大奖活动说明页
+            'pages/activityRedirect', // 分享名片赢大奖活动说明页
+            'pages/orderWebpage', // 订单列表赚钱秘籍m页
+
+            'pages/regist/index', // 快速注册页面
+            'pages/regist/qrcode', // 注册二维码
+            'pages/regist/notice', // 创建小程序提示页
+            'pages/regist/edit', // 创建小程序页面
+            'pages/regist/guide', // 注册引导
+        ],
+        subPackages: [
+            {
+                root: 'packageChat',
+                pages: [
+                    'wechat/chat', // 聊天
+                ],
+            },
         ],
         window: {
             backgroundTextStyle: 'light',
@@ -38,41 +146,154 @@ export default class extends wepy.app {
             navigationBarTitleText: 'WeChat',
             navigationBarTextStyle: 'black',
         },
+        tabBar: {
+            selectedColor: '#4E88FF',
+            list: [{
+                pagePath: 'pages/home',
+                text: '店铺',
+                iconPath: 'pages/assets/tabbar/tabbar_shop.png',
+                selectedIconPath: 'pages/assets/tabbar/tabbar_shop_selected.png',
+            }, {
+                pagePath: 'pages/chatMessages',
+                text: '消息',
+                iconPath: 'pages/assets/tabbar/tabbar_message.png',
+                selectedIconPath: 'pages/assets/tabbar/tabbar_message_selected.png',
+            }, {
+                pagePath: 'pages/OrderList',
+                text: '订单',
+                iconPath: 'pages/assets/tabbar/tabbar_order.png',
+                selectedIconPath: 'pages/assets/tabbar/tabbar_order_selected.png',
+            }],
+        },
+        plugins: {
+            loginSdk: {
+                version: '2.0.2',
+                provider: 'wxd1d3a59c204109d4',
+            },
+        },
+        navigateToMiniProgramAppIdList: [
+            'wx2a9c6eeb1c44a284', // 58登录
+            'wx86c7b0019914401c', // 同城优选
+            'wx67b75e86c9daef45', // 支付助手
+            'wx49b3af93cbcd737b', // 商家通
+        ],
     }
     onLaunch () {
-        console.log('onlainch');
+        console.log('onlaunch');
+        // wx.setStorageSync('ppu', 'UID=48738323270929&UN=h34xb9&TT=46db95bd08ff17aed4f74a9e1c1ba888&PBODY=WFnnNeXIm9dY3tOwu6eYfH52_kf5_U62WsBMQiUspovzO0RVDm5FIjwIBWA9IhGMMJYwSxThMw9diOnMySSKfme3pcUqS5_owtYxQO3--zOvqTVDXS_neYODpicpJFWPcXA2faeBuyDgd32t7aMf643hlVh1E6Ng5zNgVi6zGZg&VER=1');
     }
     onShow (options) {
-        const { path } = options;
+        // 版本更新检查
+        if (wx.getUpdateManager) {
+            // 1.9.90版本开始支持
+            const updateManager = wx.getUpdateManager();
+
+            updateManager.onUpdateReady(() => {
+                wx.showModal({
+                    title: '更新提示',
+                    content: '新版本已经准备好，是否重启应用？',
+                    success({ confirm }) {
+                        if (!confirm) {
+                            return;
+                        }
+                        // 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
+                        updateManager.applyUpdate();
+                    },
+                });
+            });
+
+            updateManager.onUpdateFailed(() => {
+                // 新版本下载失败
+                console.log('下载新版本失败');
+            });
+        }
+
+        // 赋值场景值、referrer信息
+        const {
+            scene, referrerInfo = {}, path,
+        } = options;
+        const { appId } = referrerInfo;
+        const fromAppId = appId;
+        // 获取进入小程序场景值，埋点所用
+        Object.assign(globalData, {
+            appScene: scene,
+        });
+        console.log(globalData);
+        // action:通过fromAppId和scene返回当前小程序处理
+        console.log('referrerInfo', referrerInfo);
         console.log(path);
-        // const pages = getCurrentPages();
-        // const currPage = pages[pages.length - 1];
-        // console.log('currPage', currPage.route);
-        if (options.scene === 1038 && path === 'pages/intro') {
-            if (!options.referrerInfo) {
-                console.log('options.referrerInfo为空');
+        // const path = '/pages/home?toRedirect=/pages/OrderDetail&ParamNames=id&ParamValues=123456';
+        let action = scene === 1038 || scene === '1038' ? CALLBACKAPPS[fromAppId] : '';
+
+        // 1037进入 从别的小程序进入
+        action = scene === 1037 || scene === '1037' ? CALLBACKAPPS[fromAppId] : action;
+        // 登录已经上线保持原有判断逻辑
+        // TODO: 全部转为登录插件后删除
+        if (scene === 1038 && path === 'pages/intro' && fromAppId === 'wx2a9c6eeb1c44a284') {
+            action = 'Login';
+        }
+        // 从58同城微学院公共号跳转到小程序
+        if (options.query && JSON.stringify(options.query) !== '{}' && scene === 1043) {
+            const { query } = options;
+            const { toRedirect } = query;
+            wepy.setStorageSync('query', query);
+            if (wepy.getStorageSync('ppu') && !query.ParamNames) {
+                if (toRedirect === '/pages/chatMessages') {
+                    // 跳转到消息列表页
+                    setTimeout(() => {
+                        wepy.switchTab({
+                            url: toRedirect,
+                        });
+                    }, 1000);
+                } else {
+                    setTimeout(() => {
+                        wepy.navigateTo({
+                            url: toRedirect,
+                        });
+                    }, 1000);
+                }
             }
-            if (!options.referrerInfo.extraData) {
-                console.log('options.referrerInfo.extraData为空');
-            }
-            let { extraData } = options.referrerInfo;
-            if (typeof extraData !== 'object') {
-                extraData = JSON.parse(extraData);
-            }
-            if (extraData.ppu !== undefined) { // 如果获取ppu成功
-                console.log(`获取PPU成功！ ${extraData.ppu}`);
-                wepy.setStorageSync('ppu', extraData.ppu);
+            if (wepy.getStorageSync('ppu') && query.ParamNames) {
+                let paramsStr = '';
+                if (query.ParamNames.split('|').length === 1) {
+                    paramsStr = `&${query.ParamNames}=${query.ParamValues}`;
+                } else {
+                    const keyArr = query.ParamNames.split('|');
+                    const valueArr = query.ParamValues.split('|');
+                    keyArr.forEach((item, index) => {
+                        paramsStr += `&${keyArr[index]}=${valueArr[index]}`;
+                    });
+                }
                 setTimeout(() => {
-                    wepy.reLaunch({
-                        url: '/pages/home',
+                    wepy.navigateTo({
+                        url: `${toRedirect}?${paramsStr.substring(1)}`,
                     });
                 }, 1000);
             }
         }
+        // 从小程序返回场景处理
+        action && DoMiniProgramBack[`Do${action}`].call(this, referrerInfo.extraData);
     }
 }
 </script>
 
 <style lang="scss">
-@import './app.scss';
+@import "css/common.scss";
+@import "components/mod/information/information.wxss";
+@import "components/mod/imageSwiper/imageSwiper.wxss";
+@import "components/mod/images/images.wxss";
+@import "components/mod/me/me.wxss";
+@import "components/mod/goods/goods.wxss";
+@import "components/mod/text/text.wxss";
+@import "components/mod/title/title.wxss";
+@import "components/mod/video/video.wxss";
+@import "components/mod/call/call.wxss";
+@import "components/mod/services/services.wxss";
+@import "components/mod/article/article.wxss";
+@import "components/mod/evaluation/evaluation.wxss";
+@import "components/mod/reserve/reserve.wxss";
+@import "components/mod/coupon/coupon.wxss";
+@import "components/mod/pay/pay.wxss";
+@import "components/mod/branch/branch.wxss";
+@import "components/mod/tabBar/tabBar.wxss";
 </style>

@@ -20,6 +20,30 @@
                 <text class="appedit-form-label">联系电话</text>
                 <input class="appedit-form-input" maxlength='11' type="number" @input="setMobile" placeholder="请输入" placeholder-class="appedit-form-placeholder" value="{{form.telphone}}"/>
             </view>
+            <!-- 同镇用户所属行业只可编辑一次，mpSource:3 代表同镇，所属行业已编辑 -->
+            <view class="appedit-content-list-item"
+             wx:if="{{!cateEditable}}">
+                <text class="appedit-form-label">所属行业</text>
+                <view class="appedit-form-cate">
+                    {{ form.cate1Name+' '+form.cate2Name+' '+form.cate3Name }}
+                </view>
+                <text class="appedit-form-arrow"></text>
+            </view>
+            <!-- <navigator url="/pages/CateSelector?cate1={{form.cate1}}&cate2={{form.cate2}}&cate3={{form.cate3}}" wx:else> -->
+            <navigator url="/pages/multiSelector?type=trade" wx:else>
+                <view class="appedit-content-list-item">
+                    <text class="appedit-form-label">所属行业</text>
+                    <view class="appedit-form-cate">
+                        <block wx:if="{{form.cate1Name}}">
+                            {{ form.cate1Name+' '+form.cate2Name+' '+form.cate3Name }}
+                        </block>
+                        <block wx:else>
+                            请选择
+                        </block>
+                    </view>
+                    <text class="appedit-form-arrow"></text>
+                </view>
+             </navigator>
             <picker mode="multiSelector" @change="setCity" @columnchange="bindCity" range="{{areas}}" range-key="localName" value="{{selCityIndex}}">
                 <view class="appedit-content-list-item">
                     <text class="appedit-form-label">小程序城市</text>
@@ -31,18 +55,31 @@
                     </view>
                 </view>
             </picker>
-            <view class="appedit-content-list-item appedit-content-list-item-noborder">
+            <view class="appedit-content-list-item appedit-content-list-item-noborder" @tap="setLocation">
                 <text class="appedit-form-label-address">小程序具体地点</text>
-                <view class="appedit-form-btn-location" @tap="setLocation">定位</view>
+                <view class="appedit-form-cate address">
+                    <text class="appedit-form-placeholder" wx:if="{{ !form.address }}">请选择</text>
+                </view>
+                <text class="appedit-form-arrow address"></text>
             </view>
-            <view class="appedit-content-list-item appedit-content-list-item-noborder">
-                <textarea name="" id="" cols="30" rows="10" class="appedit-form-input-addressdetail"  placeholder="请输入" placeholder-class="appedit-form-placeholder" @input="setDetailAdress" value="{{form.address}}"></textarea>
+            <view class="appedit-content-list-item appedit-content-list-item-noborder address-detail" wx:if="{{ form.address }}">
+                <textarea
+                    name=""
+                    id=""
+                    cols="30"
+                    rows="10"
+                    class="appedit-form-input-addressdetail"
+                    placeholder="请输入"
+                    placeholder-class="appedit-form-placeholder"
+                    @input="setDetailAdress"
+                    value="{{form.address}}">
+                </textarea>
             </view>
         </view>
-        <view class="appedit-map">
+        <!-- <view class="appedit-map">
             <map id="map"  class="appedit-map-in" longitude="{{longitude}}" latitude="{{latitude}}"
              scale="14" markers="{{markers}}"></map>
-        </view>
+        </view> -->
         <view class="appedit-submit submit-enable" @tap="bindSave" wx:if="{{enableSave}}">保存</view>
         <view class="appedit-submit" @tap="bindSave" wx:else>保存</view>
     </view>
@@ -50,8 +87,9 @@
 
 <script>
 import wepy from 'wepy';
-import { picSrcDomain, filteremoji, toastSync } from '../utils';
-import { get } from '../utils/ajaxP';
+import { picSrcDomain, filteremoji, toast, globalService, alertP, getNetStatus } from '../utils';
+import { get } from '../utils/ajax';
+import { getUid, SendClickLog } from '../utils/maidian';
 
 const host = 'https://yaofa.58.com';
 const uploadApi = `${host}/fileUpload`;
@@ -62,7 +100,6 @@ const saveAppApi = '/mplogic/modifympinfo';
 
 export default class AppEdit extends wepy.page {
     config = {
-        disableScroll: true,
         navigationBarTitleText: '小程序编辑',
     }
     data = {
@@ -77,6 +114,7 @@ export default class AppEdit extends wepy.page {
             province: '5001',
         },
         tempLogo: '',
+        cateEditable: true, // 所属行业是否可以编辑
     }
     computed = {
         enableSave () {
@@ -102,6 +140,207 @@ export default class AppEdit extends wepy.page {
         },
     }
 
+    methods = {
+        async bindCity (e) {
+            const { column, value } = e.detail;
+            if (column === 1) {
+                return;
+            }
+            try {
+                const { dispLocalID } = this.areas[0][value];
+                const { data } = await get(cityApi + dispLocalID);
+                this.areas = [this.areas[0], data];
+                this.$apply();
+            } catch (err) {
+                this.toast(err.message);
+            }
+        },
+        setCity (e) {
+            const arr = e.detail.value;
+            const cityIdx = arr[1] && 0;
+            const province = this.areas[0][arr[0]];
+            const city = this.areas[1][cityIdx];
+            this.selCity = [province.localName, city.localName];
+            this.updateForm({
+                province: province.dispLocalID,
+                provinceName: province.localName,
+                city: city.dispLocalID,
+                cityName: city.localName,
+            });
+        },
+        async setLogo () {
+            try {
+                const netStatus = await getNetStatus();
+
+                if (netStatus === 0) {
+                    toast('无网络');
+                    return;
+                }
+
+                const { tempFilePaths } = await wepy.chooseImage({
+                    count: 1,
+                    sizeType: 'compressed ',
+                });
+                const { confirm } = await alertP('是否裁剪图片？', '提示');
+
+                if (confirm) {
+                    // 去裁剪
+                    wepy.navigateTo({
+                        url: `/pages/cropper?url=${tempFilePaths[0]}&ratio=1,1`,
+                    });
+                } else {
+                    this.uploadLogo(tempFilePaths[0]);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        },
+        setAppName (e) {
+            let nickName = e.detail.value;
+            nickName = filteremoji(nickName);
+            this.updateForm({ nickName });
+            return {
+                value: nickName,
+            };
+        },
+        setMobile (e) {
+            const telphone = e.detail.value;
+            this.updateForm({ telphone });
+        },
+        async setLocation () {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_editapp_location');
+            const { address, latitude, longitude } = await wepy.chooseLocation();
+            this.updateForm({ address, addressLatitude: latitude, addressLongitude: longitude });
+        },
+        setDetailAdress (e) {
+            let address = e.detail.value;
+            address = filteremoji(address);
+            this.updateForm({ address });
+            return {
+                value: address,
+            };
+        },
+        async bindSave () {
+            const { form } = this.data;
+            const verify = await this.verify();
+            if (!verify) return;
+            const sendData = {
+                mpid: this.mpid, // 小程序id
+                logo: form.headImg, // 小程序logo 只有优享小程序能改
+                telphone: form.telphone, // 电话
+                mpname: form.nickName, // 小程序名称 只有优享小程序能改
+                privince: form.province,
+                city: form.city, // 城市
+                address: form.address, // 地址
+                lat: form.addressLatitude, // 纬度
+                lnt: form.addressLongitude, // 经度
+                cate1: form.cate1, // 所属行业第一级
+                cate2: form.cate2, // 所属行业第二级
+                cate3: form.cate3, // 所属行业第三级
+            };
+            console.log(sendData);
+            try {
+                await get(saveAppApi, sendData);
+                wepy.navigateBack();
+            } catch (err) {
+                this.toast(err.message);
+            }
+        },
+    }
+
+    async uploadLogo(tempPath) {
+        try {
+            const response = await wepy.uploadFile({
+                url: uploadApi,
+                filePath: tempPath,
+                name: 'content',
+            });
+            const res = JSON.parse(response.data);
+            const { state, msg, data } = res;
+            if (state === 100) {
+                this.tempLogo = tempPath;
+                this.updateForm({ headImg: data.content });
+            } else {
+                this.toast(msg);
+            }
+        } catch ({ errMsg }) {
+            this.toast(errMsg);
+        }
+    }
+
+    async onLoad (options) {
+        const mpid = options.mpid || wepy.getStorageSync('current_mpid');
+        if (!mpid) {
+            wepy.navigateBack();
+        }
+        this.mpid = mpid;
+        await this.getAppInfo(this.mpid);
+        this.recordFirstCateStatus(this.form);
+        await this.getLocation();
+        await this.getProvinces();
+        this.defaultSelCityIndex();
+    }
+    onShow () {
+        if (globalService.get('afterCrop')) {
+            globalService.set('afterCrop', false);
+            const url = globalService.get('cropperUrl');
+            this.logoUrl = picSrcDomain() + url;
+            this.form.headImg = url;
+        }
+        this.updateCateChoice();
+    }
+    // 记录页面加载是所属行业类别编辑状态
+    // 如果小程序属于同镇mpSource= 3且所属行业cate2为空则可以编辑
+    // 或者mpSource!==3则可以编辑
+    recordFirstCateStatus (appInfo) {
+        const { mpSource, cate2 } = appInfo;
+        console.log('mpSource', mpSource, 'cate2', cate2);
+        this.cateEditable = !(mpSource && mpSource.toString() === '3');
+    }
+    // 更新所属行业类别
+    updateCateChoice() {
+        const {
+            cate1 = '',
+            cate1Name = '',
+            cate2 = '',
+            cate2Name = '',
+            cate3 = '',
+            cate3Name = '',
+        } = globalService.get('multiSelector');
+
+        // 检查
+        if ([cate1, cate2, cate3].every(v => typeof v !== 'number')) {
+            return;
+        }
+
+        this.updateForm({
+            cate1,
+            cate1Name,
+            cate2,
+            cate2Name,
+            cate3,
+            cate3Name,
+        });
+    }
+    // updateCateChoice () {
+    //     if (!this.$parent.globalData || !this.$parent.globalData.cateChooice) return;
+    //     const form = {};
+    //     console.log('cateChooice0', this.$parent.globalData.cateChooice);
+    //     // 从所属类目值选择页面返回重新赋值
+    //     const cateChooice = (this.$parent.globalData && this.$parent.globalData.cateChooice) ?
+    //         this.$parent.globalData.cateChooice : [{}, {}, {}];
+    //     console.log('cateChooice1', cateChooice);
+    //     cateChooice.map((item, index) => {
+    //         form[`cate${index + 1}`] = item.cateId || '';
+    //         form[`cate${index + 1}Name`] = item.name || '';
+    //         return item;
+    //     });
+    //     // 更新完成删除全局所属类目字段cateChooice
+    //     this.$parent.globalData
+    //         && this.$parent.globalData.cateChooice
+    //         && (this.$parent.globalData.cateChooice = undefined);
+    //     this.updateForm(form);
+    // }
     defaultSelCityIndex () {
         const { city, province } = this.form;
         let pIndex = 0;
@@ -155,21 +394,17 @@ export default class AppEdit extends wepy.page {
         this.$apply();
     }
     async getProvinces () {
-        const [e1, data1] = await get(provinceApi);
-        if (e1) {
-            this.toast(e1);
-            return;
+        try {
+            const { data: data1 } = await get(provinceApi);
+            const province = this.form.province || '5001';
+            const { data: data2 } = await get(cityApi + province);
+            console.log('provinces', data1, 'citys', data2);
+            this.areas = [data1, data2];
+            this.loading = false;
+            this.$apply();
+        } catch (err) {
+            this.toast(err.message);
         }
-        const province = this.form.province || '5001';
-        const [e2, data2] = await get(cityApi + province);
-        if (e2) {
-            this.toast(e2);
-            return;
-        }
-        console.log('provinces', data1, 'citys', data2);
-        this.areas = [data1, data2];
-        this.loading = false;
-        this.$apply();
     }
     async getLocation () {
         const { latitude, longitude } = await wepy.getLocation({ type: 'wgs84' });
@@ -177,12 +412,12 @@ export default class AppEdit extends wepy.page {
         this.updateForm({ addressLatitude: latitude, addressLongitude: longitude });
     }
     async getAppInfo (mpid) {
-        const [e, data] = await get(`${appinfoApi}/${mpid}`);
-        if (e) {
-            this.toast(e);
-            return;
+        try {
+            const { data } = await get(`${appinfoApi}/${mpid}`);
+            this.updateForm({ ...data });
+        } catch (err) {
+            this.toast(err.message);
         }
-        this.updateForm({ ...data });
     }
     toast (...params) {
         const [title, duration = 2000] = params;
@@ -204,7 +439,7 @@ export default class AppEdit extends wepy.page {
             return false;
         }
         if (form.nickName.length < 4) {
-            this.toast('小程序名称不得小于4个');
+            this.toast('小程序名称不得小于4个字');
             return false;
         }
         if (!form.telphone) {
@@ -212,7 +447,7 @@ export default class AppEdit extends wepy.page {
             return false;
         }
         if (form.telphone.length < 11 && !regPhone.test(form.telphone)) {
-            await toastSync('手机号不正确');
+            await toast('手机号不正确');
             return false;
         }
         if (!form.city) {
@@ -223,120 +458,12 @@ export default class AppEdit extends wepy.page {
             this.toast('输入详情地址');
             return false;
         }
-        return true;
-    }
-    methods = {
-        async bindCity (e) {
-            const { column, value } = e.detail;
-            if (column === 1) {
-                return;
-            }
-            const { dispLocalID } = this.areas[0][value];
-            const [err, data] = await get(cityApi + dispLocalID);
-            if (err) {
-                this.toast(err);
-                return;
-            }
-            this.areas = [this.areas[0], data];
-            this.$apply();
-        },
-        setCity (e) {
-            const arr = e.detail.value;
-            const cityIdx = arr[1] && 0;
-            const province = this.areas[0][arr[0]];
-            const city = this.areas[1][cityIdx];
-            this.selCity = [province.localName, city.localName];
-            this.updateForm({
-                province: province.dispLocalID,
-                provinceName: province.localName,
-                city: city.dispLocalID,
-                cityName: city.localName,
-            });
-        },
-        async setLogo () {
-            const { tempFilePaths } = await wepy.chooseImage({
-                count: 1,
-                sizeType: 'compressed ',
-            });
-            const filePath = tempFilePaths[0];
-            console.log({ filePath });
-            try {
-                const response = await wepy.uploadFile({
-                    url: uploadApi,
-                    filePath,
-                    name: 'content',
-                });
-                const res = JSON.parse(response.data);
-                const { state, msg, data } = res;
-                if (state === 100) {
-                    this.tempLogo = filePath;
-                    this.updateForm({ headImg: data.content });
-                } else {
-                    this.toast(msg);
-                }
-            } catch ({ errMsg }) {
-                this.toast(errMsg);
-            }
-        },
-        setAppName (e) {
-            let nickName = e.detail.value;
-            nickName = filteremoji(nickName);
-            this.updateForm({ nickName });
-            return {
-                value: nickName,
-            };
-        },
-        setMobile (e) {
-            const telphone = e.detail.value;
-            this.updateForm({ telphone });
-        },
-        async setLocation () {
-            const { address, latitude, longitude } = await wepy.chooseLocation();
-            this.updateForm({ address, addressLatitude: latitude, addressLongitude: longitude });
-        },
-        setDetailAdress (e) {
-            let address = e.detail.value;
-            address = filteremoji(address);
-            this.updateForm({ address });
-            return {
-                value: address,
-            };
-        },
-        async bindSave () {
-            const { form } = this.data;
-            const verify = await this.verify();
-            if (!verify) return;
-            const sendData = {
-                mpid: this.mpid, // 小程序id
-                logo: form.headImg, // 小程序logo 只有优享小程序能改
-                telphone: form.telphone, // 电话
-                mpname: form.nickName, // 小程序名称 只有优享小程序能改
-                privince: form.province,
-                city: form.city, // 城市
-                address: form.address, // 地址
-                lat: form.addressLatitude, // 纬度
-                lnt: form.addressLongitude, // 经度
-            };
-            console.log(sendData);
-            const [e, res] = await get(saveAppApi, sendData);
-            if (e) {
-                this.toast(res.msg);
-            } else {
-                console.log(res);
-                wepy.navigateBack();
-            }
-        },
-    }
-    async onLoad (options) {
-        const mpid = options.mpid || wepy.getStorageSync('current_mpid');
-        if (!mpid) {
-            wepy.navigateBack();
+        // 所属行业至少选择两项
+        if ((!form.cate1 || !form.cate2) && form.mpSource.toString() !== '3') {
+            this.toast('所属行业至少选择两项');
+            return false;
         }
-        this.mpid = mpid;
-        await this.getAppInfo(this.mpid);
-        await this.getLocation();
-        await this.getProvinces();
-        this.defaultSelCityIndex();
+        return true;
     }
 }
 </script>
@@ -387,7 +514,7 @@ export default class AppEdit extends wepy.page {
         }
     }
     .appedit-content-list {
-        padding: 0 30rpx 40rpx;
+        padding: 0 30rpx;
         background: #fff;
         .appedit-content-list-item {
             height: 90rpx;
@@ -424,6 +551,36 @@ export default class AppEdit extends wepy.page {
                 text-align: right;
                 vertical-align: middle;
             }
+            .appedit-form-cate {
+                margin-left: 40rpx;
+                display: inline-block;
+                width: 460rpx;
+                overflow: hidden;
+                white-space: nowrap;
+                font-family: PingFangSC-Regular;
+                font-size: 30rpx;
+                color: #333333;
+                text-align: right;
+                vertical-align: middle;
+            }
+            .appedit-form-cate.address {
+                width: 392rpx;
+                margin-left: 52rpx;
+            }
+            .appedit-form-arrow {
+                display: inline-block;
+                content: '';
+                width: 15rpx;
+                height: 25rpx;
+                vertical-align: middle;
+                margin-left: 25rpx;
+                background: url('https://static.58.com/lbg/mengchong/image/icon/arrow-right.png')
+                    no-repeat;
+                background-size: 100%;
+            }
+            .appedit-form-arrow.address {
+                margin-left: 20rpx;
+            }
             .appedit-form-appname {
                 overflow: hidden;
                 white-space: nowrap;
@@ -457,13 +614,16 @@ export default class AppEdit extends wepy.page {
             .appedit-form-input-addressdetail {
                 display: block;
                 width: 100%;
-                height: 88rpx;
+                height: 137rpx;
                 padding-left: 0;
                 text-indent: 0;
                 font-family: PingFangSC-Regular;
                 font-size: 30rpx;
                 color: #333333;
             }
+        }
+        .appedit-content-list-item.address-detail {
+            height: 137rpx;
         }
         .appedit-content-list-item-noborder {
             border: none;
@@ -481,13 +641,15 @@ export default class AppEdit extends wepy.page {
     .appedit-submit {
         width: 690rpx;
         line-height: 94rpx;
-        margin: 60rpx auto 0;
         background: #cccccc;
         border-radius: 4rpx;
         font-family: PingFangSC-Regular;
-        font-size: 3r2px;
+        font-size: 32rpx;
         color: #ffffff;
         text-align: center;
+        position: fixed;
+        bottom: 65rpx;
+        left: 30rpx;
     }
     .submit-enable {
         background: #4e88ff;

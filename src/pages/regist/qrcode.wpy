@@ -1,0 +1,154 @@
+<template lang="wxml">
+    <view class="container">
+        <image class="qrcode" src="{{ src ? src + '?w=350&h=350&ss=1' : '' }}" mode="aspectFill"></image>
+        <view class="info">
+            <view class="bold">该二维码仅用于商家快速注册企业小程序</view>
+            <view><text>商家通过该二维码可直接注册认证小程序，\n请谨慎使用</text></view>
+        </view>
+        <button
+            class="btn-save"
+            @tap="handleOpenSetting"
+            wx:if="{{ showOpenSetting }}">
+            <view>保存相册</view><view class="icon-download"></view>
+        </button>
+        <button
+            class="btn-save"
+            @tap="handleAlbumSave"
+            wx:else>
+            <view>保存相册</view><view class="icon-download"></view>
+        </button>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { toast, alert } from '../../utils/index';
+import { LOAD_REGIST_QRCODE } from '../../utils/url';
+import { get } from '../../utils/ajax';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '注册二维码',
+    }
+    data = {
+        src: '',
+        tmpPath: '',
+        showOpenSetting: false,
+    }
+    async onLoad() {
+        try {
+            // 只有为false时才代表拒绝授权
+            if (await this.checkAuth('scope.writePhotosAlbum') === false) {
+                this.showOpenSetting = true;
+                this.$apply();
+            }
+
+            this.loadData();
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    async loadData() {
+        const { data: qrcode } = await get(LOAD_REGIST_QRCODE);
+        this.src = qrcode;
+        this.$apply();
+    }
+
+    async checkAuth(authName) {
+        return (await wepy.getSetting()).authSetting[authName];
+    }
+
+    async getTmpPath(url) {
+        if (this.tmpPath) {
+            return this.tmpPath;
+        }
+
+        const { tempFilePath } = await wepy.downloadFile({ url });
+        this.tmpPath = tempFilePath;
+        this.$apply();
+        return tempFilePath;
+    }
+
+    methods = {
+        async handleOpenSetting() {
+            const { authSetting } = await wepy.openSetting();
+            if (authSetting['scope.writePhotosAlbum']) {
+                this.showOpenSetting = false;
+            }
+        },
+
+        async handleAlbumSave() {
+            try {
+                const filePath = await this.getTmpPath(this.src);
+                await wepy.saveImageToPhotosAlbum({
+                    filePath,
+                });
+                toast('保存成功');
+            } catch (err) {
+                console.log(err);
+                if (err && err.errMsg === 'saveImageToPhotosAlbum:fail:auth denied') {
+                    alert('由于您拒绝了授权，为了更好的体验，请您重新授权');
+                    this.showOpenSetting = true;
+                    this.$apply();
+                    return;
+                }
+
+                toast('保存图片失败，请稍后再试');
+            }
+        },
+    }
+}
+</script>
+
+<style lang="scss" scope>
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 100rpx;
+        background-color: #fff;
+        min-height: 100vh;
+        .qrcode {
+            width: 350rpx;
+            height: 350rpx;
+            margin-bottom: 100rpx;
+            background-color: #f3f3f3;
+        }
+        .info {
+            font-size: 28rpx;
+            color: #999;
+            text-align: center;
+            margin-bottom: 130rpx;
+            .bold {
+                font-size: 32rpx;
+                color: #333;
+                margin-bottom: 30rpx;
+                line-height: 45rpx;
+                font-weight: bold;
+            }
+        }
+
+        .btn-save {
+            width: 690rpx;
+            height: 94rpx;
+            background-color: #4E88FF;
+            border-radius: 4rpx;
+            color: #fff;
+            font-size: 32rpx;
+            line-height: 94rpx;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            .icon-download {
+                line-height: 94rpx;
+                display: inline-block;
+                background-image: url('/icon-download.png');
+                background-size: 42rpx 42rpx;
+                width: 42rpx;
+                height: 42rpx;
+                margin-left: 10rpx;
+            }
+        }
+    }
+</style>

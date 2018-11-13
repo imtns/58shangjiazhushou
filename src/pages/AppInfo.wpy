@@ -6,8 +6,8 @@
                 <view class="appinfo-title">{{appInfo.nickName}}</view>
                 <view class="appinfo-date">有效期至 {{appInfo.date}}</view>
             </view>
-            <view class="appinfo-youxiang" wx:if="{{appInfo.app_type==1}}">优享</view>
-            <view class="appinfo-weixin" wx:else>微信</view>
+            <view class="appinfo-youxiang {{(appInfo.app_type==1 || appInfo.app_type==2)?'':'disable'}}">优享</view>
+            <view class="appinfo-weixin {{appInfo.app_type==2?'':'disable'}}">微信</view>
         </view>
         <view class="appinfo-status">
             <view class="appinfo-auth" wx:if="{{appInfo.app_type==2}}">授权状态：{{appInfo.status_desc}}</view>
@@ -15,12 +15,54 @@
             <view class="appinfo-telephone">联系电话：{{appInfo.telphone}}</view>
             <view class="appinfo-address">小程序地址：{{appInfo.address}}</view>
         </view>
-        <view class="appinfo-qrcode" wx:if="{{qrcodeUrl}}">
-            <view class="appinfo-qrcode-label">小程序码：</view>
-            <image class="appinfo-qrcode-img" src="{{qrcodeUrl}}" @tap="bindScanQrcode({{qrcodeUrl}})"/>
-        </view>
-        <view class="appinfo-qrcode-off" wx:else>
-            <view class="">小程序码：上线后展示</view>
+        <view class="appinfo-codelist">
+            <!-- 优享小程序码 -->
+            <view class="appinfo-codelist-li" wx:if="{{appInfo.wbQrcodeUrl}}">
+                <image class="qrcode-image" src="{{wbQrcodeUrl}}" mode="aspectFill"
+                    @tap="bindClickPreview({{appInfo.wbQrcodeUrl}})"/>
+                <view class="qrcode-tip">点击保存</view>
+                <view class="qrcode-name">优享小程序码</view>
+                <!-- 访问优享小程序 -->
+                <navigator target="miniProgram"
+                    open-type="navigate"
+                    app-id="wx86c7b0019914401c"
+                    path="/pages/index58/index58?releaseId={{appInfo.mpid}}"
+                    url="/pages/home"
+                    version="develop">
+                    <view class="qrcode-visit">访问小程序</view>
+                </navigator>
+            </view>
+            <view class="appinfo-codelist-li" wx:else>
+                <view class="qrcode-image-empty">上线后展示</view>
+                <view class="qrcode-name">优享小程序码</view>
+            </view>
+            <!-- 微信小程序码 -->
+            <view class="appinfo-codelist-li" wx:if="{{appInfo.qrcodeUrl}}">
+                <image class="qrcode-image" src="{{qrcodeUrl}}" mode="aspectFill" 
+                    @tap="bindClickPreview({{appInfo.qrcodeUrl}})"/>
+                <view class="qrcode-tip">点击保存</view>
+                <view class="qrcode-name">微信小程序码</view>
+                <!-- 访问微信小程序 -->
+                <view class="qrcode-name">点击长按识别</view>
+            </view>
+            <!-- 小程序支付码 -->
+            <view class="appinfo-codelist-li last" wx:if="{{appInfo.payQrcodeUrl}}">
+                <image class="qrcode-image" src="{{payQrcodeUrl}}" mode="aspectFill"
+                    @tap="bindClickPreview({{appInfo.payQrcodeUrl}})"/>
+                <view class="qrcode-tip">点击保存</view>
+                <view class="qrcode-name">小程序支付码</view>
+            </view>
+            <view class="appinfo-codelist-li last" wx:else>
+                <view class="qrcode-image-empty">
+                    <view>需开通支付</view>
+                    <view>功能后显示</view>
+                </view>
+                <view class="qrcode-name">小程序支付码</view>
+                <!-- 跳转开通支付页面 -->
+                <navigator open-type="navigate" url="/pages/OpenPay">
+                    <view class="qrcode-openpay">去开通</view>
+                </navigator>
+            </view>
         </view>
         <navigator url="/pages/AppEdit?mpid={{appInfo.mpid}}"><view class="appinfo-edit">编辑小程序</view></navigator>
     </view>
@@ -28,8 +70,9 @@
 
 <script>
 import wepy from 'wepy';
-import { picSrcDomain, toastSync } from '../utils';
-import { get } from '../utils/ajaxP';
+import { picSrcDomain, toast } from '../utils';
+import { get } from '../utils/ajax';
+import { getUid, SendClickLog } from '../utils/maidian';
 
 const appinfoApi = '/mplogic/get';
 
@@ -58,7 +101,7 @@ export default class AppInfo extends wepy.page {
             nickName: '金小陵装修设计',
             province: 5004,
             provinceName: '广东',
-            qrcodeUrl: '/bizmp/n_v22aebc4b4650e4be08627b2e6bcf8f0d0_5d1f067a59e63da1.jpg',
+            // qrcodeUrl: '/bizmp/n_v22aebc4b4650e4be08627b2e6bcf8f0d0_5d1f067a59e63da1.jpg',
             sign: null,
             status: 1,
             status_desc: '已授权',
@@ -68,13 +111,25 @@ export default class AppInfo extends wepy.page {
     }
     computed = {
         qrcodeUrl () {
-            const { qrcodeUrl, wbQrcodeUrl } = this.appInfo;
-            const appType = this.appInfo.app_type;
-            const ret = appType === 1 ? wbQrcodeUrl : qrcodeUrl;
-            if (ret && ret.indexOf('http') < 0) {
-                return picSrcDomain() + ret;
+            const { qrcodeUrl } = this.appInfo;
+            if (qrcodeUrl && qrcodeUrl.indexOf('http') < 0) {
+                return `${picSrcDomain() + qrcodeUrl}`;
             }
-            return ret;
+            return qrcodeUrl;
+        },
+        wbQrcodeUrl () {
+            const { wbQrcodeUrl } = this.appInfo;
+            if (wbQrcodeUrl && wbQrcodeUrl.indexOf('http') < 0) {
+                return `${picSrcDomain() + wbQrcodeUrl}`;
+            }
+            return wbQrcodeUrl;
+        },
+        payQrcodeUrl () {
+            const { payQrcodeUrl } = this.appInfo;
+            if (payQrcodeUrl && payQrcodeUrl.indexOf('http') < 0) {
+                return `${picSrcDomain() + payQrcodeUrl}`;
+            }
+            return payQrcodeUrl;
         },
         logo () {
             const { headImg = 'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png' } = this.appInfo;
@@ -85,9 +140,10 @@ export default class AppInfo extends wepy.page {
         },
     }
     methods = {
-        bindScanQrcode (qrcodeUrl) {
+        bindClickPreview (qrcodeUrl) {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_appinfo_youxiang_code');
             wepy.previewImage({
-                urls: [qrcodeUrl],
+                urls: [picSrcDomain() + qrcodeUrl],
             });
         },
     }
@@ -100,13 +156,13 @@ export default class AppInfo extends wepy.page {
         this.$apply();
     }
     async getAppInfo (mpid) {
-        const [e, data] = await get(`${appinfoApi}/${mpid}`);
-        if (e) {
-            await toastSync(e);
-            return;
+        try {
+            const { data } = await get(`${appinfoApi}/${mpid}`);
+            this.loading = false;
+            this.updateAppInfo(data);
+        } catch (err) {
+            toast(err.message);
         }
-        this.loading = false;
-        this.updateAppInfo(data);
     }
     async onLoad (options) {
         const mpid = options.mpid || wepy.getStorageSync('current_mpid');
@@ -143,7 +199,7 @@ export default class AppInfo extends wepy.page {
         .appinfo-title-wrap {
             display: inline-block;
             overflow: hidden;
-            width: 450rpx;
+            width: 384rpx;
             height: 128rpx;
         }
         .appinfo-title {
@@ -168,7 +224,6 @@ export default class AppInfo extends wepy.page {
         .appinfo-weixin {
             display: inline-block;
             vertical-align: top;
-            margin-left: 20rpx;
             width: 66rpx;
             line-height: 38rpx;
             font-family: PingFangSC-Regular;
@@ -179,8 +234,13 @@ export default class AppInfo extends wepy.page {
             letter-spacing: 0.57px;
             color: #f49b02;
             background: rgba(255, 157, 0, 0.1);
+            &.disable {
+                background: #f6f6f6;
+                color: #ccc;
+            }
         }
         .appinfo-weixin {
+            margin-left: 20rpx;
             color: #27bc28;
             background: rgba(24, 173, 25, 0.1);
         }
@@ -232,6 +292,76 @@ export default class AppInfo extends wepy.page {
         .appinfo-qrcode-img {
             width: 180rpx;
             height: 180rpx;
+        }
+    }
+    .appinfo-codelist {
+        margin-top: 20rpx;
+        padding: 30rpx;
+        display: flex;
+        // justify-content: space-between;
+        background: #ffffff;
+        .appinfo-codelist-li {
+            width: 188rpx;
+            position: relative;
+            margin-right: 64rpx;
+            &.last {
+                margin-right: 0;
+            }
+            .qrcode-image {
+                display: block;
+                width: 100%;
+                height: 188rpx;
+            }
+            // 使用table-cell,vertial-align多行文本水平垂直居中
+            .qrcode-image-empty {
+                width: 188rpx;
+                height: 188rpx;
+                display: table-cell;
+                vertical-align: middle;
+                text-align: center;
+                background: #f3f3f3;
+                font-family: PingFangSC-Regular;
+                font-size: 24rpx;
+                color: #aaaaaa;
+                letter-spacing: 0;
+            }
+            .qrcode-tip {
+                position: absolute;
+                top: 154rpx;
+                left: 0;
+                z-index: 1;
+                width: 100%;
+                line-height: 36rpx;
+                background: rgba(0, 0, 0, 0.5);
+                border-radius: 4rpx;
+                font-family: PingFangSC-Regular;
+                font-size: 24rpx;
+                color: #ffffff;
+                text-align: center;
+            }
+            .qrcode-name {
+                margin-top: 15rpx;
+                font-family: PingFangSC-Regular;
+                font-size: 28rpx;
+                color: #333333;
+                letter-spacing: 0;
+                text-align: center;
+            }
+            .qrcode-visit,
+            .qrcode-openpay {
+                width: 152rpx;
+                line-height: 45rpx;
+                margin: 10rpx auto 0;
+                border: 2rpx solid #4e88ff;
+                border-radius: 8rpx;
+                font-size: 28rpx;
+                color: #4e88ff;
+                letter-spacing: 0;
+                text-align: center;
+            }
+            .qrcode-openpay {
+                width: 98rpx;
+            }
         }
     }
     .appinfo-edit {

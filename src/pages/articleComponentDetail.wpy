@@ -1,0 +1,191 @@
+<template>
+    <view class="containe">
+        <view class="article-title">{{title}}</view>
+        <view class="article-intro">
+            <view class="article-detail-flex">
+                <view class="article-base">作者：</view>
+                <view class="base-text base-over">{{author}}</view>
+            </view>
+            <view class="article-detail-flex middle">
+                <view class="article-base">来源：</view>
+                <view class="base-text base-over">{{source}}</view>
+            </view>
+            <view class="article-detail-flex">
+                <view class="article-base">时间：</view>
+                <view class="base-text">{{ updateTime || createTime}}</view>
+            </view>
+        </view>
+        <block wx:for="{{content}}" wx:for-index="idx" wx:for-item="p" wx:key="idx">
+            <view wx:if="{{p.type === 'text'}}" class="article-content">
+                <rich-text nodes="{{p.content}}"></rich-text>
+            </view>
+            <image wx:if="{{p.type === 'img'}}" class="rich-text-img" mode="aspectFill" src="https:{{p.content}}"/>
+        </block>
+        <!-- <rich-text class="article-content" nodes="{{content}}"></rich-text> -->
+    </view>
+    <view class="block"></view>
+    <view class="button article-edit-btn" @tap="toEdit">编辑</view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { get } from '../utils/ajax';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '文章详情',
+    }
+    data = {
+        id: '',
+        group: '',
+        name: '',
+        title: '',
+        author: '',
+        source: '',
+        createTime: '',
+        updateTime: '',
+        content: '',
+    }
+    async onLoad(option) {
+        console.log('detail', option);
+        const { group = '', id = '', name = '' } = option;
+        this.group = group;
+        this.id = id;
+        this.name = name;
+        this.$apply();
+    }
+    onShow() {
+        this.loadData();
+    }
+    async loadData() {
+        const { id } = this;
+        const { data } = await get(`/businessArticle/detail/${id}`);
+        const {
+            title,
+            author,
+            source,
+            createTime,
+            content,
+            updateTime,
+        } = data;
+        const ps = content.split('</p>')
+            .filter(p => p)
+            .map(p => {
+                const result = /<img src="([^<>]+)"/g.exec(p);
+                if (result) {
+                    const src = result[1].replace(/^http:/i, '').split('?');
+
+                    return {
+                        type: 'img',
+                        content: `${src[0]}?w=750`,
+                    };
+                }
+                return {
+                    type: 'text',
+                    content: `${p}`,
+                };
+            });
+        Object.assign(this, {
+            title,
+            author,
+            source,
+            createTime,
+            content: ps,
+            updateTime,
+        });
+        this.$apply();
+    }
+    toEdit() {
+        wepy.navigateTo({
+            url: `articleComponentCreate?group=${this.group}&id=${this.id}&name=${this.name}`,
+        });
+    }
+}
+</script>
+
+<style lang="scss">
+    @import '../css/btn.scss';
+    page{
+        width:100%;
+        height:100%;
+        // display:flex;
+        // flex-direction:column;
+        position:relative;
+    }
+    .containe{
+        background:#fff;
+        // flex:1;
+        // display:flex;
+        // flex-direction:column;
+        padding: 32rpx 40rpx 0;
+        box-sizing:border-box;
+        .article-title{
+            max-width:670rpx;
+            height:68rpx;
+            font-family: PingFangSC-Medium;
+            font-size: 40rpx;
+            color: #000000;
+            letter-spacing: 0.24rpx;
+            line-height: 68rpx;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+        .article-intro{
+            width:100%;
+            border-bottom:1rpx solid #f3f3f3;
+            .article-detail-flex{
+                display:inline-block;
+                line-height:50rpx;
+                .article-base,.base-text{
+                    float:left;
+                    font-family: PingFangSC-Regular;
+                    font-size: 26rpx;
+                    letter-spacing: 0;
+                }
+                .article-base{
+                    color: #666666;
+                }
+                .base-text{
+                    color: #3F3F3F;
+                }
+                .base-over.base-text{
+                    max-width:156rpx;
+                    white-space:nowrap;
+                    overflow:hidden;
+                    text-overflow:ellipsis;
+                }
+            }
+            .article-detail-flex.middle{
+                margin:0 130rpx 0 40rpx;
+            }
+        }
+        .article-content:first-child{
+            padding-top:20rpx;
+        }
+        .article-content{
+            flex:1;
+            line-height:60rpx;
+            letter-spacing: 0.3rpx;
+            font-family: PingFangSC-Regular;
+            font-size: 30rpx;
+            color: #666666;
+        }
+        .rich-text-img{
+            width:670rpx;
+            height:503rpx;
+            margin:20rpx 0;
+            border-radius:6rpx;
+        }
+    }
+    .block{
+        width:100%;
+        height:102rpx;
+    }
+    .article-edit-btn{
+        position:fixed;
+        left:0;
+        bottom:0;
+    }
+</style>

@@ -1,0 +1,266 @@
+.mod-view {
+    font-size: 0;
+}
+.mod-head-images {
+    box-sizing: border-box;
+    text-align: center;
+    color: #666;
+    font-size: 32rpx;
+    margin-bottom: 30rpx;
+}
+
+.mod-list-images {
+    width: 690rpx;
+    overflow: hidden;
+}
+/* 一列布局 */
+.mod-li-box-1 {
+    text-align: center;
+    margin-bottom: 20rpx;
+}
+.mod-li-image-1,
+.mod-li-text-1 {
+    display: block;
+}
+.mod-li-image-1 {
+    width: 100%;
+    height: 510rpx;
+}
+.mod-li-text-1 {
+    margin-top: 20rpx;
+    font-size: 28rpx;
+    line-height: 40rpx;
+    overflow: hidden;
+    color: #333;
+}
+/* 两列布局 */
+.mod-li-box-2 {
+    width: 336rpx;
+    margin-right: 18rpx;
+    margin-bottom: 20rpx;
+    display: inline-block;
+    text-align: center;
+    vertical-align: top;
+}
+.mod-li-image-2 {
+    width: 100%;
+    height: 252rpx;
+}
+.mod-li-text-2 {
+    display: block;
+    margin-top: 20rpx;
+    font-size: 28rpx;
+    line-height: 40rpx;
+    color: #333;
+    overflow: hidden;
+}
+/* 三列布局 */
+.mod-li-box-3 {
+    width: 220rpx;
+    margin-bottom: 20rpx;
+    margin-right: 14rpx;
+    display: inline-block;
+    text-align: center;
+    vertical-align: top;
+}
+
+.mod-li-image-3 {
+    width: 100%;
+    height: 164rpx;
+}
+.mod-li-text-3 {
+    display: block;
+    margin-top: 20rpx;
+    font-size: 28rpx;
+    line-height: 40rpx;
+    overflow: hidden;
+    color: #333;
+}
+
+/* 一左两右 */
+.mod-li-box-4-1,
+.mod-li-box-4-2,
+.mod-li-box-4-3 {
+    float: left;
+}
+.mod-li-box-4-1 {
+    clear: both;
+    width: 363rpx;
+    margin-bottom: 20rpx;
+}
+.mod-li-image-4-1 {
+    display: block;
+    width: 100%;
+    height: 482rpx;
+}
+.mod-li-box-4-2,
+.mod-li-box-4-3 {
+    width: 309rpx;
+    margin-left: 18rpx;
+}
+.mod-li-image-4-2,
+.mod-li-image-4-3 {
+    display: block;
+    width: 100%;
+    height: 231rpx;
+}
+.mod-li-image-4-3 {
+    margin-top: 20rpx;
+}
+
+/* 一左两右by subtitle */
+.mod-li-box-4sub-1,
+.mod-li-box-4sub-2,
+.mod-li-box-4sub-3 {
+    float: left;
+}
+.mod-li-box-4sub-1 {
+    clear: both;
+    width: 388rpx;
+    margin-bottom: 20rpx;
+}
+.mod-li-image-4sub-1 {
+    display: block;
+    width: 100%;
+    height: 514rpx;
+}
+.mod-li-box-4sub-2,
+.mod-li-box-4sub-3 {
+    width: 284rpx;
+    margin-left: 18rpx;
+}
+.mod-li-image-4sub-2,
+.mod-li-image-4sub-3 {
+    display: block;
+    width: 100%;
+    height: 214rpx;
+}
+.mod-li-image-4sub-3 {
+    margin-top: 28rpx;
+}
+.mod-li-text-4sub-1,
+.mod-li-text-4sub-2,
+.mod-li-text-4sub-3 {
+    display: block;
+    overflow: hidden;
+    text-align: center;
+    margin-top: 20rpx;
+    font-size: 28rpx;
+    color: #333333;
+}
+/* 一上两下 */
+.mod-li-box-5-1,
+.mod-li-box-5-2,
+.mod-li-box-5-3 {
+    margin-bottom: 20rpx;
+}
+.mod-li-image-5-1 {
+    display: block;
+    width: 100%;
+    height: 388rpx;
+}
+.mod-li-box-5-2,
+.mod-li-box-5-3 {
+    display: inline-block;
+    vertical-align: top;
+    width: 336rpx;
+    margin-right: 18rpx;
+}
+.mod-li-image-5-2,
+.mod-li-image-5-3 {
+    display: block;
+    width: 100%;
+    height: 252rpx;
+}
+.mod-li-text-5-1,
+.mod-li-text-5-2,
+.mod-li-text-5-3 {
+    display: block;
+    text-align: center;
+    margin-top: 20rpx;
+    font-size: 28rpx;
+    color: #333333;
+}
+
+/* 一上三下 */
+.mod-li-box-6-1 {
+    margin-bottom: 20rpx;
+}
+.mod-li-image-6-1 {
+    display: block;
+    width: 100%;
+    height: 388rpx;
+}
+.mod-li-text-6-1,
+.mod-li-text-6-2,
+.mod-li-text-6-3,
+.mod-li-text-6-4 {
+    display: block;
+    margin-top: 20rpx;
+    font-size: 28rpx;
+    color: #333333;
+    text-align: center;
+}
+.mod-li-box-6-2,
+.mod-li-box-6-3,
+.mod-li-box-6-4 {
+    display: inline-block;
+    vertical-align: top;
+    width: 218rpx;
+    margin: 0 18rpx 30rpx 0;
+}
+.mod-li-image-6-2,
+.mod-li-image-6-3,
+.mod-li-image-6-4 {
+    display: block;
+    width: 100%;
+    height: 164rpx;
+}
+
+/* 一行四列 */
+.mod-li-box-7 {
+    display: inline-block;
+    width: 160rpx;
+    margin: 0 17rpx 20rpx 0;
+    vertical-align: top;
+}
+.mod-li-image-7 {
+    display: block;
+    width: 100%;
+    height: 160rpx;
+}
+.mod-li-text-7 {
+    display: block;
+    margin-top: 20rpx;
+    text-align: center;
+    font-size: 28rpx;
+    color: #333333;
+}
+
+/* 双图 */
+.mod-li-box-8 {
+    display: inline-block;
+    width: 336rpx;
+    margin: 0 18rpx 20rpx 0;
+    vertical-align: top;
+}
+.mod-li-image-8 {
+    display: block;
+    width: 100%;
+    height: 448rpx;
+}
+.mod-li-text-8 {
+    display: block;
+    margin-top: 20rpx;
+    text-align: center;
+    font-size: 28rpx;
+    color: #333333;
+}
+
+.mod-li-box-last {
+    margin-right: 0;
+}
+
+.padding-bottom-30 {
+    padding-bottom: 30rpx;
+}

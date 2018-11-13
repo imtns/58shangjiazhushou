@@ -1,0 +1,352 @@
+<template name="images">
+    <view class="mod-view mod-images {{pageData[0].props.cfg.showMore===false?'index'+index+' padding-bottom-30':'index'+index}}">
+        <view class="mod-head mod-head-images" wx:if="{{pageData[0].props.cfg.title && pageData[0].props.cfg.title.length>0}}">
+            {{pageData[0].props.cfg.title}}
+        </view>
+        <view class="mod-list-images">
+            <!-- 一行2张显示 -->
+            <block wx:if="{{pageData[0].props.cfg.theme==2}}">
+                <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                    <view  class="mod-li-box-2 {{~idx%2==0?'mod-li-box-last':''}}" data-index="{{idx}}"
+                        data-current="{{index}}" data-pagekey="{{item.pageKey}}" data-action="{{pageData[0].props.cfg.action}}" bindtap="onImageClick">
+                        <image  class="mod-li-image-2 {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=336&h=252"></image>
+                        <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-2">{{item.title}}</text>
+                    </view>
+                </block>
+            </block>
+            <!-- 一行3张显示 -->
+            <block wx:elif="{{pageData[0].props.cfg.theme==3}}">
+                <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                    <view class="mod-li-box-3 {{~idx%3==0?'mod-li-box-last':''}}" data-index="{{idx}}"
+                        data-current="{{index}}" data-pagekey="{{item.pageKey}}" data-action="{{pageData[0].props.cfg.action}}" bindtap="onImageClick">
+                        <image class="mod-li-image-3 {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=220&h=164"></image>
+                        <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-3">{{item.title}}</text>
+                    </view>
+                </block>
+            </block>
+            <!-- 一左两右 -->
+            <block wx:elif="{{pageData[0].props.cfg.theme==4}}">
+                <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                    <block wx:if="{{pageData[0].props.cfg.images[0].title}}">
+                        <view  class="mod-li-box-4sub-{{idx%3+1}}" data-index="{{idx}}" data-current="{{index}}"
+                            data-pagekey="{{item.pageKey}}" data-action="{{pageData[0].props.cfg.action}}" bindtap="onImageClick">
+                            <image class="mod-li-image-4sub-{{idx%3+1}} {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=388&h=514" wx:if="{{idx%3==0}}"></image>
+                            <image class="mod-li-image-4sub-{{idx%3+1}} {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=284&h=214" wx:else></image>
+                            <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-4sub-{{idx%3+1}}">{{item.title}}</text>
+                        </view>
+                    </block>
+                    <block wx:else>
+                        <view  class="mod-li-box-4-{{idx%3+1}}" data-index="{{idx}}" data-current="{{index}}"
+                            data-pagekey="{{item.pageKey}}" data-action="{{pageData[0].props.cfg.action}}" bindtap="onImageClick">
+                            <image class="mod-li-image-4-{{idx%3+1}} {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=363&h=482" wx:if="{{idx%3==0}}"></image>
+                            <image class="mod-li-image-4-{{idx%3+1}} {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=309&h=231" wx:else></image>
+                        </view>
+                    </block>
+                </block>
+            </block>
+            <!-- 一上两下 -->
+            <block wx:elif="{{pageData[0].props.cfg.theme==5}}">
+                <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                    <view class="mod-li-box-5-{{idx%3+1}} {{~idx%3==0?'mod-li-box-last':''}}" data-index="{{idx}}"
+                        data-action="{{pageData[0].props.cfg.action}}" data-current="{{index}}" data-pagekey="{{item.pageKey}}" bindtap="onImageClick">
+                        <image class="mod-li-image-5-{{idx%3+1}} {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=690&h=388" wx:if="{{idx%3==0}}"></image>
+                        <image class="mod-li-image-5-{{idx%3+1}} {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=336&h=252" wx:else></image>
+                        <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-5-{{idx%3+1}}">{{item.title}}</text>
+                    </view>
+                </block>
+            </block>
+            <!-- 一上三下 -->
+            <block wx:elif="{{pageData[0].props.cfg.theme==6}}">
+                <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                    <view  class="mod-li-box-6-{{idx%4+1}} {{~idx%4==0?'mod-li-box-last':''}}" data-index="{{idx}}"
+                        data-action="{{pageData[0].props.cfg.action}}" data-current="{{index}}" data-pagekey="{{item.pageKey}}" bindtap="onImageClick">
+                        <image class="mod-li-image-6-{{idx%4+1}} {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=345&h=194" wx:if="{{idx%4==0}}"></image>
+                        <image class="mod-li-image-6-{{idx%4+1}} {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=109&h=82" wx:else></image>
+                        <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-6-{{idx%4+1}}">{{item.title}}</text>
+                    </view>
+                </block>
+            </block>
+            <!-- 一行4张显示 -->
+            <block wx:elif="{{pageData[0].props.cfg.theme==7}}">
+                <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                    <view  class="mod-li-box-7 {{~idx%4==0?'mod-li-box-last':''}}" data-index="{{idx}}"
+                        data-current="{{idx}}" data-action="{{pageData[0].props.cfg.action}}" data-pagekey="{{item.pageKey}}" bindtap="onImageClick">
+                        <image class="{{'mod-li-image-'+pageData[0].props.cfg.theme}} {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=160&h=160"></image>
+                        <text wx:if="{{item.title && item.title.length>0}}" class="{{'mod-li-text-'+cfg.theme}}">{{item.title}}</text>
+                    </view>
+                </block>
+            </block>
+            <!-- 双图 -->
+            <block wx:elif="{{pageData[0].props.cfg.theme==8}}">
+                <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                    <view class="mod-li-box-8 {{~idx%2==0?'mod-li-box-last':''}}" data-index="{{idx}}"
+                        data-current="{{index}}" data-action="{{pageData[0].props.cfg.action}}" data-pagekey="{{item.pageKey}}" bindtap="onImageClick">
+                        <image class="mod-li-image-8 {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=336&h=448"></image>
+                        <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-8">{{item.title}}</text>
+                    </view>
+                </block>
+            </block>
+            <!-- 一行1张显示:默认 -->
+            <block wx:else>
+                <block wx:for="{{pageData[0].props.cfg.images}}" wx:for-index="idx" wx:for-item="item" wx:key="idx">
+                    <view  class="mod-li-box-1" data-index="{{idx}}" data-current="{{index}}" data-pagekey="{{item.pageKey}}"
+                        data-action="{{pageData[0].props.cfg.action}}" bindtap="onImageClick">
+                        <image class="mod-li-image-1 {{thumbActive == idx?'active':''}}" mode="aspectFill" src="{{item.src}}?w=690&h=510"></image>
+                        <text wx:if="{{item.title && item.title.length>0}}" class="mod-li-text-1">{{item.title}}</text>
+                    </view>
+                </block>
+            </block>
+        </view>
+        <!-- <view class="mod-more mod-more-images {{pageData[0].props.cfg.showAll?'mod-more-up':''}}" data-index="{{index}}" bindtap='loadMore' wx:if="{{pageData[0].props.cfg.images.length>cfg.showSize}}">
+            {{pageData[0].props.cfg.showAll ? '收起':'查看更多'}}
+        </view> -->
+    </view>
+    <view class="shopPic-editLayer">
+        <view class="saveBar" @tap="save">保存</view>
+        <view class="edit-cell">
+            <view class="edit-label">标题名称</view>
+            <view class="edit-input">
+                <input data-name="name" value="{{pageData[0].props.cfg.title}}"  maxlength="16" bindinput="bindTitle" class="weui-input" name="name" placeholder="16字以内"  />
+            </view>
+        </view>
+        <scroll-view scroll-x class="scrollView">
+            <view class="addButton">
+
+            </view>
+            <view class="tobeAdded">
+                <view class="scroll-view-item addButton" style="{{pageData[0].props.cfg.images.length==9?'display:none':''}}"  data-type="image"  @tap="actionSheepTap">
+                   <image src="../assets/plus.png"></image>
+                </view>
+                <repeat for="{{pageData[0].props.cfg.images}}" key="index" index="index" item="item">
+                    <view class="scroll-view-item {{thumbActive == index?'active':''}}" data-index="{{index}}"  @tap="thumbClick">
+                        <image src="{{item.src}}?w=90" mode="aspectFill"></image>
+                        <view class="span {{thumbActive == index?'active':''}}">{{index+1}}</view>
+                        <image class="del {{thumbActive == index?'active':''}}" src="../assets/del.png" @tap="del" data-index="{{index}}" />
+                    </view>
+                </repeat>
+            </view>
+        </scroll-view>
+        <view class="edit-cell space">
+            <view class="edit-label">图片名称</view>
+            <view class="edit-input">
+                <input data-name="name" value="{{pageData[0].props.cfg.images[thumbActive].title}}"   maxlength="16" class="weui-input" name="name" bindinput="bindNameInput"  placeholder="16字以内"  />
+            </view>
+        </view>
+         <view class="edit-cell">
+            <view class="edit-label">跳转链接</view>
+            <view class="edit-input">
+                <picker range-key="name" bindchange="bindPickerChange" value="{{pageData[0].props.cfg.pageKey}}" range="{{pageList}}">
+                    <view wx:if="{{!pageData[0].props.cfg.images[thumbActive].pageKey}}">请选择</view>
+                    <view wx:else  class="picker">
+                        {{pageData[0].props.cfg.images[thumbActive].linkName}}
+                    </view>
+                </picker>
+            </view>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+import Mixin from './mixin';
+import { toast, previewImage } from '../../utils/index';
+import { globalData } from '../../utils/globalData';
+
+const { picSrcDomain } = require('../../utils/index');
+
+// const { post } = require('../../utils/ajax');
+
+export default class ShopImages extends wepy.page {
+  config = {
+      navigationBarTitleText: '门店照片',
+  };
+    data = {
+        indicatorDots: true,
+        thumbActive: 0,
+        picName: '',
+        linkName: '',
+        src: '',
+        picDomain: picSrcDomain(),
+    };
+    onLoad() {
+        [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
+    }
+  methods = {
+      del(e) {
+          const { index } = e.currentTarget.dataset;
+          this.pageData[0].props.cfg.images.splice(index, 1);
+          this.pageModule.cfg.images.splice(index, 1);
+      },
+      onImageClick(e) {
+          const { index } = e.currentTarget.dataset;
+          const images = this.pageData[0].props.cfg.images.map(img => img.src);
+          previewImage(images, index);
+      },
+      thumbClick(e) {
+          this.thumbActive = e.currentTarget.dataset.index;
+      },
+      bindTitle(e) {
+          this.pageData[0].props.cfg.title = e.detail.value;
+          this.pageModule.cfg.title = e.detail.value;
+      },
+      bindNameInput(e) {
+          this.pageData[0].props.cfg.images[this.thumbActive].title = e.detail.value;
+          this.pageModule.cfg.images[this.thumbActive].title = e.detail.value;
+      },
+      bindLinkInput(e) {
+          this.pageData[0].props.cfg.images[this.thumbActive].linkName = e.detail.value;
+          this.pageModule.cfg.images[this.thumbActive].linkName = e.detail.value;
+      },
+      bindPickerChange(e) {
+          console.log(this.pageList);
+          this.pageData[0].props.cfg.images[this.thumbActive].pageKey = this.pageList[e.detail.value].key;
+          this.pageData[0].props.cfg.images[this.thumbActive].linkName = this.pageList[e.detail.value].name;
+          this.pageModule.cfg.images[this.thumbActive].pageKey = this.pageList[e.detail.value].key;
+          this.pageModule.cfg.images[this.thumbActive].linkName = this.pageList[e.detail.value].name;
+      },
+      save() {
+          this.pageModule.cfg.showSize = this.pageData[0].props.cfg.showSize;
+          [globalData.pageData[this.pageIndex]] = this.pageData;
+          console.log(globalData.pageData[this.pageIndex]);
+          globalData.modules[this.pageIndex] = this.pageModule;
+          console.log(globalData.modules);
+          toast('已保存');
+          setTimeout(() => {
+              wx.navigateBack({
+                  delta: 1,
+              });
+          }, 1000);
+      },
+  }
+
+  mixins = [Mixin];
+}
+</script>
+<style lang="scss">
+.shopPic-editLayer {
+  width: 100%;
+  box-sizing: border-box;
+  height: 594rpx;
+  position: fixed;
+  bottom: 0;
+  background: rgb(91, 93, 95);
+  z-index: 10;
+  padding: 0 30rpx;
+  .saveBar {
+    height: 86rpx;
+    box-sizing: border-box;
+    margin: 0 -30rpx;
+    padding-right: 30rpx;
+    background: #46484a;
+    color: white;
+    line-height: 86rpx;
+    font-size: 32rpx;
+    text-align: right;
+  }
+  .scrollView {
+    height: 186rpx;
+    width: 110%;
+    margin-right: -30rpx;
+    margin-left: -30rpx;
+    padding-left: 30rpx;
+    white-space: nowrap;
+    overflow: scroll;
+    background: #545658;
+    line-height: 186rpx;
+
+    .scroll-view-item {
+      position: relative;
+      width: 180rpx;
+      height: 134rpx;
+      margin-right: 20rpx;
+      vertical-align: middle;
+      display: inline-block;
+      border: 2rpx solid #aaa;
+      box-sizing: border-box;
+      image {
+        width: 100%;
+        height: 100%;
+      }
+      &.active {
+        border: 2rpx solid #4e88ff;
+      }
+      &.addButton {
+        background: #aaa;
+        image {
+          width: 64rpx;
+          height: 64rpx;
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+        }
+      }
+      .span {
+        width: 40rpx;
+        height: 36rpx;
+        background: rgb(170, 170, 170);
+        color: white;
+        text-align: center;
+        font-size: 26rpx;
+        line-height: 36rpx;
+        white-space: nowrap;
+        display: block;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        &.active {
+          background: rgb(78, 136, 255);
+          border:2rpx solid #aaa;
+        }
+      }
+      .del {
+        display: none;
+        position: absolute;
+        top: 5rpx;
+        right: 5rpx;
+        width: 32rpx;
+        height: 32rpx;
+        &.active {
+          display: block;
+        }
+      }
+      &:last-child {
+        margin-right: 50rpx;
+      }
+    }
+  }
+  .edit-cell {
+    height: 88rpx;
+    display: flex;
+    font-size: 30rpx;
+    background: #545658;
+    columns: #333333;
+    align-items: center;
+    margin: 0 -30rpx;
+    padding: 0 30rpx;
+    border-bottom: 1rpx solid #585d5f;
+    .edit-label {
+      width: 324rpx;
+      color: #999;
+    }
+    .edit-input {
+      width: 396rpx;
+      color: #d8d8d8;
+      text-align: right;
+    }
+  }
+}
+.space {
+  margin-top: 20rpx !important;
+}
+.mod-list-images{
+    padding-bottom:600rpx;
+    image{
+        box-sizing: border-box;
+    &.active{
+            border: 2rpx solid #4e88ff;
+        }
+    }
+}
+</style>
+
+

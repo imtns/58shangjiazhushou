@@ -1,0 +1,209 @@
+<template>
+    <view class="containe">
+        <!-- <block wx:if="{{groupList.length > 0}}">
+            <GroupComponent list="{{groupList}}"></GroupComponent>
+        </block> -->
+        <view class="group-list article-group-list {{isEditing ? 'edit' : ''}}" wx:if="{{groupList.length > 0}}">
+            <view
+                class="group-item article-group-item"
+                @tap.stop="editChose({{ item.id }}, {{ index }}, {{item.name}})"
+                wx:for="{{groupList}}"
+                wx:key="index"
+                data-item="{{item}}">
+                <view class="group-line article-group-line"
+                :class="{ selected: item.choseStatu}">
+                    <view class="group-name article-group-name">{{item.name}}</view>
+                    <view class="group-size article-group-size"> ({{item.count}})</view>
+                    <view class="group-angel article-group-angel" wx:if="{{!isEditing}}"></view>
+                    <view class="rename-btn article-rename-btn" wx:if="{{isEditing}}" @tap.catch.stop="showDialog({{item.id}}, {{item.name}})">重命名</view>
+                </view>
+            </view>
+        </view>
+        <EmptyPage wx:if="{{groupList.length === 0}}" :title.sync="title"></EmptyPage>
+    </view>
+    <view class="block"></view>
+    <view class="options">
+        <button class="button edit" @tap="edit" wx:if="{{groupList.length > 0 || works.length > 0}}" data-status="{{isEditing}}">{{ isEditing ? '取消' : '编辑' }}</button>
+        <button class="button" wx:if="{{ isEditing }}" @tap="deleteItem">删除</button>
+        <button wx:else @tap="showDialog" class="button">添加分组</button>
+    </view>
+    <Pop wx:if="{{showPop}}" @close.user="close" @addGroup.user="addGroup" :name.sync= "name"></Pop>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { toast, alert } from '../utils';
+import { get } from '../utils/ajax';
+
+import Pop from '../components/Dialog';
+import EmptyPage from '../components/EmptyPage';
+import GroupComponent from '../components/GroupComponent';
+import { getUid, SendClickLog } from '../utils/maidian';
+
+export default class OrderComponentGroup extends wepy.page {
+    config = {
+        navigationBarTitleText: '预约管理',
+    }
+    components = {
+        EmptyPage,
+        Pop,
+        GroupComponent,
+    }
+    data = {
+        isEditing: false,
+        groupList: [],
+        title: '没有预约分组~',
+        showPop: false,
+        delList: [],
+        mpId: '',
+        id: '',
+        name: '',
+    }
+    async onLoad() {
+        console.log('onLoad');
+        const mpId = wepy.getStorageSync('current_mpid');
+        this.mpId = mpId;
+        this.$apply();
+    }
+    onShow() {
+        this.loadData();
+    }
+    methods = {
+        showDialog(id = '', name = '') {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderComponentGroup_addGroup');
+            this.showDialog(id, name);
+        },
+        async addGroup(content) {
+            try {
+                let url = '';
+                if (this.name) {
+                    url = `/businessService/updateGroup/${this.id}`;
+                } else {
+                    url = '/businessService/addGroup';
+                }
+                this.showPop = false;
+                this.isEditing = false;
+                this.name = '';
+                this.id = '';
+                this.$apply();
+                await get(url, {
+                    name: content,
+                    mpid: this.mpId,
+                });
+                toast('添加成功！');
+                this.loadData();
+            } catch (e) {
+                toast(e);
+                this.showPop = false;
+                this.isEditing = false;
+            }
+            this.$apply();
+        },
+        close() {
+            this.showPop = false;
+            this.$apply();
+        },
+        edit(e) {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderComponentGroup_editGroup');
+            const { status } = e.currentTarget.dataset;
+            const dataList = this.groupList;
+            if (status) {
+                dataList.forEach(item => {
+                    Object.assign(item, {
+                        choseStatu: false,
+                    });
+                });
+                this.groupList = dataList;
+            }
+            this.delList = [];
+            this.name = '';
+            this.id = '';
+            this.isEditing = !this.isEditing;
+            this.$apply();
+        },
+        async deleteItem() {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderComponentGroup_deleteGroup');
+            try {
+                const { delList } = this;
+                if (delList.length === 0) {
+                    alert('请选择要删除的分组');
+                    return;
+                }
+                const ids = delList.join();
+                await get('/businessService/delGroup/0', {
+                    ids,
+                });
+                this.delList = [];
+                this.isEditing = false;
+                this.$apply();
+                this.loadData();
+            } catch (e) {
+                this.delList = [];
+                this.isEditing = false;
+                toast(e);
+            }
+        },
+        editChose(id, index, name) {
+            if (this.isEditing) {
+                const item = this.groupList[index];
+                const itemIndex = this.delList.length === 0 ? -2 : this.delList.indexOf(id);
+                console.log(itemIndex);
+                if (item) {
+                    item.choseStatu = !item.choseStatu;
+                }
+                if (itemIndex < 0) {
+                    this.delList.push(id);
+                } else {
+                    this.delList.splice(itemIndex, 1);
+                }
+                this.$apply();
+                console.log(this.delList);
+                return;
+            }
+            // 点击跳转详情页面
+            wepy.navigateTo({
+                url: `orderComponentlist?id=${id}&name=${name}`,
+            });
+        },
+    }
+    async loadData() {
+        const { data } = await get('/businessService/groups', {
+            mpid: this.mpId,
+        });
+        if (!data || data.length === 0) return;
+        data.forEach(item => {
+            Object.assign(item, {
+                choseStatu: false,
+            });
+        });
+        this.groupList = data;
+        this.$apply();
+    }
+    showDialog(id = '', name = '') {
+        console.log(name, id);
+        const { groupList } = this;
+        if (!name && groupList && groupList.length >= 10) {
+            toast(' 分组数量达到最大（10个），无法创建更多。');
+            return;
+        }
+        this.name = name;
+        this.id = id;
+        this.$broadcast('postData', name);
+        this.showPop = true;
+        this.$apply();
+    }
+}
+</script>
+
+<style lang="scss">
+@import '../css/group.scss';
+@import '../css/btn.scss';
+page{
+    width:100%;
+    height:auto;
+}
+.empty-box{
+    margin-top:150rpx;
+}
+</style>

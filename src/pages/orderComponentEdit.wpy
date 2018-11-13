@@ -1,0 +1,655 @@
+<template>
+    <view class="containe">
+        <view class="section">
+            <view class="item required border-bottom">
+                <text>服务名称</text>
+                <input
+                type="text"
+                placeholder="可用优惠券亮点吸引用户"
+                placeholder-class="placeholder"
+                value="{{ form.serviceName }}"
+                @change="setFormData('serviceName')"/>
+            </view>
+            <imageUploader @changeimages.user="setImages" maxCount="10"
+            maxSize="4" uploadtype="1" :showDelete="showImageDelete"
+            showType="order" :defaultImages.sync="defaultImages"></imageUploader>
+            <view class="item required">
+                <text>服务价格</text>
+                <input
+                class="price-font input-price"
+                type="digit"
+                placeholder="请输入价格"
+                placeholder-class="placeholder"
+                value="{{ form.price }}"
+                @change="setFormData('price')"/>
+                <text class="unit">元/次</text>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required">
+                <text>服务时长</text>
+                <input
+                class="input-duration"
+                type="number"
+                placeholder="请输入时间"
+                placeholder-class="placeholder"
+                value="{{ form.duration }}"
+                @change="setFormData('duration')"/>
+                <text class="unit">{{ form.durationUnit === 1 ? '分钟' : '小时' }}</text>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required border-bottom">
+                <text>服务开始时间</text>
+                <picker mode="time" value="{{ form.serviceStarttime }}"
+                :class="{ placeholder: !form.serviceStarttime }"
+                @change="setFormData('serviceStarttime')">
+                    {{ form.serviceStarttime || '去选择' }}<view class="icon more"></view>
+                </picker>
+            </view>
+            <view class="item required">
+                <text>服务结束时间</text>
+                <picker mode="time" value="{{ form.serviceEndtime }}"
+                :class="{ placeholder: !form.serviceEndtime }"
+                @change="setFormData('serviceEndtime')">
+                    {{ form.serviceEndtime || '去选择' }}<view class="icon more"></view>
+                </picker>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required border-bottom">
+                <text>预约区域</text>
+                <navigator
+                :class="{ placeholder: region === '' }"
+                hover-class="none"
+                url="/pages/multiSelector">
+                    {{ region || '去选择' }}
+                    <view class="icon more"></view>
+                </navigator>
+            </view>
+            <view class="item required">
+                <text>预约地址</text>
+                <button class="locate" @tap="setLocation">定位</button>
+            </view>
+            <input
+            type="text"
+            class="location-detail"
+            placeholder="请输入详细地址"
+            placeholder-class="placeholder"
+            value="{{ form.address }}"
+            @change="setFormData('address')"/>
+            <map class="location-map" scale="14"
+            longitude="{{ form.addressLongitude }}"
+            latitude="{{ form.addressLatitude }}"></map>
+        </view>
+        <view class="section">
+            <view class="item">
+                <text>服务详情</text>
+            </view>
+            <textarea class="service-detail" cols="30" rows="10"
+            placeholder="详细描述下您的服务内容吧~"
+            placeholder-class="placeholder"
+            value="{{ form.serviceDetailInfo }}"
+            @input="setFormData('serviceDetailInfo')">
+            </textarea>
+            <!-- <view class="item required">
+                <text>服务详情</text>
+                <navigator
+                hover-class="none"
+                :class="{ placeholder: region === '' }"
+                url="/pages/orderDetailSelector">
+                    {{ region || '未填写' }}
+                    <view class="icon more"></view>
+                </navigator>
+            </view> -->
+        </view>
+        <view class="section">
+            <view class="item border-bottom">
+                <text>服务人姓名</text>
+                <input
+                placeholder="请输入服务人姓名"
+                placeholder-class="placeholder"
+                value="{{ form.serviceUserName }}"
+                @change="setFormData('serviceUserName')"/>
+            </view>
+            <view class="item">
+                <text>服务人电话</text>
+                <input
+                type="number"
+                placeholder="请输入服务人电话"
+                placeholder-class="placeholder"
+                value="{{ form.serviceTelphone }}"
+                @change="setFormData('serviceTelphone')"/>
+            </view>
+        </view>
+        <view class="section">
+            <view class="item required border-bottom">
+                <text>收费方式</text>
+                <view class="pay-types">
+                    <view  wx:for="{{payTypeDetail}}" wx:key="{{index}}" class="pay-type {{item.value==form.payType?'selected':''}}" @tap="bindPayType" data-type="{{item.value}}">{{item.name}}</view>
+                    <!-- <view>{{form.payTypeDetail}}</view> -->
+                </view>
+            </view>
+            <view class="item required" wx:if="{{form.payType == 2 || form.payType == 3}}">
+                <text wx:if="{{form.payType == 2}}">一口价</text>
+                <text wx:if="{{form.payType == 3}}">订金价格</text>
+                <input
+                class="price-font input-price"
+                type="digit"
+                placeholder="请输入价格"
+                placeholder-class="placeholder"
+                value="{{ form.earnestMoney }}"
+                @change="setFormData('earnestMoney')"/>
+                <text class="unit">元/次</text>
+            </view>
+        </view>
+        <view class="pay-tip">{{payTips[form.payType-1]}}</view>
+    </view>
+    <button class="save" :class="{ disabled: !canSubmit }" @tap="save">保存</button>
+</template>
+
+<script>
+import wepy from 'wepy';
+import Mixin from '../mixin';
+import { get, post } from '../utils/ajax';
+import { LOAD_SERVICE, INSERT_SERVICE, SAVE_SERVICE } from '../utils/url';
+import { alert, picSrcDomain, isEmpty } from '../utils';
+import imageUploader from '../components/UploadFile';
+import globalService from '../utils/globalService';
+import { getUid, SendClickLog } from '../utils/maidian';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '编辑详情',
+    }
+
+    components = {
+        imageUploader,
+    }
+
+    data = {
+        form: {
+            id: '',
+            mpid: '',
+            serviceName: '', // *服务名称
+            pics: '', // *服务头图
+            price: 0, // *服务价格
+            durationUnit: 1, // *服务形式，小程序端只能选择 分钟/次
+            duration: 0, // *服务时长
+            serviceDetailInfo: '', // 服务详情
+            serviceUserName: '', // 服务人员姓名
+            serviceTelphone: '', // 服务人电话
+            serviceStarttime: '', // *开始时间
+            serviceEndtime: '', // *结束时间
+            provinceStr: '', // 省名
+            cityStr: '', // 城市名
+            areaStr: '', // 区名
+            address: '', // *详细地址
+            addressLongitude: '116.39722', // *经度
+            addressLatitude: '39.90960', // *纬度
+            province: 0, // *省id
+            city: 0, // *城市id
+            area: 0, // *区域id
+            payType: 1, // *支付方式，只能为到店付
+            earnestMoney: 0, // 服务收费
+        },
+        payTypeDetail: [
+            {
+                name: '免费预约',
+                value: '1',
+            },
+            {
+                name: '一口价',
+                value: '2',
+            },
+            {
+                name: '订金',
+                value: '3',
+            },
+        ],
+        showImageDelete: false,
+        defaultImages: [],
+        region: '',
+        canSubmit: false,
+        isOpenPay: false,
+        payTips: ['客户预约时无需付款，完成服务后线上收取费用', '一口价为服务的全部费用，商家需承诺无其他费用', '客户预约时支付订金，完成服务后线上收取尾款'],
+    }
+
+    mixins = [Mixin]
+
+    methods = {
+        setImages({ images }) {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderComponentEdit_setImages');
+            if (images.length) {
+                [this.form.pics] = images;
+            }
+        },
+
+        bindPayType(e) {
+            const { type } = e.currentTarget.dataset;
+            // 改变付款方式
+            this.form.payType = type;
+            if (parseInt(type) !== 1) {
+                this.form.earnestMoney = null;
+            } else {
+                this.form.earnestMoney = 0;
+            }
+            this.$apply();
+        },
+        async save() {
+            if (!this.canSubmit) {
+                return;
+            }
+
+            try {
+                let requestUrl = '';
+
+                // 数据过滤，不提交未填写字段
+                const { form } = this;
+                const postData = {};
+                Object.keys(form).forEach(key => {
+                    if (form[key] !== '') {
+                        // !== '' 付款方式为免费预约时earnestMoney=0
+                        postData[key] = form[key];
+                    }
+                });
+
+                // 校验数据
+                this.validator(postData);
+                if (form.id) {
+                    requestUrl = SAVE_SERVICE;
+                } else {
+                    requestUrl = INSERT_SERVICE;
+                }
+
+                await post(requestUrl, postData);
+                wepy.navigateBack();
+            } catch (e) {
+                this.errorHandler(e);
+
+                let msg = '';
+                if (typeof e === 'object') {
+                    msg = e.message;
+                } else {
+                    msg = e;
+                }
+                alert(msg);
+            }
+        },
+
+        /**
+         * prop 字段名
+         * e 事件对象
+         */
+        setFormData(prop, e) {
+            this.form[prop] = e.detail.value;
+        },
+
+        async setLocation () {
+            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderComponentEdit_setLocation');
+            try {
+                const {
+                    address,
+                    latitude: addressLatitude,
+                    longitude: addressLongitude,
+                } = await wepy.chooseLocation();
+
+                Object.assign(this.form, {
+                    address,
+                    addressLatitude,
+                    addressLongitude,
+                });
+                this.$apply();
+            } catch (e) {
+                this.errorHandler(e);
+            }
+        },
+    }
+
+    computed = {
+        region() {
+            const { provinceStr, cityStr, areaStr } = this.form;
+
+            if (!provinceStr || !cityStr || !areaStr) {
+                return '';
+            }
+
+            return `${provinceStr} ${cityStr} ${areaStr}`;
+        },
+        canSubmit() {
+            let result = true;
+            const requiredFields = ['serviceName', 'pics', 'price', 'durationUnit',
+                'duration', 'serviceStarttime', 'serviceEndtime',
+                'provinceStr', 'cityStr', 'areaStr', 'address', 'payType', 'earnestMoney'];
+
+            requiredFields.forEach(key => {
+                console.log(this.form[key]);
+                if (isEmpty(this.form[key])) {
+                    result = false;
+                }
+            });
+            return result;
+        },
+    }
+
+    async onLoad({ id, resourceGroup }) {
+        const mpid = wepy.getStorageSync('current_mpid');
+        this.mpid = mpid;
+        this.$apply();
+
+        if (id) {
+            await this.loadData(id);
+            this.updateData();
+        }
+
+        Object.assign(this.form, {
+            resourceGroup,
+            mpid,
+        });
+        this.$apply();
+    }
+
+    onShow() {
+        // 每次onShow同步数据
+        const regionData = globalService.get('multiSelector');
+        const {
+            province, city, area,
+        } = regionData;
+
+        if (province && city && area) {
+            Object.assign(this.form, regionData);
+        }
+        this.isChecked();
+    }
+
+    // 校验数据
+    validator(data) {
+        // 校验必填字段
+        const {
+            serviceStarttime, serviceEndtime, payType, earnestMoney, price, duration, durationUnit,
+        } = data;
+        if (this.transform(serviceStarttime) > this.transform(serviceEndtime)) {
+            alert('预约结束时间必须大于开始时间');
+            throw new Error('预约结束时间必须大于开始时间');
+        }
+
+        if (price > 1e5) {
+            alert('输入价格不超过10万');
+            throw new Error('输入价格不超过10万');
+        }
+
+        if (duration > 1440 && durationUnit === 1) {
+            alert('输入时长不得大于1440分钟');
+            throw new Error('输入时长不得大于1440分钟');
+        }
+
+        if (duration > 24 && durationUnit === 2) {
+            alert('输入时长不得大于24小时');
+            throw new Error('输入时长不得大于24小时');
+        }
+        if (!this.isOpenPay && parseInt(payType) !== 1) {
+            alert('请开通支付功能');
+            throw new Error('请开通支付功能');
+        }
+        if (parseInt(payType) === 2 && earnestMoney > price) {
+            alert('一口价不得大于服务价格');
+            throw new Error('一口价不得大于服务价格');
+        }
+        if (parseInt(payType) === 3 && earnestMoney > price / 2) {
+            alert('订金不得大于服务价格的一半');
+            throw new Error('订金不得大于服务价格的一半');
+        }
+    }
+    async isChecked() {
+        const { data, state } = await await get('/mpInfo/isChecked', {
+            id: this.form.mpid,
+        });
+        if (state === 100 && data === true) {
+            this.isOpenPay = true;
+            this.$apply();
+        }
+    }
+    async loadData(id) {
+        try {
+            const { mpid } = this;
+            const { data: service } = await get(LOAD_SERVICE + id, {
+                mpid,
+            });
+
+            const {
+                serviceName,
+                pics,
+                price,
+                durationUnit,
+                duration,
+                serviceDetailInfo,
+                // serviceUserName,
+                // serviceTelphone,
+                linker,
+                mobile,
+                serviceStarttime,
+                serviceEndtime,
+                provinceStr,
+                cityStr,
+                areaStr,
+                address,
+                addressLongitude,
+                addressLatitude,
+                province,
+                city,
+                area,
+                payType,
+                earnestMoney,
+            } = service;
+
+            Object.assign(this.form, {
+                id,
+                mpid,
+                serviceName,
+                pics,
+                price,
+                durationUnit,
+                duration,
+                serviceDetailInfo,
+                serviceUserName: linker,
+                serviceTelphone: mobile,
+                serviceStarttime,
+                serviceEndtime,
+                provinceStr,
+                cityStr,
+                areaStr,
+                address,
+                addressLongitude,
+                addressLatitude,
+                province,
+                city,
+                area,
+                payType,
+                earnestMoney,
+            });
+            this.defaultImages = [picSrcDomain() + pics];
+
+            this.$apply();
+        } catch (e) {
+            this.errorHandler(e);
+        }
+    }
+
+    updateData() {
+        const orderComponent = globalService.get('orderComponent');
+        globalService.set('orderComponent', Object.assign(orderComponent, this.form));
+    }
+    transform(hours) {
+        const minutes = parseInt(hours.split(':')[0] * 60) + parseInt(hours.split(':')[1]);
+        return minutes;
+    }
+}
+</script>
+
+<style lang="scss">
+view {
+    box-sizing: border-box;
+}
+.containe {
+    font-size: 28rpx;
+    padding-bottom: 122rpx;
+}
+
+.section {
+    margin-top: 20rpx;
+    background-color: #FFFFFF;
+    overflow: hidden;
+
+    .location-detail {
+        margin: 0 30rpx 30rpx;
+        height: 40rpx;
+    }
+
+    .location-map {
+        width: 100%;
+        height: 360rpx;
+        margin-bottom: 30rpx;
+    }
+
+    .service-detail {
+        height: 200rpx;
+        background: #f6f6f6;
+        border-radius: 4rpx;
+        margin: 0 20rpx 30rpx;
+        padding: 20rpx;
+        width: 670rpx;
+    }
+    .pay-types {
+        width: 396rpx;
+        display: flex;
+    }
+    .pay-type {
+        font-size: 26rpx;
+        color: #BDBDBD;
+        text-align: center;
+        border: 1px solid #CCCCCC;
+        border-radius: 4px;
+        width: 132rpx;
+        line-height: 48rpx;
+        margin-left: 20rpx;
+    }
+    .selected {
+        color: #fff;
+        border: 1px solid #4E88FF;
+        background: #4E88FF;
+    }
+    .item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 23rpx 0;
+        margin: 0 30rpx;
+        position: relative;
+        height: 89rpx;
+
+        .price-font {
+            color: #FF937B;
+        }
+
+        &.border-bottom {
+            border-bottom: 1rpx solid #f3f3f3;
+        }
+        &.required::before {
+            display: block;
+            content: '*';
+            width: 14rpx;
+            height: 37rpx;
+            font-size: 26rpx;
+            color: #FFA100;
+            position: absolute;
+            left: -15rpx;
+        }
+
+        input {
+            width: 396rpx;
+            height: 30rpx;
+            line-height: 30rpx;
+            text-align: right;
+            position: relative;
+        }
+        .input-price {
+            margin-right: 84rpx;
+        }
+        .input-duration {
+            margin-right: 69rpx;
+        }
+        .unit {
+            position: absolute;
+            top: 0;
+            right: 0;
+            line-height: 89rpx;
+            font-size: 28rpx;
+            color: #666;
+        }
+
+        text {
+            color: #BDBDBD;
+            font-size: 30rpx;
+        }
+
+        button.locate {
+            width: 110rpx;
+            height: 50rpx;
+            border: 2rpx solid #83abff;
+            border-radius: 4rpx;
+            padding: 0;
+            margin: 0;
+            font-size: 28rpx;
+            color: #83abff;
+            line-height:50rpx;
+            background-color:inherit;
+            &::after {
+                border: none;
+            }
+        }
+    }
+}
+
+button.save {
+    height: 102rpx;
+    background-color: #4e88ff;
+    color: #fff;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 0;
+    z-index: 999;
+
+    &.disabled {
+        background-color: #C5C5C5;
+    }
+
+    &::after {
+        content: none;
+    }
+}
+
+.placeholder {
+    font-size: 28rpx;
+    color: #BDBDBD;
+}
+
+.icon {
+    display: inline-block;
+
+    &.more {
+        width: 25rpx;
+        height: 25rpx;
+        background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/coupon-more.png') no-repeat;
+        background-size: auto 25rpx;
+        background-position: right;
+    }
+}
+.pay-tip{
+    font-size: 26rpx;
+    color: #999;
+    text-indent: 23rpx;
+    margin-top:10rpx;
+}
+</style>

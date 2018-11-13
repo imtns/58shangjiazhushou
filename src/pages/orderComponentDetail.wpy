@@ -1,0 +1,243 @@
+<template>
+    <view class="containe">
+        <view class="order-banner">
+            <image src="http://pic1.58cdn.com.cn/{{pics}}"></image>
+        </view>
+        <view class="item-height-100">
+            <view class="item-base">{{serviceName}}</view>
+                <view class="item-text align-right"><image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/phone-icon.png"></image></view>
+        </view>
+        <view class="item-flex margin-top-20">
+            <view class="item-flex-line">
+                <view class="item-base">服务时长</view>
+                <view class="item-text align-right">{{duration}} {{durationUnit === 1 ? '分钟' : '小时'}}</view>
+            </view>
+        </view>
+        <view class="item-flex">
+            <view class="item-flex-line">
+                <view class="item-base">可预约时间段</view>
+                <view class="item-text align-right">{{timeZone}}</view>
+            </view>
+        </view>
+        <view class="item-flex">
+            <view class="item-flex-line multiLine">
+                <view class="item-base">商家地址</view>
+                <view class="align-right right-angel padding-right-20 address">{{address}}</view>
+            </view>
+        </view>
+        <!-- <view class="item-flex">
+            <view class="item-flex-line">
+                <view class="item-base">优惠劵</view>
+                <view class="item-base align-right right-angel padding-right-20">有可使用的优惠劵</view>
+            </view>
+        </view> -->
+        <view class="item-flex margin-top-20">
+            <view class="item-flex-line"><view class="item-base">服务详情</view></view>
+            <view class="item-flex-text">{{serviceDetailInfo}}</view>
+        </view>
+    </view>
+    <view class="block"></view>
+    <view class="options">
+        <view class="button edit" @tap="manageProduct">{{status === 2 ? '上架' : '下架'}}</view>
+        <view class="button" @tap="edit">编辑</view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { get } from '../utils/ajax';
+import { alert } from '../utils';
+
+export default class OrderComponentDetail extends wepy.page {
+    config = {
+        navigationBarTitleText: '预览详情',
+    }
+    data = {
+        id: '',
+        resourceGroup: '',
+        mpid: '',
+        pics: '',
+        serviceName: '',
+        serviceDuaring: '',
+        timeZone: '',
+        address: '',
+        serviceDetailInfo: '',
+        duration: '',
+        durationUnit: '',
+        status: '',
+    }
+    onLoad(option) {
+        const { id = '', resourceGroup = '' } = option;
+        console.log(option);
+        this.id = id;
+        this.resourceGroup = resourceGroup;
+        this.mpid = wepy.getStorageSync('current_mpid');
+        this.$apply();
+    }
+    onShow() {
+        this.loadData();
+    }
+    async loadData() {
+        try {
+            const { data } = await get(`/businessService/get/${this.id}`, {
+                mpid: this.mpid,
+            });
+            const {
+                pics,
+                serviceName,
+                serviceDuaring,
+                serviceStarttime,
+                serviceEndtime,
+                address,
+                serviceDetailInfo,
+                duration,
+                durationUnit,
+                status,
+            } = data;
+            this.pics = pics;
+            this.serviceName = serviceName;
+            this.serviceDuaring = serviceDuaring;
+            this.timeZone = `${serviceStarttime} - ${serviceEndtime}`;
+            this.address = address;
+            this.serviceDetailInfo = serviceDetailInfo;
+            this.duration = duration;
+            this.durationUnit = durationUnit;
+            this.status = status;
+            this.$apply();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    async manageProduct() {
+        try {
+            const { id, status } = this;
+            const msg = status === 2 ? '上架成功!' : '下架成功!';
+            await get('/businessService/update', {
+                id,
+                status: status === 2 ? 0 : 2,
+            });
+            alert(msg);
+            this.loadData();
+        } catch (e) {
+            alert(e);
+        }
+    }
+    edit() {
+        wepy.navigateTo({
+            url: `orderComponentEdit?id=${this.id}&resourceGroup=${this.resourceGroup}`,
+        });
+    }
+}
+</script>
+
+<style lang="scss">
+@import '../css/btn.scss';
+.containe{
+    width:100%;
+    height:100%;
+    overflow-y:auto;
+    .order-banner{
+        width:100%;
+        height:562rpx;
+        image{
+            width:100%;
+            height:100%;
+        }
+    }
+    .item-height-100{
+        background:#fff;
+        height:100rpx;
+        line-height:100rpx;
+        padding:0 30rpx;
+        position:relative;
+        .item-base{
+            max-width:600rpx;
+            overflow:hidden;
+            white-space:nowrap;
+            text-overflow:ellipsis;
+            font-family: PingFangSC-Regular;
+            font-size: 28rpx;
+            color: #333333;
+            letter-spacing: 0;
+        }
+        image{
+            width:44rpx;
+            height:44rpx;
+            position:absolute;
+            right:30rpx;
+            top:50%;
+            margin-top:-22rpx;
+        }
+    }
+    .item-flex{
+        background:#fff;
+        .height-100.item-flex-line{
+            height:100rpx;
+            line-height:100rpx;
+            padding: 0;
+        }
+        .item-flex-line{
+            border-bottom:1rpx solid #f6f6f6;
+            padding:30rpx 0;
+            margin:0 30rpx;
+            display:flex;
+            .item-base{
+                width:180rpx;
+            }
+            .item-base,.item-text{
+                font-family: PingFangSC-Regular;
+                font-size: 28rpx;
+                color: #333333;
+                letter-spacing: 0;
+            }
+            .item-text{
+                flex:1;
+            }
+            .align-right{
+                text-align:right;
+            }
+            .right-angel{
+                &::before{
+                    position:absolute;
+                    right:0;
+                    top:50%;
+                    margin-top:-13rpx;
+                    content:'';
+                    width:15rpx;
+                    height:26rpx;
+                    background:url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png') no-repeat center;
+                    background-size: 15rpx 26rpx;
+                }
+            }
+            .padding-right-20{
+                padding-right:20rpx;
+            }
+            .address{
+                font-family: PingFangSC-Regular;
+                font-size: 28rpx;
+                color: #333333;
+                letter-spacing: 0;
+                flex:1;
+                position:relative;
+            }
+        }
+        .multiLine.item-flex-line{
+            min-height:88rpx;
+        }
+        &.margin-top-20{
+            margin-top:20rpx;
+        }
+        .item-flex-text{
+            background:#fff;
+            font-size: 28rpx;
+            padding:20rpx 30rpx;
+            line-height:40rpx;
+            letter-spacing: 0.3rpx;
+        }
+    }
+}
+.block{
+    width:100%;
+    height:102rpx;
+}
+</style>

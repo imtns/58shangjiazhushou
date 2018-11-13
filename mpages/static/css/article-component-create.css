@@ -1,0 +1,563 @@
+@charset "UTF-8";
+/* 基础样式 */
+html{
+	font-family:PingFangSC-Regular;;
+	-webkit-text-size-adjust: none;
+}
+*{
+	box-sizing:border-box;
+	-webkit-box-sizing:border-box;
+	-ms-box-sizing:border-box;
+	-moz-box-sizing:border-box
+}
+body,blockquote,dd,dl,h1,h2,h3,h4,h5,h6,hr,input,p,pre,fieldset,ol,ul{
+	margin:0
+}
+button,input,textarea,fieldset,legend,ol,th,td,option,ul{
+	padding:0
+}
+a{
+	text-decoration:none;
+	-webkit-tap-highlight-color:rgba(0,0,0,0);
+	text-decoration:none;
+}
+body{
+	font-size:100%;
+	line-height:1;
+	background:#f8f9fb;
+}
+h1{font-size:200%}
+h2{font-size:150%}
+h3{font-size:117%}
+h4{font-size:100%}
+h5{font-size:83%}
+h6{font-size:67%}
+iframe{border:0}
+table{
+	border-collapse:collapse;
+	border-spacing:0
+}
+ol, ul{
+    list-style:none;
+}
+table{
+    border-collapse:collapse;
+    border-spacing:0;
+}
+input{
+    -webkit-appearance:none;
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+    outline:0;
+}
+
+
+/* 页面样式 */
+html, body{
+    width:100%;
+    height:100%;
+    display:-webkit-box;
+    display:-ms-flexbox;
+    display:flex;
+    -webkit-box-orient:vertical;
+    -webkit-box-direction:normal;
+        -ms-flex-direction:column;
+            flex-direction:column;
+}
+.wrap{
+   -webkit-box-flex:1;
+       -ms-flex:1;
+           flex:1;
+    background:#f6f6f6;
+    display:-webkit-box;
+    display:-ms-flexbox;
+    display:flex;
+    -webkit-box-orient:vertical;
+    -webkit-box-direction:normal;
+        -ms-flex-direction:column;
+            flex-direction:column;
+    position:relative;
+    overflow:hidden;
+}
+.wrap-items{
+    width:100%;
+    /* height:4.27rem;
+    min-height:5.16rem; */
+    margin-top:0.2rem;
+}
+
+.item-flex{
+    width:100%;
+    height:.89rem;
+    line-height:.89rem;
+    display:-webkit-box;
+    display:-ms-flexbox;
+    display:flex;
+    border-bottom:0.01rem solid #ccc;
+    background:#fff;
+    padding:0 0.3rem;
+}
+.wrap-content .item-flex{
+    padding:0 0.1rem;
+}
+.item-file.item-flex{
+    height:1.6rem;
+    border:0;
+    padding:.2rem 0;
+    -webkit-box-sizing:border-box;
+            box-sizing:border-box;
+}
+.item-upload-img,.item-file-div{
+    width:1.2rem;
+    height:1.2rem;
+    margin-left:0.3rem;
+    position:relative;
+}
+.item-upload-img img{
+    width:1.2rem;
+    height:1.2rem;
+    border-radius: 0.08rem;
+}
+.item-upload-img .exchange-img{
+    position:absolute;
+    width:100%;
+    height:0.6rem;
+    background:rgba(0,0,0,.5);
+    bottom:0;
+    left:0;
+    text-align:center;
+    line-height:0.6rem;
+    font-size: 0.24rem;
+    color: #FFFFFF;
+    border-radius:0 0 0.08rem 0.08rem;
+}
+.item-upload{
+    border: 1px solid #CCCCCC;
+    text-align:center;
+    line-height:0.4rem;
+    font-family: PingFangSC-Regular;
+    font-size: 0.2rem;
+    color: #999999;
+    border-radius: 0.08rem;
+}
+.item-upload::before{
+    display:block;
+    content:'';
+    width:0.6rem;
+    height:0.6rem;
+    background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-img-icon.png) no-repeat;
+    background-size:0.6rem 0.6rem;
+    margin: 0.14rem 0 0 0.3rem;
+}
+.item-file-div{
+    position:relative;
+}
+.item-file-btn{
+    position:absolute;
+    width:1.2rem;
+    height:1.2rem;
+    left:0;
+    top:0;
+    opacity:0;
+}
+.no-border.item-flex{
+    border:0;
+}
+.item-text{
+    width:2rem;
+    text-align:left;
+    margin-right:1.02rem;
+    font-size:0.3rem;
+    color:#999;
+    float:left;
+    position: relative;
+}
+.item-text.required{
+    position:relative;
+}
+.item-text.required::before{
+    width:0.075rem;
+    height:0.075rem;
+    content:"*";
+    color: #FFA100;
+    position:absolute;
+    top:0.04rem;
+    left:-0.15rem;
+}
+.item-input-div{
+    -webkit-box-flex:1;
+        -ms-flex:1;
+            flex:1;
+    
+}
+.item-chose{
+    text-align:right;
+    width:100%;
+    font-family: PingFangSC-Regular;
+    font-size: .28rem;
+    color: #BDBDBD;
+    position:relative;
+}
+.item-chose::after{
+    display:inline-block;
+    width:0.15rem;
+    height:0.26rem;
+    content:'';
+    position:relative;
+    top:50%;
+    margin-left:0.2rem;
+    background:url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png') no-repeat center;
+    background-size: 100%;
+}
+.zeditor-btn-main{
+    position:absolute;
+    right:0.3rem;
+    top: 0;
+    width:0.4rem;
+    height:0.34rem;
+}
+.item-input{
+    width:100%;
+    height:.86rem;
+    border:0;
+    text-align:right;
+    font-size: .28rem;
+    color: #666666;
+    overflow:hidden;
+    -o-text-overflow:ellipsis;
+       text-overflow:ellipsis;
+    white-space:nowrap;
+    background:rgba(0,0,0,0);
+}
+.icon-tupian{
+    width:0.4rem;
+    height:0.34rem;
+    position:absolute;
+    right:0;
+    top:0.32rem;
+}
+.icon-bold{
+    width:0.35rem;
+    height:0.35rem;
+    position:absolute;
+    right:0.65rem;
+    top:0.32rem;
+}
+.icon-tupian-btn{
+    opacity:0;
+}
+.wrap-content{
+    height:59%;
+    background:#fff;
+    padding:0.1rem 0.2rem 0.6rem 0.2rem;
+    -webkit-box-sizing:border-box;
+            box-sizing:border-box;
+    overflow:hidden;
+    position:relative;
+}
+.editor{
+    background:#f6f6f6;
+    width:100%;
+    height:90%;
+    padding:.2rem;
+    overflow-y:scroll;
+    -webkit-box-sizing:border-box;
+            box-sizing:border-box;
+}
+.zeditor-content p{
+    font-size:0.3rem;
+    line-height:.5rem;
+    letter-spacing: 0;
+    color: #666666;
+    word-break:break-all;
+    white-space:pre-wrap;
+    text-align:justify
+}
+.zeditor-content p img{
+    width:100%;
+    height:5.03rem;
+    border-radius:0.05rem;
+    margin:0.3rem 0;
+}
+.zeditor-content{
+    height:200px;
+    outline:0;
+}
+.block{
+    width:100%;
+    height:1.02rem;
+    line-height:1.02rem;
+}
+.btn{
+    width:100%;
+    height:1.02rem;
+    line-height:1.02rem;
+    text-align:center;
+}
+.save-btn{
+    background:#4E88FF;
+    color:#fff;
+    font-size: .34rem;
+    position:fixed;
+    left:0;
+    bottom:0;
+    z-index:10;
+}
+
+.mask{
+    position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.5);
+    z-index:11;
+}
+.dialog{
+    width:5.6rem;
+    height:2.91rem;
+    background:#fff;
+    border-radius:.08rem;
+    position:absolute;
+    left:0;
+    top:0;
+    right:0;
+    bottom:0;
+    margin:auto;
+    -webkit-box-sizing:border-box;
+            box-sizing:border-box;
+    padding-top: 0.50rem;
+    text-align: center;
+    z-index:11;
+}
+.dialog-title{
+    height: 0.5rem;
+    line-height:0.5rem;
+    font-family: PingFangSC-Regular;
+    font-size: 0.36rem;
+    color: #000000;
+}
+.dialog-content{
+    font-family: PingFangSC-Regular;
+    font-size: 0.28rem;
+    color: #888888;
+    margin:0.2rem 0 0.3rem 0;
+    height:0.6rem;
+    line-height:0.6rem;
+}
+.dialog-content.dialog-content-input{
+    width:80%;
+    height:0.6rem;
+    border:0;
+    outline:0;
+    padding:0 0.2rem;
+    background:#f5f5f5;
+    border-radius:0.05rem;
+    color:#333;
+    -webkit-box-sizing:border-box;
+            box-sizing:border-box;
+}
+.dialog-action-bar{
+    height:0.79rem;
+    border-top:0.01rem solid #f5f5f5;
+    display:-webkit-box;
+    display:-ms-flexbox;
+    display:flex;
+}
+.dialog-action-bar .btn{
+    -webkit-box-flex:1;
+        -ms-flex:1;
+            flex:1;
+    height:0.79rem;
+    line-height:0.79rem;
+    display:block;
+    font-family: PingFangSC-Regular;
+    font-size: 0.36rem;
+    color:#888;
+}
+.dialog-action-bar .btn._sure-btn,.dialog-action-bar .btn._ok-btn{
+    color: #4E88FF;
+    border-left:0.01rem solid #f5f5f5;
+}
+.dialog-action-bar ._chose-btn{
+    color: #fff;
+    background:#4E88FF;
+}
+.none{
+    display:none;
+}
+
+
+.group-dialog{
+    width:100%;
+    height:5.93rem;
+    background:#fff;
+    position:fixed;
+    left:0;
+    bottom:0;
+    z-index:12;
+}
+.group-dialog-list{
+    width:100%;
+    height:4.91rem;
+    padding:0 0.2rem;
+    -webkit-box-sizing:border-box;
+            box-sizing:border-box;
+    overflow-y:scroll;
+}
+.group-dialog-item{
+    border-bottom:0.01rem solid #f5f5f5;
+    height:1.21rem;
+    line-height:1.21rem;
+    padding-left:0.5rem;
+    -webkit-box-sizing:border-box;
+            box-sizing:border-box;
+    background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png) no-repeat left center;
+    background-size:0.3rem 0.3rem;
+    font-family: PingFangSC-Regular;
+    font-size: 0.30rem;
+    color: #666666;
+    letter-spacing: 0.0045rem;
+}
+.group-dialog-item.selected{
+    background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/selected-icon.png) no-repeat left center;
+    background-size:0.3rem 0.3rem;
+}
+.group-dialog .dialog-action-bar,.group-dialog .dialog-action-bar .btn{
+    height:1.02rem;
+    line-height:1.02rem;
+}
+
+
+.toast{
+    position:fixed;
+    z-index:1000;
+    left:0;
+    top:0;
+    height:100%;
+    width:100%;
+    background:rgba(0,0,0,.5);
+    overflow:hidden;
+}
+.win2 {
+    position:absolute;
+    z-index:1001;
+    width:80%;
+    height:2.2rem;
+    left:0;
+    top:0;
+    right:0;
+    bottom:0;
+    margin:auto;
+}
+.win2 div.before {
+    height: 100%;
+}
+.win2 div.before p {
+    line-height: 2;
+}
+.win2 .tips2 {
+    width:100%;
+    padding-top:0.48rem;
+    background:#2e2e2e;
+    border-radius:0.2rem;
+}
+.win2 .tips2 .icon {
+    display:block;
+    width:0.72rem;
+    height:0.72rem;
+    margin:0 auto
+}
+.win2 .tips-submiting .icon {
+    width:1rem;
+    height:1rem;
+    background:url(//img.58cdn.com.cn/ds/zhaobiao/v1/tips.png) no-repeat;
+    background-size:1rem 1rem;
+    -webkit-animation: rotate 1s linear infinite;
+    animation: rotate 1s linear infinite;
+}
+@-webkit-keyframes rotate{
+    from{-webkit-transform: rotate(0deg)}
+    to{-webkit-transform: rotate(360deg)}
+}
+@keyframes rotate{
+    from{-webkit-transform: rotate(0deg);transform: rotate(0deg)}
+    to{-webkit-transform: rotate(359deg);transform: rotate(359deg)}
+}
+.win2 .tips-error .icon {
+    position:relative;
+    border-radius:0.36rem;
+    background:#aaa
+}
+.win2 .tips-error .icon:after {
+    content:open-quote;
+    display:block;
+    position:absolute;
+    top:0.12rem;
+    left:0.34rem;
+    width:0.06rem;
+    height:0.3rem;
+    background:#fff;
+    font-size:0;
+    color:#fff;
+    border-radius:0.04rem
+}
+.win2 .tips-error .icon:before {
+    content:open-quote;
+    display:block;
+    position:absolute;
+    top:0.52rem;
+    left:0.34rem;
+    width:0.06rem;
+    height:0.06rem;
+    border-radius:0.04rem;
+    background:#fff;
+    font-size:0;
+    color:#fff
+}
+.win2 .tips-success .icon {
+    position:relative;
+    border-radius:0.36rem;
+    background:#aaa
+}
+.win2 .tips-success .icon:after {
+    content:open-quote;
+    display:block;
+    position:absolute;
+    top:0.16rem;
+    left:0.42rem;
+    width:0.06rem;
+    height:0.44rem;
+    font-size:0;
+    color:#fff;
+    border-radius:0.04rem;
+    background:#fff;
+    transform:rotate(35deg);
+    -ms-transform:rotate(35deg);
+    -moz-transform:rotate(35deg);
+    -webkit-transform:rotate(35deg);
+    -o-transform:rotate(35deg)
+}
+.win2 .tips-success .icon:before {
+    content:open-quote;
+    display:block;
+    position:absolute;
+    top:0.34rem;
+    left:0.22rem;
+    width:0.06rem;
+    height:0.22rem;
+    font-size:0;
+    border-radius:0.04rem;
+    color:#fff;
+    background:#fff;
+    transform:rotate(-45deg);
+    -ms-transform:rotate(-45deg);
+    -moz-transform:rotate(-45deg);
+    -webkit-transform:rotate(-45deg);
+    -o-transform:rotate(-45deg)
+}
+.win2 .tips2 p {
+    line-height:3;
+    font-size:0.28rem;
+    color:#cacaca;
+    text-align:center
+}

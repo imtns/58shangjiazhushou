@@ -1,0 +1,161 @@
+<template lang="wxml">
+    <view class="container">
+        <loading wx:if="{{ loading }}"></loading>
+        <block wx:else>
+            <view class="account-list">
+                <view
+                    class="account-item"
+                    wx:for="{{ accountList }}"
+                    wx:key="index"
+                    @tap="handleLogin({{item.username}}, {{item.mobile}})"
+                    hover-class="navigator-hover"
+                >
+                    <image
+                        class="account-logo"
+                        src="{{ item.portrait ? item.portrait + '?w=100&h=100&ss=1' : '' }}"
+                    ></image>
+                    <view class="account-info">
+                        <view class="account-title overflow-ellipsis">
+                            {{ item.title }}
+                        </view>
+                        <view class="account-mobile">{{ item.username }}</view>
+                        <view class="account-mpinfo">
+                            <view class="account-mp-count">
+                                小程序数量：{{ item.mpCount }}
+                            </view>
+                            <view>
+                                名片数量：{{ item.cardCount }}
+                            </view>
+                        </view>
+                    </view>
+                    <view class="account-arrow"></view>
+                </view>
+            </view>
+            <view
+                class="login-other"
+                @tap="handleLogin"
+            >登录其他账号</view>
+        </block>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import * as service from '../../utils/service';
+import Loading from '../../components/Loading';
+import loginHelper from '../../utils/login';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '选择58账号登录',
+    };
+    components = {
+        loading: Loading,
+    };
+    data = {
+        accountList: [
+            {
+                portrait: '',
+                title: '这是58账号非常长的名字很厉害吧哈哈哈哈哈哈',
+                mobile: '18010882283',
+                mpCount: 1,
+                cardCount: 10,
+            },
+        ],
+        loading: true,
+    };
+    async onLoad() {
+        try {
+            const openId = await service.getOpenId();
+            const accountList = await service.getAssistAuthList(openId);
+            this.accountList = accountList;
+
+            this.loading = false;
+            this.$apply();
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    methods = {
+        handleLogin(username, mobile) {
+            // 防止默认传入event对象
+            if (typeof username === 'object') {
+                username = '';
+            }
+            loginHelper.goLogin({
+                username,
+                mobile,
+            });
+        },
+    }
+}
+</script>
+
+<style lang="scss">
+navigator {
+    box-sizing: border-box;
+}
+.container {
+    padding: 0 30rpx;
+}
+.account-list {
+    margin: 30rpx 0;
+}
+.account-item {
+    margin-bottom: 20rpx;
+    display: flex;
+    align-items: center;
+    width: 690rpx;
+    padding: 30rpx;
+    background-color: #fff;
+}
+.account-logo {
+    width: 100rpx;
+    height: 100rpx;
+    border-radius: 50%;
+    margin-right: 30rpx;
+    background-color: #f3f3f3;
+}
+.account-info {
+    flex-grow: 1;
+}
+.account-arrow {
+    width: 15rpx;
+    height: 25rpx;
+    margin-left: 20rpx;
+    background: url('https://static.58.com/lbg/mengchong/image/icon/arrow-right.png')
+        no-repeat;
+    background-size: 100%;
+}
+.account-title {
+    font-size: 32rpx;
+    line-height: 45rpx;
+    color: #333;
+    margin-bottom: 10rpx;
+    width: 465rpx;
+}
+.account-mobile {
+    color: #999;
+    font-size: 26rpx;
+    line-height: 37rpx;
+    margin-bottom: 10rpx;
+}
+.account-mpinfo {
+    display: flex;
+    line-height: 33rpx;
+    color: #999;
+    font-size: 24rpx;
+}
+.account-mp-count {
+    margin-right: 20rpx;
+}
+.overflow-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.login-other {
+    font-size: 26rpx;
+    color: #999;
+}
+</style>

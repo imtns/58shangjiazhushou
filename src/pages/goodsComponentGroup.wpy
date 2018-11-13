@@ -1,0 +1,294 @@
+<template>
+    <view class="containe">
+        <block wx:if="{{ !isLoading }}">
+            <view class="group-list edit" wx:if="{{groupList.length > 0}}">
+                <view class="group-item" @tap.stop="editChose({{ item.data.id }}, {{ index }}, {{item.data.name}})" wx:for="{{groupList}}" wx:key="index" data-item="{{item}}">
+                    <view class="group-line" :class="{ selected: item.chooseStatus}">
+                        <view class="group-info">
+                            <view class="group-name">{{item.data.name}}</view>
+                            <view class="group-size">({{item.count}})</view>
+                        </view>
+                        <view class="rename-btn" @tap.catch.stop="showDialog({{item.data.id}}, {{item.data.name}})">重命名</view>
+                    </view>
+                </view>
+            </view>
+            <EmptyPage wx:else>
+                <view slot="content">
+                    <view class="empty-title">您还没有添加商品分类哦</view>
+                </view>
+            </EmptyPage>
+        </block>
+    </view>
+    <view class="block"></view>
+    <view class="options">
+        <button class="button" @tap="deleteItem">删除</button>
+        <button class="button primary" @tap="showDialog">添加</button>
+    </view>
+    <Pop wx:if="{{showPop}}" @close.user="close" @addGroup.user="addGroup" :name.sync="name"></Pop>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { toast, alert } from '../utils';
+import { get } from '../utils/ajax';
+import * as globalService from '../utils/globalService';
+
+import Pop from '../components/Dialog';
+import EmptyPage from '../components/EmptyPage';
+
+export default class goodsComponentGroup extends wepy.page {
+    config = {
+        navigationBarTitleText: '编辑分类',
+    };
+    components = {
+        EmptyPage,
+        Pop,
+    };
+    data = {
+        isLoading: false,
+        groupList: [],
+        showPop: false,
+        delList: [],
+        mpId: '',
+        id: '',
+        name: '',
+    };
+    onShow() {
+        const mpId = wepy.getStorageSync('current_mpid');
+        this.mpId = mpId;
+        this.loadData();
+    }
+    methods = {
+        showDialog(id = '', name = '') {
+            this.showDialog(id, name);
+        },
+        async addGroup(content) {
+            try {
+                let url = '';
+                if (this.name) {
+                    url = `/goods/updateGroup/${this.id}`;
+                } else {
+                    url = '/goods/addGroup';
+                }
+                this.showPop = false;
+                this.name = '';
+                this.id = '';
+                this.$apply();
+                await get(url, {
+                    name: content,
+                    mpId: this.mpId,
+                });
+                toast('添加成功！');
+                this.loadData();
+                globalService.set('refresh', true);
+            } catch (e) {
+                toast(e);
+                this.showPop = false;
+            }
+            this.$apply();
+        },
+        close() {
+            this.showPop = false;
+            this.$apply();
+        },
+        edit(e) {
+            const { status } = e.currentTarget.dataset;
+            const dataList = this.groupList;
+            if (status) {
+                dataList.forEach(item => {
+                    Object.assign(item, {
+                        chooseStatus: false,
+                    });
+                });
+                this.groupList = dataList;
+            }
+            this.delList = [];
+            this.name = '';
+            this.id = '';
+            this.$apply();
+        },
+        async deleteItem() {
+            try {
+                const { delList } = this;
+                if (delList.length === 0) {
+                    alert('请选择要删除的分组');
+                    return;
+                }
+                const ids = delList.join();
+                await get(`/goods/delGroup/${ids}`);
+                this.delList = [];
+                this.$apply();
+                this.loadData();
+                globalService.set('refresh', true);
+            } catch (e) {
+                this.delList = [];
+                toast(e);
+            }
+        },
+        editChose(id) {
+            let { delList } = this;
+
+            if (!~delList.indexOf(id)) {
+                delList = [id];
+            } else {
+                delList = [];
+            }
+
+            this.groupList.forEach(group => {
+                group.chooseStatus = ~delList.indexOf(group.data.id);
+            });
+
+            this.delList = delList;
+        },
+    };
+    async loadData() {
+        this.isLoading = true;
+        this.$apply();
+
+        const { data } = await get('/goods/groups/specail', {
+            mpId: this.mpId,
+        });
+
+        if (!data || data.length === 0) {
+            return;
+        }
+
+        data.forEach(item => {
+            Object.assign(item, {
+                chooseStatus: false,
+            });
+        });
+
+        this.groupList = data;
+        this.isLoading = false;
+        this.$apply();
+    }
+    showDialog(id = '', name = '') {
+        const { groupList } = this;
+        if (!name && groupList && groupList.length >= 10) {
+            toast(' 分组数量达到最大（10个），无法创建更多。');
+            return;
+        }
+        this.name = name;
+        this.id = id;
+        this.$broadcast('postData', name);
+        this.showPop = true;
+        this.$apply();
+    }
+}
+</script>
+
+<style lang="scss">
+.group-list {
+    width: 100%;
+    background: #fff;
+
+    .group-item {
+        width: 100%;
+        position: relative;
+        padding: 0 30rpx;
+        box-sizing: border-box;
+
+        .group-line {
+            width: 100%;
+            height: 124rpx;
+            border-bottom: 1rpx solid #f6f6f6;
+            display: flex;
+            font-size: 30rpx;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .group-info {
+            display: flex;
+            .group-name {
+                color: #666;
+                margin-right: 20rpx;
+            }
+            .group-size {
+                color: #999;
+            }
+        }
+
+        .group-angel {
+            width: 15rpx;
+            height: 26rpx;
+            background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png')
+                no-repeat center;
+            background-size: 100%;
+        }
+
+        .rename-btn {
+            color: #4e88ff;
+            letter-spacing: 0.45rpx;
+        }
+    }
+}
+
+.edit .group-line {
+    padding-left: 56rpx;
+    position: relative;
+
+    &::before {
+        width: 36rpx;
+        height: 36rpx;
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 44rpx;
+        // margin-top: -15rpx;
+        background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png')
+            no-repeat;
+        background-size: 36rpx 36rpx;
+    }
+}
+
+.edit .selected.group-line {
+    &::before {
+        background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/selected-icon.png');
+    }
+}
+
+.block {
+    width: 100%;
+    height: 102rpx;
+}
+
+.options {
+    display: flex;
+    font-size: 34rpx;
+    letter-spacing: 0.51px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    box-shadow: 0 -1px 17px -1px rgba(202,202,202,0.50);
+
+    .button {
+        width:100%;
+        height:102rpx;
+        font-size: 34rpx;
+        line-height: 102rpx;
+        border-radius: 0;
+        background-color: #fff;
+        color: #4E88FF;
+
+        &.primary {
+            background-color: #4E88FF;
+            color: #fff;
+        }
+
+        &::after {
+            content: none;
+        }
+    }
+}
+
+.empty-box {
+    margin-top: 150rpx;
+}
+.empty-title {
+    font-size: 26rpx;
+    color: #999;
+    margin-top: 30rpx;
+}
+</style>

@@ -1,0 +1,178 @@
+<template>
+    <view class="containe">
+        <view class="pay-header">
+            <!-- <view class="payrecord-type">类型选择</view> -->
+            <!-- <view class="select-icon {{choseMonth === '1' ? 'selected' : ''}}" @tap="choseType" data-type="1">按月选择</view> -->
+            <view class="select-icon" @tap="choseType" data-type="2">按日选择</view>
+        </view>
+        <view class="pay-body" wx:if="{{choseMonth === '1'}}">
+            <view class="pay-base"><text style="color: #FFA100;">*</text>请选择月份</view>
+            <picker class="pay-base right-angel" mode="date" fields="month" bindchange="selectMonth" value="{{month}}" end="{{currentMonth}}">{{month}}</picker>
+        </view>
+        <view class="pay-body"  wx:if="{{choseMonth === '2'}}">
+            <view class="pay-base"><text style="color: #FFA100;">*</text>开始时间</view>
+            <picker class="pay-base right-angel" mode="date" fields="day" bindchange="selectStartDate" value="{{startDate}}" end="{{currenDate}}">{{startDate}}</picker>
+        </view>
+        <view class="pay-body" wx:if="{{choseMonth === '2'}}">
+            <view class="pay-base"><text style="color: #FFA100;">*</text>结束时间</view>
+            <picker class="pay-base right-angel" mode="date" fields="day" bindchange="selectEndDate" value="{{endDate}}" end="{{currenDate}}">{{endDate}}</picker>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+import { sleep, alert } from '../utils';
+
+export default class PayChoseTime extends wepy.page {
+    config = {
+        navigationBarTitleText: '收款记录',
+    }
+    data = {
+        month: '请选择',
+        startDate: '请选择',
+        endDate: '请选择',
+        choseMonth: '2',
+        currentDate: '',
+    }
+    async onLoad() {
+        await sleep();
+        console.log('onLoad');
+        this.getCurrent();
+    }
+    choseType(e) {
+        const { type } = e.currentTarget.dataset;
+        this.choseMonth = type;
+        this.month = '请选择';
+        this.startDate = '请选择';
+        this.endDate = '请选择';
+        this.$apply();
+    }
+    selectMonth(e) {
+        const val = e.detail.value;
+        const timeZone = this.getDays(val);
+        wepy.redirectTo({
+            url: `paymentRecord?startDate=${timeZone[0]}&endDate=${timeZone[1]}`,
+        });
+    }
+    selectStartDate(e) {
+        const val = e.detail.value;
+        this.startDate = val;
+        this.$apply();
+    }
+    selectEndDate(e) {
+        const { startDate } = this;
+        if (startDate === '请选择') {
+            alert('请选择起始时间');
+            return;
+        }
+        const startTemp = new Date(startDate).getTime();
+        const val = e.detail.value;
+        const endTemp = new Date(val).getTime();
+        if (startTemp > endTemp) {
+            alert('起始时间不能晚于结束时间');
+            return;
+        }
+        this.startDate = `${startDate} 00:00:00`;
+        this.endDate = `${val} 24:00:00`;
+        this.$apply();
+        wepy.redirectTo({
+            url: `paymentRecord?startDate=${this.startDate}&endDate=${this.endDate}`,
+        });
+    }
+    getDays(date) {
+        const nDate = date.split('-');
+        const year = nDate[0] < 10 ? `200${nDate[0]}` : `20${nDate[0]}`;
+        const month = nDate[1];
+        const days = new Date(year, month, 0).getDate();
+        const startDay = '01';
+        const endDay = days;
+        console.log(year, month, startDay, endDay);
+        return [`${year}-${month}-${startDay} 00:00:00`, `${year}-${month}-${endDay} 24:00:00`];
+    }
+    // 获取当前日期
+    getCurrent() {
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1) < 10 ? `0${(date.getMonth() + 1)}` : (date.getMonth() + 1);
+        const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+        this.currentDate = `${year}-${month}-${day}`;
+        this.$apply();
+    }
+}
+</script>
+
+<style lang="scss">
+view{
+    box-sizing:border-box;
+}
+.pay-header,.pay-body{
+    width:100%;
+    height: 89rpx;
+    line-height: 89rpx;
+    background:#fff;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    padding:20rpx 30rpx;
+}
+.pay-header{
+    font-family: PingFangSC-Regular;
+    font-size: 30rpx;
+    color: #999999;
+    view{
+        flex:1;
+        
+        font-size: 28rpx;
+    }
+    .payrecord-type{
+        text-align:center;
+    }
+    .select-icon{
+        color:#666;
+        text-align:center;
+        // &:before{
+        //     display:inline-block;
+        //     float:left;
+        //     content:"";
+        //     width:40rpx;
+        //     height:40rpx;
+        //     background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png) no-repeat;
+        //     margin:24rpx 10rpx 0 0;
+        //     background-size:40rpx 40rpx;
+        // }
+    }
+    .selected.select-icon{
+        &::before{
+            background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/selected-icon.png) no-repeat;
+            background-size:40rpx 40rpx;
+        }
+    }
+}
+.pay-body{
+    margin-top:20rpx;
+    .pay-base{
+        flex:1;
+        font-family: PingFangSC-Regular;
+        font-size: 30rpx;
+        color: #999999;
+    }
+    .right-angel{
+        text-align:right;
+        position:relative;
+        padding-right: 30rpx;
+        &::before{
+            position:absolute;
+            right:0;
+            top:50%;
+            margin-top:-13rpx;
+            content:'';
+            width:15rpx;
+            height:26rpx;
+            background:url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png') no-repeat center;
+            background-size: 100%;
+        }
+    }
+}
+</style>

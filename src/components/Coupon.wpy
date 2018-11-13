@@ -1,0 +1,216 @@
+<template lang="wxml">
+    <view class="coupons" :class="{ row: viewType === 'row' }">
+        <block wx:if="{{ viewType === 'row' }}">
+            <view class="coupon-row-item"
+            wx:for="{{ coupons }}" wx:key="id">
+                <view class="coupon-row-left">
+                    <view class="value" >
+                        <!-- 打折 -->
+                        <block wx:if="{{ item.couponType === 2 }}">
+                            <text class="bold">{{ item.couponDiscard / 10 || 9 }}</text>折
+                        </block>
+                        <!-- 满减 -->
+                        <block wx:else>
+                            ￥<text class="bold">{{ item.reliefAmount }}</text>
+                        </block>
+                    </view>
+                    <view class="subtitle">
+                        满{{ item.limitAmount }}可用 
+                    </view>
+                    <!-- 固定时间类型 -->
+                    <view class="valid-time" wx:if="{{ item.validType === 1}}">
+                        {{ item.validEndtime }}前有效
+                    </view>
+                    <!-- 领取后生效 -->
+                    <view class="valid-time" wx:else>
+                        领取后{{ item.validAfterDays ? (item.validAfterDays + '天') : '立即' }}生效
+                    </view>
+                </view>
+                <view class="coupon-row-right">
+                    点击领取
+                </view>
+            </view>
+        </block>
+        <block wx:else>
+            <view class="coupon-item"
+            wx:for="{{ coupons }}" wx:key="id">
+                <view class="coupon-left">
+                    <!-- 打折 -->
+                    <view class="discount" wx:if="{{ item.couponType === 2 }}">
+                        <text class="bold">{{ item.couponDiscard / 10 || 9 }}</text>折
+                    </view>
+                    <!-- 满减 -->
+                    <view class="reduce" wx:else>
+                        ￥<text class="bold">{{ item.reliefAmount }}</text>
+                    </view>
+                </view>
+                <view class="coupon-right">
+                    <view class="info">
+                        <view class="title">满{{ item.limitAmount }}可用</view>
+                        <view class="type">{{ item.subTitle }}</view>
+                        <!-- 固定时间类型 -->
+                        <view class="time" wx:if="{{ item.validType === 1}}">
+                            {{ item.validStarttime }}-{{ item.validEndtime }}
+                        </view>
+                        <!-- 领取后生效 -->
+                        <view class="time" wx:else>
+                            领取后{{ item.validAfterDays ? (item.validAfterDays + '天') : '立即' }}生效
+                        </view>
+                    </view>
+                    <button>立即领取</button>
+                </view>
+            </view>
+        </block>
+    </view>
+</template>
+
+<script>
+/**
+ * @desc 优惠券组件，给用户看的
+ */
+
+import wepy from 'wepy';
+
+
+export default class Coupon extends wepy.component {
+    props = {
+        coupons: Array,
+        viewType: String,
+    }
+}
+</script>
+
+<style lang="scss" scope>
+$radius: 4rpx;
+
+.coupons {
+    &.row {
+        display: flex;
+        width: 200%;
+    }
+    .coupon-row-item {
+        background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/coupon-small.png');
+        background-size: 315rpx 180rpx;
+        width: 315rpx;
+        height: 180rpx;
+        display: flex;
+        color: #fff;
+        margin-right: 40rpx;
+
+        .coupon-row-left {
+            width: 250rpx;
+            padding: 20rpx 0 20rpx 30rpx;
+            .value {
+                font-size: 30rpx;
+                .bold {
+                    font-size: 50rpx;
+                }
+            }
+            .subtitle {
+                font-size: 24rpx;
+            }
+            .valid-time {
+                font-size: 24rpx;
+                color: #FFE37F;
+            }
+        }
+        .coupon-row-right {
+            width: 63rpx;
+            font-size: 24rpx;
+            padding: 24rpx 26rpx 24rpx 15rpx;
+        }
+    }
+
+    .coupon-item {
+        width: 710rpx;
+        height: 180rpx;
+        margin: 20rpx 0 20rpx 0;
+        display: flex;
+        box-shadow: 0 1rpx 10rpx 0 rgba(0,0,0,0.05);
+        border-radius: $radius;
+        position: relative;
+        transition: margin .5s;
+
+        &.editing {
+            margin-left: 123rpx;
+        }
+
+        .coupon-left {
+            width: 176rpx;
+            color: #FF552E;
+            font-size: 30rpx;
+            background-color: #fff;
+            line-height: 180rpx;
+            padding: 0 20rpx;
+            border-right: 2rpx dashed #FFB204;
+            border-radius: $radius 0 0 $radius;
+            text-align: center;
+
+            .discount .bold {
+                font-size: 70rpx;
+            }
+            .reduce .bold {
+                font-size: 60rpx;
+            }
+        }
+
+        .coupon-right {
+            flex-grow: 1;
+            display: flex;
+            background-image: linear-gradient(135deg, #FFBD05 0%, #FF9602 100%);
+            padding: 30rpx 24rpx;
+            align-items: center;
+
+            .info {
+                flex-grow: 1;
+                color: #FFF;
+
+                .title {
+                    font-size: 32rpx;
+                    line-height: 45rpx;
+                }
+                .type {
+                    font-size: 28rpx;
+                    line-height: 40rpx;
+                    margin-bottom: 13rpx;
+                }
+                .time {
+                    font-size: 24rpx;
+                    color: #ffe37f;
+                    line-height: 33rpx;
+                }
+            }
+
+            button {
+                font-size:28rpx;
+                color:#FF9C02;
+                background-color:#FFF;
+                border-radius:30rpx;
+                width:160rpx;
+                height:60rpx;
+                padding:0;
+                line-height:60rpx;
+            }
+        }
+
+        .checkbox {
+            width: 40rpx;
+            height: 40rpx;
+            background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png');
+            background-size: 40rpx 40rpx;
+            position: absolute;
+            left: -83rpx;
+            top: 70rpx;
+
+            &.checked {
+                background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/selected-icon.png');
+            }
+        }
+        .mask {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+    }
+}
+</style>

@@ -1,0 +1,18 @@
+<template>
+    <web-view src="https://mp.weixin.qq.com/mp/homepage?__biz=MzU0NzgwMDQzOQ==&hid=3&sn=228522d4021eab2d2c79a64f39200cbc&scene=18"></web-view>
+</template>
+<script>
+import wepy from 'wepy';
+
+export default class orderWebage extends wepy.page {
+    config = {
+        navigationBarTitleText: '赚钱秘籍',
+    }
+    data = {
+        url: '',
+    }
+}
+</script>
+<style lang="scss">
+
+</style>
