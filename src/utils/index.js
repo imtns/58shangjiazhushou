@@ -175,3 +175,26 @@ export const getTmpFilePath = (url) => {
         });
     });
 };
+
+/**
+ * 获取url上的参数，以对象形式返回
+ *
+ * @param {string} url 需要获取的参数的url
+ * @return {Object} 返回的url参数键值对
+ */
+export const getUrlParams = (url) => {
+    const arr = url.split('?')[1].split('&');
+    const result = {};
+
+    if (arr.length === 0) {
+        return result;
+    }
+
+
+    arr.forEach((item) => {
+        const [k, v] = item.split('=');
+        result[k] = v;
+    });
+
+    return result;
+};
