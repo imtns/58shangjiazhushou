@@ -47,7 +47,7 @@ import wepy from 'wepy';
 import { get } from '../utils/ajax';
 import { toast } from '../utils/index';
 import { READ_GROUND_MSG, CONSUMERS } from '../utils/url';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { SendClickLog } from '../utils/maidian';
 
 export default class cardList extends wepy.page {
     config = {
@@ -73,19 +73,19 @@ export default class cardList extends wepy.page {
             this.loadList();
         },
         SystemMsg() {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_noticeList_SystemMsg');
+            SendClickLog('sjzh_click_noticeList_SystemMsg');
             wepy.navigateTo({
                 url: 'sysNoticeList',
             });
         },
         MoneyMsg() {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_noticeList_MoneyMsg');
+            SendClickLog('sjzh_click_noticeList_MoneyMsg');
             wepy.navigateTo({
                 url: 'accountNoticeList',
             });
         },
         consumerCard() {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_noticeList_consumerCard');
+            SendClickLog('sjzh_click_noticeList_consumerCard');
         },
     }
     async onShow() {

@@ -15,6 +15,14 @@ import { globalData } from './globalData';
  * @example
 
  */
+function getUid() { // 商家助手截取ppu作为唯一标识
+    try {
+        const uid = wx.getStorageSync('ppu').split('UID=')[1].split('&')[0];
+        return uid;
+    } catch (e) {
+        return '';
+    }
+}
 function SendTrackLog(currentPage) {
     console.log(currentPage);
     const appType = 2; // appType:1:优选壳子 2小程序
@@ -61,12 +69,13 @@ function SendTrackLog(currentPage) {
  * referrer.sendClickLog('1234','abcd', "{'cate':'1,12','area':'1','pagetype':'special','page':'huodong','qudao':'weixin','自定义key':'自定义val'}", "tz_huodong_fx");
  * referrer.sendClickLog('1234','abcd', "{'cate':'1,12','area':'1','pagetype':'special','page':'huodong','qudao':'weixin','自定义key':'自定义val'}", "tz_huodong_fx&infoid=8976");
  */
-function SendClickLog(appid, uid, _trackURL, clickTag) {
+function SendClickLog(clickTag) {
     const appType = 2; // appType:1:优选壳子 2小程序
     // mpType:小程序类型(1优享 2企业)
     const { appScene, mpType } = globalData;
     const mpId = wx.getStorageSync('current_mpid');
     const cardId = wx.getStorageSync('current_cardId') || '';
+    const uid = getUid();
     const paramJson = {
         appBaseSign: 'LBG_BIZMP_XZS',
         appScene,
@@ -85,15 +94,6 @@ function SendClickLog(appid, uid, _trackURL, clickTag) {
         });
     } else {
         console.error('SendClickLog 方法 uid参数为空，请求被拒绝');
-    }
-}
-
-function getUid() { // 商家助手截取ppu作为唯一标识
-    try {
-        const uid = wx.getStorageSync('ppu').split('UID=')[1].split('&')[0];
-        return uid;
-    } catch (e) {
-        return '';
     }
 }
 

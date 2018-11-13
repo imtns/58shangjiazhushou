@@ -21,7 +21,7 @@ import NoLogin from '../components/NoLogin';
 import ProductOrder from '../components/order/productOrder';
 import ServiceOrder from '../components/order/serviceOrder';
 import { globalData } from '../utils/globalData';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { SendClickLog } from '../utils/maidian';
 import mixin from '../components/order/mixin';
 
 export default class OrderList extends wepy.page {
@@ -67,12 +67,7 @@ export default class OrderList extends wepy.page {
             this.$apply();
             return;
         }
-        SendClickLog(
-            'wxf03e52adc4b13448',
-            getUid(),
-            '{}',
-            'sjzh_click_orderList_onload',
-        );
+        SendClickLog('sjzh_click_orderList_onload');
         this.orderList = [];
         this.sendParams.pageNum = 1;
         await this.getOrderList(this.orderType, this.status);

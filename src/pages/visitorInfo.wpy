@@ -47,7 +47,7 @@ import { get } from '../utils/ajax';
 import { toast } from '../utils/index';
 import { CONSUMER_INFO } from '../utils/url';
 import { globalData } from '../utils/globalData';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { SendClickLog } from '../utils/maidian';
 
 export default class visitorInfo extends wepy.page {
     config = {
@@ -74,7 +74,7 @@ export default class visitorInfo extends wepy.page {
     }
     methods = {
         async bindPhoneCall (mobile) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_visitorInfo_call');
+            SendClickLog('sjzh_click_visitorInfo_call');
             const sendData = { mobile: mobile, cardid: this.cardId };
             const { data, msg, state } = await get('/other/encrypt/phone', sendData);
             if (state !== 100) {
@@ -84,7 +84,7 @@ export default class visitorInfo extends wepy.page {
             wepy.makePhoneCall({ phoneNumber: data });
         },
         sendMsg() {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_visitorInfo_sendMsg');
+            SendClickLog('sjzh_click_visitorInfo_sendMsg');
         },
     }
     onLoad (option) {

@@ -86,7 +86,7 @@ import { toast } from '../../utils';
 import { uploader } from '../../utils/uploader';
 import { post, get } from '../../utils/ajax';
 
-import { getUid, SendClickLog } from '../../utils/maidian';
+import { SendClickLog } from '../../utils/maidian';
 import { MSG_LIST, SEND_MSG } from '../../utils/url';
 import { msgType } from '../../utils/msg/msgType';
 import { formatDateTimeLocal } from '../../utils/dateFomate';
@@ -125,7 +125,7 @@ export default class Chat extends wepy.page {
         },
         // 拍照、上传图片
         async upload(target) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_upload');
+            SendClickLog('sjzh_click_chat_upload');
             this.showpanel = false;
             this.$apply();
             try {
@@ -144,7 +144,7 @@ export default class Chat extends wepy.page {
                     count: 1,
                     sourceType: [type],
                 });
-                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_chooseImage');
+                SendClickLog('sjzh_click_chat_chooseImage');
                 this.msgList.push(Object.assign(msg, {
                     sendTime: new Date().format('hh:mm'),
                     portrait: globalData.chat.headImg,
@@ -236,13 +236,13 @@ export default class Chat extends wepy.page {
         this.$apply();
     }
     input(e) {
-        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_input');
+        SendClickLog('sjzh_click_chat_input');
         this.content = e.detail.value;
         this.canIsend = this.content.trim().length > 0;
         this.$apply();
     }
     async sendMsg(target) {
-        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_sendMsg');
+        SendClickLog('sjzh_click_chat_sendMsg');
         try {
             const type = target.currentTarget ? target.currentTarget.dataset.type : 'IMAGE';
             const content = type === 'TEXT' ? this.content.trim() : target;
@@ -367,11 +367,11 @@ export default class Chat extends wepy.page {
         const { myId } = this.data;
         let url = '';
         if (senderId === myId) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_business_toDetail');
+            SendClickLog('sjzh_click_chat_business_toDetail');
             // 当前商家,进商家名片页面
             url = '/pages/myBizCard';
         } else {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chat_consumer_toDetail');
+            SendClickLog('sjzh_click_chat_consumer_toDetail');
             const cardId = wepy.getStorageSync('current_cardId');
             // 用户的，进访客详情页面
             url = `/pages/visitorInfo?cardId=${cardId}&consumerId=${senderConsumerId}`;

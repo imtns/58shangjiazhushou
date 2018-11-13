@@ -83,7 +83,7 @@ import { CARD_HAS_CARD, CARD_HAS_DETAIL, CHECK_IS_SALESMAN } from '../utils/url'
 import { post, get } from '../utils/ajax';
 import { myCardItems } from '../utils/introData';
 import Mixin from '../mixin';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { SendClickLog } from '../utils/maidian';
 import Mask from '../components/Mask';
 
 
@@ -114,7 +114,7 @@ export default class myBizCard extends wepy.page {
     }
     methods = {
         toinnerJump(path) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_myBizCard_${path}`);
+            SendClickLog(`sjzh_click_myBizCard_${path}`);
             if (!path) {
                 this.isShowDialogShare = true;
                 return;
@@ -130,7 +130,7 @@ export default class myBizCard extends wepy.page {
             });
         },
         createCard() {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_myBizCard_createCard');
+            SendClickLog('sjzh_click_myBizCard_createCard');
             wepy.navigateTo({
                 url: 'newBizCard',
             });

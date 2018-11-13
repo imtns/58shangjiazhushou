@@ -29,7 +29,7 @@ import wepy from 'wepy';
 import { CONSUMER_RECORDS } from '../utils/url';
 import { post } from '../utils/ajax';
 import { alert } from '../utils';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { SendClickLog } from '../utils/maidian';
 
 export default class visitorLogs extends wepy.page {
     config = {
@@ -43,7 +43,7 @@ export default class visitorLogs extends wepy.page {
     }
     methods = {
         toVisitorInfo(cardId, consumerId) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_visitorLogs_toVisitorInfo');
+            SendClickLog('sjzh_click_visitorLogs_toVisitorInfo');
             wepy.navigateTo({
                 url: `visitorInfo?cardId=${cardId}&consumerId=${consumerId}`,
             });
