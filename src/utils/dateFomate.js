@@ -147,5 +147,5 @@ module.exports = {
     appendZero,
     toDateString,
     formatTimeExtra,
-    formatDateTimeLocal
+    formatDateTimeLocal,
 };
