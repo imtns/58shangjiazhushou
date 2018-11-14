@@ -167,7 +167,7 @@ export default class choseImageStyle extends wepy.page {
                 maxWidth: 750,
                 radius: 4,
                 bgColor: '#4E88FF',
-                padding: '3 24 3 24',
+                padding: '3 15 3 15',
                 lineHeight: 32,
             },
             {
