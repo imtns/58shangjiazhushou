@@ -1,6 +1,7 @@
 import wepy from 'wepy';
 import { get } from '../../utils/ajax';
 import { REGIST_PRE_CHECK } from '../../utils/url';
+import { getPathName } from '../../utils';
 
 export default class OrderMixin extends wepy.mixin {
     showModal(content, { confirmText } = {}) {
@@ -14,9 +15,24 @@ export default class OrderMixin extends wepy.mixin {
     async checkRegistStatus() {
         const {
             data: {
-                vip, currentAuditStatus, createMp, alreadyAuth,
+                vip,
+                currentAuditStatus,
+                createMp,
+                alreadyAuth,
+                oldUser,
             } = {},
         } = await get(REGIST_PRE_CHECK) || {};
+
+        // 老用户走原来的流程
+        if (oldUser) {
+            // 首页check的时候不然他跳转
+            if (getPathName() === 'pages/home') {
+                return { msg: '' };
+            }
+            // 如果老用户扫描销售二维码进入到注册页面，让他跳转回原来注册的老流程
+            wepy.switchTab({ url: '/pages/home' });
+            return { msg: '进入到注册老页面' };
+        }
 
         // 已经授权过，并且已经创建了
         if (alreadyAuth && createMp) {
@@ -29,8 +45,7 @@ export default class OrderMixin extends wepy.mixin {
          * 未购买、未注册
          * 这三个情况都留在当前页面
          */
-        if ([(alreadyAuth && !createMp),
-            (vip && createMp),
+        if ([(vip && createMp),
             (vip && currentAuditStatus === 0),
             (!vip && currentAuditStatus === 0)].some(v => v)) {
             this.registPrecheck = {
