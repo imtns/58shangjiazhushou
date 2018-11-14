@@ -1,4 +1,5 @@
 import wepy from 'wepy';
+import { get } from './ajax';
 import globalService from './globalService';
 
 module.exports.globalService = globalService;
@@ -184,6 +185,19 @@ export const getCurrentPageUrl = () => {
     const currentPage = pages[pages.length-1]; // 获取当前页面的对象
     const url = currentPage.route; // 当前页面url
     return url;
+};
+
+// 400电话封装
+export const makeTelCall = async (e) => {
+    const { mobile } = e.currentTarget.dataset;
+    const cardid = wepy.getStorageSync('current_cardId');
+    const sendData = { mobile, cardid };
+    const { data, msg, state } = await get('/other/encrypt/phone', sendData);
+    if (state !== 100) {
+        toast(msg);
+        return;
+    }
+    wepy.makePhoneCall({ phoneNumber: data });
 };
 
 /**

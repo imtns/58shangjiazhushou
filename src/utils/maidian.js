@@ -28,6 +28,8 @@ function SendTrackLog(currentPage) {
     const appType = 2; // appType:1:优选壳子 2小程序
     // mpType:小程序类型(1优享 2企业)
     const { appScene, mpType } = globalData;
+    // 商家助手appId
+    const appId = 'wxf03e52adc4b13448';
     const mpId = wx.getStorageSync('current_mpid');
     const cardId = wx.getStorageSync('current_cardId') || '';
     const uid = getUid();
@@ -35,6 +37,7 @@ function SendTrackLog(currentPage) {
         pagePath: currentPage,
         appBaseSign: 'LBG_BIZMP_XZS',
         appScene,
+        scene: appScene,
         appType,
         userId: uid,
         mpId,
@@ -43,7 +46,7 @@ function SendTrackLog(currentPage) {
         conKey: uid,
     };
     if (uid) {
-        const url = `https://tracklog.58.com/wx/track/empty.js.gif?wxid=${mpId || ''}&uid=${uid}&trackURL=${JSON.stringify(paramJson) || ''}&v=${version}&rand_id=${Math.random()}`;
+        const url = `https://tracklog.58.com/wx/track/empty.js.gif?wxid=${appId || ''}&uid=${uid}&trackURL=${JSON.stringify(paramJson) || ''}&v=${version}&rand_id=${Math.random()}`;
         wx.request({
             url: url,
             success() {},
@@ -73,6 +76,8 @@ function SendClickLog(clickTag) {
     const appType = 2; // appType:1:优选壳子 2小程序
     // mpType:小程序类型(1优享 2企业)
     const { appScene, mpType } = globalData;
+    // 商家助手appId
+    const appId = 'wxf03e52adc4b13448';
     const mpId = wx.getStorageSync('current_mpid');
     const cardId = wx.getStorageSync('current_cardId') || '';
     const uid = getUid();
@@ -87,7 +92,7 @@ function SendClickLog(clickTag) {
         conKey: uid,
     };
     if (uid) {
-        const url = `https://tracklog.58.com/wx/click/empty.js.gif?wxid=${mpId || ''}&uid=${uid}&from=${clickTag || 'default'}&trackURL=${JSON.stringify(paramJson) || ''}&v=${version}&rand_id=${Math.random()}`;
+        const url = `https://tracklog.58.com/wx/click/empty.js.gif?wxid=${appId || ''}&uid=${uid}&from=${clickTag || 'default'}&trackURL=${JSON.stringify(paramJson) || ''}&v=${version}&rand_id=${Math.random()}`;
         wx.request({
             url: url,
             success() {},
