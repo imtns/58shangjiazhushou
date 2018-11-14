@@ -1,9 +1,8 @@
 // mixins/test.js
 import wepy from 'wepy';
-import { alertP } from '../utils';
+import { alertP, getCurrentPageUrl } from '../utils';
 import { get } from '../utils/ajax';
 import { SendTrackLog } from '../utils/maidian';
-import { getCurrentPageUrl } from '../utils/trackLog';
 
 const buySrc = 'https://ordermobile.58.com/ordermobile/app/product/buyMiniApp?fromProductItemCode=871817130073200000&productItemCode=861110090334300017,852215312393800001&source=up_mini_app&os=ios';
 const upgradeSrc = 'https://ordermobile.58.com/ordermobile/app/product/buyUpEnterpriseMiniApp?';

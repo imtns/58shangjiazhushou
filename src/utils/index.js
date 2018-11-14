@@ -89,7 +89,8 @@ export const toast = (title, duration = 1500) => wepy.showToast({
     icon: 'none',
     duration,
 });
-    // 不支持提示
+
+// 不支持提示
 export const notSupportTips = () => {
     wx.showModal({
         title: '提示',
@@ -99,6 +100,7 @@ export const notSupportTips = () => {
         },
     });
 };
+
 export const toastSync = (title) => wepy.showToast({
     title: title.toString(),
     icon: 'none',
@@ -174,6 +176,14 @@ export const getTmpFilePath = (url) => {
             },
         });
     });
+};
+
+// 获取当前小程序页面url
+export const getCurrentPageUrl = () => {
+    const pages = getCurrentPages(); // 获取加载的页面
+    const currentPage = pages[pages.length-1]; // 获取当前页面的对象
+    const url = currentPage.route; // 当前页面url
+    return url;
 };
 
 /**
