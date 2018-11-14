@@ -37,6 +37,7 @@ export default class Mixin extends wepy.mixin {
         }
     }
     onShow() {
+        // 每个小程序页面的pv埋点
         SendTrackLog(getCurrentPageUrl());
     }
 }
