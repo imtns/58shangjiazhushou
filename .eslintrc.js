@@ -10,6 +10,7 @@ module.exports = {
   globals: {
     globalData:true,
     getSystemInfo:true,
+    getCurrentPages: true,
     getApp:true,
     wx: true,
     Page: true,

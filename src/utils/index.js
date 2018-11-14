@@ -227,7 +227,7 @@ export const getUrlParams = (url) => {
  * 上传图片，临时路径变为永久路径
  *
  * @param {string} tmpPath 临时路径
- * @return {string} 上传完成后的线上路径，不带域名，如
+ * @return {Promise<string>} 上传完成后的线上路径，不带域名，如
  * /bizmp/n_v283deb5e639474fbbb779224cc5aeaffa_46c1b2fb24e2d965.jpg
  */
 export const uploadImage = async (tmpPath) => {
@@ -244,4 +244,22 @@ export const uploadImage = async (tmpPath) => {
     }
 
     throw new Error(msg);
+};
+
+/**
+ * 获取页面路径名
+ * **注意**，该方法不允许在app.js中调用
+ *
+ * @param {number} n 获取页面栈向前推进的位置，0则表示当前页，-1表示上一页
+ * @return {string} 路径名，如 pages/home
+ */
+export const getPathName = (n = 0) => {
+    if (n > 0) {
+        throw new Error('参数n应小于1');
+    }
+
+    const pages = getCurrentPages();
+    const l = pages.length;
+
+    return pages[(l - 1) + n].route;
 };
