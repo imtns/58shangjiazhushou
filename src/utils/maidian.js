@@ -84,6 +84,7 @@ function SendClickLog(clickTag) {
     const paramJson = {
         appBaseSign: 'LBG_BIZMP_XZS',
         appScene,
+        scene: appScene,
         appType,
         userId: uid,
         mpId,
