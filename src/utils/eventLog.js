@@ -19,6 +19,7 @@ function getUid() {
  * button:按钮                      点击按钮名称
  * ip地址                           ip地址
  * model机型                        model机型
+ * brand手机品牌                     手机品牌
  * system系统                       系统
  * action:行为                      点击click、展现show、长按识别longpress、关闭小程序closemp、发送消息sendmsg、分享share
  * openid:openid                   后端通过consumerId来获取
@@ -31,15 +32,17 @@ function getUid() {
  */
 function SendEventLog(params) {
     const uid = getUid();
-    const { model, system } = wx.getSystemInfoSync();
+    const { model, system, brand } = wx.getSystemInfoSync();
     const paramsJSON = Object.assign({}, {
         page: '',
         button: '',
         model: model,
+        brand: brand,
         system: system,
         action: 'click',
         openid: '',
         consumerId: uid,
+        userid: uid,
         appid: 'wxf03e52adc4b13448',
         window: '',
         scene: globalData.appScene,
