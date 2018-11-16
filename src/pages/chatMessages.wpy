@@ -35,6 +35,7 @@ import { pubsub } from '../utils/IM/pubsub';
 import { formatDateTimeLocal } from '../utils/dateFomate';
 import { CHAT_CONTACT_LIST } from '../utils/url';
 import { SendClickLog } from '../utils/maidian';
+import { getString } from '../utils/index';
 
 const newMsgToken = [];
 export default class chatMessages extends wepy.page {
@@ -141,8 +142,9 @@ export default class chatMessages extends wepy.page {
                 unReadCount,
                 recentMsgs,
                 id,
-                portrait,
-                nickName,
+                portrait = 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/zhushou-default-avatar.png',
+                nickName = '',
+                otherInfo = {},
             } = item;
             const lastMsg = recentMsgs && recentMsgs.length > 0 ? recentMsgs[recentMsgs.length - 1] : {};
             const {
@@ -152,10 +154,12 @@ export default class chatMessages extends wepy.page {
             } = lastMsg;
             // 未读消息数特殊处理：超过两位数显示...
             const unReadCountMsg = `${unReadCount >= 100 ? '...' : ''}${unReadCount > 0 && unReadCount < 100 ? unReadCount : ''}`;
+            // 由于c端授权逻辑漏洞，部分用户可能没授权就访问了商家的名片，导致消息列表有的用户没有头像和昵称，针对这部分用户，展示给个默认头像，昵称展示用户openId后5位
+            const { openId = '' } = otherInfo;
             const nItem = {
                 contactId: id || '', // 联系人Id
                 portrait: `${portrait.indexOf('http') === -1 ? 'https://pic1.58cdn.com.cn' : ''}${portrait}`, // 联系人头像
-                nickName: nickName || '', // 联系人昵称
+                nickName: nickName || getString(openId, 5) || '', // 联系人昵称
                 unReadCount: unReadCountMsg, // 未读消息数，超过两位数显示...
                 sendTime: formatDateTimeLocal(lastSendTime), // 最后发送时间，格式化: 当天只展示时分，非当天且在当年 显示月天，非当年 显示年月日；
                 content: lastType === 1 ? '[图片]' : lastContent, // 最后发送内容 ,type =0 文本 type=1图片
@@ -225,6 +229,7 @@ export default class chatMessages extends wepy.page {
                 font-size: 34rpx;
                 color: #000000;
                 line-height: 55rpx;
+                height:55rpx;
             }
             .chat_info{
                 font-size: 28rpx;
@@ -232,6 +237,7 @@ export default class chatMessages extends wepy.page {
                 overflow: hidden;
                 text-overflow:ellipsis;
                 white-space: nowrap;
+                width:532rpx;
             }
             .chat_time{
                 position: absolute;
