@@ -98,7 +98,8 @@
 <script>
 import wepy from 'wepy';
 import { get, post } from '../utils/ajax';
-import { toast, makeTelCall } from '../utils';
+import { toast } from '../utils';
+import { makeTelCall } from '../utils/service';
 import { SendClickLog } from '../utils/maidian';
 import Mixin from '../mixin';
 

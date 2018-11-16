@@ -66,7 +66,6 @@ import Mixin from '../mixin';
 import globalService from '../utils/globalService';
 
 const host = 'https://yaofa.58.com';
-const uploadApi = `${host}/fileUpload`;
 
 export default class newBizCard extends wepy.page {
     mixins = [Mixin]
