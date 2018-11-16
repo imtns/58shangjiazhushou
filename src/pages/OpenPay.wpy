@@ -72,8 +72,10 @@
 import wepy from 'wepy';
 import { toast } from '../utils';
 import { get } from '../utils/ajaxP';
+import Mixin from '../mixin';
 
 export default class OpenPay extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '开通支付',
         disableScroll: true,

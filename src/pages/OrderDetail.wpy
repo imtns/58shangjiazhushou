@@ -81,7 +81,7 @@
             <block wx:if="{{order.status==9}}">
                 <view class="order-evaluated">已评价</view>
             </block>
-            <view wx:if="{{order.status!=3}}" class="order-contact" @tap="bindPhoneCall({{order.consumerMobile}})">联系顾客</view>
+            <view wx:if="{{order.status!=3}}" class="order-contact" @tap="bindPhoneCall" data-mobile="{{order.consumerMobile}}">联系顾客</view>
             <view wx:if="{{order.status==10 && order.applyStatus==0}}" class="order-apply" @tap="bindApplyPlat" data-orderId="{{order.id}}">申请平台介入</view>
             <view wx:if="{{order.status==10 && order.applyStatus!=0}}" class="order-apply">已申请平台介入</view>
         </view>
@@ -98,10 +98,12 @@
 <script>
 import wepy from 'wepy';
 import { get, post } from '../utils/ajax';
-import { toast } from '../utils';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { toast, makeTelCall } from '../utils';
+import { SendClickLog } from '../utils/maidian';
+import Mixin from '../mixin';
 
 export default class OrderDetail extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '订单管理',
     }
@@ -125,21 +127,12 @@ export default class OrderDetail extends wepy.page {
         submitSuccess: false,
     }
     methods = {
-        async bindPhoneCall (mobile) {
-            console.log(getUid());
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderDetail_phoneCall');
-            // const { userid } = this.order;
-            // const sendParams = { sign: `${userid}#${mobile}`, from: 'OrderDetail' };
-            // const [e, phoneNumber] = await get('/other/encrypt/phone', sendParams);
-            // if (e) {
-            //     toast(e);
-            //     return;
-            // }
-            // wepy.makePhoneCall({ phoneNumber });
-            wepy.makePhoneCall({ phoneNumber: mobile });
+        async bindPhoneCall (e) {
+            SendClickLog('sjzh_click_orderDetail_phoneCall');
+            makeTelCall(e);
         },
         bindSubmitOrder () {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderDetail_submitOrder');
+            SendClickLog('sjzh_click_orderDetail_submitOrder');
             this.submitOrder();
         },
         async bindAgreeRefund (o) {

@@ -86,8 +86,10 @@
 import wepy from 'wepy';
 
 import { sleep } from '../utils';
+import Mixin from '../mixin';
 
 export default class Buy extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '小程序购买',
         disableScroll: true,

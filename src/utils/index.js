@@ -1,4 +1,5 @@
 import wepy from 'wepy';
+import { get } from './ajax';
 import globalService from './globalService';
 
 module.exports.globalService = globalService;
@@ -89,7 +90,8 @@ export const toast = (title, duration = 1500) => wepy.showToast({
     icon: 'none',
     duration,
 });
-    // 不支持提示
+
+// 不支持提示
 export const notSupportTips = () => {
     wx.showModal({
         title: '提示',
@@ -99,6 +101,7 @@ export const notSupportTips = () => {
         },
     });
 };
+
 export const toastSync = (title) => wepy.showToast({
     title: title.toString(),
     icon: 'none',
@@ -174,4 +177,89 @@ export const getTmpFilePath = (url) => {
             },
         });
     });
+};
+
+// 获取当前小程序页面url
+export const getCurrentPageUrl = () => {
+    const pages = getCurrentPages(); // 获取加载的页面
+    const currentPage = pages[pages.length-1]; // 获取当前页面的对象
+    const url = currentPage.route; // 当前页面url
+    return url;
+};
+
+// 400电话封装
+export const makeTelCall = async (e) => {
+    const { mobile } = e.currentTarget.dataset;
+    const cardid = wepy.getStorageSync('current_cardId');
+    const sendData = { mobile, cardid };
+    const { data, msg, state } = await get('/other/encrypt/phone', sendData);
+    if (state !== 100) {
+        toast(msg);
+        return;
+    }
+    wepy.makePhoneCall({ phoneNumber: data });
+};
+
+/**
+ * 获取url上的参数，以对象形式返回
+ *
+ * @param {string} url 需要获取的参数的url
+ * @return {Object} 返回的url参数键值对
+ */
+export const getUrlParams = (url) => {
+    const arr = url.split('?')[1].split('&');
+    const result = {};
+
+    if (arr.length === 0) {
+        return result;
+    }
+
+
+    arr.forEach((item) => {
+        const [k, v] = item.split('=');
+        result[k] = v;
+    });
+
+    return result;
+};
+
+/**
+ * 上传图片，临时路径变为永久路径
+ *
+ * @param {string} tmpPath 临时路径
+ * @return {Promise<string>} 上传完成后的线上路径，不带域名，如
+ * /bizmp/n_v283deb5e639474fbbb779224cc5aeaffa_46c1b2fb24e2d965.jpg
+ */
+export const uploadImage = async (tmpPath) => {
+    const response = await wepy.uploadFile({
+        url: 'https://yaofa.58.com/fileUpload',
+        filePath: tmpPath,
+        name: 'content',
+    });
+    const res = JSON.parse(response.data);
+    const { state, msg, data } = res;
+
+    if (state === 100) {
+        return data.content;
+    }
+
+    throw new Error(msg);
+};
+
+/**
+ * 获取页面路径名
+ * **注意**，该方法不允许在app.js中调用
+ *
+ * @param {number} n 获取页面栈向前推进的位置，0则表示当前页，-1表示上一页
+ * @return {string} 路径名，如 pages/home
+ */
+export const getPathName = (n = 0) => {
+    if (n > 0) {
+        throw new Error('参数n应小于1');
+    }
+
+    const pages = getCurrentPages();
+    const l = pages.length;
+
+    return pages[(l - 1) + n].route;
 };

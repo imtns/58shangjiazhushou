@@ -21,7 +21,8 @@
 import wepy from 'wepy';
 import { get } from '../utils/ajax';
 import globalService from '../utils/globalService';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { SendClickLog } from '../utils/maidian';
+import Mixin from '../mixin';
 import { REGIST_INDUSTRY_CATE } from '../utils/url';
 
 const selectorConfig = {
@@ -141,6 +142,7 @@ const selectorConfig = {
 let registCates = [];
 
 export default class Index extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '选择',
     }
@@ -172,7 +174,7 @@ export default class Index extends wepy.page {
                 return;
             }
 
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_multiSelector_${colIdx}`);
+            SendClickLog(`sjzh_click_multiSelector_${colIdx}`);
             const colIndex = +colIdx;
             const conIndex = +conIdx;
             const column = this.contentList[colIndex] || [];

@@ -60,14 +60,16 @@
 import wepy from 'wepy';
 import { CARD_FIRST_EDIT, CARD_CREATE_NEW_CARD } from '../utils/url';
 import { post } from '../utils/ajax';
-import { getNetStatus, toast } from '../utils';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { getNetStatus, toast, alertP, uploadImage } from '../utils';
+import { SendClickLog } from '../utils/maidian';
+import Mixin from '../mixin';
 import globalService from '../utils/globalService';
 
 const host = 'https://yaofa.58.com';
 const uploadApi = `${host}/fileUpload`;
 
 export default class newBizCard extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '名片编辑',
     }
@@ -90,7 +92,7 @@ export default class newBizCard extends wepy.page {
     }
     methods = {
         async setLogo () {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_setLogo');
+            SendClickLog('sjzh_click_newBizCard_setLogo');
             try {
                 const netStatus = await getNetStatus();
 
@@ -102,11 +104,17 @@ export default class newBizCard extends wepy.page {
                     count: 1,
                     sizeType: 'compressed ',
                 });
-                const url = await this.uploadLogo(tempFilePaths[0]);
-                const fullUrl = `https://pic1.58cdn.com.cn${url}`;
-                wepy.navigateTo({
-                    url: `/pages/cropper?url=${fullUrl}`,
-                });
+
+                const { confirm } = await alertP('是否裁剪图片？', '提示');
+
+                if (confirm) {
+                    // 去裁剪
+                    wepy.navigateTo({
+                        url: `/pages/cropper?url=${tempFilePaths[0]}`,
+                    });
+                } else {
+                    this.uploadLogo(tempFilePaths[0]);
+                }
                 // this.picImg = url;
                 // this.headImg = url;
                 // this.$apply();
@@ -115,7 +123,7 @@ export default class newBizCard extends wepy.page {
             }
         },
         addNewTag() {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_addNewTag');
+            SendClickLog('sjzh_click_newBizCard_addNewTag');
             const len = this.serviceTagArr.length;
             if (len === 0 || this.serviceTagArr[len - 1]) {
                 this.serviceTagArr.push('');
@@ -138,12 +146,12 @@ export default class newBizCard extends wepy.page {
             this.serviceTag = this.serviceTagArr.join(',');
         },
         deleteTag(index) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_deleteTag');
+            SendClickLog('sjzh_click_newBizCard_deleteTag');
             this.serviceTagArr.splice(index, 1);
             this.serviceTag = this.serviceTagArr.join(',');
         },
         async creatCard() {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_creatCard');
+            SendClickLog('sjzh_click_newBizCard_creatCard');
             const currentMpid = wepy.getStorageSync('current_mpid');
             if (!currentMpid) {
                 return;
@@ -180,7 +188,7 @@ export default class newBizCard extends wepy.page {
             }
         },
         async setLocation () {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_newBizCard_setLocation');
+            SendClickLog('sjzh_click_newBizCard_setLocation');
             this.setUserLocation();
         },
         async opensetting() {
@@ -306,24 +314,14 @@ export default class newBizCard extends wepy.page {
         });
     }
     async uploadLogo(tempPath) {
-        try {
-            const response = await wepy.uploadFile({
-                url: uploadApi,
-                filePath: tempPath,
-                name: 'content',
-            });
-            const res = JSON.parse(response.data);
-            const { state, msg, data } = res;
-
-            if (state !== 100) {
-                throw new Error(msg);
-            }
-
-            return data.content;
-        } catch ({ errMsg }) {
-            this.toast(errMsg);
-            return '';
-        }
+        const url = await uploadImage(tempPath).catch(err => {
+            console.log(err);
+            this.toast('上传图片失败，请稍后再试');
+        });
+        console.log(url);
+        this.headImg = url;
+        this.picImg = url;
+        this.$apply();
     }
 }
 </script>

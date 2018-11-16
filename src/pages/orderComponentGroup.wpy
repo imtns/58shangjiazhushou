@@ -39,9 +39,11 @@ import { get } from '../utils/ajax';
 import Pop from '../components/Dialog';
 import EmptyPage from '../components/EmptyPage';
 import GroupComponent from '../components/GroupComponent';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { SendClickLog } from '../utils/maidian';
+import Mixin from '../mixin';
 
 export default class OrderComponentGroup extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '预约管理',
     }
@@ -71,7 +73,7 @@ export default class OrderComponentGroup extends wepy.page {
     }
     methods = {
         showDialog(id = '', name = '') {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderComponentGroup_addGroup');
+            SendClickLog('sjzh_click_orderComponentGroup_addGroup');
             this.showDialog(id, name);
         },
         async addGroup(content) {
@@ -105,7 +107,7 @@ export default class OrderComponentGroup extends wepy.page {
             this.$apply();
         },
         edit(e) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderComponentGroup_editGroup');
+            SendClickLog('sjzh_click_orderComponentGroup_editGroup');
             const { status } = e.currentTarget.dataset;
             const dataList = this.groupList;
             if (status) {
@@ -123,7 +125,7 @@ export default class OrderComponentGroup extends wepy.page {
             this.$apply();
         },
         async deleteItem() {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_orderComponentGroup_deleteGroup');
+            SendClickLog('sjzh_click_orderComponentGroup_deleteGroup');
             try {
                 const { delList } = this;
                 if (delList.length === 0) {

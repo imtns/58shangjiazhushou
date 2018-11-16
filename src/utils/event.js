@@ -16,5 +16,5 @@ function emitEvent(eventName,detail){
 
 module.exports={
     bindEvent,
-    emitEvent
+    emitEvent,
 }

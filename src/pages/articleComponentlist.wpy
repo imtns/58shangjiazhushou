@@ -58,10 +58,12 @@
 import wepy from 'wepy';
 import { alert, toast } from '../utils';
 import { get } from '../utils/ajax';
+import Mixin from '../mixin';
 import EmptyPage from '../components/EmptyPage';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { SendClickLog } from '../utils/maidian';
 
 export default class ArticleComponentList extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '文章管理',
         disableScroll: true,
@@ -198,7 +200,7 @@ export default class ArticleComponentList extends wepy.page {
         this.$apply();
     }
     addArticle() {
-        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_articleComponentlist_addArticle');
+        SendClickLog('sjzh_click_articleComponentlist_addArticle');
         wepy.navigateTo({
             url: `articleComponentCreate?group=${this.group}&name=${this.name}`,
         });

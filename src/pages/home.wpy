@@ -218,7 +218,7 @@ import { items, nItems } from '../utils/homeList';
 import { alert, formatDuring } from '../utils';
 import { post, get } from '../utils/ajax';
 import { globalData, setTabBar } from '../utils/globalData';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { SendClickLog } from '../utils/maidian';
 
 import {
     CHAT_LOGIN,
@@ -333,22 +333,12 @@ export default class Home extends wepy.page {
           if (!this.userLogin) return;
           // console.log(text);意见反馈不做判断
           if (text === '意见反馈') {
-              SendClickLog(
-                  'wxf03e52adc4b13448',
-                  getUid(),
-                  '{}',
-                  'sjzh_click_home_feedback',
-              );
+              SendClickLog('sjzh_click_home_feedback');
               wepy.navigateTo({
                   url: 'feedback',
               });
           } else if (text === '购买小程序') {
-              SendClickLog(
-                  'wxf03e52adc4b13448',
-                  getUid(),
-                  '{}',
-                  'sjzh_click_home_buy_app',
-              );
+              SendClickLog('sjzh_click_home_buy_app');
               this.buyMiniProgram();
           } else {
               this.checkBeforeJump(text);
@@ -356,23 +346,13 @@ export default class Home extends wepy.page {
       },
       // 关注公众号埋点
       toFollow() {
-          SendClickLog(
-              'wxf03e52adc4b13448',
-              getUid(),
-              '{}',
-              'sjzh_click_home_follow',
-          );
+          SendClickLog('sjzh_click_home_follow');
           wepy.navigateTo({
               url: '/pages/followPublic',
           });
       },
       shopScore() {
-          SendClickLog(
-              'wxf03e52adc4b13448',
-              getUid(),
-              '{}',
-              'sjzh_click_home_shopScore',
-          );
+          SendClickLog('sjzh_click_home_shopScore');
           wepy.navigateTo({
               url: '/pages/shopScore',
           });
@@ -383,12 +363,7 @@ export default class Home extends wepy.page {
               alert('您还未购买小程序，请登录e.58.com进行购买', '提示');
               return;
           }
-          SendClickLog(
-              'wxf03e52adc4b13448',
-              getUid(),
-              '{}',
-              'sjzh_click_home_progressText',
-          );
+          SendClickLog('sjzh_click_home_progressText');
           switch (this.business.nexttask) {
               case 2:
                   wepy.navigateTo({
@@ -449,12 +424,7 @@ export default class Home extends wepy.page {
           this.$apply();
       },
       async changeAction() {
-          SendClickLog(
-              'wxf03e52adc4b13448',
-              getUid(),
-              '{}',
-              'sjzh_click_home_switch_app',
-          );
+          SendClickLog('sjzh_click_home_switch_app');
           this.business = Object.assign({}, this.business, {
               changeMP: true,
           });
@@ -493,12 +463,7 @@ export default class Home extends wepy.page {
               loginHelper.goLogin();
               return;
           }
-          SendClickLog(
-              'wxf03e52adc4b13448',
-              getUid(),
-              '{}',
-              'sjzh_click_home_switch_Identity',
-          );
+          SendClickLog('sjzh_click_home_switch_Identity');
           wepy.navigateTo({
               url: '/pages/app/accountList',
           });
@@ -585,12 +550,7 @@ export default class Home extends wepy.page {
           const seft = this;
           seft.everydayShow = true;
           seft.$apply();
-          SendClickLog(
-              'wxf03e52adc4b13448',
-              getUid(),
-              '{}',
-              'sjzh_click_home_toeveryday',
-          );
+          SendClickLog('sjzh_click_home_toeveryday');
       },
   };
   async onLoad(options) {
@@ -641,12 +601,7 @@ export default class Home extends wepy.page {
       try {
           await this.loadData();
           if (!this.userLogin) return;
-          SendClickLog(
-              'wxf03e52adc4b13448',
-              getUid(),
-              '{}',
-              'sjzh_click_home_onload',
-          );
+          SendClickLog('sjzh_click_home_onload');
           await this.loadShareActivity();
           this.loadCode();
           this.getInfo();
@@ -958,12 +913,7 @@ export default class Home extends wepy.page {
       }
       switch (text) {
           case '名片管理':
-              SendClickLog(
-                  'wxf03e52adc4b13448',
-                  getUid(),
-                  '{}',
-                  'sjzh_click_home_myBizCard',
-              );
+              SendClickLog('sjzh_click_home_myBizCard');
               if (this.business.productType !== '20001') {
                   alert('您暂无权限使用该功能', '提示');
                   return;
@@ -973,23 +923,13 @@ export default class Home extends wepy.page {
               });
               break;
           case '通知':
-              SendClickLog(
-                  'wxf03e52adc4b13448',
-                  getUid(),
-                  '{}',
-                  'sjzh_click_home_noticeList',
-              );
+              SendClickLog('sjzh_click_home_noticeList');
               wepy.navigateTo({
                   url: 'noticeList',
               });
               break;
           case '访客记录':
-              SendClickLog(
-                  'wxf03e52adc4b13448',
-                  getUid(),
-                  '{}',
-                  'sjzh_click_home_visitorLogs',
-              );
+              SendClickLog('sjzh_click_home_visitorLogs');
               if (this.business.productType !== '20001') {
                   alert('您暂无权限使用该功能', '提示');
                   return;
@@ -999,34 +939,19 @@ export default class Home extends wepy.page {
               });
               break;
           case '收款记录':
-              SendClickLog(
-                  'wxf03e52adc4b13448',
-                  getUid(),
-                  '{}',
-                  'sjzh_click_home_paymentRecord',
-              );
+              SendClickLog('sjzh_click_home_paymentRecord');
               wepy.navigateTo({
                   url: 'paymentRecord',
               });
               break;
           case '我的小程序':
-              SendClickLog(
-                  'wxf03e52adc4b13448',
-                  getUid(),
-                  '{}',
-                  'sjzh_click_home_myMp',
-              );
+              SendClickLog('sjzh_click_home_myMp');
               wepy.navigateTo({
                   url: 'myMp',
               });
               break;
           case '小程序制作':
-              SendClickLog(
-                  'wxf03e52adc4b13448',
-                  getUid(),
-                  '{}',
-                  'sjzh_click_home_myMp_make',
-              );
+              SendClickLog('sjzh_click_home_myMp_make');
               if (this.business.selected.app_type === 3) {
                   alert('请升级到优享或企业小程序后使用', '提示');
                   return;
@@ -1036,12 +961,7 @@ export default class Home extends wepy.page {
               });
               break;
           case '素材管理':
-              SendClickLog(
-                  'wxf03e52adc4b13448',
-                  getUid(),
-                  '{}',
-                  'sjzh_click_home_resourceManage',
-              );
+              SendClickLog('sjzh_click_home_resourceManage');
               if (this.business.selected.app_type === 3) {
                   alert('请升级到优享或企业小程序后使用', '提示');
                   return;
@@ -1051,67 +971,37 @@ export default class Home extends wepy.page {
               });
               break;
           case '支付开通':
-              SendClickLog(
-                  'wxf03e52adc4b13448',
-                  getUid(),
-                  '{}',
-                  'sjzh_click_home_OpenPay',
-              );
+              SendClickLog('sjzh_click_home_OpenPay');
               wepy.navigateTo({
                   url: 'OpenPay',
               });
               break;
           case '服务':
-              SendClickLog(
-                  'wxf03e52adc4b13448',
-                  getUid(),
-                  '{}',
-                  'sjzh_click_home_orderComponentGroup',
-              );
+              SendClickLog('sjzh_click_home_orderComponentGroup');
               wepy.navigateTo({
                   url: 'orderComponentGroup',
               });
               break;
           case '商品':
-              SendClickLog(
-                  'wxf03e52adc4b13448',
-                  getUid(),
-                  '{}',
-                  'sjzh_click_home_goodsComponentGroup',
-              );
+              SendClickLog('sjzh_click_home_goodsComponentGroup');
               wepy.navigateTo({
                   url: '/pages/goodsComponent/publish',
               });
               break;
           case '文章':
-              SendClickLog(
-                  'wxf03e52adc4b13448',
-                  getUid(),
-                  '{}',
-                  'sjzh_click_home_articleComponentGroup',
-              );
+              SendClickLog('sjzh_click_home_articleComponentGroup');
               wepy.navigateTo({
                   url: 'articleComponentGroup',
               });
               break;
           case '优惠劵':
-              SendClickLog(
-                  'wxf03e52adc4b13448',
-                  getUid(),
-                  '{}',
-                  'sjzh_click_home_couponManage',
-              );
+              SendClickLog('sjzh_click_home_couponManage');
               wepy.navigateTo({
                   url: 'couponManage',
               });
               break;
           case '注册小程序':
-              SendClickLog(
-                  'wxf03e52adc4b13448',
-                  getUid(),
-                  '{}',
-                  'sjzh_click_home_myMp_registed',
-              );
+              SendClickLog('sjzh_click_home_myMp_registed');
               if (this.registPrecheck) {
                   const {
                       vip,
@@ -1155,12 +1045,7 @@ export default class Home extends wepy.page {
               }
               break;
           case '进度查询':
-              SendClickLog(
-                  'wxf03e52adc4b13448',
-                  getUid(),
-                  '{}',
-                  'sjzh_click_home_progress',
-              );
+              SendClickLog('sjzh_click_home_progress');
               wepy.navigateTo({
                   url: 'progress',
               });

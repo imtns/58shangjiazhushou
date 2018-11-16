@@ -29,14 +29,16 @@
 import wepy from 'wepy';
 import NoLogin from '../components/NoLogin';
 import { post } from '../utils/ajax';
+import Mixin from '../mixin';
 import { globalData, setTabBar } from '../utils/globalData';
 import { pubsub } from '../utils/IM/pubsub';
 import { formatDateTimeLocal } from '../utils/dateFomate';
 import { CHAT_CONTACT_LIST } from '../utils/url';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { SendClickLog } from '../utils/maidian';
 
 const newMsgToken = [];
 export default class chatMessages extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '消息',
     }
@@ -50,7 +52,7 @@ export default class chatMessages extends wepy.page {
     }
     methods = {
         toChat(e) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chatMessages_toChat');
+            SendClickLog('sjzh_click_chatMessages_toChat');
             const { contactId, nickName, unReadCount } = e.currentTarget.dataset.item;
             const { unReadCount: totalCount } = globalData.chat;
             if (unReadCount) {
@@ -64,7 +66,7 @@ export default class chatMessages extends wepy.page {
         },
     }
     onLoad () {
-        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_chatMessages_onload');
+        SendClickLog('sjzh_click_chatMessages_onload');
         console.log('onload');
     }
     async onShow () {

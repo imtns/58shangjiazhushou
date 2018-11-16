@@ -2,7 +2,7 @@
 import modulesParse from '../utils/modulesParse';
 import { toast } from '../utils';
 import { globalData } from '../utils/globalData';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { SendClickLog } from '../utils/maidian';
 
 const { post } = require('../utils/ajax');
 
@@ -28,7 +28,7 @@ module.exports = {
         });
     },
     async cancelClick() {
-        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_editLayer_verifyApp');
+        SendClickLog('sjzh_editLayer_verifyApp');
         if (!this.data.isEditing) {
             try {
                 if (wx.getStorageSync('verify')) {
@@ -52,7 +52,7 @@ module.exports = {
         });
     },
     editClick() {
-        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_editLayer_editApp');
+        SendClickLog('sjzh_editLayer_editApp');
         this.setData({
             isEditing: !this.data.isEditing,
         });
@@ -122,7 +122,7 @@ module.exports = {
     // });
     },
     goEdit(e) {
-        SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_editLayer_goEditApp');
+        SendClickLog('sjzh_editLayer_goEditApp');
         if (this.data.noEdit) return;
         const {
             id,

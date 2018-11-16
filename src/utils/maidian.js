@@ -15,11 +15,21 @@ import { globalData } from './globalData';
  * @example
 
  */
+function getUid() { // 商家助手截取ppu作为唯一标识
+    try {
+        const uid = wx.getStorageSync('ppu').split('UID=')[1].split('&')[0];
+        return uid;
+    } catch (e) {
+        return '';
+    }
+}
 function SendTrackLog(currentPage) {
     console.log(currentPage);
     const appType = 2; // appType:1:优选壳子 2小程序
     // mpType:小程序类型(1优享 2企业)
     const { appScene, mpType } = globalData;
+    // 商家助手appId
+    const appId = 'wxf03e52adc4b13448';
     const mpId = wx.getStorageSync('current_mpid');
     const cardId = wx.getStorageSync('current_cardId') || '';
     const uid = getUid();
@@ -27,6 +37,7 @@ function SendTrackLog(currentPage) {
         pagePath: currentPage,
         appBaseSign: 'LBG_BIZMP_XZS',
         appScene,
+        scene: appScene,
         appType,
         userId: uid,
         mpId,
@@ -35,7 +46,7 @@ function SendTrackLog(currentPage) {
         conKey: uid,
     };
     if (uid) {
-        const url = `https://tracklog.58.com/wx/track/empty.js.gif?wxid=${mpId || ''}&uid=${uid}&trackURL=${JSON.stringify(paramJson) || ''}&v=${version}&rand_id=${Math.random()}`;
+        const url = `https://tracklog.58.com/wx/track/empty.js.gif?wxid=${appId || ''}&uid=${uid}&trackURL=${JSON.stringify(paramJson) || ''}&v=${version}&rand_id=${Math.random()}`;
         wx.request({
             url: url,
             success() {},
@@ -61,15 +72,19 @@ function SendTrackLog(currentPage) {
  * referrer.sendClickLog('1234','abcd', "{'cate':'1,12','area':'1','pagetype':'special','page':'huodong','qudao':'weixin','自定义key':'自定义val'}", "tz_huodong_fx");
  * referrer.sendClickLog('1234','abcd', "{'cate':'1,12','area':'1','pagetype':'special','page':'huodong','qudao':'weixin','自定义key':'自定义val'}", "tz_huodong_fx&infoid=8976");
  */
-function SendClickLog(appid, uid, _trackURL, clickTag) {
+function SendClickLog(clickTag) {
     const appType = 2; // appType:1:优选壳子 2小程序
     // mpType:小程序类型(1优享 2企业)
     const { appScene, mpType } = globalData;
+    // 商家助手appId
+    const appId = 'wxf03e52adc4b13448';
     const mpId = wx.getStorageSync('current_mpid');
     const cardId = wx.getStorageSync('current_cardId') || '';
+    const uid = getUid();
     const paramJson = {
         appBaseSign: 'LBG_BIZMP_XZS',
         appScene,
+        scene: appScene,
         appType,
         userId: uid,
         mpId,
@@ -78,22 +93,13 @@ function SendClickLog(appid, uid, _trackURL, clickTag) {
         conKey: uid,
     };
     if (uid) {
-        const url = `https://tracklog.58.com/wx/click/empty.js.gif?wxid=${mpId || ''}&uid=${uid}&from=${clickTag || 'default'}&trackURL=${JSON.stringify(paramJson) || ''}&v=${version}&rand_id=${Math.random()}`;
+        const url = `https://tracklog.58.com/wx/click/empty.js.gif?wxid=${appId || ''}&uid=${uid}&from=${clickTag || 'default'}&trackURL=${JSON.stringify(paramJson) || ''}&v=${version}&rand_id=${Math.random()}`;
         wx.request({
             url: url,
             success() {},
         });
     } else {
         console.error('SendClickLog 方法 uid参数为空，请求被拒绝');
-    }
-}
-
-function getUid() { // 商家助手截取ppu作为唯一标识
-    try {
-        const uid = wx.getStorageSync('ppu').split('UID=')[1].split('&')[0];
-        return uid;
-    } catch (e) {
-        return '';
     }
 }
 

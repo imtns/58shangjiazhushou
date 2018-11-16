@@ -26,7 +26,7 @@
 import wepy from 'wepy';
 import couponList from '../components/CouponList';
 import couponView from '../components/Coupon';
-
+import Mixin from '../mixin';
 import CouponMixin from '../mixin/coupon';
 
 const pageSize = 10;
@@ -34,6 +34,7 @@ let pageNum = 1;
 let noMore = false;
 
 export default class Index extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '优惠券',
     }
