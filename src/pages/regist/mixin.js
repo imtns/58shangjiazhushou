@@ -14,14 +14,15 @@ export default class OrderMixin extends wepy.mixin {
     // 检查用户的注册状态
     async checkRegistStatus() {
         const {
-            data: {
-                vip,
-                currentAuditStatus,
-                createMp,
-                alreadyAuth,
-                oldUser,
-            } = {},
+            data: preCheckData,
         } = await get(REGIST_PRE_CHECK) || {};
+        const {
+            vip,
+            currentAuditStatus,
+            createMp,
+            alreadyAuth,
+            oldUser,
+        } = preCheckData;
 
         // 老用户走原来的流程
         if (oldUser) {
@@ -33,6 +34,8 @@ export default class OrderMixin extends wepy.mixin {
 
         // 已经授权过，并且已经创建了
         if (alreadyAuth && createMp) {
+            // 已经创建成功小程序的商家，扫描销售二维码直接跳转回首页
+            getPathName() === 'pages/regist/index' && wepy.switchTab({ url: '/pages/home' });
             return { msg: '' };
         }
 
@@ -40,7 +43,7 @@ export default class OrderMixin extends wepy.mixin {
          * 已购买、已创建
          * 已购买、未注册
          * 未购买、未注册
-         * 这三个情况都留在当前页面
+         * 这三个情况都留在当前页面，并通过点击“注册小程序”图标进行相应流程
          */
         if ([(vip && createMp),
             (vip && currentAuditStatus === 0),
@@ -62,11 +65,11 @@ export default class OrderMixin extends wepy.mixin {
             return { msg: '注册资料提交成功' };
         }
 
-        // 审核失败，跳转到 注册成功页 (regist/guide)
+        // 审核失败，跳转到状态提示页，在状态提示页统一判断处理
         if (currentAuditStatus === -1) {
             // 若在当前页则不跳转
-            getPathName() !== 'pages/regist/guide' && wx.redirectTo({
-                url: '/pages/regist/guide',
+            getPathName() !== 'pages/regist/notice' && wx.redirectTo({
+                url: '/pages/regist/notice',
             });
             return { msg: '资料审核失败' };
         }
