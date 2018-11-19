@@ -57,6 +57,7 @@ export default class OrderMixin extends wepy.mixin {
             return { msg: '' };
         }
 
+        // 资料在腾讯那边审核中
         if (currentAuditStatus === 1) {
             // 若在当前页则不跳转
             getPathName() !== 'pages/regist/guide' && wx.redirectTo({
