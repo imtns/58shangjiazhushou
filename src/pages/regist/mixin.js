@@ -25,12 +25,9 @@ export default class OrderMixin extends wepy.mixin {
 
         // 老用户走原来的流程
         if (oldUser) {
-            // 首页check的时候不然他跳转
-            if (getPathName() === 'pages/home') {
-                return { msg: '' };
-            }
             // 如果老用户扫描销售二维码进入到注册页面，让他跳转回原来注册的老流程
-            wepy.switchTab({ url: '/pages/home' });
+            // 若在当前页则不跳转
+            getPathName() !== 'pages/home' && wepy.switchTab({ url: '/pages/home' });
             return { msg: '进入到注册老页面' };
         }
 
@@ -58,7 +55,8 @@ export default class OrderMixin extends wepy.mixin {
         }
 
         if (currentAuditStatus === 1) {
-            wx.redirectTo({
+            // 若在当前页则不跳转
+            getPathName() !== 'pages/regist/guide' && wx.redirectTo({
                 url: '/pages/regist/guide',
             });
             return { msg: '注册资料提交成功' };
@@ -66,7 +64,8 @@ export default class OrderMixin extends wepy.mixin {
 
         // 审核失败，跳转到 注册成功页 (regist/guide)
         if (currentAuditStatus === -1) {
-            wx.redirectTo({
+            // 若在当前页则不跳转
+            getPathName() !== 'pages/regist/guide' && wx.redirectTo({
                 url: '/pages/regist/guide',
             });
             return { msg: '资料审核失败' };
@@ -74,7 +73,8 @@ export default class OrderMixin extends wepy.mixin {
 
         // 资料审核通过，但是没购买小程序
         if (!vip && currentAuditStatus === 2 && !createMp) {
-            wx.redirectTo({
+            // 若在当前页则不跳转
+            getPathName() !== 'pages/regist/notice' && wx.redirectTo({
                 url: '/pages/regist/notice',
             });
             return { msg: '去购买' };
@@ -82,7 +82,8 @@ export default class OrderMixin extends wepy.mixin {
 
         // 资料审核通过，已购买小程序
         if (vip && currentAuditStatus === 2 && !createMp) {
-            wx.redirectTo({
+            // 若在当前页则不跳转
+            getPathName() !== 'pages/regist/notice' && wx.redirectTo({
                 url: '/pages/regist/notice',
             });
             return { msg: '去创建' };

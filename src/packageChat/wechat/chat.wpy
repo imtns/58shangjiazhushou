@@ -335,6 +335,10 @@ export default class Chat extends wepy.page {
             }
             msg.nSendTime = formatDateTimeLocal(msg.sendTime);
 
+            if (!msg.senderPortrait) {
+                // 默认头像
+                msg.senderPortrait = 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/zhushou-default-avatar.png';
+            }
             if (msg.senderPortrait && msg.senderPortrait.indexOf('http') === -1) {
                 msg.senderPortrait = `https://pic1.58cdn.com.cn${msg.senderPortrait}`;
             }
