@@ -180,6 +180,11 @@ export default class extends wepy.app {
     }
     onLaunch () {
         console.log('onlaunch');
+        // yxd 正式环境
+        // wx.setStorageSync(
+        //     'ppu',
+        //     'UID=47350441209367&UN=%E8%A2%81%E7%AD%B1%E4%B8%B90803&TT=b1ce9a3bf0dbe2fda2da594405532c38&PBODY=BPap2Dvi_m5L2imfEcj-FU_MDPTuQq26GBasfK-ItJHahjEy_bWyGsg39BqTSmck89_XCeUyHZ8sXnIN2FhO8hTveC4zvNGzJB_Z9MHGxAlCjSgUHCw3cMoMVxMfvj_bVe0PbGyyS2Q5EaUt--KqqpHJv569rteEzsnBFGtf3xI&VER=1',
+        // );
         // wx.setStorageSync('ppu', 'UID=48738323270929&UN=h34xb9&TT=46db95bd08ff17aed4f74a9e1c1ba888&PBODY=WFnnNeXIm9dY3tOwu6eYfH52_kf5_U62WsBMQiUspovzO0RVDm5FIjwIBWA9IhGMMJYwSxThMw9diOnMySSKfme3pcUqS5_owtYxQO3--zOvqTVDXS_neYODpicpJFWPcXA2faeBuyDgd32t7aMf643hlVh1E6Ng5zNgVi6zGZg&VER=1');
     }
     onShow (options) {

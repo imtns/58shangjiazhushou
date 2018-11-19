@@ -1,0 +1,107 @@
+<template lang="wxml">
+    <view class="toedit-modal" wx:if="{{showEditModal}}">
+        <view class="toedit-con">
+            <view class="edit-title">提示</view>
+            <view class="edit-tip">{{syncEditData.tip}}</view>
+            <view class="edit-action">
+                <view class="cancle-btn" @tap="cancleEdit">{{syncEditData.leftButton}}</view>
+                <!-- 去客服消息公众号 -->
+                <button wx:if="{{syncEditData.action=='topublic'}}" open-type="contact" class="edit-btn">{{syncEditData.rightButton}}</button>
+                <!-- 去58验证小程序登录 -->
+                <view wx:if="{{syncEditData.action=='tologin'}}" class="edit-btn" @tap="toEdit" data-action="{{syncEditData.action}}">
+                    {{syncEditData.rightButton}}
+                </view>
+                <view wx:else="{{syncEditData.action!='topublic' && syncEditData.action!='tologin'}}" class="edit-btn" @tap="toEdit" data-action="{{syncEditData.action}}">{{syncEditData.rightButton}}</view>
+            </view>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+import loginHelper from '../utils/login';
+
+export default class Index extends wepy.component {
+    /**
+    * 自定义dialog，适应于有弹框标题，弹框detail，
+    * 两个action，左侧取消弹框action，右侧去执行操作action。
+    */
+    props = {
+        syncEditShow: {
+            type: Boolean,
+            default: false,
+            twoWay: true,
+        },
+        syncEditData: {
+            type: Object,
+            default: {},
+        },
+    }
+    onLoad () {
+    }
+    methods = {
+        // 取消编辑小程序
+        cancleEdit() {
+            console.log('----');
+            this.syncEditShow = false;
+        },
+        // 去编辑小程序
+        toEdit(e) {
+            const that = this;
+            const { action } = e.currentTarget.dataset;
+            switch (action) {
+                case 'tologin': // 还未登录
+                    loginHelper.goLogin();
+                    break;
+                case 'topublic': // 去客服号
+                    that.syncEditShow = false;
+                    break;
+                case 'toeditcard': // 去编辑名片
+                    that.syncEditShow = false;
+                    wepy.navigateTo({
+                        url: 'newBizCard',
+                    });
+                    break;
+                default:
+                    break;
+            }
+        },
+    }
+}
+</script>
+
+<style lang="scss">
+.toedit-con {
+    width: 74%;
+    text-align: center;
+    margin: 45% 13% 0 13%;
+    padding-top: 50rpx;
+    background: #fff;
+    border-radius: 8rpx;
+    z-index: 100;
+}
+.edit-title {
+    font-size: 36rpx;
+    color: #000;
+}
+.edit-tip {
+    font-size: 28rpx;
+    color: #999;
+    line-height: 40rpx;
+    margin: 20rpx 70rpx 30rpx;
+}
+.edit-action {
+    font-size: 36rpx;
+    border-top: 1rpx solid #e5e5e5;
+    line-height: 100rpx;
+    display: flex;
+}
+.cancle-btn {
+    color: #666;
+    flex: 1;
+    border-right: 1rpx solid #e5e5e5;
+}
+.edit-btn {
+    color: #4e88ff;
+    flex: 1;
+}
+</style>

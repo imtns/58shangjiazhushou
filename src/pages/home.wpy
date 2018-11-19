@@ -1,11 +1,7 @@
 <template>
     <scroll-view class="home" scroll-y style="height:100vh">
         <guideMask :show.sync="maskShow" :type="maskType"></guideMask>
-        <!-- <view class="follow-public" wx:if="{{!isFollow}}">
-            <text>关注公众号接收通知</text>
-            <navigator class="follow-action" wx:if="{{assistAuth}}" @tap="toFollow">马上关注</navigator>
-            <button class="follow-action" wx:elif="{{!assistAuth}}" open-type="getUserInfo" @tap="loadSession">马上关注</button>
-        </view> -->
+        <actionDialog wx:if="{{showEditModal}}" :syncEditShow.sync="showEditModal" :syncEditData.sync="editDialog"></actionDialog>
         <view class="add-myapp" wx:if="{{showTip}}" @tap="showAddStep">
             <view class="triangle"></view>
             点击【添加到我的小程序】，快捷访问接单 >
@@ -33,31 +29,32 @@
                     </view>
                     <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">小程序切换</view>
                     <image class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
-                </view>
-                <view wx:if="{{!userLogin}}" class="unlogin">
-                    <text class="login-tip">您还没有登录，授权登录后可管理小程序赚大钱</text>
-                    <view wx:if="{{editDialog.action=='tologin'}}" class="login-btn" @tap="handleLogin">立即登录</view>
-                </view>
-                <view wx:if="{{userLogin}}" class="index-block-body index-item">
-                    <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
-                        <image src="{{item.iconPath}}" class="item-img"></image>
-                        <view class="item-text">{{item.text}}</view>
+                    <view class="index-block-body index-item">
+                        <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
+                            <image src="{{item.iconPath}}" class="item-img"></image>
+                            <view class="item-text">{{item.text}}</view>
+                        </view>
+                    </view>
+                    <view bindtap="checkProgress" class="item-detail-progress">
+                        <view class="current-progress"></view>
+                        <view class="remind-title">{{ business.progressText}}</view>
                     </view>
                 </view>
-                <view wx:if="{{!userLogin}}" class="index-block-body index-item" @tap="handleLogin">
-                    <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index">
-                        <image src="{{item.iconPath}}" class="item-img"></image>
-                        <view class="item-text">{{item.text}}</view>
+                <view wx:if="{{!userLogin}}">
+                    <view class="unlogin">
+                        <text class="login-tip">您还没有登录，授权登录后可管理小程序赚大钱</text>
+                        <view wx:if="{{editDialog.action=='tologin'}}" class="login-btn" @tap="handleLogin">立即登录</view>
                     </view>
-                </view>
-                <view wx:if="{{userLogin}}" bindtap="checkProgress" class="item-detail-progress">
-                    <view class="current-progress"></view>
-                    <view class="remind-title">{{ business.progressText}}</view>
-                </view>
-
-                <view wx:if="{{!userLogin}}" class="item-detail-progress" @tap="handleLogin">
-                    <view class="current-progress"></view>
-                    <view class="remind-title">{{ business.progressText}}</view>
+                    <view class="index-block-body index-item" @tap="handleLogin">
+                        <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index">
+                            <image src="{{item.iconPath}}" class="item-img"></image>
+                            <view class="item-text">{{item.text}}</view>
+                        </view>
+                    </view>
+                    <view class="item-detail-progress" @tap="handleLogin">
+                        <view class="current-progress"></view>
+                        <view class="remind-title">{{ business.progressText}}</view>
+                    </view>
                 </view>
             </view>
         </view>
@@ -113,24 +110,7 @@
                 <button class="showModal_cancle" bindtap="hideModal"></button>
             </view>
         </view>
-        <!-- 未编辑过名片提示 -->
-        <view class="toedit-modal" wx:if="{{share.showEditModal}}">
-            <view class="toedit-con">
-                <view class="edit-title">提示</view>
-                <view class="edit-tip">{{editDialog.tip}}</view>
-                <view class="edit-action">
-                    <view class="cancle-btn" @tap="cancleEdit">{{editDialog.leftButton}}</view>
-                    <!-- 去客服消息公众号 -->
-                    <button wx:if="{{editDialog.action=='topublic'}}" open-type="contact" class="edit-btn">{{editDialog.rightButton}}</button>
-                    <!-- 去58验证小程序登录 -->
-                    <view wx:if="{{editDialog.action=='tologin'}}" class="edit-btn" @tap="handleLogin">
-                        去登录
-                    </view>
-                    <view wx:else="{{editDialog.action!='topublic' && editDialog.action!='tologin'}}" class="edit-btn" @tap="toEdit" data-action="{{editDialog.action}}">{{editDialog.rightButton}}</view>
-                </view>
-            </view>
-        </view>
-        <!-- 分享名片赢大奖提示 -->
+        <!-- 分享名片赢大奖提示 活动下线注释掉代码 -->
         <!-- <view class="toedit-modal" wx:if="{{Actfrom || share.hasPromptToday && share.hasPerm}}">
             <form bindsubmit="handleFormidCollect" report-submit="true">
                 <button class="share-active-cancle" data-action="cancle" bindtap="handleActionRoute" hover-class="none" form-type="submit"></button>
@@ -214,7 +194,7 @@ import wepy from 'wepy';
 import Mixin from '../mixin';
 import RegistMixin from './regist/mixin';
 
-import { items, nItems } from '../utils/homeList';
+import { items, nItems, share, business } from '../utils/homeList';
 import { alert, formatDuring } from '../utils';
 import { post, get } from '../utils/ajax';
 import { globalData, setTabBar } from '../utils/globalData';
@@ -236,6 +216,7 @@ import * as service from '../utils/service';
 
 import EverydayModal from '../components/EverydayModal';
 import Mask from '../components/Mask';
+import ActionDialog from '../components/ActionDialog';
 
 export default class Home extends wepy.page {
   mixins = [Mixin, RegistMixin];
@@ -248,6 +229,7 @@ export default class Home extends wepy.page {
   components = {
       guideMask: Mask,
       'everyday-modal': EverydayModal,
+      actionDialog: ActionDialog,
   };
   data = {
       code: '',
@@ -266,36 +248,7 @@ export default class Home extends wepy.page {
       maskShow: false,
       maskType: 'home',
       Actfrom: '', // 运营活动首页进入来源 ‘app’ || ‘h5’
-      business: {
-          mps: [],
-          name: '',
-          miniProgramName: '您还没购买小程序',
-          unread: 0,
-          unreadOrder: 0,
-          mpCount: 0,
-          progressText: '您还没有购买小程序',
-          nexttask: 0,
-          changeMP: false,
-          canConfirm: false,
-          selected: {
-              id: 0,
-          },
-          chosedId: 0,
-      },
-      share: {
-          hasPerm: false, // 能不能参加活动
-          isAuto: false, // 是不是默认名片
-          hasPromptToday: false, // 今天需不需要弹框
-          hasShareToday: 0, // 今天分享次数
-          hasShareDays: 0, // 一共分享天数
-          needShareDays: 3, // 分享多少天达标
-          cashTime: '2018-10-18', // 开奖日期
-          cashDistance: 0, // 开奖距离，单位秒
-          cashTotal: 0, // 奖池金额，单位元，可修改
-          cashAmount: 0, // 我的中奖金额，单位元
-          timeArray: [], // 开奖倒计时数组
-          showEditModal: false, // 是否显示去编辑名片弹框
-      },
+      showEditModal: false, // 是否显示去编辑名片弹框
       editDialog: {
           tip: '',
           leftButton: '取消',
@@ -305,9 +258,10 @@ export default class Home extends wepy.page {
       status: {
           loading: true,
       },
+      business,
       items,
       nItems,
-
+      share,
       // 用户注册状态前置检查
       // 快速注册时添加
       // {
@@ -331,7 +285,6 @@ export default class Home extends wepy.page {
       },
       link(text) {
           if (!this.userLogin) return;
-          // console.log(text);意见反馈不做判断
           if (text === '意见反馈') {
               SendClickLog('sjzh_click_home_feedback');
               wepy.navigateTo({
@@ -503,28 +456,6 @@ export default class Home extends wepy.page {
           this.storageShowmodal = wepy.getStorageSync('showmodal');
           this.$apply();
       },
-      // 取消编辑小程序
-      cancleEdit() {
-          this.share.showEditModal = false;
-      },
-      // 去编辑小程序
-      toEdit(e) {
-          const that = this;
-          const { action } = e.currentTarget.dataset;
-          switch (action) {
-              case 'topublic':
-                  that.share.showEditModal = false;
-                  break;
-              case 'toeditcard':
-                  that.share.showEditModal = false;
-                  wepy.navigateTo({
-                      url: 'newBizCard',
-                  });
-                  break;
-              default:
-                  break;
-          }
-      },
       /**
      * 事件操作：表单提交 收集formId
      * 收集formid操作：去分享，关闭，去赚钱
@@ -680,7 +611,7 @@ export default class Home extends wepy.page {
                   leftButton: '取消',
                   rightButton: '去编辑',
               };
-              seft.share.showEditModal = true;
+              seft.showEditModal = true;
               seft.share.hasPromptToday = false;
               // clickLog = 'makemoney';
               break;
@@ -692,7 +623,7 @@ export default class Home extends wepy.page {
                   leftButton: '取消',
                   rightButton: '去获取',
               };
-              seft.share.showEditModal = true;
+              seft.showEditModal = true;
               seft.share.hasPromptToday = false;
               break;
           case 'topubnumber': // 去公众号获取更多赚钱机会
@@ -796,7 +727,6 @@ export default class Home extends wepy.page {
               console.log(error);
           }
       } else {
-          console.log(e.detail.errMsg);
           alert('由于您拒绝了授权，后续功能不能使用。');
       }
   }
@@ -895,9 +825,9 @@ export default class Home extends wepy.page {
               tip: '您还未登录，登录后能使用更多功能',
               action: 'tologin',
               leftButton: '取消',
-              rightButton: '去完善',
+              rightButton: '去登录',
           };
-          this.share.showEditModal = true;
+          this.showEditModal = true;
           this.$apply();
       }
   }
@@ -1178,12 +1108,6 @@ export default class Home extends wepy.page {
       const cardId = wepy.getStorageSync('current_cardId');
       seft.everydayIconShow = !!cardId; // 是否显示每日一言悬浮icon
       seft.$apply();
-      console.log(
-          '==============>initEveryday = cardId',
-          cardId,
-          'everydayIconShow=',
-          seft.everydayIconShow,
-      );
   }
 }
 </script>
@@ -1745,40 +1669,6 @@ scroll-view {
   text-align: center;
   background: rgba(0, 0, 0, 0.7);
   transition: all 0.6s ease-in-out;
-}
-.toedit-con {
-  width: 74%;
-  text-align: center;
-  margin: 45% 13% 0 13%;
-  padding-top: 50rpx;
-  background: #fff;
-  border-radius: 8rpx;
-  z-index: 100;
-}
-.edit-title {
-  font-size: 36rpx;
-  color: #000;
-}
-.edit-tip {
-  font-size: 28rpx;
-  color: #999;
-  line-height: 40rpx;
-  margin: 20rpx 70rpx 30rpx;
-}
-.edit-action {
-  font-size: 36rpx;
-  border-top: 1rpx solid #e5e5e5;
-  line-height: 100rpx;
-  display: flex;
-}
-.cancle-btn {
-  color: #666;
-  flex: 1;
-  border-right: 1rpx solid #e5e5e5;
-}
-.edit-btn {
-  color: #4e88ff;
-  flex: 1;
 }
 .share-active-cancle {
   width: 74rpx;

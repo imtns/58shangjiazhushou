@@ -75,3 +75,34 @@ export const nItems = [
         ],
     },
 ];
+
+export const share = {
+    hasPerm: false, // 能不能参加活动
+    isAuto: false, // 是不是默认名片
+    hasPromptToday: false, // 今天需不需要弹框
+    hasShareToday: 0, // 今天分享次数
+    hasShareDays: 0, // 一共分享天数
+    needShareDays: 3, // 分享多少天达标
+    cashTime: '2018-10-18', // 开奖日期
+    cashDistance: 0, // 开奖距离，单位秒
+    cashTotal: 0, // 奖池金额，单位元，可修改
+    cashAmount: 0, // 我的中奖金额，单位元
+    timeArray: [], // 开奖倒计时数组
+};
+
+export const business = {
+    mps: [],
+    name: '',
+    miniProgramName: '您还没购买小程序',
+    unread: 0,
+    unreadOrder: 0,
+    mpCount: 0,
+    progressText: '您还没有购买小程序',
+    nexttask: 0,
+    changeMP: false,
+    canConfirm: false,
+    selected: {
+        id: 0,
+    },
+    chosedId: 0,
+};
