@@ -557,7 +557,8 @@ export default class Home extends wepy.page {
    * 5s关闭添加到我的小程序提示
    */
   hideTipModal() {
-      if (!wepy.getStorageSync('showAddModal')) {
+      const { appScene } = globalData;
+      if (+appScene !== 1089 && !wepy.getStorageSync('showAddModal')) {
           this.showTip = true;
           setTimeout(() => {
               this.showTip = false;

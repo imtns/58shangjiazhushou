@@ -69,18 +69,11 @@
             </view>
             <view class="item required">
                 <text>预约地址</text>
-                <button class="locate" @tap="setLocation">定位</button>
+                <button class="locate" @tap="setLocation">去填写</button>
             </view>
-            <input
-            type="text"
-            class="location-detail"
-            placeholder="请输入详细地址"
-            placeholder-class="placeholder"
-            value="{{ form.address }}"
-            @change="setFormData('address')"/>
-            <map class="location-map" scale="14"
-            longitude="{{ form.addressLongitude }}"
-            latitude="{{ form.addressLatitude }}"></map>
+            <view class="location-detail"
+                data-longitude="{{ form.addressLongitude }}"
+                data-latitude="{{ form.addressLatitude }}">{{ form.address || '请输入详细地址' }}</view>
         </view>
         <view class="section">
             <view class="item">
@@ -92,16 +85,6 @@
             value="{{ form.serviceDetailInfo }}"
             @input="setFormData('serviceDetailInfo')">
             </textarea>
-            <!-- <view class="item required">
-                <text>服务详情</text>
-                <navigator
-                hover-class="none"
-                :class="{ placeholder: region === '' }"
-                url="/pages/orderDetailSelector">
-                    {{ region || '未填写' }}
-                    <view class="icon more"></view>
-                </navigator>
-            </view> -->
         </view>
         <view class="section">
             <view class="item border-bottom">
@@ -127,7 +110,6 @@
                 <text>收费方式</text>
                 <view class="pay-types">
                     <view  wx:for="{{payTypeDetail}}" wx:key="{{index}}" class="pay-type {{item.value==form.payType?'selected':''}}" @tap="bindPayType" data-type="{{item.value}}">{{item.name}}</view>
-                    <!-- <view>{{form.payTypeDetail}}</view> -->
                 </view>
             </view>
             <view class="item required" wx:if="{{form.payType == 2 || form.payType == 3}}">
