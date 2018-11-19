@@ -74,7 +74,7 @@
         }
         async onLoad() {
             // 获取数据信息
-            const mpId = '936531389749948416' || wepy.getStorageSync('current_mpid');
+            const mpId = wepy.getStorageSync('current_mpid');
             const { data } = await get(LOAD_SPREADRP_INFO, { mpId });
             const {
                 card,
