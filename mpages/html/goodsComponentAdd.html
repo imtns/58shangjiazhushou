@@ -1,10 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta http-equiv="X-UA-Compatible"
         content="ie=edge">
   <title>商品添加</title>
@@ -36,6 +36,7 @@
           doc.body.style.fontSize = 12 + "px"
         }, false)
       }
+
       function refreshRem() {
         var width = docEl.getBoundingClientRect().width;
         var rem = width / 7.5;
@@ -74,8 +75,9 @@
 
   </script>
   <script>
-        window.__staticConfigUrl = 'https://j1.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/js/goods-add-version.js';
-    </script>
+    window.__staticConfigUrl = 'https://j1.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/js/goods-add-version.js';
+
+  </script>
   <script type="text/javascript"
           src="https://j1.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/js/static-loader.js"></script>
 </head>
@@ -84,7 +86,8 @@
   <div class="wrap">
     <div class="wrap-items">
       <div class="item-flex">
-        <div class="item-text required" style="width:2.3rem;">商品名称</div>
+        <div class="item-text required"
+             style="width:2.3rem;">商品名称</div>
         <div class="item-input-div">
           <input type="text"
                  maxlength="15"
@@ -128,8 +131,7 @@
             <input id="radio-1"
                    name="size"
                    type="radio"
-                   value="multi"
-                   >
+                   value="multi">
             <label for="radio-1"
                    class="radio-label">多规格</label>
           </div>
@@ -138,14 +140,17 @@
             <input id="radio-2"
                    name="size"
                    value="single"
-                   type="radio" checked>
+                   type="radio"
+                   checked>
             <label for="radio-2"
                    class="radio-label">单规格</label>
           </div>
         </div>
       </div>
-      <div class="item-flex-s size" style="display:none;">
-        <div class="item-text full required" id="size-text">商品规格</div>
+      <div class="item-flex-s size"
+           style="display:none;">
+        <div class="item-text full required"
+             id="size-text">商品规格</div>
         <!-- <div class="size-info-wrapper">
           <div class="size-info">
             <div class="info-line">
@@ -268,4 +273,33 @@
 </html>
 <!-- html -->
 <script type="text/javascript"
-        src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
+        src="https://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+<script>
+  $(function(){
+    var signURL = 'http://yaofa.58.com/cmtHunter/getJsSign';
+    var data = {
+      url: window.location.href.split('#')[0],
+    }
+    var returnData = null;
+    $.ajax({
+      url: signURL,
+      type: 'POST',
+      data: {
+        url: window.location.href.split('#')[0],
+      },
+      success: function success(res) {
+        console.log(res);
+        returnData = res.data;
+      }
+    })
+    wx.config({
+      debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+      appId: returnData.appId, // 必填，公众号的唯一标识
+      timestamp: returnData.timestamp, // 必填，生成签名的时间戳
+      nonceStr: returndata.nonceStr, // 必填，生成签名的随机串
+      signature: returndata.signature, // 必填，签名
+      jsApiList: ['chooseImage']// 必填，需要使用的JS接口列表
+    });
+  });
+
+</script>

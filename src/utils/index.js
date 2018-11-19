@@ -157,21 +157,17 @@ export const withHttp = (list) => {
     return list;
 };
 
-export const autoFixed = (num) => {
-    return num <= 9 ? `0${num}` : num;
-};
+export const autoFixed = (num) => (num <= 9 ? `0${num}` : num);
 
 // 线上图片 下载到本地
-export const getTmpFilePath = (url) => {
-    return new Promise((resolve, reject) => {
-        wx.downloadFile({
-            url,
-            success(res) {
-                resolve(res.tempFilePath);
-            },
-            fail(err) {
-                reject(err);
-            },
-        });
+export const getTmpFilePath = (url) => new Promise((resolve, reject) => {
+    wx.downloadFile({
+        url,
+        success(res) {
+            resolve(res.tempFilePath);
+        },
+        fail(err) {
+            reject(err);
+        },
     });
-};
+});

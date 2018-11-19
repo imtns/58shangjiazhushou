@@ -152,6 +152,7 @@ export default class Cropper extends wepy.page {
         },
         async 'crop-loadImage'(iSrc, ratio = '1,1', first = false) {
             try {
+                console.log(`src:${iSrc}`);
                 const { qualityWidth } = this;
                 let { innerAspectRadio } = this;
                 let imageSrc = iSrc;
@@ -164,8 +165,12 @@ export default class Cropper extends wepy.page {
                 // 在线图片，需要下载到本地
                 if (this.onlineImage) {
                     this.onlineImage = false;
-                    const tempFilePath = await getTmpFilePath(imageSrc);
-                    imageSrc = tempFilePath;
+                    // 开发者工具浏览图片返回的临时地址是http开头的地址，则需要通过wx.downloadFile下载
+                    // 真机则不需要此方法，可以直接使用返回的imageSrc使用
+                    if (imageSrc.indexOf('http:') > -1) {
+                        // const tempFilePath = await getTmpFilePath(imageSrc);
+                        imageSrc = await getTmpFilePath(imageSrc);
+                    }
                 }
 
                 this.imageSrc = imageSrc;
