@@ -1217,7 +1217,7 @@ export default class Home extends wepy.page {
       this.spreadUserID = this.business.userId;
       this.spreadRPFirst && SendEventLog({
           page: 'home',
-          button: 'redpacketWindowShow',
+          button: '',
           window: 'redpacketWindow',
           action: 'show',
       });

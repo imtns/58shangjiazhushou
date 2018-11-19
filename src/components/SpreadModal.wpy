@@ -1,14 +1,14 @@
 <template>
     <view class="spread-modal" wx:if="{{show}}">
         <!-- 推广按钮 -->
-        <form data-name="spreadRPIconButton" report-submit="true" @submit="handleFormidCollect">
+        <form data-name="redpacketIconButton" report-submit="true" @submit="handleFormidCollect">
             <button class="spread-float" hover-class="none" form-type="submit" @tap="openSpreadPage"></button>
         </form>
         <!-- 推广入口广告 -->
         <block wx:if="{{showAd||first}}">
             <view class="spread-ad" @touchmove.stop="handleStopScroll">
                 <view class="spread-ad-body" />
-                <form data-name="spreadRPWindowButton" report-submit="true" @submit="handleFormidCollect">
+                <form data-name="redpacketWindowButton" report-submit="true" @submit="handleFormidCollect">
                     <button class="spread-ad-btn" hover-class="none" form-type="submit" @tap="openSpreadPage">立即免费推广</button>
                 </form>
                 <view class="spread-ad-close" hover-class="none" form-type="submit" @tap="handleClose"></view>

@@ -23,7 +23,7 @@ function getUid() {
  * system系统                       系统
  * action:行为                      点击click、展现show、长按识别longpress、关闭小程序closemp、发送消息sendmsg、分享share
  * openid:openid                   后端通过consumerId来获取
- * consumerId:收集formId需要传此参数  商家id
+ * consumerId                      商家id
  * appid:appid                     小程序id
  * window:弹出名称                  当前页面弹窗名称
  * scene:场景值                     场景值
