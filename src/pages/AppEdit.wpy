@@ -188,6 +188,7 @@ export default class AppEdit extends wepy.page {
                     wepy.navigateTo({
                         url: `/pages/cropper?url=${tempFilePaths[0]}&ratio=1,1`,
                     });
+                    // this.uploadLogo(tempFilePaths[0], true);
                 } else {
                     this.uploadLogo(tempFilePaths[0]);
                 }
@@ -248,7 +249,7 @@ export default class AppEdit extends wepy.page {
         },
     }
 
-    async uploadLogo(tempPath) {
+    async uploadLogo(tempPath, isCrop = false) {
         try {
             const response = await wepy.uploadFile({
                 url: uploadApi,
@@ -258,8 +259,14 @@ export default class AppEdit extends wepy.page {
             const res = JSON.parse(response.data);
             const { state, msg, data } = res;
             if (state === 100) {
-                this.tempLogo = tempPath;
-                this.updateForm({ headImg: data.content });
+                if (isCrop) {
+                    wepy.navigateTo({
+                        url: `/pages/cropper?url=${data.content}&ratio=1,1`,
+                    });
+                } else {
+                    this.tempLogo = tempPath;
+                    this.updateForm({ headImg: data.content });
+                }
             } else {
                 this.toast(msg);
             }

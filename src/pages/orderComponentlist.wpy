@@ -21,7 +21,7 @@
                     wx:for="{{listData}}"
                     wx:key="{{index}}"
                     data-item="{{item}}">
-                    <image class="list-image" src="https://pic1.58cdn.com.cn{{item.pics}}"></image>
+                    <image class="list-image" src="https://pic1.58cdn.com.cn{{item.pics}}?w=132" mode="aspectFill"></image>
                     <view class="list-detail">
                         <view class="list-title">{{item.serviceName}}</view>
                         <view class="list-intro">服务价格：<text>{{item.price!=null ? item.price : '0'}}</text>元/次
