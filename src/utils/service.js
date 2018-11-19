@@ -1,6 +1,10 @@
 import wepy from 'wepy';
 import { get } from './ajax';
-import { GET_ASSIST_AUTH, LOAD_ASSIST_AUTH_LIST } from './url';
+import {
+    GET_ASSIST_AUTH,
+    LOAD_ASSIST_AUTH_LIST,
+    REGIST_PRE_CHECK,
+} from './url';
 import { picSrcDomain, toast } from './index';
 
 const store = {
@@ -84,3 +88,5 @@ export const makeTelCall = async (e) => {
     }
     wepy.makePhoneCall({ phoneNumber: data });
 };
+
+export const getRegistPreCheck = async () => get(REGIST_PRE_CHECK);

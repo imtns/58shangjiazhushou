@@ -1,7 +1,6 @@
 import wepy from 'wepy';
-import { get } from '../../utils/ajax';
-import { REGIST_PRE_CHECK } from '../../utils/url';
 import { getPathName } from '../../utils';
+import { getRegistPreCheck } from '../../utils/service';
 
 export default class OrderMixin extends wepy.mixin {
     showModal(content, { confirmText } = {}) {
@@ -15,7 +14,7 @@ export default class OrderMixin extends wepy.mixin {
     async checkRegistStatus() {
         const {
             data: preCheckData,
-        } = await get(REGIST_PRE_CHECK) || {};
+        } = await getRegistPreCheck() || {};
         const {
             vip,
             currentAuditStatus,
@@ -69,7 +68,10 @@ export default class OrderMixin extends wepy.mixin {
         // 审核失败，跳转到状态提示页，在状态提示页统一判断处理
         if (currentAuditStatus === -1) {
             // 若在当前页则不跳转
-            getPathName() !== 'pages/regist/notice' && wx.redirectTo({
+            getPathName() !== 'pages/regist/notice'
+            // 注册页面不跳转
+            && getPathName() !== 'pages/regist/index'
+            && wx.redirectTo({
                 url: '/pages/regist/notice',
             });
             return { msg: '资料审核失败' };
