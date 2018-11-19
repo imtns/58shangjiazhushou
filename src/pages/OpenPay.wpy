@@ -71,7 +71,7 @@
 <script>
 import wepy from 'wepy';
 import { toast } from '../utils';
-import { get } from '../utils/ajaxP';
+import { get } from '../utils/ajax';
 import Mixin from '../mixin';
 
 export default class OpenPay extends wepy.page {
@@ -118,8 +118,8 @@ export default class OpenPay extends wepy.page {
         const OpenPayStatus = wepy.getStorageSync('OpenPay');
         if (OpenPayStatus !== '0') return;
         wepy.removeStorageSync('OpenPay');
-        const [e] = await get('/mpInfo/agree');
-        e && toast(e);
+        const { state, msg } = await get('/mpInfo/agree');
+        if (state !== 100) toast(msg);
     }
     async getOpenedInfo () {
         // 获取用户是否开通支付
@@ -130,12 +130,12 @@ export default class OpenPay extends wepy.page {
         //     toast(e);
         //     return;
         // }
-        const [e, res] = await get('/mplogic/getPayOpenStatus');
-        if (e) {
-            toast(e);
+        const { state, msg, data } = await get('/mplogic/getPayOpenStatus');
+        if (state !== 100) {
+            toast(msg);
             return;
         }
-        const { payOpenStatus, payOpenType } = res;
+        const { payOpenStatus, payOpenType } = data;
         Object.assign(this, {
             payOpenStatus,
             payOpenType,
@@ -168,8 +168,8 @@ export default class OpenPay extends wepy.page {
             }
         }
         this.loading = false;
-        this.userid = res.userid;
-        // this.opened = res.pay_open;
+        this.userid = data.userid;
+        // this.opened = data.pay_open;
         this.$apply();
     }
 }
