@@ -510,6 +510,8 @@ export default class Home extends wepy.page {
               await this.hideMask();
               // 切换小程序，重新登录IM
               await this.chatLogin();
+              // 重新判断是否显示推广
+              this.initSpreadRedpacket();
           }
       },
       hideModal() {
@@ -1210,8 +1212,6 @@ export default class Home extends wepy.page {
    */
   async initSpreadRedpacket() {
       console.log('-----business----------');
-      console.log(wepy.getStorageSync('current_mpid'));
-      console.log(this.business.selected.id);
       const mpId = wepy.getStorageSync('current_mpid');
       const { data } = await get(CHECK_CANSPREAD, { mpId });
       // 判断是否有推广功能
