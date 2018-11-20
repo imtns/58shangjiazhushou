@@ -55,6 +55,21 @@ export const myCardItems = [{
     type: 'mpJump',
     path: '/pages/index58/index58?mpcardId=',
 }, {
+    src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_edit_card.png',
+    name: '编辑名片',
+    type: 'innerJump',
+    path: 'newBizCard',
+}, {
+    src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_go_share.png',
+    name: '分享名片',
+    type: 'innerJump',
+    path: '',
+}, {
+    src: 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/mycard_group.png',
+    name: '我的团队',
+    type: 'innerJump',
+    path: '',
+}, {
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_visitor_logs.png',
     name: '访客记录',
     type: 'innerJump',
@@ -65,15 +80,10 @@ export const myCardItems = [{
     type: 'innerJump',
     path: 'chatMessages',
 }, {
-    src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_go_share.png',
-    name: '分享名片',
+    src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_go_notice.png',
+    name: '通知设置',
     type: 'innerJump',
-    path: '',
-}, {
-    src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_edit_card.png',
-    name: '编辑名片',
-    type: 'innerJump',
-    path: 'newBizCard',
+    path: 'noticeSet',
 }, {
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_go_pay.png',
     name: '开通支付',
@@ -85,10 +95,10 @@ export const myCardItems = [{
     type: 'mpJump',
     path: '/pages/index58/index58?releaseId=',
 }, {
-    src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_go_notice.png',
-    name: '通知设置',
+    src: 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/mycard_to_print.png',
+    name: '名片打印',
     type: 'innerJump',
-    path: 'noticeSet',
+    path: 'myBizCardPrint',
 }, {
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_regist_qrcode.png',
     name: '注册码',

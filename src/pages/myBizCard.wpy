@@ -20,18 +20,34 @@
                     </view>
                     <view class="other_entery">
                         <view class="otherbox">
-                            <view class="num vote">{{vote}}</view>
-                            <view class="type">点赞</view>
-                        </view>
-                        <view class="line"></view>
-                        <view class="otherbox">
                             <view class="num vote">{{visit}}</view>
                             <view class="type">访问</view>
                         </view>
                         <view class="line"></view>
                         <view class="otherbox">
+                            <view class="num vote">{{vote}}</view>
+                            <view class="type">浏览总数</view>
+                        </view>
+                        <view class="line"></view>
+                        <view class="otherbox">
                             <view class="num share">{{share}}</view>
                             <view class="type">转发</view>
+                        </view>
+                    </view>
+                    <view class="other_entery">
+                        <view class="otherbox">
+                            <view class="num vote">{{vote}}</view>
+                            <view class="type">被关注总数</view>
+                        </view>
+                        <view class="line"></view>
+                        <view class="otherbox">
+                            <view class="num vote">{{visit}}</view>
+                            <view class="type">被点赞总数</view>
+                        </view>
+                        <view class="line"></view>
+                        <view class="otherbox">
+                            <view class="num share">{{share}}</view>
+                            <view class="type">咨询总数</view>
                         </view>
                     </view>
                 </view>
@@ -362,9 +378,9 @@ export default class myBizCard extends wepy.page {
                 display: flex;
                 flex-wrap: wrap;
                 padding: 0 55rpx 40rpx;
-                justify-content: space-between;
+                justify-content: left;
                 .item_box{
-                    width: 130rpx;
+                    width: 25%;
                     text-align: center;
                     padding-top: 40rpx;
                     .img{
@@ -380,7 +396,7 @@ export default class myBizCard extends wepy.page {
             }
         }
         .card_tips{
-            margin-top: 20rpx;
+            margin: 20rpx 0;
             padding-left: 30rpx;
             .tips_header{
                 height: 80rpx;
