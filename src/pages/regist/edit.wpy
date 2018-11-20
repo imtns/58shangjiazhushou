@@ -32,6 +32,10 @@
                     <view class="label">小程序名称</view>
                     <input class="input" name="nickName" type="text" maxlength="20" placeholder-class="placeholder" placeholder="请输入"/>
                 </view>
+                <view class="form-item column">
+                    <view class="label">小程序简介</view>
+                    <textarea name="signature" class="textarea"></textarea>
+                </view>
                 <view class="form-text-item">小程序名称提交后不可修改，请谨慎写</view>
                 <button class="btn-save" form-type="submit">提交</button>
             </view>
@@ -86,11 +90,13 @@ export default class Index extends wepy.page {
 
         form: {
             nickName: '', // 小程序名称
+            // 行业选择
             wubaFirstId: null,
             wubaSecondId: null,
             wechatFirstId: null,
             wechatSecondId: null,
-            avatarUrl: '',
+            avatarUrl: '', // 头像地址
+            signature: '', // 简介
         },
 
         modalShow: false,
@@ -164,7 +170,7 @@ export default class Index extends wepy.page {
         async handleSubmit(e) {
             try {
                 const { value: data, formId } = e.detail;
-                const { nickName } = data;
+                const { nickName, signature } = data;
                 const avatarUrl = this.logo;
                 const { form } = this;
 
@@ -172,6 +178,7 @@ export default class Index extends wepy.page {
                     nickName,
                     avatarUrl,
                     formId,
+                    signature,
                 });
 
                 const { msg } = this.validator(postData);
@@ -253,6 +260,10 @@ export default class Index extends wepy.page {
         &.last {
             border: none;
         }
+        &.column {
+            flex-direction: column;
+            align-items: start;
+        }
 
         .input {
             width: 396rpx;
@@ -260,6 +271,14 @@ export default class Index extends wepy.page {
             text-align: right;
             height: 42rpx;
             min-height: auto;
+        }
+        .textarea {
+            width: 100%;
+            border-radius: 8rpx;
+            margin-top: 15rpx;
+            background-color: #f3f3f3;
+            box-sizing: border-box;
+            padding: 15rpx;
         }
         .selector {
             margin-right: 20rpx;
