@@ -28,7 +28,7 @@
                         <view wx:else>可上传素材、提交注册信息到当前小程序</view>
                     </view>
                     <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">小程序切换</view>
-                    <image class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+                    <image class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="aspectFit" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
                     <view class="index-block-body index-item">
                         <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
                             <image src="{{item.iconPath}}" class="item-img"></image>
@@ -78,13 +78,13 @@
             <view class="default">
                 <view class="name logoPadding">{{business.miniProgramName}}</view>
                 <view>默认</view>
-                <image class="haslogo" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+                <image class="haslogo" mode="aspectFit" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
             </view>
             <view class="otherBox">
                 <repeat for="{{business.mps}}" key="index" index="index" item="item">
                     <view class="mpbox">
                         <view bindtap="selectMp({{item}})" class="mpItem logoPadding" data-appid="{{item.id}}" :class="{ 'active' : item.id === business.chosedId}">{{item.nickName || item.id}}</view>
-                        <image class="haslogo" mode="{{aspectFit}}" src="{{item.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+                        <image class="haslogo" mode="aspectFit" src="{{item.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
                     </view>
                 </repeat>
             </view>
