@@ -103,7 +103,7 @@
             // 需要绘制所有文字
             let texts = [
                 Object.assign({
-                    text: card.company,
+                    text: card.realName,
                 }, SPREAD_REDPACKET.userName),
                 Object.assign({
                     text: moment.moments,
@@ -185,6 +185,7 @@
          */
         scale(obj) {
             Object.keys(obj).forEach(item => {
+                if (item === 'lineClamp') return;
                 obj[item] = typeof obj[item] === 'number' ? ~~((obj[item] * 560) / 750) : obj[item];
             });
         }
