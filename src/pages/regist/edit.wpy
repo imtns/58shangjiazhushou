@@ -34,7 +34,7 @@
                 </view>
                 <view class="form-item column">
                     <view class="label">小程序简介</view>
-                    <textarea name="signature" class="textarea"></textarea>
+                    <textarea name="signature" class="textarea" maxlength="100"></textarea>
                 </view>
                 <view class="form-text-item">小程序名称提交后不可修改，请谨慎写</view>
                 <button class="btn-save" form-type="submit">提交</button>
