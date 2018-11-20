@@ -1,7 +1,8 @@
 <template>
     <view class="spread-panel">
         <view class="spread-body">
-            <view class="draw-loading">
+            <view class="draw-loading" wx:if="{{!loaded}}">
+                <view class="draw-mask"></view>
                 <view class="spinner">
                     <view class="bounce"/>
                 </view>
@@ -11,7 +12,6 @@
                 id="{{draw.id}}"
                 width="{{draw.width}}"
                 height="{{draw.height}}"
-                background="{{draw.background}}"
                 layers="{{draw.layers}}"
                 @toTempFile="handleToTempFile"></drawimage>
         </view>
@@ -128,23 +128,11 @@
                 })]);
             });
 
-            await this.drawBackground();
             await this.drawImgs(imgs);
             await this.drawTexts(texts);
 
             this.loaded = true;
             this.$apply();
-        }
-        /**
-         * 绘制背景图
-         */
-        async drawBackground() {
-            const src = 'http://img.58cdn.com.cn/lbg/jianzhan/images/redpacket-bg.png';
-            this.draw.background.dx = 0;
-            this.draw.background.dy = 0;
-            this.draw.background.dWidth = this.draw.width;
-            this.draw.background.dHeight = this.draw.height;
-            this.draw.background.imageResource = await getTmpFilePath(src);
         }
         /**
          * 绘制图片类型
@@ -301,6 +289,7 @@
         width: 560rpx;
         height: 900rpx;
         background-color: #fff;
+        @include bg('redpacket-bg');
     }
     .spread-btn-group {
         display: flex;
@@ -376,5 +365,16 @@
             padding-left: 114rpx;
             color: #666;
         }
+    }
+    .draw-loading {
+        background: transparent;
+    }
+    .draw-mask {
+        position:absolute;
+        top: 130rpx;
+        bottom: 348rpx;
+        left: 42rpx;
+        right: 42rpx;
+        background: #fff;
     }
 </style>
