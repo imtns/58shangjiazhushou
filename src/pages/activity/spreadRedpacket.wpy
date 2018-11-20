@@ -12,6 +12,7 @@
                 id="{{draw.id}}"
                 width="{{draw.width}}"
                 height="{{draw.height}}"
+                background="{{draw.background}}"
                 layers="{{draw.layers}}"
                 @toTempFile="handleToTempFile"></drawimage>
         </view>
@@ -130,9 +131,21 @@
 
             await this.drawImgs(imgs);
             await this.drawTexts(texts);
+            await this.drawBackground();
 
             this.loaded = true;
             this.$apply();
+        }
+        /**
+         * 绘制背景图
+         */
+        async drawBackground() {
+            const src = 'http://img.58cdn.com.cn/lbg/jianzhan/images/redpacket-bg.png';
+            this.draw.background.dx = 0;
+            this.draw.background.dy = 0;
+            this.draw.background.dWidth = this.draw.width;
+            this.draw.background.dHeight = this.draw.height;
+            this.draw.background.imageResource = await getTmpFilePath(src);
         }
         /**
          * 绘制图片类型
@@ -267,7 +280,7 @@
         }
     }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
     @import '../../css/drawLoading';
     @mixin bg($pic, $size: cover) {
         background: url('#{$requestPath}/#{$pic}.png') center no-repeat;
