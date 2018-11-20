@@ -33,6 +33,18 @@
                     <input class="input" name="nickName" type="text" maxlength="20" placeholder-class="placeholder" placeholder="请输入"/>
                 </view>
                 <view class="form-text-item">小程序名称提交后不可修改，请谨慎写</view>
+                <view class="form-item column">
+                    <view class="label">小程序功能介绍</view>
+                    <textarea name="signature"
+                        class="textarea"
+                        maxlength="100"
+                        @input="handleInput"
+                        placeholder="请输入"
+                        placeholder-class="placeholder">
+                        <view class="textarea-num">{{signatureNum}}/100</view>
+                    </textarea>
+                </view>
+                <view class="form-text-item">请确认介绍内容不含国家相关法律禁止内容</view>
                 <button class="btn-save" form-type="submit">提交</button>
             </view>
         </form>
@@ -86,12 +98,16 @@ export default class Index extends wepy.page {
 
         form: {
             nickName: '', // 小程序名称
+            // 行业选择
             wubaFirstId: null,
             wubaSecondId: null,
             wechatFirstId: null,
             wechatSecondId: null,
-            avatarUrl: '',
+            avatarUrl: '', // 头像地址
+            signature: '', // 简介
         },
+
+        signatureNum: 0,
 
         modalShow: false,
         modalContent: '',
@@ -161,10 +177,13 @@ export default class Index extends wepy.page {
     }
 
     methods = {
+        handleInput(e) {
+            this.signatureNum = e.detail.value.length;
+        },
         async handleSubmit(e) {
             try {
                 const { value: data, formId } = e.detail;
-                const { nickName } = data;
+                const { nickName, signature } = data;
                 const avatarUrl = this.logo;
                 const { form } = this;
 
@@ -172,6 +191,7 @@ export default class Index extends wepy.page {
                     nickName,
                     avatarUrl,
                     formId,
+                    signature,
                 });
 
                 const { msg } = this.validator(postData);
@@ -253,6 +273,10 @@ export default class Index extends wepy.page {
         &.last {
             border: none;
         }
+        &.column {
+            flex-direction: column;
+            align-items: flex-start;
+        }
 
         .input {
             width: 396rpx;
@@ -260,6 +284,13 @@ export default class Index extends wepy.page {
             text-align: right;
             height: 42rpx;
             min-height: auto;
+        }
+        .textarea {
+            width: 100%;
+            margin-top: 15rpx;
+            box-sizing: border-box;
+            position: relative;
+            height: 200rpx;
         }
         .selector {
             margin-right: 20rpx;
@@ -297,6 +328,7 @@ export default class Index extends wepy.page {
         line-height: 40rpx;
         color: #999;
         padding: 10rpx 30rpx;
+        margin-bottom: 30rpx;
     }
     .btn-save {
         position: fixed;
@@ -321,5 +353,11 @@ export default class Index extends wepy.page {
     }
     .placeholder {
         color: #ccc;
+    }
+
+    .textarea-num {
+        position: absolute;
+        right: 0rpx;
+        bottom: 0rpx;
     }
 </style>

@@ -39,80 +39,81 @@
 
 <script>
 import wepy from 'wepy';
-
+import Mixin from '../mixin';
 import { get } from '../utils/ajax';
 
 export default class goodsComponentDetail extends wepy.page {
-  config = {
-      navigationBarTitleText: '商品详情',
-  };
-  data = {
-      id: '',
-      group: '',
-      name: '',
-      title: '',
-      price: '',
-      description: '',
-      pics: '',
-  };
-  async onLoad(option) {
-      console.log('detail', option);
-      const { group = '', id = '', name = '' } = option;
-      this.group = group;
-      this.id = id;
-      this.name = name;
-      this.$apply();
-  }
-  onShow() {
-      this.loadData();
-  }
-  async loadData() {
-      const { id } = this;
-      console.log(id);
-      const { data } = await get('/goods/get', {
-          goodId: id,
-      });
-      console.log(data);
-      let { pics } = data;
-      if (pics.indexOf('?') > -1) {
-          pics = `${pics.substr(0, pics.indexOf('?'))}?w=750`;
-      } else {
-          pics += '?w=750';
-      }
-      const { title, price, description } = data;
-      const ps = description
-          .split('</p>')
-          .filter(p => p)
-          .map(p => {
-              const result = /<img src="([^<>]+)"/g.exec(p);
-              if (result) {
-                  const src = result[1].replace(/^http:/i, '').split('?');
+    mixins = [Mixin]
+    config = {
+        navigationBarTitleText: '商品详情',
+    };
+    data = {
+        id: '',
+        group: '',
+        name: '',
+        title: '',
+        price: '',
+        description: '',
+        pics: '',
+    };
+    async onLoad(option) {
+        console.log('detail', option);
+        const { group = '', id = '', name = '' } = option;
+        this.group = group;
+        this.id = id;
+        this.name = name;
+        this.$apply();
+    }
+    onShow() {
+        this.loadData();
+    }
+    async loadData() {
+        const { id } = this;
+        console.log(id);
+        const { data } = await get('/goods/get', {
+            goodId: id,
+        });
+        console.log(data);
+        let { pics } = data;
+        if (pics.indexOf('?') > -1) {
+            pics = `${pics.substr(0, pics.indexOf('?'))}?w=750`;
+        } else {
+            pics += '?w=750';
+        }
+        const { title, price, description } = data;
+        const ps = description
+            .split('</p>')
+            .filter(p => p)
+            .map(p => {
+                const result = /<img src="([^<>]+)"/g.exec(p);
+                if (result) {
+                    const src = result[1].replace(/^http:/i, '').split('?');
 
-                  return {
-                      type: 'img',
-                      src: `${src[0]}?w=750`,
-                  };
-              }
-              return {
-                  type: 'text',
-                  content: `${p}</p>`,
-              };
-          });
-      Object.assign(this, {
-          title,
-          price,
-          description: ps,
-          pics,
-      });
-      this.$apply();
-  }
-  toEdit() {
-      wepy.navigateTo({
-          url: `goodsComponentAdd?group=${this.group}&id=${this.id}&name=${
-              this.name
-          }`,
-      });
-  }
+                    return {
+                        type: 'img',
+                        src: `${src[0]}?w=750`,
+                    };
+                }
+                return {
+                    type: 'text',
+                    content: `${p}</p>`,
+                };
+            });
+        Object.assign(this, {
+            title,
+            price,
+            description: ps,
+            pics,
+        });
+        this.$apply();
+    }
+    toEdit() {
+        wepy.navigateTo({
+            url: `goodsComponentAdd?group=${this.group}&id=${this.id}&name=${
+                this.name
+            }`,
+        });
+    }
 }
 </script>
 

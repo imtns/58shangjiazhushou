@@ -19,10 +19,11 @@
 import wepy from 'wepy';
 
 import { sleep, alert, filteremoji } from '../utils';
-
+import Mixin from '../mixin';
 import { post } from '../utils/ajax';
 
 export default class Feedback extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '意见反馈',
     }

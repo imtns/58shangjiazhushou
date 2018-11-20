@@ -25,10 +25,11 @@
 import wepy from 'wepy';
 
 import { get } from '../utils/ajax';
-
+import Mixin from '../mixin';
 import { toast } from '../utils';
 
 export default class PaymentRecord extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '收款记录',
     }

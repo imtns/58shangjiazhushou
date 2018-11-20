@@ -27,13 +27,13 @@
             </view>
         </view>
         <view class="visitor-action">
-            <view class="has-mobile" wx:if="{{visitInfo.mobile}}" @tap="bindPhoneCall({{visitInfo.mobile}})">拨打电话</view>
+            <view class="has-mobile" wx:if="{{visitInfo.mobile}}" @tap="bindPhoneCall" data-mobile="{{visitInfo.mobile}}">拨打电话</view>
             <view class="call" wx:else>拨打电话</view>
             <navigator url="../packageChat/wechat/chat?contact={{visitInfo.chatToken}}&nickName={{visitInfo.nickName}}" class="send-msg" open-type="navigate" hover-class="none" @tap="sendMsg">发送信息</navigator>
         </view>
         <view class="visitor-log" wx:if="{{visitInfo.actions.length > 0}}">当前访客的行为记录</view>
         <view class="visitor-list" wx:if="{{visitInfo.actions.length > 0}}">
-            <view class="item" wx:for="{{visitInfo.actions}}">
+            <view class="item" wx:for="{{visitInfo.actions}}" wx:key="index">
                 <text class="time">{{item.createTime}}</text>
                 <text class="action">{{item.action}}</text>
             </view>
@@ -44,12 +44,15 @@
 <script>
 import wepy from 'wepy';
 import { get } from '../utils/ajax';
-import { toast } from '../utils/index';
+import { toast } from '../utils';
+import { makeTelCall } from '../utils/service';
 import { CONSUMER_INFO } from '../utils/url';
 import { globalData } from '../utils/globalData';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { SendClickLog } from '../utils/maidian';
+import Mixin from '../mixin';
 
 export default class visitorInfo extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '访客信息',
     }
@@ -73,18 +76,12 @@ export default class visitorInfo extends wepy.page {
         },
     }
     methods = {
-        async bindPhoneCall (mobile) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_visitorInfo_call');
-            const sendData = { mobile: mobile, cardid: this.cardId };
-            const { data, msg, state } = await get('/other/encrypt/phone', sendData);
-            if (state !== 100) {
-                toast(msg);
-                return;
-            }
-            wepy.makePhoneCall({ phoneNumber: data });
+        bindPhoneCall (e) {
+            SendClickLog('sjzh_click_visitorInfo_call');
+            makeTelCall(e);
         },
         sendMsg() {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_visitorInfo_sendMsg');
+            SendClickLog('sjzh_click_visitorInfo_sendMsg');
         },
     }
     onLoad (option) {

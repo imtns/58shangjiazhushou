@@ -63,7 +63,7 @@
 import wepy from 'wepy';
 import globalService from '../utils/globalService';
 import { alert } from '../utils';
-
+import Mixin from '../mixin';
 import CouponMixin from '../mixin/coupon';
 
 export default class Index extends wepy.page {
@@ -71,7 +71,7 @@ export default class Index extends wepy.page {
         navigationBarTitleText: '生效时间',
     }
 
-    mixins = [CouponMixin]
+    mixins = [Mixin, CouponMixin]
 
     data = {
         limitStart: '',

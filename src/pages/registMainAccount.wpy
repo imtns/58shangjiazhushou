@@ -65,12 +65,14 @@
 import wepy from 'wepy';
 
 import { sleep, alert } from '../utils';
+import Mixin from '../mixin';
 
 import RemindBar from '../components/RemindBar';
 
 import UploaderCom from '../components/UploaderCom';
 
 export default class RegistMainAccount extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '注册',
     }

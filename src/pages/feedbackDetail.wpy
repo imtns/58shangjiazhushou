@@ -46,8 +46,10 @@
 
 <script>
 import wepy from 'wepy';
+import Mixin from '../mixin';
 
 export default class FeedbackDetail extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '优享小程序介绍',
     }

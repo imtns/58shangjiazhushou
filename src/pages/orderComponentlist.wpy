@@ -50,8 +50,10 @@ import wepy from 'wepy';
 import { alert, toast } from '../utils';
 import { get } from '../utils/ajax';
 import EmptyPage from '../components/EmptyPage';
+import Mixin from '../mixin';
 
 export default class ArticleComponentList extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '预约列表',
         disableScroll: true,

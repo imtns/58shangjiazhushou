@@ -13,8 +13,10 @@
 import wepy from 'wepy';
 
 import { sleep } from '../utils';
+import Mixin from '../mixin';
 
 export default class Index extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '登录常见问题',
     }

@@ -1,7 +1,7 @@
 import wepy from 'wepy';
 import { toast, picSrcDomain } from '../../utils';
 import { get, post } from '../../utils/ajax';
-import { getUid, SendClickLog } from '../../utils/maidian';
+import { SendClickLog } from '../../utils/maidian';
 import {
     ACCEPT_ORDER,
     DELIVER_ORDER,
@@ -80,12 +80,7 @@ export default class OrderMixin extends wepy.mixin {
                 // this.orderList = [];
                 this.sendParams.pageNum = 1;
             }
-            SendClickLog(
-                'wxf03e52adc4b13448',
-                getUid(),
-                '{}',
-                `sjzh_click_orderList_status_${id}`,
-            );
+            SendClickLog(`sjzh_click_orderList_status_${id}`);
             this.noMore = false;
             const mpId = wepy.getStorageSync('current_mpid');
             this.sendParams = Object.assign({}, this.sendParams, {

@@ -6,8 +6,10 @@
 <script>
 import wepy from 'wepy';
 import { getNetStatus, alertP } from '../utils';
+import Mixin from '../mixin';
 
 export default class VideoPlay extends wepy.page {
+    mixins = [Mixin]
     config = {
         enablePullDownRefresh: false,
         disableScroll: true,

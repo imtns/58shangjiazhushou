@@ -12,9 +12,11 @@ import { toast } from '../utils/index';
 
 import { get, post } from '../utils/ajax';
 import { PUSN_SET_UP, TO_PUSN_SET_UP } from '../utils/url';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { SendClickLog } from '../utils/maidian';
+import Mixin from '../mixin';
 
 export default class NoticeSet extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '通知设置',
     }
@@ -27,7 +29,7 @@ export default class NoticeSet extends wepy.page {
     methods = {
         async switchchange(e) {
             const { index } = e.currentTarget.dataset;
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_noticeSet_${index}`);
+            SendClickLog(`sjzh_click_noticeSet_${index}`);
             const { value } = e.detail;
             if (value) {
                 this.noticeSet[index].value = 1;

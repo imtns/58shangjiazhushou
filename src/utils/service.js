@@ -1,6 +1,11 @@
+import wepy from 'wepy';
 import { get } from './ajax';
-import { GET_ASSIST_AUTH, LOAD_ASSIST_AUTH_LIST } from './url';
-import { picSrcDomain } from './index';
+import {
+    GET_ASSIST_AUTH,
+    LOAD_ASSIST_AUTH_LIST,
+    REGIST_PRE_CHECK,
+} from './url';
+import { picSrcDomain, toast } from './index';
 
 const store = {
     openId: '',
@@ -66,3 +71,22 @@ export const getUnionId = async () => {
     const { wechatUnionId } = assistInfo;
     return wechatUnionId;
 };
+
+/**
+ * 封装400电话
+ *
+ * @param {Object event} e 事件对象
+ */
+export const makeTelCall = async (e) => {
+    const { mobile } = e.currentTarget.dataset;
+    const cardid = wepy.getStorageSync('current_cardId');
+    const sendData = { mobile, cardid };
+    const { data, msg, state } = await get('/other/encrypt/phone', sendData);
+    if (state !== 100) {
+        toast(msg);
+        return;
+    }
+    wepy.makePhoneCall({ phoneNumber: data });
+};
+
+export const getRegistPreCheck = async () => get(REGIST_PRE_CHECK);

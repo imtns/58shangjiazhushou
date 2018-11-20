@@ -32,12 +32,14 @@ import wepy from 'wepy';
 
 import { toast, alert } from '../utils';
 import { get } from '../utils/ajax';
+import Mixin from '../mixin';
 import * as globalService from '../utils/globalService';
 
 import Pop from '../components/Dialog';
 import EmptyPage from '../components/EmptyPage';
 
 export default class goodsComponentGroup extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '编辑分类',
     };

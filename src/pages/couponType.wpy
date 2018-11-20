@@ -53,9 +53,11 @@
 import wepy from 'wepy';
 
 import globalService from '../utils/globalService';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { SendClickLog } from '../utils/maidian';
+import Mixin from '../mixin';
 
 export default class Index extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '优惠券类型',
     }
@@ -69,7 +71,7 @@ export default class Index extends wepy.page {
 
     methods = {
         dataAction(prop, v) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_couponType_${v}`);
+            SendClickLog(`sjzh_click_couponType_${v}`);
             console.log(v);
             let value = v;
             if (prop === 'couponType') {

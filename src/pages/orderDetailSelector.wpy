@@ -3,8 +3,10 @@
 </template>
 <script>
 import wepy from 'wepy';
+import Mixin from '../mixin';
 
 export default class orderDetailCreate extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '编辑文章',
     };

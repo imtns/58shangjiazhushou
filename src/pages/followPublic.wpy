@@ -10,8 +10,10 @@
 
 <script>
 import wepy from 'wepy';
+import Mixin from '../mixin';
 
 export default class Index extends wepy.page {
+    mixins = [Mixin]
     data = {
         isIphoneX: false,
     }

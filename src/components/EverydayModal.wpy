@@ -36,7 +36,7 @@
      * @desc 每日一言弹窗
      */
     import wepy from 'wepy';
-    import { getUid, SendClickLog } from '../utils/maidian';
+    import { SendClickLog } from '../utils/maidian';
     import { get } from '../utils/ajax';
     import { getTmpFilePath, toast } from '../utils/index';
 
@@ -278,7 +278,7 @@
 
         trackClickLog(clickLog) {
             if (clickLog) {
-                SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_everyday_${clickLog}`);
+                SendClickLog(`sjzh_click_everyday_${clickLog}`);
             }
         }
     }

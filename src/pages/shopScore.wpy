@@ -50,8 +50,10 @@ import wepy from 'wepy';
 import { alertP } from '../utils';
 import { shopScore } from '../utils/config';
 import { post } from '../utils/ajax';
+import Mixin from '../mixin';
 
 export default class Index extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '店铺评分',
     }
