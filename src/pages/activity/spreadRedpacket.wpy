@@ -140,7 +140,7 @@
          * 绘制背景图
          */
         async drawBackground() {
-            const src = 'http://img.58cdn.com.cn/lbg/jianzhan/images/redpacket-bg.png';
+            const src = 'https://img.58cdn.com.cn/lbg/jianzhan/images/redpacket-bg.png';
             this.draw.background.dx = 0;
             this.draw.background.dy = 0;
             this.draw.background.dWidth = this.draw.width;
@@ -156,7 +156,8 @@
             let src;
 
             const tempUrls = arr.map(async item => {
-                const tempUrl = await getTmpFilePath(`${picSrcDomain()}/${item.url}`);
+                // const tempUrl = await getTmpFilePath(`${picSrcDomain()}/${item.url}`);
+                const tempUrl = await getTmpFilePath(`https://pic1.58cdn.com.cn/${item.url}`);
                 return tempUrl;
             });
 
