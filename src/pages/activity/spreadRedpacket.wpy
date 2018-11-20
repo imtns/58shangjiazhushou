@@ -23,7 +23,7 @@
         <view class="spread-footer">
             <text class="text" @tap="triggleRule('1')">规则说明<text class="icon">&gt;</text></text>
         </view>
-        <view hidden="{{ hiddenRule }}" class="spread-mask">
+        <view wx:if="{{ !hiddenRule }}" class="spread-mask">
             <view class="spread-modal">
                 <view class="spread-modal-title">规则说明</view>
                 <text class="spread-modal-close" @tap="triggleRule('2')"></text>
@@ -45,7 +45,7 @@
 </template>
 <script>
     import wepy from 'wepy';
-    import { getTmpFilePath, toast, picSrcDomain } from '../../utils';
+    import { getTmpFilePath, toast } from '../../utils';
     import { SPREAD_REDPACKET } from '../../utils/config';
     import { LOAD_SPREADRP_INFO } from '../../utils/url';
     import { get } from '../../utils/ajax';
@@ -135,6 +135,8 @@
 
             this.loaded = true;
             this.$apply();
+
+            this.$invoke('miniprogram-drawimage', 'test');
         }
         /**
          * 绘制背景图
@@ -287,7 +289,7 @@
         background: url('#{$requestPath}/#{$pic}.png') center no-repeat;
         background-size: $size;
     }
-
+    
     $requestPath: 'http://img.58cdn.com.cn/lbg/jianzhan/images';
     .spread-panel {
         position: fixed;
