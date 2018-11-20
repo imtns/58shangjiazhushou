@@ -72,11 +72,13 @@
 import wepy from 'wepy';
 import { picSrcDomain, toast } from '../utils';
 import { get } from '../utils/ajax';
-import { getUid, SendClickLog } from '../utils/maidian';
+import Mixin from '../mixin';
+import { SendClickLog } from '../utils/maidian';
 
 const appinfoApi = '/mplogic/get';
 
 export default class AppInfo extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '小程序信息',
     }
@@ -141,7 +143,7 @@ export default class AppInfo extends wepy.page {
     }
     methods = {
         bindClickPreview (qrcodeUrl) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_appinfo_youxiang_code');
+            SendClickLog('sjzh_click_appinfo_youxiang_code');
             wepy.previewImage({
                 urls: [picSrcDomain() + qrcodeUrl],
             });

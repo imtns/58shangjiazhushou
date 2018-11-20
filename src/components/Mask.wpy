@@ -1,5 +1,26 @@
 <template>
-
+    <view class="mask-wrapper" wx:if="{{show}}">
+        <block wx:if="{{type == 'home'}}">
+            <view class="mask1">
+                <image class="icon1 absolute" mode="aspectFit" src="/pages/assets/mask/icon1.png"></image>
+                <image class="tip1 absolute"  mode="aspectFit" src="/pages/assets/mask/tip1.png"></image>
+                <image class="line1 absolute" mode="aspectFit" src="/pages/assets/mask/line.png"></image>
+            </view>
+        </block>
+        <block wx:else>
+            <view class="mask2" wx:if="{{step=='1'}}">
+                <image class="icon2 absolute" mode="aspectFit" src="/pages/assets/mask/icon2.png"></image>
+                <image class="tip2 absolute" mode="aspectFit" src="/pages/assets/mask/tip2.png"></image>
+                <image class="line2 absolute" mode="aspectFit" src="/pages/assets/mask/line2.png"></image>
+            </view>
+            <view class="mask3" wx:if="{{step=='2'}}">
+                <image class="icon3 absolute" mode="aspectFit" src="/pages/assets/mask/icon3.png"></image>
+                <image class="tip3 absolute" mode="aspectFit" src="/pages/assets/mask/tip3.png"></image>
+                <image class="line3 absolute" mode="aspectFit" src="/pages/assets/mask/line2.png"></image>
+            </view>
+        </block>
+        <image class="iknow" mode="aspectFit" src="/pages/assets/mask/iknow.png" @tap="iKnow"></image>
+    </view>
 </template>
 
 <script>
@@ -20,13 +41,13 @@ export default class Mask extends wepy.component {
       iKnow() {
           if (this.type === 'home') {
               // 首页的引导层，mask是设置首页显示的表示，cardMask是名片页显示的表示
-              //   wx.setStorageSync('mask', true);
+              wx.setStorageSync('mask', true);
               wx.setStorageSync('cardMask', true);
               this.show = false;
           }
           if (this.step === '2') {
               this.show = false;
-              //   wx.setStorageSync('cardMask', false);
+              wx.setStorageSync('cardMask', false);
           }
           if (this.step === '1' && this.type !== 'home') {
               this.step = '2';
@@ -37,5 +58,88 @@ export default class Mask extends wepy.component {
 </script>
 
 <style lang="scss">
-
+.mask-wrapper {
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  .absolute{
+      position: absolute;
+  }
+  .mask1 {
+    .icon1 {
+      width: 170rpx;
+      height: 170rpx;
+      top: 263rpx;
+      left: 46rpx;
+    }
+    .line1 {
+      top: 315rpx;
+      left: 237rpx;
+      width: 155rpx;
+      height: 144rpx;
+    }
+    .tip1 {
+      width: 448rpx;
+      height: 36rpx;
+      top: 497rpx;
+      left: 157rpx;
+    }
+  }
+  .mask2 {
+    .icon2 {
+      width: 140rpx;
+      height: 140rpx;
+      top: 515rpx;
+      left: 50rpx;
+    }
+    .line2 {
+      top: 466rpx;
+      left: 230rpx;
+      width: 155rpx;
+      height: 144rpx;
+    }
+    .tip2 {
+      top: 0;
+      left: 0;
+      width: 390rpx;
+      height: 36rpx;
+      top: 400rpx;
+      left: 130rpx;
+    }
+  }
+  .mask3 {
+    .icon3 {
+      width: 140rpx;
+      height: 140rpx;
+      top: 515rpx;
+      left: 220rpx;
+    }
+    .line3 {
+      top: 466rpx;
+      left: 394rpx;
+      width: 155rpx;
+      height: 144rpx;
+    }
+    .tip3 {
+      top: 0;
+      left: 0;
+      width: 508rpx;
+      height: 38rpx;
+      top: 400rpx;
+      left: 180rpx;
+    }
+  }
+  .iknow {
+    width: 302rpx;
+    height: 89rpx;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 866rpx;
+  }
+}
 </style>

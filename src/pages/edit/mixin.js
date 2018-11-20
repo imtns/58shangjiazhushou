@@ -113,7 +113,7 @@ export default class Mixin extends wepy.mixin {
             if (confirm) {
                 console.log('跳转');
                 wepy.navigateTo({
-                    url: `/pages/cropper?url=${tempFilePaths[0]}&ratio=4,3`,
+                    url: `/pages/cropper?url=${tempFilePaths[0]}&ratio=4,3&onlineImage=true`,
                 });
                 return;
             }

@@ -19,10 +19,12 @@
 import wepy from 'wepy';
 import { CARD_FIRST_EDIT } from '../utils/url';
 import { get, post } from '../utils/ajax';
+import Mixin from '../mixin';
 import { firstStyle, secondStyle } from '../utils/introData';
 import { getTmpFilePath, alert } from '../utils/index';
 
 export default class choseImageStyle extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '选择图片样式',
         usingComponents: {
@@ -165,7 +167,7 @@ export default class choseImageStyle extends wepy.page {
                 maxWidth: 750,
                 radius: 4,
                 bgColor: '#4E88FF',
-                padding: '3 24 3 24',
+                padding: '3 15 3 15',
                 lineHeight: 32,
             },
             {

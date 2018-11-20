@@ -13,9 +13,11 @@
 
 <script>
 import wepy from 'wepy';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { SendClickLog } from '../utils/maidian';
+import Mixin from '../mixin';
 
 export default class myBizCardSave extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '选择样式',
     }
@@ -24,19 +26,19 @@ export default class myBizCardSave extends wepy.page {
     }
     methods = {
         checkBizCard() {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_myBizCardSave_checkBizCard');
+            SendClickLog('sjzh_click_myBizCardSave_checkBizCard');
             wepy.navigateTo({
                 url: '/pages/myBizCard',
             });
         },
         openPay() {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_myBizCardSave_openPay');
+            SendClickLog('sjzh_click_myBizCardSave_openPay');
             wepy.navigateTo({
                 url: '/pages/OpenPay',
             });
         },
         returnHome() {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_myBizCardSave_returnHome');
+            SendClickLog('sjzh_click_myBizCardSave_returnHome');
             wepy.switchTab({
                 url: '/pages/home',
             });

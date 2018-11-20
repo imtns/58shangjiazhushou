@@ -86,18 +86,26 @@
 
 <script>
 import wepy from 'wepy';
-import { picSrcDomain, filteremoji, toast, globalService, alertP, getNetStatus } from '../utils';
+import {
+    picSrcDomain,
+    filteremoji,
+    toast,
+    globalService,
+    alertP,
+    getNetStatus,
+    uploadImage,
+} from '../utils';
 import { get } from '../utils/ajax';
-import { getUid, SendClickLog } from '../utils/maidian';
+import Mixin from '../mixin';
+import { SendClickLog } from '../utils/maidian';
 
-const host = 'https://yaofa.58.com';
-const uploadApi = `${host}/fileUpload`;
 const provinceApi = '/local/provinces';
 const cityApi = '/local/citys/';
 const appinfoApi = '/mplogic/get';
 const saveAppApi = '/mplogic/modifympinfo';
 
 export default class AppEdit extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '小程序编辑',
     }
@@ -207,7 +215,7 @@ export default class AppEdit extends wepy.page {
             this.updateForm({ telphone });
         },
         async setLocation () {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_editapp_location');
+            SendClickLog('sjzh_click_editapp_location');
             const { address, latitude, longitude } = await wepy.chooseLocation();
             this.updateForm({ address, addressLatitude: latitude, addressLongitude: longitude });
         },
@@ -248,23 +256,12 @@ export default class AppEdit extends wepy.page {
     }
 
     async uploadLogo(tempPath) {
-        try {
-            const response = await wepy.uploadFile({
-                url: uploadApi,
-                filePath: tempPath,
-                name: 'content',
-            });
-            const res = JSON.parse(response.data);
-            const { state, msg, data } = res;
-            if (state === 100) {
-                this.tempLogo = tempPath;
-                this.updateForm({ headImg: data.content });
-            } else {
-                this.toast(msg);
-            }
-        } catch ({ errMsg }) {
-            this.toast(errMsg);
-        }
+        const url = await uploadImage(tempPath).catch(err => {
+            console.log(err);
+            this.toast('上传图片失败，请稍后再试');
+        });
+        this.tempLogo = tempPath;
+        this.updateForm({ headImg: url });
     }
 
     async onLoad (options) {

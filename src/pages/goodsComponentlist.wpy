@@ -49,9 +49,11 @@
 import wepy from 'wepy';
 import { alert, toast } from '../utils';
 import { get } from '../utils/ajax';
+import Mixin from '../mixin';
 import EmptyPage from '../components/EmptyPage';
 
 export default class goodsComponentList extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '商品列表',
         disableScroll: true,

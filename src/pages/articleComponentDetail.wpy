@@ -29,10 +29,11 @@
 
 <script>
 import wepy from 'wepy';
-
+import Mixin from '../mixin';
 import { get } from '../utils/ajax';
 
 export default class Index extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '文章详情',
     }

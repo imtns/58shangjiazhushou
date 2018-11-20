@@ -39,16 +39,16 @@
                     <repeat for="{{myCardItems}}" key="index" index="index" item="item">
                         <block wx:if="{{ item.id !== 'regist_qrcode' || (item.id === 'regist_qrcode' && isSalesman) }}">
                             <view class="item_box" wx:if="{{item.type == 'innerJump'}}"  @tap="toinnerJump({{item.path}})">
-                                <view class="img" style="background:url({{item.src}}) no-repeat center;"></view>
+                                <image class="img" src="{{ item.src + '?w=64&h=64&ss=1' }}"></image>
                                 <view class="text">{{item.name}}</view>
                             </view>
                         </block>
                         <navigator class="item_box" wx:if="{{item.type == 'mpJump' && item.name === '查看名片'}}" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="{{item.path + cardId }}" extra-data="" version="develop">
-                            <view class="img" style="background:url({{item.src}}) no-repeat center;"></view>
+                            <image class="img" src="{{ item.src + '?w=64&h=64&ss=1' }}"></image>
                             <view class="text">{{item.name}}</view>
                         </navigator>
                         <navigator class="item_box" wx:if="{{item.type == 'mpJump' && item.name === '线下物料'}}" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="{{item.path + '1042759818970558464'}}" extra-data="" version="develop">
-                            <view class="img" style="background:url({{item.src}}) no-repeat center;"></view>
+                            <image class="img" src="{{ item.src + '?w=64&h=64&ss=1' }}"></image>
                             <view class="text">{{item.name}}</view>
                         </navigator>
                     </repeat>
@@ -82,11 +82,13 @@ import wepy from 'wepy';
 import { CARD_HAS_CARD, CARD_HAS_DETAIL, CHECK_IS_SALESMAN } from '../utils/url';
 import { post, get } from '../utils/ajax';
 import { myCardItems } from '../utils/introData';
-import { getUid, SendClickLog } from '../utils/maidian';
+import Mixin from '../mixin';
+import { SendClickLog } from '../utils/maidian';
 import Mask from '../components/Mask';
 
 
 export default class myBizCard extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '我的名片',
     }
@@ -112,7 +114,7 @@ export default class myBizCard extends wepy.page {
     }
     methods = {
         toinnerJump(path) {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', `sjzh_click_myBizCard_${path}`);
+            SendClickLog(`sjzh_click_myBizCard_${path}`);
             if (!path) {
                 this.isShowDialogShare = true;
                 return;
@@ -128,7 +130,7 @@ export default class myBizCard extends wepy.page {
             });
         },
         createCard() {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_myBizCard_createCard');
+            SendClickLog('sjzh_click_myBizCard_createCard');
             wepy.navigateTo({
                 url: 'newBizCard',
             });
@@ -156,9 +158,9 @@ export default class myBizCard extends wepy.page {
         },
     };
     onLoad () {
-        // if (wepy.getStorageSync('cardMask')) {
-        this.maskShow = true;
-        // }
+        if (wepy.getStorageSync('cardMask')) {
+            this.maskShow = true;
+        }
         /**
          * @author zhouwunan
          */
@@ -303,16 +305,19 @@ export default class myBizCard extends wepy.page {
                     color: #333333;
                     margin-bottom: 50rpx;
                     width: 56%;
+                    line-height: 58rpx;
                 }
                 .position{
                     padding-left: 50rpx;
                     font-size: 28rpx;
                     color: #333333;
+                    line-height: 40rpx;
                 }
                 .mobile{
                     padding-left: 50rpx;
                     font-size: 28rpx;
                     color: #333333;
+                    line-height: 40rpx;
                 }
                 .picImg{
                     width: 281.2rpx;
@@ -343,32 +348,33 @@ export default class myBizCard extends wepy.page {
                         .num{
                             font-size: 46rpx;
                             color: #333333;
+                            line-height: 64rpx;
                         }
                         .type{
                             font-size: 24rpx;
                             color: #93B0D1;
+                            line-height: 34rpx;
                         }
                     }
                 }
             }
             .btns{
-                height: 344rpx;
                 display: flex;
-                white-space: warp;
                 flex-wrap: wrap;
-                padding: 10rpx 20rpx;
+                padding: 0 55rpx 40rpx;
+                justify-content: space-between;
                 .item_box{
-                    width: 25%;
+                    width: 130rpx;
                     text-align: center;
-                    padding-top: 10rpx;
+                    padding-top: 40rpx;
                     .img{
-                        width: 100%;
-                        height: 100rpx;
-                        background-size: 64rpx 64rpx !important;
+                        width: 64rpx;
+                        height: 64rpx;
                     }
                     .text{
                         font-size: 26rpx;
                         color: #333333;
+                        line-height: 36rpx;
                     }
                 }
             }

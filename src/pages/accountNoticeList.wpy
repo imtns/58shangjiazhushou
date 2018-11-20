@@ -29,10 +29,11 @@
 import wepy from 'wepy';
 
 import { sleep, toast } from '../utils/index';
-
+import Mixin from '../mixin';
 import { get } from '../utils/ajax';
 
 export default class AccountNoticeList extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '入账通知',
     }

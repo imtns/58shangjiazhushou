@@ -24,8 +24,10 @@
 import wepy from 'wepy';
 
 import { sleep, alert } from '../utils';
+import Mixin from '../mixin';
 
 export default class PayChoseTime extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '收款记录',
     }

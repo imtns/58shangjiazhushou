@@ -28,8 +28,10 @@
 import wepy from 'wepy';
 
 import { get } from '../utils/ajax';
+import Mixin from '../mixin';
 
 export default class Registed extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '注册',
     }

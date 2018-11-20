@@ -67,10 +67,15 @@ import wepy from 'wepy';
 import MessageBox from '../../components/MessageBox';
 import HelpModal from '../../components/HelpModal';
 import { SAVE_BASICINFO } from '../../utils/url';
+import { getUrlParams } from '../../utils';
 import { post } from '../../utils/ajax';
 import RegistMixin from './mixin';
 
 export default class Index extends wepy.page {
+    constructor() {
+        super();
+        this.userId = ''; // 销售的id
+    }
     mixins = [RegistMixin];
     config = {
         navigationBarTitleText: '注册信息',
@@ -89,8 +94,19 @@ export default class Index extends wepy.page {
         messageBox: MessageBox,
         helpModal: HelpModal,
     }
-    onLoad({ userId = '' }) {
-        this.userId = userId;
+    onLoad({ q = '' }) {
+        /**
+         * 扫描销售的二维码，传递的参数如下
+         * pages/regist/index?q=https%3A%2F%2Fyaofa.58.com%2Fqrcode%2FfastRegister%3FuserId%3D1111111
+         * 需要从q参数上抓取销售的二维码
+         */
+        if (q) {
+            const url = decodeURIComponent(q);
+            const params = getUrlParams(url);
+            const { userId } = params;
+            this.userId = userId;
+        }
+
         this.checkRegistStatus()
             .then(() => {
                 this.loading = false;
@@ -116,7 +132,7 @@ export default class Index extends wepy.page {
                     }
                 });
 
-                Object.assign(data, { userId: this.userId, formId });
+                Object.assign(data, { inviterUserid: this.userId, formId });
 
                 await post(SAVE_BASICINFO, data);
 

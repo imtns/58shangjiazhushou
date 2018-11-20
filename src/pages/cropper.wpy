@@ -68,6 +68,7 @@ import wepy from 'wepy';
 import { getTmpFilePath, alert } from '../utils';
 import { uploadResource } from '../utils/upload';
 import globalService from '../utils/globalService';
+import Mixin from '../mixin';
 
 const { pixelRatio } = wx.getSystemInfoSync();
 const windowWidth = 750;
@@ -101,6 +102,7 @@ let rotateCount = 0; // 旋转次数
 const getFixedNum = (num, digit = 4) => Math.ceil(num * (10 ** digit)) / (10 ** digit);
 
 export default class Cropper extends wepy.page {
+    mixins = [Mixin]
     config = {
         navigationBarTitleText: '图片裁剪',
     }
@@ -137,7 +139,7 @@ export default class Cropper extends wepy.page {
         drawL: 0,
     }
 
-    onLoad({ url, ratio, onlineImage = 'true' }) {
+    onLoad({ url, ratio, onlineImage }) {
         ctx = wx.createCanvasContext('myCanvas');
         this.onlineImage = onlineImage === 'true';
         this.$emit('crop-loadImage', decodeURIComponent(url), ratio, true);

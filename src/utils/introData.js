@@ -54,7 +54,7 @@ export const myCardItems = [{
     name: '查看名片',
     type: 'mpJump',
     path: '/pages/index58/index58?mpcardId=',
-},{
+}, {
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_visitor_logs.png',
     name: '访客记录',
     type: 'innerJump',
@@ -69,7 +69,7 @@ export const myCardItems = [{
     name: '分享名片',
     type: 'innerJump',
     path: '',
-},{
+}, {
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_edit_card.png',
     name: '编辑名片',
     type: 'innerJump',
@@ -90,7 +90,7 @@ export const myCardItems = [{
     type: 'innerJump',
     path: 'noticeSet',
 }, {
-    src: 'http://c.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/img/mycard_regist_qrcode.png',
+    src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_regist_qrcode.png',
     name: '注册码',
     type: 'innerJump',
     path: '/pages/regist/qrcode',

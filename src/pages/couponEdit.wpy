@@ -90,7 +90,7 @@ import Mixin from '../mixin';
 import { get, post } from '../utils/ajax';
 import { LOAD_COUPON, SAVE_COUPON } from '../utils/url';
 import { alert, isEmpty, toast, formatTime } from '../utils';
-import { getUid, SendClickLog } from '../utils/maidian';
+import { SendClickLog } from '../utils/maidian';
 
 import globalService from '../utils/globalService';
 
@@ -177,7 +177,7 @@ export default class Index extends wepy.page {
 
     methods = {
         async handleChooseApplyType() {
-            SendClickLog('wxf03e52adc4b13448', getUid(), '{}', 'sjzh_click_couponEdit_handleChooseApplyType');
+            SendClickLog('sjzh_click_couponEdit_handleChooseApplyType');
             const { applyTypeMap } = this;
 
             try {
