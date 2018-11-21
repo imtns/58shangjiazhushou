@@ -40,7 +40,7 @@ import Mixin from '../mixin';
 export default class visitorLogs extends wepy.page {
     mixins = [Mixin]
     config = {
-        navigationBarTitleText: '访问记录',
+        navigationBarTitleText: 'TA的访问记录',
     }
     data = {
         visitorList: [],

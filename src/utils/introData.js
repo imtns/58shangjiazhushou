@@ -55,6 +55,11 @@ export const myCardItems = [{
     type: 'mpJump',
     path: '/pages/index58/index58?mpcardId=',
 }, {
+    src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_visitor_logs.png',
+    name: '访客记录',
+    type: 'innerJump',
+    path: 'visitorLogs',
+}, {
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_edit_card.png',
     name: '编辑名片',
     type: 'innerJump',
@@ -69,12 +74,7 @@ export const myCardItems = [{
     name: '我的团队',
     type: 'innerJump',
     path: '',
-}, {
-    src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_visitor_logs.png',
-    name: '访客记录',
-    type: 'innerJump',
-    path: 'visitorLogs',
-}, {
+},  {
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_chat_msg.png',
     name: '消息',
     type: 'innerJump',
