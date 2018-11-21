@@ -16,8 +16,8 @@ export const chatContactList = async () => {
             unReadCount,
             recentMsgs,
             id,
-            portrait,
-            nickName,
+            portrait = 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/zhushou-default-avatar.png',
+            nickName = '',
         } = item;
         const lastMsg = recentMsgs && recentMsgs.length > 0 ? recentMsgs[recentMsgs.length - 1] : {};
         const {

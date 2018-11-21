@@ -5,8 +5,7 @@
             <repeat for="{{visitorList}}" key="index" index="index" item="item">
                 <view class="visitor_box" @tap="toVisitorInfo({{item.cardId}}, {{item.consumerId}})">
                     <view class="visitor_header" style="background:url({{item.portrait}}) no-repeat center"></view>
-                    <view class="visitor_name">{{item.nickName || ''}}</view>
-                    <view wx:if="{{item.gender}}" class="{{item.gender == 1 ? 'male' : 'female'}}"></view>
+                    <view class="visitor_name">{{item.nickName || ''}}<view wx:if="{{item.gender}}" class="{{item.gender == 1 ? 'male' : 'female'}}"></view></view>
                     <view class="visitor_count">
                         访问您的名片
                         <text class="visitor_num">{{item.visitCount}}</text> 
@@ -126,9 +125,15 @@ export default class visitorLogs extends wepy.page {
                 font-size: 30rpx;
                 color: #333333;
                 padding-left: 30rpx;
+                width:330rpx;
+                overflow:hidden;
+                white-space:nowrap;
+                text-overflow:ellipsis;
+                vertical-align: middle;
             }
             .male{
                 margin: 18rpx 10rpx;
+                display:inline-block;
                 width: 24rpx;
                 height: 24rpx;
                 background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_male.png) no-repeat center;
@@ -137,10 +142,12 @@ export default class visitorLogs extends wepy.page {
             }
             .female{
                 margin: 18rpx 10rpx;
+                display:inline-block;
                 width: 24rpx;
                 height: 24rpx;
                 background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_female.png) no-repeat center;
                 background-size: contain;
+                vertical-align: middle;
             }
             .visitor_count{
                 line-height: 60rpx;

@@ -1,12 +1,23 @@
 <template lang="wxml">
     <view class="container">
          <view class="regist-tip">
-            <image class="icon" mode="aspectFill" src="{{currentState == 3?'/pages/assets/regist/warn.png':'/pages/assets/regist/check.png'}}"></image>
+            <!-- 提交的资料有误 -->
+            <block wx:if="{{ currentState === -1 }}">
+                <image class="icon" mode="aspectFill" src="/pages/assets/regist/error.png"></image>
+            </block>
+            <!-- 资料认证成功 -->
+            <block wx:elif="{{ currentState === 3 }}">
+                <image class="icon" mode="aspectFill" src="/pages/assets/regist/warn.png"></image>
+            </block>
+            <!-- 资料审核中 -->
+            <block wx:else>
+                <image class="icon" mode="aspectFill" src="/pages/assets/regist/check.png"></image>
+            </block>
             <view class="tip-success">{{status[currentState].title}}</view>
             <view class="tip-text">{{status[currentState].tip}}</view>
         </view>
         <view class="regist-bottom" wx:if="{{currentState != 3}}"> 
-            <view class="button" @tap="operate">{{status[currentState].button}}</view>
+            <view class="button" @tap="handleOperate">{{status[currentState].button}}</view>
         </view>
     </view>
 </template>
@@ -14,122 +25,130 @@
 <script>
 import wepy from 'wepy';
 // import { toast, alert } from '../../utils';
-import { get } from '../../utils/ajax';
 import Mixin from '../../mixin';
+import { getRegistPreCheck } from '../../utils/service';
 
 export default class Index extends wepy.page {
-  mixins = [Mixin]
-  config = {
-      navigationBarTitleText: '注册结果',
-  };
-  data = {
-      currentState: '',
-      status: {
-          0: {
-              title: '您已注册认证成功',
-              tip: '需要购买后进行小程序创建',
-              button: '去购买',
-          },
-          1: {
-              title: '您已注册认证成功',
-              tip: '去创建已认证的小程序吧',
-              button: '去创建',
-          },
-          2: {
-              title: '您已有认证的小程序，快去创建吧',
-              tip: '',
-              button: '去创建',
-          },
-          3: {
-              title: '认证资料审核中',
-              tip: '',
-              button: '',
-          },
-      },
-  };
-  methods = {
-      operate() {
-          if (this.currentState === 0) {
-              this.buyMiniProgram();
-          } else if (this.currentState === 1 || this.currentState === 2) {
-              wepy.navigateTo({
-                  url: 'edit',
-              });
-          }
-      },
-  }
-  async onShow() {
-      try {
-          const { data } = await get('/register/preCheck');
-          const { vip, currentAuditStatus } = data;
-          let currentState = null;
+    mixins = [Mixin];
+    config = {
+        navigationBarTitleText: '注册结果',
+    };
+    data = {
+        currentState: '',
+        status: {
+            '-1': {
+                title: '您的注册信息审核失败',
+                button: '重新提交审核',
+            },
+            0: {
+                title: '您已注册认证成功',
+                tip: '需要购买后进行小程序创建',
+                button: '去购买',
+            },
+            1: {
+                title: '您已注册认证成功',
+                tip: '去创建已认证的小程序吧',
+                button: '去创建',
+            },
+            2: {
+                title: '您已有认证的小程序，快去创建吧',
+                tip: '',
+                button: '去创建',
+            },
+            3: {
+                title: '认证资料审核中',
+                tip: '',
+                button: '',
+            },
+        },
+    };
+    methods = {
+        handleOperate() {
+            if (this.currentState === 0) {
+                this.buyMiniProgram();
+            } else if (this.currentState === 1 || this.currentState === 2) {
+                wepy.navigateTo({
+                    url: 'edit',
+                });
+            } else if (this.currentState === -1) {
+                wepy.redirectTo({ url: '/pages/regist/index' });
+            }
+        },
+    };
+    async onShow() {
+        try {
+            const { data } = await getRegistPreCheck();
+            const { vip, currentAuditStatus } = data;
+            let currentState = null;
 
-          if (currentAuditStatus === 1) {
-              currentState = 3;
-          } else if (vip && currentAuditStatus === 2) {
-              const pages = this.getCurrentPages();
-              const page = pages[pages.length - 1].route;
+            if (currentAuditStatus === 1) {
+                currentState = 3;
+            } else if (vip && currentAuditStatus === 2) {
+                const pages = this.getCurrentPages();
+                const page = pages[pages.length - 1].route;
 
-              if (page === 'pages/regist/index') {
-                  currentState = 1;
-              } else {
-                  currentState = 2;
-              }
-          } else {
-              currentState = 0;
-          }
+                if (page === 'pages/regist/index') {
+                    currentState = 1;
+                } else {
+                    currentState = 2;
+                }
+            } else if (currentAuditStatus === -1) {
+                currentState = -1;
+            } else {
+                currentState = 0;
+            }
 
-          this.currentState = currentState;
-          this.$apply();
-      } catch (e) {
-          console.log(e);
-      }
-  }
+            this.currentState = currentState;
+            this.$apply();
+        } catch (e) {
+            console.log(e);
+        }
+    }
 }
 </script>
 
 <style lang="scss">
 .container {
-  width: 100%;
-  position: relative;
-  .regist-tip {
     width: 100%;
-    height: 460rpx;
-    background: white;
-    padding-top: 80rpx;
-    text-align: center;
-    .icon {
-      display: block;
-      margin: 0 auto;
-      width: 150rpx;
-      height: 150rpx;
+    position: relative;
+    .regist-tip {
+        width: 100%;
+        height: 460rpx;
+        background: white;
+        padding-top: 80rpx;
+        text-align: center;
+        .icon {
+            display: block;
+            margin: 0 auto;
+            width: 150rpx;
+            height: 150rpx;
+        }
+        .tip-success {
+            font-size: 32rpx;
+            color: #000;
+            font-weight: bold;
+            margin-top: 40rpx;
+        }
+        .tip-text {
+            font-size: 28rpx;
+            color: #999;
+            margin-top: 20rpx;
+        }
     }
-    .tip-success {
-      font-size: 32rpx;
-      color: #000;
-      font-weight: bold;
-      margin-top: 40rpx;
+    .regist-bottom {
+        margin-top: 60rpx;
+        width: 100%;
+        .button {
+            width: 690rpx;
+            height: 94rpx;
+            line-height: 94rpx;
+            background: #4e88ff;
+            color: white;
+            border-radius: 4rpx;
+            margin: 0 auto;
+            font-size: 32rpx;
+            text-align: center;
+        }
     }
-    .tip-text {
-      font-size: 28rpx;
-      color: #999;
-      margin-top: 20rpx;
-    }
-  }
-  .regist-bottom {
-    margin-top: 60rpx;
-    width: 100%;
-    .button {
-      width: 690rpx;
-      height: 94rpx;
-      line-height: 94rpx;
-      background: #4e88ff;
-      color: white;
-      border-radius: 4rpx;
-      margin: 0 auto;
-      font-size: 32rpx;
-      text-align: center;
-    }
-  }
 }
 </style>
