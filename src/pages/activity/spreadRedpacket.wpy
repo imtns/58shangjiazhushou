@@ -157,22 +157,22 @@
         async drawImgs(arr) {
             const tempImgs = [];
             let i;
-            let src;
+            let imgItem;
 
-            const tempUrls = arr.map(async item => {
-                // const tempUrl = await getTmpFilePath(`${picSrcDomain()}/${item.url}`);
-                const tempUrl = await getTmpFilePath(`https://pic1.58cdn.com.cn/${item.url}`);
-                return tempUrl;
+            const tempImgsInfo = arr.map(async item => {
+                // 为了获取其他信息，所以这里直接获取图片信息
+                const imgInfo = await this.getImageInfo(`https://pic1.58cdn.com.cn/${item.url}`);
+                return imgInfo;
             });
-
-            for await (src of tempUrls) {
-                tempImgs.push(src);
+            for await (imgItem of tempImgsInfo) {
+                tempImgs.push(imgItem);
             }
-    
             for (i = 0; i < arr.length; i += 1) {
                 this.scale(arr[i]);
                 arr[i].type = 'image';
-                arr[i].imageResource = tempImgs[i];
+                arr[i].imageResource = tempImgs[i].path;
+                arr[i].width = tempImgs[i].width;
+                arr[i].height = tempImgs[i].height;
             }
             this.draw.layers = this.draw.layers.concat(arr);
         }
@@ -193,6 +193,19 @@
             Object.keys(obj).forEach(item => {
                 if (item === 'lineClamp') return;
                 obj[item] = typeof obj[item] === 'number' ? ~~((obj[item] * 560) / 750) : obj[item];
+            });
+        }
+        async getImageInfo(src) {
+            return new Promise((resolve, reject) => {
+                wx.getImageInfo({
+                    src,
+                    success(res) {
+                        resolve(res);
+                    },
+                    fail(err) {
+                        reject(err);
+                    },
+                });
             });
         }
         methods = {
