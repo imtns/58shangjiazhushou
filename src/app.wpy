@@ -132,7 +132,11 @@ export default class extends wepy.app {
             'pages/regist/notice', // 创建小程序提示页
             'pages/regist/edit', // 创建小程序页面
             'pages/regist/guide', // 注册引导
-            'pages/staffDetail', //员工详情
+
+
+            'pages/employee/index', // 我的员工首页
+            'pages/employee/add', // 添加员工
+            'pages/staffDetail', // 员工详情
         ],
         subPackages: [
             {
