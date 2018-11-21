@@ -196,6 +196,7 @@ export default class AppEdit extends wepy.page {
                     wepy.navigateTo({
                         url: `/pages/cropper?url=${tempFilePaths[0]}&ratio=1,1`,
                     });
+                    // this.uploadLogo(tempFilePaths[0], true);
                 } else {
                     this.uploadLogo(tempFilePaths[0]);
                 }

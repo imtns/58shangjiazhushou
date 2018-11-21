@@ -1,7 +1,7 @@
 <template>
     <view class="containe">
         <view class="order-banner">
-            <image src="http://pic1.58cdn.com.cn/{{pics}}"></image>
+            <image src="http://pic1.58cdn.com.cn/{{pics}}?w=750" mode="aspectFill"></image>
         </view>
         <view class="item-height-100">
             <view class="item-base">{{serviceName}}</view>

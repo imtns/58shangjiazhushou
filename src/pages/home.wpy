@@ -2,7 +2,7 @@
     <scroll-view class="home" scroll-y style="height:100vh">
         <view class="switchEmployee" @tap="switchEmployee">
             <image mode="aspectFit" class="switchIcon" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/switchAccount.png?w=68"></image>
-            <text class="switchName">店长账号</text>
+            <text class="switchName">{{currentAccountType}}账号</text>
         </view>
         <block wx:if="{{isEmployee}}">
             <employee></employee>
@@ -196,7 +196,7 @@
             <everyday-modal :show.sync="everydayShow" :unread.sync="everydayUnread" />
             <!-- 添加到我的小程序步骤提示 -->
             <view class="add-myapp-modal" wx:if="{{showTipModal}}">
-                <view class="add-step">
+                <view class="add-step">  
                     <view class="step-text">
                         1.点击
                         <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step1.png" class="step-image1"></image>
@@ -307,9 +307,12 @@ export default class Home extends wepy.page {
       everydayIconShow: false,
       // 是否是员工
       isEmployee: false,
+
+      currentAccountType: '店长',
   };
   methods = {
       switchEmployee() {
+          this.currentAccountType = this.currentAccountType === '店长' ? '员工' : '店长';
           this.isEmployee = !this.isEmployee;
           globalData.isEmployee = this.isEmployee;
       },
