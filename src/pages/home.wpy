@@ -35,7 +35,6 @@
                             </view>
                             <view wx:else>可上传素材、提交注册信息到当前小程序</view>
                         </view>
-                        <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">小程序切换</view>
                         <image class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="aspectFit" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
                         <view class="index-block-body index-item">
                             <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
@@ -43,16 +42,8 @@
                                 <view class="item-text">{{item.text}}</view>
                             </view>
                         </view>
-                        <view wx:else>可上传素材、提交注册信息到当前小程序</view>
                     </view>
                     <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">小程序切换</view>
-                    <image class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="aspectFit" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
-                    <view class="index-block-body index-item">
-                        <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
-                            <image src="{{item.iconPath}}" class="item-img"></image>
-                            <view class="item-text">{{item.text}}</view>
-                        </view>
-                    </view>
                     <view wx:if="{{!userLogin}}">
                         <view class="unlogin">
                             <text class="login-tip">您还没有登录，授权登录后可管理小程序赚大钱</text>
@@ -190,11 +181,11 @@
                 <navigator class="toshare-action" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="/pages/index58/index58?mpcardId={{business.selected.cardId}}&businessId={{business.userId}}&from=zhushou_home" extra-data="" version="develop">
                     <button hover-class="none" form-type="submit" class="toshare-btn" data-action="share" bindtap="handleActionRoute">立即分享</button>
                 </navigator>
-            </form> 
-        </view>-->
+            </form>--> 
+        </view>
             <!-- <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{!Actfrom && !share.hasPromptToday && share.hasPerm}}">
             <button class="tomake-money" data-action="makemoney" bindtap="handleActionRoute" hover-class="none" form-type="submit"></button>
-        </form> -->
+            </form> -->
             <!-- 每日一言悬浮提示 -->
             <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{everydayIconShow}}">
                 <button class="to-everyday" @tap="handleToEveryday" hover-class="none" form-type="submit">
