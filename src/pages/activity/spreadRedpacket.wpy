@@ -1,20 +1,23 @@
 <template>
     <view class="spread-panel">
+        <!-- 背景覆盖 -->
         <view class="spread-body">
-            <view class="draw-loading" wx:if="{{!loaded}}">
+            <view class="draw-loading" wx:if="{{!finished}}">
                 <view class="draw-mask"></view>
                 <view class="spinner">
                     <view class="bounce"/>
                 </view>
             </view>
-            <drawimage
-                wx:if="{{loaded}}"
-                id="{{draw.id}}"
-                width="{{draw.width}}"
-                height="{{draw.height}}"
-                background="{{draw.background}}"
-                layers="{{draw.layers}}"
-                @toTempFile="handleToTempFile"></drawimage>
+            <view class="draw-panel">
+                <drawimage
+                    wx:if="{{loaded}}"
+                    id="{{draw.id}}"
+                    width="{{draw.width}}"
+                    height="{{draw.height}}"
+                    background="{{draw.background}}"
+                    layers="{{draw.layers}}"
+                    @toTempFile="handleToTempFile"></drawimage>
+            </view>
         </view>
         <view class="spread-btn-group">
             <button class="spread-btn-item" @tap="handleShareFriend">分享给好友</button>
@@ -23,7 +26,8 @@
         <view class="spread-footer">
             <text class="text" @tap="triggleRule('1')">规则说明<text class="icon">&gt;</text></text>
         </view>
-        <view wx:if="{{ !hiddenRule }}" class="spread-mask">
+        <view class="spread-rule {{showRule?'':'hidden'}}">
+            <view class="spread-mask" @tap="triggleRule('2')"></view>
             <view class="spread-modal">
                 <view class="spread-modal-title">规则说明</view>
                 <text class="spread-modal-close" @tap="triggleRule('2')"></text>
@@ -63,7 +67,7 @@
             finished: false, // 加载canvas会阻断线程，所以当加载完canvas后再进行查看规则和分享操作
             loaded: false, // 图片加载中
             isOpenWritePhotosAlbum: true, // 默认用户打开了访问相册权限
-            hiddenRule: true, // 是否隐藏规则
+            showRule: false, // 是否隐藏规则
             draw: {
                 id: 'spread-canvas',
                 imageSrc: '',
@@ -197,7 +201,8 @@
              */
             triggleRule(type) {
                 if (!this.finished) return;
-                this.hiddenRule = +type === 2;
+                this.showRule = +type === 1;
+                this.$apply();
             },
             /**
              * 绘制完成，保存地址
@@ -206,6 +211,7 @@
                 const { tempFilePath } = e.detail;
                 this.draw.imageSrc = tempFilePath;
                 this.finished = true;
+                this.$apply();
             },
             /**
              * 分享给好友
@@ -287,14 +293,17 @@
         background: url('#{$requestPath}/#{$pic}.png') center no-repeat;
         background-size: $size;
     }
-    
-    $requestPath: 'http://img.58cdn.com.cn/lbg/jianzhan/images';
-    .spread-panel {
-        position: fixed;
+    @mixin fullpage($position: fixed) {
+        position: $position;
         top: 0;
         bottom: 0;
         left: 0;
         right: 0;
+    }
+    
+    $requestPath: 'http://img.58cdn.com.cn/lbg/jianzhan/images';
+    .spread-panel {
+        @include fullpage();
         @include bg('spreadRd-share-bg');
     }
     .spread-body {
@@ -334,13 +343,12 @@
             margin-left: 6rpx;
         }
     }
-    .spread-mask {
+    .spread-rule {
         z-index: 2;
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        @include fullpage();
+    }
+    .spread-mask {
+        @include fullpage(absolute);
         background: rgba(0, 0, 0, .7);
     }
     .spread-modal {
@@ -379,6 +387,12 @@
             padding-left: 114rpx;
             color: #666;
         }
+    }
+    .hidden {
+        display: none;
+    }
+    .draw-panel {
+        @include fullpage(absolute);
     }
     .draw-loading {
         background: transparent;

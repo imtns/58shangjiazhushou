@@ -301,7 +301,7 @@ Component({
         ctx.draw(false, () => {
             setTimeout(() => {
                 drawed.call(this);
-            }, 600);
+            }, 700);
         });
 
         setTimeout(() => {
