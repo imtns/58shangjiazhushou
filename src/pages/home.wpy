@@ -1,117 +1,125 @@
 <template>
     <scroll-view class="home" scroll-y style="height:100vh">
-        <guideMask :show.sync="maskShow" :type="maskType"></guideMask>
-        <actionDialog wx:if="{{showEditModal}}" :syncEditShow.sync="showEditModal" :syncEditData.sync="editDialog"></actionDialog>
-        <view class="add-myapp" wx:if="{{showTip}}" @tap="showAddStep">
-            <view class="triangle"></view>
-            点击【添加到我的小程序】，快捷访问接单 >
+        <view class="switchEmployee" @tap="switchEmployee">
+            <image mode="aspectFit" class="switchIcon" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/switchAccount.png?w=68"></image>
+            <text class="switchName">店长账号</text>
         </view>
-        <view class="index-loaded-header">
-            <view class="welcome-block">
-                <view wx:if="{{userLogin}}" class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
-                <view wx:else class="welcome-title">欢迎来到58小程序管理平台</view>
-                <view @tap="changeIdentity" class="item-switch">账号切换</view>
+        <block wx:if="{{isEmployee}}">
+            <employee></employee>
+        </block>
+        <block wx:else>
+            <guideMask :show.sync="maskShow" :type="maskType"></guideMask>
+            <actionDialog wx:if="{{showEditModal}}" :syncEditShow.sync="showEditModal" :syncEditData.sync="editDialog"></actionDialog>
+            <view class="add-myapp" wx:if="{{showTip}}" @tap="showAddStep">
+                <view class="triangle"></view>
+                点击【添加到我的小程序】，快捷访问接单 >
             </view>
-            <view class="item-detail">
-                <view wx:if="{{userLogin}}">
-                    <view class="item-name" :class="{logoPadding : business.mpCount > 0 }">{{ business.miniProgramName }}</view>
-                    <view class="item-title" :class="{logoPadding : business.mpCount > 0 }">
-                        <view class="star-box" wx:if="{{ business.selected.score }}">
-                            <view class="unstar-list">
-                                <view class="icon-unstar" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
+            <view class="index-loaded-header">
+                <view class="welcome-block">
+                    <view wx:if="{{userLogin}}" class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
+                    <view wx:else class="welcome-title">欢迎来到58小程序管理平台</view>
+                    <view @tap="changeIdentity" class="item-switch">账号切换</view>
+                </view>
+                <view class="item-detail">
+                    <view wx:if="{{userLogin}}">
+                        <view class="item-name" :class="{logoPadding : business.mpCount > 0 }">{{ business.miniProgramName }}</view>
+                        <view class="item-title" :class="{logoPadding : business.mpCount > 0 }">
+                            <view class="star-box" wx:if="{{ business.selected.score }}">
+                                <view class="unstar-list">
+                                    <view class="icon-unstar" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
+                                </view>
+                                <view class="star-list" style="width:{{ 30 * (~~(business.selected.score / 1)) + 22 * (business.selected.score % 1) }}rpx">
+                                    <view class="icon-star" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
+                                </view>
+                                <view class="star-box-title" @tap="shopScore">店铺评分</view>
                             </view>
-                            <view class="star-list" style="width:{{ 30 * (~~(business.selected.score / 1)) + 22 * (business.selected.score % 1) }}rpx">
-                                <view class="icon-star" wx:for="{{ [0, 1, 2, 3, 4] }}" wx:key="index"></view>
+                            <view wx:else>可上传素材、提交注册信息到当前小程序</view>
+                        </view>
+                        <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">小程序切换</view>
+                        <image class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="aspectFit" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+                        <view class="index-block-body index-item">
+                            <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
+                                <image src="{{item.iconPath}}" class="item-img"></image>
+                                <view class="item-text">{{item.text}}</view>
                             </view>
-                            <view class="star-box-title" @tap="shopScore">店铺评分</view>
                         </view>
-                        <view wx:else>可上传素材、提交注册信息到当前小程序</view>
-                    </view>
-                    <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">小程序切换</view>
-                    <image class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
-                    <view class="index-block-body index-item">
-                        <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
-                            <image src="{{item.iconPath}}" class="item-img"></image>
-                            <view class="item-text">{{item.text}}</view>
+                        <view bindtap="checkProgress" class="item-detail-progress">
+                            <view class="current-progress"></view>
+                            <view class="remind-title">{{ business.progressText}}</view>
                         </view>
                     </view>
-                    <view bindtap="checkProgress" class="item-detail-progress">
-                        <view class="current-progress"></view>
-                        <view class="remind-title">{{ business.progressText}}</view>
-                    </view>
-                </view>
-                <view wx:if="{{!userLogin}}">
-                    <view class="unlogin">
-                        <text class="login-tip">您还没有登录，授权登录后可管理小程序赚大钱</text>
-                        <view wx:if="{{editDialog.action=='tologin'}}" class="login-btn" @tap="handleLogin">立即登录</view>
-                    </view>
-                    <view class="index-block-body index-item" @tap="handleLogin">
-                        <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index">
-                            <image src="{{item.iconPath}}" class="item-img"></image>
-                            <view class="item-text">{{item.text}}</view>
+                    <view wx:if="{{!userLogin}}">
+                        <view class="unlogin">
+                            <text class="login-tip">您还没有登录，授权登录后可管理小程序赚大钱</text>
+                            <view wx:if="{{editDialog.action=='tologin'}}" class="login-btn" @tap="handleLogin">立即登录</view>
+                        </view>
+                        <view class="index-block-body index-item" @tap="handleLogin">
+                            <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index">
+                                <image src="{{item.iconPath}}" class="item-img"></image>
+                                <view class="item-text">{{item.text}}</view>
+                            </view>
+                        </view>
+                        <view class="item-detail-progress" @tap="handleLogin">
+                            <view class="current-progress"></view>
+                            <view class="remind-title">{{ business.progressText}}</view>
                         </view>
                     </view>
-                    <view class="item-detail-progress" @tap="handleLogin">
-                        <view class="current-progress"></view>
-                        <view class="remind-title">{{ business.progressText}}</view>
+                </view>
+            </view>
+            <view class="index-block" wx:for="{{nItems}}" wx:for-item="nItem" wx:key="{{nItem.title}}">
+                <view class="index-block-title">{{nItem.title}}</view>
+                <view wx:if="{{userLogin}}" class="index-block-body">
+                    <view class="index-loaded-item new-margin {{item.text === '店铺装修' ? 'shangxin' : ''}}" wx:for="{{nItem.items}}" wx:key="index" bindtap="link({{item.text}})">
+                        <image src="{{item.iconPath}}" class="item-img"></image>
+                        <view class="item-text">{{item.text}}</view>
+                    </view>
+                </view>
+                <view wx:if="{{!userLogin}}" class="index-block-body" @tap="handleLogin">
+                    <view class="index-loaded-item new-margin {{item.text === '店铺装修' ? 'shangxin' : ''}}" wx:for="{{nItem.items}}" wx:key="index" bindtap="link({{item.text}})">
+                        <image src="{{item.iconPath}}" class="item-img"></image>
+                        <view class="item-text">{{item.text}}</view>
                     </view>
                 </view>
             </view>
-        </view>
-        <view class="index-block" wx:for="{{nItems}}" wx:for-item="nItem" wx:key="{{nItem.title}}">
-            <view class="index-block-title">{{nItem.title}}</view>
-            <view wx:if="{{userLogin}}" class="index-block-body">
-                <view class="index-loaded-item new-margin {{item.text === '店铺装修' ? 'shangxin' : ''}}" wx:for="{{nItem.items}}" wx:key="index" bindtap="link({{item.text}})">
-                    <image src="{{item.iconPath}}" class="item-img"></image>
-                    <view class="item-text">{{item.text}}</view>
+            <view wx:if="{{business.changeMP === true}}" class="mask" @tap="bindHideMask"></view>
+            <view wx:if="{{business.changeMP === true }}" class="mpBox">
+                <view class="default">
+                    <view class="name logoPadding">{{business.miniProgramName}}</view>
+                    <view>默认</view>
+                    <image class="haslogo" mode="aspectFit" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+                </view>
+                <view class="otherBox">
+                    <repeat for="{{business.mps}}" key="index" index="index" item="item">
+                        <view class="mpbox">
+                            <view bindtap="selectMp({{item}})" class="mpItem logoPadding" data-appid="{{item.id}}" :class="{ 'active' : item.id === business.chosedId}">{{item.nickName || item.id}}</view>
+                            <image class="haslogo" mode="aspectFit" src="{{item.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+                        </view>
+                    </repeat>
+                </view>
+                <view class="btnBox">
+                    <view class="cancle" @tap="bindHideMask">取消</view>
+                    <view class="confirm" :class="{ 'active' : business.canConfirm}" bindtap="confirmAction">确定</view>
                 </view>
             </view>
-            <view wx:if="{{!userLogin}}" class="index-block-body" @tap="handleLogin">
-                <view class="index-loaded-item new-margin {{item.text === '店铺装修' ? 'shangxin' : ''}}" wx:for="{{nItem.items}}" wx:key="index" bindtap="link({{item.text}})">
-                    <image src="{{item.iconPath}}" class="item-img"></image>
-                    <view class="item-text">{{item.text}}</view>
+            <!-- 去授权 -->
+            <view wx:if="{{!assistAuth && showModal && storageShowmodal}}">
+                <view class="showModal_mask" bindtap="hideModal"></view>
+                <view class="showModal_modal auth_modal">
+                    <view class="showModal_text">各位老板，您需要<text>授权</text>后商家助手才能给您提供更好的服务哦</view>
+                    <button class="showModal_btn" open-type="getUserInfo" bindgetuserinfo="loadSession">去授权</button>
+                    <button class="showModal_cancle" bindtap="hideModal"></button>
                 </view>
             </view>
-        </view>
-        <view wx:if="{{business.changeMP === true}}" class="mask" @tap="bindHideMask"></view>
-        <view wx:if="{{business.changeMP === true }}" class="mpBox">
-            <view class="default">
-                <view class="name logoPadding">{{business.miniProgramName}}</view>
-                <view>默认</view>
-                <image class="haslogo" mode="{{aspectFit}}" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+            <view wx:if="{{assistAuth && !isFollow && showModal && storageShowmodal}}">
+                <view class="showModal_mask" bindtap="hideModal"></view>
+                <view class="showModal_modal follow_modal">
+                    <view class="showModal_text">各位老板，您<text>关注公众号</text>后商家助手才能及时给您通知订单消息哦</view>
+                    <navigator class="showModal_btn" @tap="toFollow">去关注</navigator>
+                    <button class="showModal_cancle" bindtap="hideModal"></button>
+                </view>
             </view>
-            <view class="otherBox">
-                <repeat for="{{business.mps}}" key="index" index="index" item="item">
-                    <view class="mpbox">
-                        <view bindtap="selectMp({{item}})" class="mpItem logoPadding" data-appid="{{item.id}}" :class="{ 'active' : item.id === business.chosedId}">{{item.nickName || item.id}}</view>
-                        <image class="haslogo" mode="{{aspectFit}}" src="{{item.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
-                    </view>
-                </repeat>
-            </view>
-            <view class="btnBox">
-                <view class="cancle" @tap="bindHideMask">取消</view>
-                <view class="confirm" :class="{ 'active' : business.canConfirm}" bindtap="confirmAction">确定</view>
-            </view>
-        </view>
-        <!-- 去授权 -->
-        <view wx:if="{{!assistAuth && showModal && storageShowmodal}}">
-            <view class="showModal_mask" bindtap="hideModal"></view>
-            <view class="showModal_modal auth_modal">
-                <view class="showModal_text">各位老板，您需要<text>授权</text>后商家助手才能给您提供更好的服务哦</view>
-                <button class="showModal_btn" open-type="getUserInfo" bindgetuserinfo="loadSession">去授权</button>
-                <button class="showModal_cancle" bindtap="hideModal"></button>
-            </view>
-        </view>
-        <view wx:if="{{assistAuth && !isFollow && showModal && storageShowmodal}}">
-            <view class="showModal_mask" bindtap="hideModal"></view>
-            <view class="showModal_modal follow_modal">
-                <view class="showModal_text">各位老板，您<text>关注公众号</text>后商家助手才能及时给您通知订单消息哦</view>
-                <navigator class="showModal_btn" @tap="toFollow">去关注</navigator>
-                <button class="showModal_cancle" bindtap="hideModal"></button>
-            </view>
-        </view>
-        <!-- 分享名片赢大奖提示 活动下线注释掉代码 -->
-        <!-- <view class="toedit-modal" wx:if="{{Actfrom || share.hasPromptToday && share.hasPerm}}">
+            <!-- 分享名片赢大奖提示 活动下线注释掉代码 -->
+            <!-- <view class="toedit-modal" wx:if="{{Actfrom || share.hasPromptToday && share.hasPerm}}">
             <form bindsubmit="handleFormidCollect" report-submit="true">
                 <button class="share-active-cancle" data-action="cancle" bindtap="handleActionRoute" hover-class="none" form-type="submit"></button>
             </form>
@@ -159,33 +167,34 @@
                 </navigator>
             </form> 
         </view>-->
-        <!-- <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{!Actfrom && !share.hasPromptToday && share.hasPerm}}">
+            <!-- <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{!Actfrom && !share.hasPromptToday && share.hasPerm}}">
             <button class="tomake-money" data-action="makemoney" bindtap="handleActionRoute" hover-class="none" form-type="submit"></button>
         </form> -->
-        <!-- 每日一言悬浮提示 -->
-        <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{everydayIconShow}}">
-            <button class="to-everyday" @tap="handleToEveryday" hover-class="none" form-type="submit">
-                <view class="unread" wx:if="{{everydayIconShow && everydayUnread}}" />
-            </button>
-        </form>
-        <!-- 每日一言弹窗模块 -->
-        <everyday-modal :show.sync="everydayShow" :unread.sync="everydayUnread" />
-        <!-- 添加到我的小程序步骤提示 -->
-        <view class="add-myapp-modal" wx:if="{{showTipModal}}">
-            <view class="add-step">
-                <view class="step-text">
-                    1.点击
-                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step1.png" class="step-image1"></image>
-                </view>
-                <view class="step-text">2.点击【添加到我的小程序】</view>
-                <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step2.png" class="step-image2"></image>
-                <view class="step-text">3.在微信首页下拉，快速进入"58商家程序助手"</view>
-                <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step3.png" class="step-image3"></image>
-                <view class="cancle-btn" @tap="cancleTipModal">
-                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step4.png"></image>
+            <!-- 每日一言悬浮提示 -->
+            <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{everydayIconShow}}">
+                <button class="to-everyday" @tap="handleToEveryday" hover-class="none" form-type="submit">
+                    <view class="unread" wx:if="{{everydayIconShow && everydayUnread}}" />
+                </button>
+            </form>
+            <!-- 每日一言弹窗模块 -->
+            <everyday-modal :show.sync="everydayShow" :unread.sync="everydayUnread" />
+            <!-- 添加到我的小程序步骤提示 -->
+            <view class="add-myapp-modal" wx:if="{{showTipModal}}">
+                <view class="add-step">
+                    <view class="step-text">
+                        1.点击
+                        <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step1.png" class="step-image1"></image>
+                    </view>
+                    <view class="step-text">2.点击【添加到我的小程序】</view>
+                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step2.png" class="step-image2"></image>
+                    <view class="step-text">3.在微信首页下拉，快速进入"58商家程序助手"</view>
+                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step3.png" class="step-image3"></image>
+                    <view class="cancle-btn" @tap="cancleTipModal">
+                        <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step4.png"></image>
+                    </view>
                 </view>
             </view>
-        </view>
+        </block>
     </scroll-view>
 </template>
 
@@ -217,6 +226,7 @@ import * as service from '../utils/service';
 import EverydayModal from '../components/EverydayModal';
 import Mask from '../components/Mask';
 import ActionDialog from '../components/ActionDialog';
+import Employee from '../components/Employee';
 
 export default class Home extends wepy.page {
   mixins = [Mixin, RegistMixin];
@@ -230,6 +240,7 @@ export default class Home extends wepy.page {
       guideMask: Mask,
       'everyday-modal': EverydayModal,
       actionDialog: ActionDialog,
+      employee: Employee,
   };
   data = {
       code: '',
@@ -278,8 +289,14 @@ export default class Home extends wepy.page {
       everydayShow: false,
       // 每日一言 是否显示每日一言icon
       everydayIconShow: false,
+      // 是否是员工
+      isEmployee: false,
   };
   methods = {
+      switchEmployee() {
+          this.isEmployee = !this.isEmployee;
+          globalData.isEmployee = this.isEmployee;
+      },
       handleLogin() {
           loginHelper.goLogin();
       },
@@ -488,6 +505,7 @@ export default class Home extends wepy.page {
       if (options.mask && !wepy.getStorageSync('mask')) {
           this.maskShow = true;
       }
+      this.isEmployee = globalData.isEmployee;
       const from = options.from || ''; // from=daypic 打开每日一言的弹窗
       try {
       // 快速注册判断跳转
@@ -512,6 +530,7 @@ export default class Home extends wepy.page {
           if (!token) {
               this.chatLogin();
           }
+
           // globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
           this.setGlobalMpId(this.business.selected.id);
           this.loadExtJson();
@@ -1117,6 +1136,29 @@ export default class Home extends wepy.page {
 page {
   overflow: auto !important;
 }
+.switchEmployee {
+  position: fixed;
+  width: 220rpx;
+  height: 90rpx;
+  right: 0;
+  bottom: 50rpx;
+  display: flex;
+  z-index: 98;
+  background:white;
+  box-shadow: 0 0 20px 0 rgba(0,0,0,0.20);
+  border-radius: 100rpx 0px 0px 100rpx;
+  align-items: center;
+  .switchIcon {
+    width: 64rpx;
+    height: 64rpx;
+    border-radius: 50%;
+    margin-left: 20rpx;
+  }
+  .switchName {
+    font-size: 30rpx;
+    color: #333;
+  }
+}
 view,
 scroll-view {
   box-sizing: border-box;
@@ -1440,6 +1482,9 @@ scroll-view {
       font-family: PingFangSC-Medium;
       font-size: 28rpx;
       color: #333333;
+    }
+    &:last-child{
+        margin-bottom: 130rpx;
     }
   }
 
