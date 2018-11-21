@@ -43,9 +43,14 @@
                                 <view class="item-text">{{item.text}}</view>
                             </view>
                         </view>
-                        <view bindtap="checkProgress" class="item-detail-progress">
-                            <view class="current-progress"></view>
-                            <view class="remind-title">{{ business.progressText}}</view>
+                        <view wx:else>可上传素材、提交注册信息到当前小程序</view>
+                    </view>
+                    <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">小程序切换</view>
+                    <image class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="aspectFit" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+                    <view class="index-block-body index-item">
+                        <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
+                            <image src="{{item.iconPath}}" class="item-img"></image>
+                            <view class="item-text">{{item.text}}</view>
                         </view>
                     </view>
                     <view wx:if="{{!userLogin}}">
@@ -101,14 +106,34 @@
                     <view class="confirm" :class="{ 'active' : business.canConfirm}" bindtap="confirmAction">确定</view>
                 </view>
             </view>
-            <!-- 去授权 -->
-            <view wx:if="{{!assistAuth && showModal && storageShowmodal}}">
-                <view class="showModal_mask" bindtap="hideModal"></view>
-                <view class="showModal_modal auth_modal">
-                    <view class="showModal_text">各位老板，您需要<text>授权</text>后商家助手才能给您提供更好的服务哦</view>
-                    <button class="showModal_btn" open-type="getUserInfo" bindgetuserinfo="loadSession">去授权</button>
-                    <button class="showModal_cancle" bindtap="hideModal"></button>
-                </view>
+        </view>
+        <view wx:if="{{business.changeMP === true}}" class="mask" @tap="bindHideMask"></view>
+        <view wx:if="{{business.changeMP === true }}" class="mpBox">
+            <view class="default">
+                <view class="name logoPadding">{{business.miniProgramName}}</view>
+                <view>默认</view>
+                <image class="haslogo" mode="aspectFit" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+            </view>
+            <view class="otherBox">
+                <repeat for="{{business.mps}}" key="index" index="index" item="item">
+                    <view class="mpbox">
+                        <view bindtap="selectMp({{item}})" class="mpItem logoPadding" data-appid="{{item.id}}" :class="{ 'active' : item.id === business.chosedId}">{{item.nickName || item.id}}</view>
+                        <image class="haslogo" mode="aspectFit" src="{{item.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+                    </view>
+                </repeat>
+            </view>
+            <view class="btnBox">
+                <view class="cancle" @tap="bindHideMask">取消</view>
+                <view class="confirm" :class="{ 'active' : business.canConfirm}" bindtap="confirmAction">确定</view>
+            </view>
+        </view>
+        <!-- 去授权 -->
+        <view wx:if="{{!assistAuth && showModal && storageShowmodal}}">
+            <view class="showModal_mask" bindtap="hideModal"></view>
+            <view class="showModal_modal auth_modal">
+                <view class="showModal_text">各位老板，您需要<text>授权</text>后商家助手才能给您提供更好的服务哦</view>
+                <button class="showModal_btn" open-type="getUserInfo" bindgetuserinfo="loadSession">去授权</button>
+                <button class="showModal_cancle" bindtap="hideModal"></button>
             </view>
             <view wx:if="{{assistAuth && !isFollow && showModal && storageShowmodal}}">
                 <view class="showModal_mask" bindtap="hideModal"></view>

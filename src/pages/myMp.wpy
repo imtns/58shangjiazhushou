@@ -10,7 +10,7 @@
             <view class="list">
                 <view class="infos">
                     <view class="logBox">
-                        <image class="logo" mode="{{aspectFit}}" src="{{business.current.headImg || 'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+                        <image class="logo" mode="aspectFit" src="{{business.current.headImg || 'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
                     </view>
                     <view class="details">
                         <view class="title"> 
@@ -18,8 +18,8 @@
                             <button wx:if="{{business.current.mpStatus == 2}}" class="share" plain="{{true}}" open-type="getUserInfo" bindgetuserinfo="onReadytoShare" data-id="{{business.current.id}}">分享</button>
                         </view>
                         <view class="icons">
-                            <image class="icon" mode="{{aspectFit}}" src="{{ business.current.app_type === 1 || business.current.app_type === 2 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang_grey.png'}}"></image>
-                            <image class="icon" mode="{{aspectFit}}" src="{{ business.current.app_type === 2 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin_grey.png'}}"></image>
+                            <image class="icon" mode="aspectFit" src="{{ business.current.app_type === 1 || business.current.app_type === 2 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang_grey.png'}}"></image>
+                            <image class="icon" mode="aspectFit" src="{{ business.current.app_type === 2 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin_grey.png'}}"></image>
                         </view>
                         <view class="deadline">有效期至 {{business.current.expiryDate}}</view>
                     </view>
@@ -40,7 +40,7 @@
                 <view class="list">
                     <view class="infos">
                         <view class="logBox">
-                            <image class="logo" mode="{{aspectFit}}" src="{{item.headImg || 'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
+                            <image class="logo" mode="aspectFit" src="{{item.headImg || 'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
                         </view>
                         <view class="details">
                             <view class="title"> 
@@ -48,8 +48,8 @@
                                 <button wx:if="{{item.mpStatus == 2}}" class="share" plain="{{true}}" open-type="getUserInfo" bindgetuserinfo="onReadytoShare" data-id="{{item.id}}">分享</button>
                             </view>
                             <view class="icons">
-                                <image  class="icon" mode="{{aspectFit}}" src="{{ item.app_type === 1 || item.app_type === 2 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang_grey.png'}}"></image>
-                                <image class="icon" mode="{{aspectFit}}" src="{{ item.app_type === 2 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin_grey.png'}}"></image>
+                                <image  class="icon" mode="aspectFit" src="{{ item.app_type === 1 || item.app_type === 2 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/youxiang_grey.png'}}"></image>
+                                <image class="icon" mode="aspectFit" src="{{ item.app_type === 2 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/weixin_grey.png'}}"></image>
                             </view>
                             <view class="deadline">有效期至 {{item.expiryDate}}</view>
                         </view>
