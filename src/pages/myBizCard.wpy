@@ -85,9 +85,9 @@
                     </navigator>
                 </form>
                 <form report-submit="true" bindsubmit="handleFormidCollect">
-                    <button hover-class="none" class='dialog-share-item line' bindtap="choseStyle">生成图片分享</button>
+                    <button hover-class="none" class='dialog-share-item line' @tap="choseStyle">生成图片分享</button>
                 </form>
-                <button hover-class="none" class='dialog-share-item cancel' bindtap='dialogShareCancel'>取消</button>
+                <button hover-class="none" class='dialog-share-item cancel' @tap='dialogShareCancel'>取消</button>
             </view>
         </view>
     </view>
