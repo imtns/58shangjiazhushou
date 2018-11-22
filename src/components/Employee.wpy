@@ -7,14 +7,14 @@
         </view>
         <view class="item-detail">
             <view class="employee-block"> 
-                <block wx:if="{{login}}">
+                <block wx:if="{{isComplete}}">
                     <image class="icon" mode="aspectFill" src="https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375"></image>
-                    <view class="name">张飞</view>
-                    <view class="company">58优选服务有限公司</view>
+                    <view class="name">{{card.realName}}</view>
+                    <view class="company">{{card.company}}</view>
                 </block>
                 <block wx:else>
                     <view class="tip">您还未完善名片信息</view>
-                    <view class="finishCard">去完善名片</view>
+                    <view class="finishCard" @tap="navigate('newBizCard')">去完善名片</view>
                 </block>
             </view>
             <view class="viewer-block">
@@ -32,22 +32,23 @@
         </view>
     </view>
     <view class="index-block" >
-        <view class="block-content">
+        <view class="block-content" @tap="navigate('myBizCard')">
             <image class="block-icon" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/cartManage.png?w=68"></image>
             <text class="name">名片管理</text>
             <image class="arrow" ode="scaleToFill" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/arrow-right.png?w=15"></image>
         </view>
-        <view class="block-content">
+        <view class="block-content" @tap="navigate('noticeList')">
             <image class="block-icon" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/notice.png?w=68"></image>
             <text class="name">通知</text>
             <image class="arrow" ode="scaleToFill" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/arrow-right.png?w=15"></image>
         </view>
-        <view class="block-content">
+        <view class="block-content" @tap="navigate('feedback')">
             <image class="block-icon" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/feedback.png?w=68"></image>
             <text class="name">意见反馈</text>
             <image class="arrow" ode="scaleToFill" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/arrow-right.png?w=15"></image>
         </view>
     </view>
+     <messageBox :show.sync="modalShow" :showCancel="showCancel" :content.sync="modalContent" :title.sync="modalTitle" :confirmText.sync="modalConfirmText"></messageBox>
 </template>
 
 <script>
@@ -56,6 +57,10 @@
  */
 
 import wepy from 'wepy';
+import { get } from '../utils/ajax';
+import { toast } from '../utils/index';
+import { EMPLOYEE_CARD_GET } from '../utils/url';
+import MessageBox from '../components/MessageBox';
 
 export default class Employee extends wepy.component {
   data = {
@@ -65,11 +70,69 @@ export default class Employee extends wepy.component {
           'https://t1.58cdn.com.cn/bidding/tiny/n_v1bkuymczvuqxfr3drs5gq.jpg?w=160&h=120',
           'https://t1.58cdn.com.cn/bidding/tiny/n_v1bkuymczvuqxfr3drs5gq.jpg?w=160&h=120',
       ],
-      login: false,
+      isComplete: false,
+      card: {},
+      modalShow: false,
+      modalContent: '',
+      showCancel: true,
+      modalConfirmText: '去完善',
+      modalCancelText: '取消',
+      modalTitle: '提示',
+      employee: {},
+      isEmployee: false,
+  };
+  components = {
+      messageBox: MessageBox,
   };
   props = {
-      coupons: Array,
-      viewType: String,
+
+  };
+  onLoad() {
+      this.isEmployee = wepy.getStorageSync('isEmployee');
+      if (this.isEmployee) {
+          this.employee = wepy.getStorageSync('employee');
+          this.getData();
+      }
+  }
+  async getData() {
+      if (this.employee) {
+          this.employee = JSON.parse(this.employee);
+      }
+      this.isComplete = this.employee.isAuto !== 1 || false;
+      if (this.employee.isAuto === 1) {
+          const realName = wepy.getStorageSync('realName');
+          wx.showModal({
+              title: '提示', // 提示的标题,
+              content: `${realName}邀请你完善名片信息`, // 提示的内容,
+              showCancel: true, // 是否显示取消按钮,
+              cancelText: '取消', // 取消按钮的文字，默认为取消，最多 4 个字符,
+              cancelColor: '#000', // 取消按钮的文字颜色,
+              confirmText: '去完善', // 确定按钮的文字，默认为取消，最多 4 个字符,
+              confirmColor: '#4E88FF', // 确定按钮的文字颜色,
+              success: res => {
+                  if (res.confirm) {
+                      this.methods.navigate('newBizCard');
+                  }
+              },
+          });
+      }
+      try {
+          const { data } = await get(EMPLOYEE_CARD_GET, {
+              cardId: this.employee.cardId,
+          });
+          this.card = data;
+          this.$apply();
+      } catch (err) {
+          toast(err);
+      }
+  }
+  methods = {
+      navigate(url) {
+          wepy.navigateTo({ url });
+      },
+      changeIdentity() {
+          this.$emit('changeIdentity');
+      },
   };
 }
 </script>
@@ -97,22 +160,22 @@ export default class Employee extends wepy.component {
     color: #aaa;
     margin-top: 10rpx;
   }
-  .tip{
-      font-size:28rpx;
-      color:#aaa;
+  .tip {
+    font-size: 28rpx;
+    color: #aaa;
   }
-  .finishCard{
-      width:480rpx;
-      height: 88rpx;
-      margin:20rpx auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      color:white;
-      border-radius: 44rpx;
-      background:#4e88ff;
-      font-size:32rpx;
+  .finishCard {
+    width: 480rpx;
+    height: 88rpx;
+    margin: 20rpx auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    border-radius: 44rpx;
+    background: #4e88ff;
+    font-size: 32rpx;
   }
 }
 .viewer-block {
@@ -157,12 +220,12 @@ export default class Employee extends wepy.component {
   height: 88rpx;
   align-items: center;
   position: relative;
-  border-bottom:1rpx solid #f3f3f3;
+  border-bottom: 1rpx solid #f3f3f3;
   .block-icon {
     width: 64rpx;
     height: 64rpx;
-    margin-left:30rpx;
-    margin-right:20rpx;
+    margin-left: 30rpx;
+    margin-right: 20rpx;
   }
   .name {
     font-size: 30rpx;
@@ -172,10 +235,10 @@ export default class Employee extends wepy.component {
     position: absolute;
     right: 30rpx;
     transform: translateY(-50%);
-    top:50%;
+    top: 50%;
   }
-  &:last-child{
-      border:0;
+  &:last-child {
+    border: 0;
   }
 }
 .arrow {

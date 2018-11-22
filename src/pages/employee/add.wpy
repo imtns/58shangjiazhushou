@@ -4,18 +4,18 @@
         <view class="employee-info-block">
             <view class="info-block">
                 <text>手机</text>
-                <input type="number" maxlength="11" placeholder="请填写手机号" auto-focus />
+                <input type="number" maxlength="11" @input="setValue('mobile')" placeholder="请填写手机号" auto-focus />
             </view>
             <view class="info-block">
                 <text>姓名</text>
-                <input type="text" maxlength="10" placeholder="请填写姓名" />
+                <input type="text" maxlength="10" @input="setValue('realName')" placeholder="请填写姓名" />
             </view>
             <view class="info-block">
                 <text>职位</text>
-                <input type="text" maxlength="12" placeholder="请填写职位" />
+                <input type="text" maxlength="12" @input="setValue('position')" placeholder="请填写职位" />
             </view>
         </view>
-        <view class="add-button active" @tap="add">创建名片</view>
+        <button class="add-button" disabled="{{disabled}}" @tap="add">创建名片</button>
     </view>
     <messageBox :show.sync="modalShow" :content.sync="modalContent" :title.sync="modalTitle" :confirmText.sync="modalConfirmText"></messageBox>
 </template>
@@ -25,92 +25,154 @@
  * 商品订单详情
  */
 import wepy from 'wepy';
-// import { get } from '../../utils/ajax';
+import { post } from '../../utils/ajax';
 import MessageBox from '../../components/MessageBox';
-import { toast } from '../../utils';
+import { toast, sleep } from '../../utils';
+import { EMPLOYEE_CARD_ADD } from '../../utils/url';
 
 export default class Index extends wepy.page {
-  config = {
-      navigationBarTitleText: '我的团队',
-  };
-  components = {
-      messageBox: MessageBox,
-  }
-  data = {
-      modalShow: false,
-      modalContent: '您填写的信息有误。一天内只能提交5次，您还可以提交4次',
-      modalConfirmText: '确认',
-      modalTitle: '提示',
-  };
-  methods = {
-      add() {
-          //   this.modalShow = !this.modalShow;
-          toast('创建成功');
-      },
-  }
-  onLoad() {}
+    config = {
+        navigationBarTitleText: '我的团队',
+    };
+    components = {
+        messageBox: MessageBox,
+    };
+    data = {
+        modalShow: false,
+        modalContent: '',
+        modalConfirmText: '确认',
+        modalTitle: '提示',
+        disabled: true,
+        form: {
+            mobile: '',
+            realName: '',
+            position: '',
+        },
+        added: false,
+    };
+    events = {
+        async onConfirm() {
+            if (this.added) return;
+            const mpId = wepy.getStorageSync('current_mpid');
+            try {
+                await post(EMPLOYEE_CARD_ADD, {
+                    mobile: this.form.mobile.replace(/\s+/g, ''),
+                    realName: this.form.realName,
+                    position: this.form.position,
+                    mpId,
+                });
+                toast('创建成功');
+                await sleep(1500);
+                wepy.navigateBack({
+                    delta: 1, // 返回的页面数，如果 delta 大于现有页面数，则返回到首页,
+                });
+            } catch (err) {
+                this.modalContent = `${
+                    this.form.realName
+                }已为其他店长的员工， \r\n 不可再次创建`;
+                this.added = true;
+            }
+        },
+    }
+    methods = {
+        add() {
+            if (this.verify()) {
+                this.modalShow = !this.modalShow;
+                this.added = false;
+                this.modalContent = `是否确定为${
+                    this.form.realName
+                }创建名片,\r\n名片创建后不可撤销`;
+            }
+        },
+        setValue(val, e) {
+            this.updateForm({ [val]: e.detail.value });
+        },
+    };
+    updateForm(data) {
+        const res = data;
+        const { form } = this.data;
+        this.form = Object.assign({}, form, { ...res });
+        Object.values(this.form).every(item => {
+            if (!item) {
+                this.disabled = true;
+                return false;
+            }
+            this.disabled = false;
+            return true;
+        });
+        this.$apply();
+    }
+    verify() {
+        const regPhone = /^1[3456789][0-9]{9}$/;
+        if (!regPhone.test(this.form.mobile)) {
+            toast('手机号不正确');
+            return false;
+        }
+        return true;
+    }
+    onLoad() {}
 }
 </script>
 
 <style lang="scss">
 .employee-add {
-  width: 100%;
-  padding-left: 30rpx;
-  padding-right: 30rpx;
-  .title {
     width: 100%;
-    height: 88rpx;
-    color: #999;
-    font-size: 30rpx;
-    line-height: 88rpx;
-  }
-  .employee-info-block {
-    margin-left: -30rpx;
-    margin-right: -30rpx;
-    padding: 0 30rpx;
-    background: white;
-    .info-block {
-      width: 100%;
-      display: flex;
-      height: 88rpx;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-      &:not(:last-child):after {
-        content: '';
-        position: absolute;
-        height: 2rpx;
-        background: #f3f3f3;
-        bottom: 0rpx;
+    padding-left: 30rpx;
+    padding-right: 30rpx;
+    .title {
+        width: 100%;
+        height: 88rpx;
+        color: #999;
+        font-size: 30rpx;
+        line-height: 88rpx;
+    }
+    .employee-info-block {
+        margin-left: -30rpx;
+        margin-right: -30rpx;
+        padding: 0 30rpx;
+        background: white;
+        .info-block {
+            width: 100%;
+            display: flex;
+            height: 88rpx;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            &:not(:last-child):after {
+                content: '';
+                position: absolute;
+                height: 2rpx;
+                background: #f3f3f3;
+                bottom: 0rpx;
+                width: 690rpx;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            text {
+                font-size: 28rpx;
+                width: 140rpx;
+                color: #666;
+            }
+            input {
+                font-size: 28rpx;
+                color: #333;
+                text-align: right;
+            }
+        }
+    }
+    .add-button {
         width: 690rpx;
-        left: 50%;
-        transform: translateX(-50%);
-      }
-      text {
-        font-size: 28rpx;
-        width: 140rpx;
-        color: #666;
-      }
-      input {
-        font-size: 28rpx;
-        color: #333;
-        text-align: right;
-      }
+        height: 94rpx;
+        line-height: 94rpx;
+        color: white;
+        background: #4e88ff;
+        border-radius: 4px;
+        text-align: center;
+        margin: 40rpx auto;
+        font-size: 32rpx;
     }
-  }
-  .add-button {
-    width: 690rpx;
-    height: 94rpx;
-    line-height: 94rpx;
-    color: white;
-    background: #dbdbdb;
-    border-radius: 4px;
-    text-align: center;
-    margin: 40rpx auto;
-    font-size: 32rpx;
-    &.active {
-      background: #4e88ff;
+    button[disabled] {
+        background: #dbdbdb;
     }
-  }
 }
 </style>

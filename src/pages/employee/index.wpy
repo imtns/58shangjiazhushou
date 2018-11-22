@@ -1,58 +1,42 @@
 <template>
     <view class="employee-container">
-        <!-- <view class="empty">
+        <view class="empty" wx:if="{{!cardData.cards.length && noData}}">
             <view class="wrapper">
                 <image class="icon" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/emptyIcon.png?w=120&h=120" mode="scaleToFill"></image>
                 <view class="tip">您还未创建员工名片</view>
-                <view class="createEmployee">创建员工名片</view>
+                <view class="createEmployee" @tap="add">创建员工名片</view>
             </view>
-        </view> -->
-        <view class="employee-content">
+        </view>
+        <view wx:else class="employee-content">
             <view class="text-block">
                 <view class="text">团队数据</view>
                 <view class="number-content">
-                    <view class="number">29131</view>
+                    <view class="number">{{cardData.totalCount}}</view>
                     <view class="desc">团队访问总数</view>
                 </view>
                 <view class="number-content">
-                    <view class="number">187</view>
+                    <view class="number">{{cardData.ydayCount}}</view>
                     <view class="desc">昨日新增访客数</view>
                 </view>
             </view>
             <view class="grey-bar"></view>
             <view class="employee-members">
-                <view class="title">团队员工 (3)</view>
+                <view class="title">团队员工 ({{cardData.cards.length}})</view>
                 <view class="member-block">
-                    <view class="member">
-                        <image class="icon" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/emptyIcon.png?w=120&h=120" mode="aspectFit"></image>
-                        <view class="nameWrap">
-                            <view class="name">赵四的</view>
-                            <view class="views">访客人数：100</view>
+                    <repeat for="{{cardData.cards}}" key="index" key="index" index="index" item="item">
+                        <view class="member">
+                            <image class="icon" src="{{item.picImg || 'https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/emptyIcon.png?w=120&h=120'}}" mode="aspectFit"></image>
+                            <view class="nameWrap">
+                                <view class="name">{{item.realName}}</view>
+                                <view class="views">访客人数：{{item.totalCount}}</view>
+                            </view>
+                            <image class="arrow" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png?w=25" mode="aspectFit"> </image>
+                            <button class="notice" open-type="share" data-name="{{item.realName}}" wx:if="{{item.isNew}}">提醒他完善信息</button>
                         </view>
-                        <image class="arrow" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png?w=25" mode="aspectFit"> </image>
-                        <view class="notice">提醒他完善信息</view>
-                    </view>
-                    <view class="member">
-                        <image class="icon" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/emptyIcon.png?w=120&h=120" mode="aspectFit"></image>
-                        <view class="nameWrap">
-                            <view class="name">赵四的</view>
-                            <view class="views">访客人数：100</view>
-                        </view>
-                        <image class="arrow" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png?w=25" mode="aspectFit"> </image>
-                        <view class="notice">提醒他完善信息</view>
-                    </view>
-                    <view class="member">
-                        <image class="icon" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/emptyIcon.png?w=120&h=120" mode="aspectFit"></image>
-                        <view class="nameWrap">
-                            <view class="name">赵四</view>
-                            <view class="views">暂无访客</view>
-                        </view>
-                        <image class="arrow" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png?w=25" mode="aspectFit"> </image>
-                        <view class="notice">提醒他完善信息</view>
-                    </view>
+                    </repeat>
                 </view>
             </view>
-            <view class="add-button">点击添加员工名片</view>
+            <view class="add-button" @tap="add">点击添加员工名片</view>
         </view>
     </view>
 </template>
@@ -62,14 +46,58 @@
  * 商品订单详情
  */
 import wepy from 'wepy';
-// import { get } from '../../utils/ajax';
+import { get } from '../../utils/ajax';
+import { toast } from '../../utils/index';
+import { EMPLOYEE_CARD_LIST } from '../../utils/url';
 
 export default class Index extends wepy.page {
   config = {
       navigationBarTitleText: '我的团队',
   };
-  data = {};
+  data = {
+      cardData: {},
+      noData: false,
+  };
   onLoad() {}
+  onShow() {
+      this.getData();
+  }
+  async getData() {
+      const mpId = wepy.getStorageSync('current_mpid');
+      try {
+          const { data } = await get(EMPLOYEE_CARD_LIST, {
+              mpId,
+          });
+          this.cardData = data;
+          if (!this.cardData.cards) {
+              this.noData = true;
+          }
+          this.$apply();
+      } catch (err) {
+          toast(err);
+      }
+  }
+  methods = {
+      add() {
+          wepy.navigateTo({ url: 'add' });
+      },
+      onShareAppMessage(e) {
+          console.log(e);
+          const realName = wepy.getStorageSync('realName');
+
+          return {
+              title: `${realName}邀请你完善名片信息`,
+              path: '/pages/employee/login',
+              imageUrl: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/share.png',
+              success(data) {
+                  console.log(data);
+              },
+              fail (err) {
+                  console.log(err);
+              },
+          };
+      },
+  };
 }
 </script>
 
@@ -169,7 +197,7 @@ page {
             text-align: center;
             line-height: 60rpx;
             color: #ff552e;
-            font-size: 28rpx; 
+            font-size: 28rpx;
             margin-left: 70rpx;
           }
         }

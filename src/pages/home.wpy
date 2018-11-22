@@ -4,10 +4,10 @@
             <image mode="aspectFit" class="switchIcon" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/switchAccount.png?w=68"></image>
             <text class="switchName">{{currentAccountType}}账号</text>
         </view>
-        <block wx:if="{{isEmployee}}">
+        <block wx:if="{{currentAccountType === '员工'}}">
             <employee></employee>
         </block>
-        <block wx:else>
+        <view wx:else class="dianzhang">
             <guideMask :show.sync="maskShow" :type="maskType"></guideMask>
             <actionDialog wx:if="{{showEditModal}}" :syncEditShow.sync="showEditModal" :syncEditData.sync="editDialog"></actionDialog>
             <view class="add-myapp" wx:if="{{showTip}}" @tap="showAddStep">
@@ -181,36 +181,36 @@
                 <navigator class="toshare-action" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="/pages/index58/index58?mpcardId={{business.selected.cardId}}&businessId={{business.userId}}&from=zhushou_home" extra-data="" version="develop">
                     <button hover-class="none" form-type="submit" class="toshare-btn" data-action="share" bindtap="handleActionRoute">立即分享</button>
                 </navigator>
-            </form>--> 
+            </form>-->
         </view>
-            <!-- <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{!Actfrom && !share.hasPromptToday && share.hasPerm}}">
+        <!-- <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{!Actfrom && !share.hasPromptToday && share.hasPerm}}">
             <button class="tomake-money" data-action="makemoney" bindtap="handleActionRoute" hover-class="none" form-type="submit"></button>
             </form> -->
-            <!-- 每日一言悬浮提示 -->
-            <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{everydayIconShow}}">
-                <button class="to-everyday" @tap="handleToEveryday" hover-class="none" form-type="submit">
-                    <view class="unread" wx:if="{{everydayIconShow && everydayUnread}}" />
-                </button>
-            </form>
-            <!-- 每日一言弹窗模块 -->
-            <everyday-modal :show.sync="everydayShow" :unread.sync="everydayUnread" />
-            <!-- 添加到我的小程序步骤提示 -->
-            <view class="add-myapp-modal" wx:if="{{showTipModal}}">
-                <view class="add-step">  
-                    <view class="step-text">
-                        1.点击
-                        <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step1.png" class="step-image1"></image>
-                    </view>
-                    <view class="step-text">2.点击【添加到我的小程序】</view>
-                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step2.png" class="step-image2"></image>
-                    <view class="step-text">3.在微信首页下拉，快速进入"58商家程序助手"</view>
-                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step3.png" class="step-image3"></image>
-                    <view class="cancle-btn" @tap="cancleTipModal">
-                        <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step4.png"></image>
-                    </view>
+        <!-- 每日一言悬浮提示 -->
+        <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{everydayIconShow}}">
+            <button class="to-everyday" @tap="handleToEveryday" hover-class="none" form-type="submit">
+                <view class="unread" wx:if="{{everydayIconShow && everydayUnread}}" />
+            </button>
+        </form>
+        <!-- 每日一言弹窗模块 -->
+        <everyday-modal :show.sync="everydayShow" :unread.sync="everydayUnread" />
+        <!-- 添加到我的小程序步骤提示 -->
+        <view class="add-myapp-modal" wx:if="{{showTipModal}}">
+            <view class="add-step">
+                <view class="step-text">
+                    1.点击
+                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step1.png" class="step-image1"></image>
+                </view>
+                <view class="step-text">2.点击【添加到我的小程序】</view>
+                <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step2.png" class="step-image2"></image>
+                <view class="step-text">3.在微信首页下拉，快速进入"58商家程序助手"</view>
+                <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step3.png" class="step-image3"></image>
+                <view class="cancle-btn" @tap="cancleTipModal">
+                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step4.png"></image>
                 </view>
             </view>
-        </block>
+        </view>
+        </view>
     </scroll-view>
 </template>
 
@@ -306,15 +306,24 @@ export default class Home extends wepy.page {
       // 每日一言 是否显示每日一言icon
       everydayIconShow: false,
       // 是否是员工
-      isEmployee: false,
-
       currentAccountType: '店长',
   };
+  events = {
+      changeIdentity() {
+          if (!this.userLogin) {
+              loginHelper.goLogin();
+              return;
+          }
+          SendClickLog('sjzh_click_home_switch_Identity');
+          wepy.navigateTo({
+              url: '/pages/app/accountList',
+          });
+      },
+  }
   methods = {
       switchEmployee() {
           this.currentAccountType = this.currentAccountType === '店长' ? '员工' : '店长';
-          this.isEmployee = !this.isEmployee;
-          globalData.isEmployee = this.isEmployee;
+          wepy.setStorageSync('isEmployee', this.currentAccountType === '员工' || false);
       },
       handleLogin() {
           loginHelper.goLogin();
@@ -524,7 +533,6 @@ export default class Home extends wepy.page {
       if (options.mask && !wepy.getStorageSync('mask')) {
           this.maskShow = true;
       }
-      this.isEmployee = globalData.isEmployee;
       const from = options.from || ''; // from=daypic 打开每日一言的弹窗
       try {
       // 快速注册判断跳转
@@ -568,6 +576,9 @@ export default class Home extends wepy.page {
   }
   async onShow() {
       try {
+          if (wepy.getStorageSync('isEmployee')) {
+              this.currentAccountType = '员工';
+          }
           await this.loadData();
           if (!this.userLogin) return;
           SendClickLog('sjzh_click_home_onload');
@@ -578,8 +589,8 @@ export default class Home extends wepy.page {
           await this.getAssistAuth();
           if (!this.isFollow && wepy.getStorageSync('ppu')) {
               this.showModal = true;
-              this.$apply();
           }
+          this.$apply();
       } catch (err) {
           console.log(err);
       }
@@ -1163,8 +1174,8 @@ page {
   bottom: 50rpx;
   display: flex;
   z-index: 98;
-  background:white;
-  box-shadow: 0 0 20px 0 rgba(0,0,0,0.20);
+  background: white;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
   border-radius: 100rpx 0px 0px 100rpx;
   align-items: center;
   .switchIcon {
@@ -1188,6 +1199,9 @@ scroll-view {
 .home {
   width: 100%;
   background: #f6f6f6;
+  .dianzhang {
+    margin-bottom: 130rpx;
+  }
   .mask {
     width: 100%;
     height: 100%;
@@ -1501,9 +1515,6 @@ scroll-view {
       font-family: PingFangSC-Medium;
       font-size: 28rpx;
       color: #333333;
-    }
-    &:last-child{
-        margin-bottom: 130rpx;
     }
   }
 

@@ -14,7 +14,6 @@ export const globalData = {
     pageData:{},
     pageList:{},
     modules:{},
-    isEmployee:true, //是否是员工
     isIphoneX:false,
     tabMode:0,
     consumerId: null,
