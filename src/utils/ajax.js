@@ -40,6 +40,7 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
             PPU: ppu || 'wanghongyue',
             'YkuYdY8rk5As4T2QaJ7v': '47350441209367',
             reqfrom: 'biz_assistant',
+            'cardSession':"1201fdab8802493082d699c3d7038d60"
             // 'YkuYdY8rk5As4T2QaJ7v': '55436982950166',
             // 'YkuYdY8rk5As4T2QaJ7v': 33433383496455,
         },

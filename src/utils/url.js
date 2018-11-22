@@ -81,3 +81,4 @@ export const CHECK_IS_SALESMAN = '/register/isSalesman'; // 判断是否为销�
 export const EMPLOYEE_LOGIN = '/mpCardBusiness/subCard/login'; // 员工登录
 export const EMPLOYEE_CARD_LIST = '/mpCardBusiness/myTeamForU'; // 员工名片列表
 export const EMPLOYEE_CARD_ADD = '/mpCardBusiness/saveStaffCard'; // 员工名片添加
+export const EMPLOYEE_CARD_GET = '/mpCardBusiness/myCardByCardId'; // 员工名片查询

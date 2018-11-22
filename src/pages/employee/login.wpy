@@ -6,6 +6,7 @@
             <button class="login-button" @tap="login" disabled="{{disabled}}">登录</button>
         </view>
     </view>
+    <messageBox :show.sync="modalShow" :content.sync="modalContent" :title.sync="modalTitle" :confirmText.sync="modalConfirmText"></messageBox>
 </template>
 
 <script>
@@ -13,17 +14,27 @@
  * 商品订单详情
  */
 import wepy from 'wepy';
+import { post } from '../../utils/ajax';
 import { mobileSpace, checkMobile, toast } from '../../utils/index';
+import { EMPLOYEE_LOGIN } from '../../utils/url';
+import MessageBox from '../../components/MessageBox';
 
 export default class Login extends wepy.page {
   config = {
       navigationBarTitleText: '员工登录',
+  };
+  components = {
+      messageBox: MessageBox,
   };
   data = {
       code: [],
       focus: true,
       mobile: '',
       disabled: true,
+      modalShow: false,
+      modalContent: '',
+      modalConfirmText: '确认',
+      modalTitle: '提示',
   };
   methods = {
       inputTap(e) {
@@ -38,14 +49,19 @@ export default class Login extends wepy.page {
               toast('手机号格式不正确');
               return;
           }
-          wepy.navigateTo({ url: 'code' });
+          try {
+              await post(EMPLOYEE_LOGIN, { mobile: this.mobile.replace(/\s+/g, '') });
+              wepy.navigateTo({ url: 'code' });
+          } catch (err) {
+              this.modalShow = true;
+              this.modalContent = `当前手机号没有注册哦~
+              请联系店长进行注册`;
+              this.$apply();
+          }
       },
   };
-  onLoad() {
-
-  }
-  onShow() {
-  }
+  onLoad() {}
+  onShow() {}
 }
 </script>
 

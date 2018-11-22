@@ -73,8 +73,8 @@ export const myCardItems = [{
     src: 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/mycard_group.png',
     name: '我的团队',
     type: 'innerJump',
-    path: '',
-},  {
+    path: '/pages/employee/index',
+}, {
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_chat_msg.png',
     name: '消息',
     type: 'innerJump',

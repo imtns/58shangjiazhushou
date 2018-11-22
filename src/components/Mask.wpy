@@ -47,7 +47,7 @@ export default class Mask extends wepy.component {
           }
           if (this.step === '2') {
               this.show = false;
-              //   wx.setStorageSync('cardMask', false);
+              wx.setStorageSync('cardMask', false);
           }
           if (this.step === '1' && this.type !== 'home') {
               this.step = '2';

@@ -12,7 +12,8 @@
                 </repeat>
                 <input type="number" maxlength="4" @blur="blur" @input="inputFocus()" focus='{{focus}}' auto-focus='true' />
             </view>
-            <view class="countdown">{{countdown }}秒后可重新获取</view>
+            <view class="countdown" wx:if="{{countdown >= 1}}">{{countdown}}秒后可重新获取</view>
+            <view class="countdown" wx:else @tap="getCode">重新获取验证码</view>
         </view>
     </view>
 </template>
@@ -23,7 +24,7 @@
  */
 import wepy from 'wepy';
 import { post } from '../../utils/ajax';
-import { toast } from '../../utils/index';
+import { toast, sleep } from '../../utils/index';
 import { EMPLOYEE_LOGIN } from '../../utils/url';
 
 export default class Code extends wepy.page {
@@ -32,17 +33,15 @@ export default class Code extends wepy.page {
   };
   data = {
       countdown: 60,
-      code: [],
+      code: '',
       focus: true,
       mobile: '',
   };
   methods = {
       inputFocus(index, e) {
           this.code = e.detail.value;
-          const mobile = this.mobile.replace(/\s+/g, '');
           if (this.code.length >= 4) {
-              toast('登录成功');
-              console.log(mobile);
+              this.getCode(this.code);
           }
       },
       focus() {
@@ -54,23 +53,37 @@ export default class Code extends wepy.page {
   };
   onLoad() {
       this.mobile = wepy.getStorageSync('mobile');
-      this.getCode();
+      this.countDown();
   }
-  async getCode() {
+  async getCode(code) {
       try {
-          const { data } = await post(EMPLOYEE_LOGIN, {
+          const postData = {
               mobile: this.mobile.replace(/\s+/g, ''),
-          });
-          console.log(data);
+          };
+          if (typeof code === 'object') {
+              this.countdown = 60;
+              this.countDown();
+              this.code = '';
+          } else if (code) {
+              Object.assign(postData, { code });
+          }
+          const { data } = await post(EMPLOYEE_LOGIN, postData);
+          if (postData.code) {
+              toast('登录成功');
+              wepy.setStorageSync('isEmployee', true);
+              wepy.setStorageSync('employee', JSON.stringify(data));
+              await sleep(1000);
+              wepy.reLaunch({ url: '/pages/home' });
+          }
       } catch (err) {
-          toast(err);
+          toast('验证码错误');
       }
+  }
+  countDown() {
       const interval = setInterval(() => {
           this.countdown = this.countdown - 1;
-          if (this.countdown <= 50) {
+          if (this.countdown <= 0) {
               clearInterval(interval);
-              this.countdown = 60;
-              //   this.getCode();
           }
           this.$apply();
       }, 1000);
