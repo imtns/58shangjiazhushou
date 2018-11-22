@@ -33,6 +33,7 @@ module.exports = {
     'html/html-extensions': ['.html', '.wpy']
   },
   'rules': {
+    'no-plusplus': [2, { allowForLoopAfterthoughts: true }],
     "no-param-reassign": 0,
     'linebreak-style': 0,
     'indent': [2, 4, {"SwitchCase": 1}],

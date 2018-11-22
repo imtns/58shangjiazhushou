@@ -136,6 +136,8 @@ export default class extends wepy.app {
 
             'pages/employee/index', // 我的员工首页
             'pages/employee/add', // 添加员工
+            'pages/employee/login', // 员工登录
+            'pages/employee/code', // 员工登录验证码
             'pages/staffDetail', // 员工详情
         ],
         subPackages: [

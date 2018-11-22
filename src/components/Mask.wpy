@@ -47,7 +47,7 @@ export default class Mask extends wepy.component {
           }
           if (this.step === '2') {
               this.show = false;
-              wx.setStorageSync('cardMask', false);
+              //   wx.setStorageSync('cardMask', false);
           }
           if (this.step === '1' && this.type !== 'home') {
               this.step = '2';
@@ -73,7 +73,7 @@ export default class Mask extends wepy.component {
     .icon1 {
       width: 170rpx;
       height: 170rpx;
-      top: 263rpx;
+      top: 260rpx;
       left: 46rpx;
     }
     .line1 {
@@ -93,11 +93,11 @@ export default class Mask extends wepy.component {
     .icon2 {
       width: 140rpx;
       height: 140rpx;
-      top: 515rpx;
+      top: 650rpx;
       left: 50rpx;
     }
     .line2 {
-      top: 466rpx;
+      top: 600rpx;
       left: 230rpx;
       width: 155rpx;
       height: 144rpx;
@@ -107,7 +107,7 @@ export default class Mask extends wepy.component {
       left: 0;
       width: 390rpx;
       height: 36rpx;
-      top: 400rpx;
+      top: 540rpx;
       left: 130rpx;
     }
   }
@@ -115,11 +115,11 @@ export default class Mask extends wepy.component {
     .icon3 {
       width: 140rpx;
       height: 140rpx;
-      top: 515rpx;
+      top: 650rpx;
       left: 220rpx;
     }
     .line3 {
-      top: 466rpx;
+      top: 600rpx;
       left: 394rpx;
       width: 155rpx;
       height: 144rpx;
@@ -129,7 +129,7 @@ export default class Mask extends wepy.component {
       left: 0;
       width: 508rpx;
       height: 38rpx;
-      top: 400rpx;
+      top: 540rpx;
       left: 180rpx;
     }
   }

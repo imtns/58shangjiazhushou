@@ -1,0 +1,100 @@
+<template>
+    <view class="login-container">
+        <view class="login-home" style="left:{{left}}">
+            <image class="logo" src="/pages/assets/logo.png" mode="aspectFit"></image>
+            <view class="input"> <input placeholder-class="phcolor" value="{{mobile}}" @input="inputTap" type="number" maxlength="13" placeholder="请输入手机号" auto-focus /></view>
+            <button class="login-button" @tap="login" disabled="{{disabled}}">登录</button>
+        </view>
+    </view>
+</template>
+
+<script>
+/**
+ * 商品订单详情
+ */
+import wepy from 'wepy';
+import { mobileSpace, checkMobile, toast } from '../../utils/index';
+
+export default class Login extends wepy.page {
+  config = {
+      navigationBarTitleText: '员工登录',
+  };
+  data = {
+      code: [],
+      focus: true,
+      mobile: '',
+      disabled: true,
+  };
+  methods = {
+      inputTap(e) {
+          let mobile = e.detail.value;
+          mobile = mobileSpace(mobile);
+          this.mobile = mobile;
+          this.disabled = this.mobile.length !== 13;
+          wepy.setStorageSync('mobile', this.mobile);
+      },
+      async login() {
+          if (!checkMobile(this.mobile)) {
+              toast('手机号格式不正确');
+              return;
+          }
+          wepy.navigateTo({ url: 'code' });
+      },
+  };
+  onLoad() {
+
+  }
+  onShow() {
+  }
+}
+</script>
+
+<style lang="scss">
+page {
+  background: white;
+}
+.login-container {
+  padding: 0 30rpx;
+  width: 100%;
+
+  .login-home {
+    transition: 0.5s;
+    position: absolute;
+    .logo {
+      width: 120rpx;
+      height: 120rpx;
+      margin: 80rpx auto 86rpx;
+      display: block;
+    }
+    .input {
+      width: 690rpx;
+      height: 130rpx;
+      font-size: 32px;
+      color: #333;
+      display: flex;
+      text-align: center;
+      justify-content: center;
+      align-items: center;
+      border-bottom: 2rpx solid #f3f3f3;
+    }
+  }
+
+  .login-button {
+    width: 690rpx;
+    height: 94rpx;
+    line-height: 94rpx;
+    text-align: center;
+    color: white;
+    background: #4e88ff;
+    font-size: 32rpx;
+    margin-top: 60rpx;
+    border-radius: 4px;
+  }
+  button[disabled] {
+    background: #dbdbdb;
+  }
+  .phcolor {
+    color: #aaaaaa;
+  }
+}
+</style>
