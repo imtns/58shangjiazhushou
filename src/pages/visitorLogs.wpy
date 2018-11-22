@@ -3,19 +3,32 @@
         <view class="tips" wx:if="{{visitorList.length > 0}}">以下客户访问过您的名片，可联系他们哦</view>
         <view class="visitor_content" wx:if="{{visitorList.length > 0}}">
             <repeat for="{{visitorList}}" key="index" index="index" item="item">
-                <view class="visitor_box" @tap="toVisitorInfo({{item.cardId}}, {{item.consumerId}})">
-                    <view class="visitor_header">
-                        <image mode="aspectFit" src="{{item.portrait}}?w=82&h=83&ss=1"></image>
+                <view class="visitor_item">
+                    <view class="visitor_box" @tap="toVisitorInfo({{item.cardId}}, {{item.consumerId}})">
+                            <view class="visitor_header">
+                                <image mode="aspectFit" src="{{item.portrait}}?w=82&h=82&ss=1"></image>
+                            </view>
+                            <view class="visitor_info">
+                                <view class="visitor_name">
+                                    {{item.nickName || ''}}
+                                    <view wx:if="{{item.gender}}" class="{{item.gender == 1 ? 'male' : 'female'}}"></view>
+                                </view>
+                                <view class="visitor_status">哈哈哈哈</view>
+                            </view>
+                            <view class="visitor_from">来自 {{item.nickName}} 的分享</view>
                     </view>
-                    <view class="visitor_info">
-                        <view class="visitor_name">{{item.nickName || ''}}</view>
-                        <view class="visitor_from">来自 {{item.nickName}} 的分享</view>
-                    </view>
-                    <view wx:if="{{item.gender}}" class="{{item.gender == 1 ? 'male' : 'female'}}"></view>
-                    <view class="visitor_count">
-                        访问您的名片
-                        <text class="visitor_num">{{item.visitCount}}</text> 
-                        次
+                    <view class="visitor_box">
+                        <view class="visitor_log">
+                            <view class="visitor_count">
+                                访问您的名片
+                                <text class="visitor_num">{{item.visitCount}}</text> 
+                                次
+                            </view>
+                            <view class="visitor_time">1小时前访问过你</view>
+                        </view>
+                        <view class="visitor_tel">
+                            <view class="visitor_make_phone">拨打电话</view>
+                        </view>
                     </view>
                 </view>
             </repeat>
@@ -103,6 +116,11 @@ export default class visitorLogs extends wepy.page {
 </script>
 
 <style lang="scss">
+page{
+    width: 100%;
+    height: 100%;
+    background: #f9f9f9;
+}
 .visitors{
     .tips{
         font-size: 24rpx;
@@ -115,12 +133,17 @@ export default class visitorLogs extends wepy.page {
         background-size: 40rpx 40rpx;
     }
     .visitor_content{
-        background: white;
+        .visitor_item{
+            padding: 0 30rpx;
+            margin-bottom: 10rpx;
+            background: #fff;
+        }
         .visitor_box{
             height: 130rpx;
-            padding: 24rpx 30rpx;
+            padding: 24rpx 0;
             border-bottom: 1rpx solid #F3F3F3;
             display: flex;
+            position: relative;
             .visitor_header{
                 image {
                     width: 82rpx;
@@ -135,42 +158,70 @@ export default class visitorLogs extends wepy.page {
                 line-height: 42rpx;
                 font-size: 30rpx;
                 color: #333;
+                position: absolute;
             }
-            .visitor_from{
+            .visitor_status{
                 font-size: 24rpx;
-                color: #999;
-                margin-top: 8rpx;
+                color: #93B0D1;
+                background: #EDF3FF;
+                margin-top: 46rpx;
                 line-height: 33rpx;
+                min-width: 20rpx;
+                max-width: 300rpx;
+                overflow: hidden;
+                white-space:nowrap; 
+                text-overflow:ellipsis;
+            }
+            .visitor_time{
+                font-size:24rpx;
+                color:#999999;
             }
             .male{
-                margin: 9rpx 10rpx;
+                display: inline-block;
+                margin: 2rpx 0 0 10rpx;
                 width: 24rpx;
                 height: 24rpx;
                 background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_male.png) no-repeat center;
                 background-size: contain;
-                vertical-align: middle;
             }
             .female{
-                margin: 18rpx 10rpx;
+                display: inline-block;
+                margin: 8rpx 0 0 10rpx;
                 width: 24rpx;
                 height: 24rpx;
-                background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_female.png) no-repeat center;
+                background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_female.png) no-repeat left center;
                 background-size: contain;
             }
-            .visitor_count{
+            .visitor_from{
                 line-height: 42rpx;
                 font-size: 24rpx;
                 color: #999999;
                 flex:1;
                 text-align: right;
-                background: url(https://static.58.com/lbg/mengchong/image/icon/arrow-right.png) no-repeat right;
-                background-size: 18rpx 32rpx;
+            }
+            .visitor_count{
+                line-height: 42rpx;
+                font-size: 24rpx;
+                color: #333;
                 padding-right: 30rpx;
                 .visitor_num{
-                    font-size: 28rpx;
-                    color: #151515;
+                    color: #ff552e;
                 }
             }
+        }
+        .visitor_tel{
+            position:absolute;
+            right:0;
+            top:35rpx;
+        }
+        .visitor_make_phone{
+            font-size: 30rpx;
+            color: #FFF;
+            width: 182rpx;
+            line-height: 60rpx;
+            text-align: center;
+            background: #4E88FF;
+            border-radius: 30rpx;
         }
     }
     .img-no-data {

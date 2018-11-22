@@ -2,14 +2,22 @@
     <scroll-view class="visitor-container" scroll-y bindscrolltolower="loadMore" style="height:100vh" >
         <image class="visitor-bg" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor-bg.png" mode="aspectFit"/>
         <view class="visitor-card">
-            <view class="visitor-info">
-                <image class="avator" wx:if="{{visitInfo.portrait}}" src="{{visitInfo.portrait}}" />
-                <!-- <image class="avator" wx:if="{{!visitInfo.portrait}}" src="{{visitInfo.otherInfo.gender === 1 ? 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/portrait-man.png' : 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/portrait-woman.png'}} " /> -->
-                <view class="name">{{visitInfo.nickName}}</view>
-                <text class="other">
-                    <text class="location">{{visitInfo.otherInfo.city}}</text>
-                    <text class="sex {{ visitInfo.otherInfo.gender === 1 ? 'man' : 'woman' }}">{{visitInfo.otherInfo.gender === 1 ? '男' : '女'}}</text>
-                </text>
+                <view class="visitor-info">
+                    <view class="avator" wx:if="{{visitInfo.portrait}}">
+                        <image src="{{visitInfo.portrait}}?w=120&h=120&ss=1"/>
+                    </view>
+                    <view class="detail">
+                        <view class="name">
+                            {{visitInfo.nickName}}
+                            <view wx:if="{{visitInfo.otherInfo.gender}}" class="{{visitInfo.otherInfo.gender === 1 ? 'male' : 'female'}}"></view>
+                        </view>
+                        <view class="address">{{visitInfo.otherInfo.city}}</view>
+                        <view class="note">添加备注</view>
+                    </view>
+                    <view class="from">
+                        <view class="from-text">来自买智超的分享</view>
+                    </view>
+                </view>
                 <view class="actions">
                     <view class="action">
                         <view class="num">{{visitInfo.visit > 9999 ? '9999+' : visitInfo.visit}}</view>
@@ -24,7 +32,6 @@
                         <view class="title">点赞</view>
                     </view>
                 </view>
-            </view>
         </view>
         <view class="visitor-action">
             <view class="has-mobile" wx:if="{{visitInfo.mobile}}" @tap="bindPhoneCall" data-mobile="{{visitInfo.mobile}}">拨打电话</view>
@@ -155,7 +162,7 @@ view,scroll-view{
 }
 .visitor-card{
     margin:50rpx 10rpx 0 10rpx;
-    padding:75rpx 0;
+    padding:75rpx 30rpx;
     position:relative;
     z-index:9;
     background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor-infobg.png) no-repeat;
@@ -163,17 +170,76 @@ view,scroll-view{
     overflow: hidden;
 }
 .visitor-info{
-    text-align: center;
-    border-radius: 4rpx;
+    padding: 0 40rpx;
+    display: flex;
+    .detail{
+        flex:1;
+    }
     .avator{
-        width: 120rpx;
-        height: 120rpx;
-        border-radius: 100%;
+        margin-right: 30rpx;
+        image{
+            width: 120rpx;
+            height: 120rpx;
+            border-radius: 100%;
+        }
     }
     .name{
-        font-size: 32rpx;
+        font-size: 30rpx;
         color: #333;
-        margin:20rpx 0;
+        line-height: 42rpx;
+        margin-bottom: 5rpx;
+    }
+    .address{
+        line-height: 40rpx;
+        font-size: 24rpx;
+        color: #999;
+    }
+    .from{
+        flex:1;
+        text-align: right;
+        position: relative;
+        .from-text{
+            font-size:24rpx;
+            color:#93B0D1;
+            background:#EDF3FF;
+            height: 33rpx;
+            line-height:33rpx;
+            position:absolute;
+            right:0;
+        }
+    }
+    .male{
+        display: inline-block;
+        margin: 2rpx 0 0 10rpx;
+        width: 24rpx;
+        height: 24rpx;
+        background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_male.png) no-repeat center;
+        background-size: contain;
+    }
+    .female{
+        display: inline-block;
+        margin: 8rpx 0 0 10rpx;
+        width: 24rpx;
+        height: 24rpx;
+        background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_female.png) no-repeat left center;
+        background-size: contain;
+    }
+    .note{
+        font-size: 24rpx;
+        color: #93B0D1;
+        max-width: 300rpx;
+        overflow: hidden;
+        white-space:nowrap; 
+        text-overflow:ellipsis;
+        &:before{
+            display: inline-block;
+            content: '';
+            width: 24rpx;
+            height: 24rpx;
+            background: url(https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/edit_note.png) no-repeat left center;
+            background-size:100% 100%;
+            margin-right: 10rpx;
+        }
     }
     .other{
         font-size: 24rpx;
@@ -185,69 +251,36 @@ view,scroll-view{
         margin: 0 auto;
         border-radius: 30rpx;
     }
-    .location{
-        padding-right: 22rpx;
-        border-right: 2rpx solid #C7E1FF;
-        &:before{
-            display: inline-block;
+}
+.actions{
+    text-align: center;
+    display: flex;
+    margin-top: 30rpx;
+    .action{
+        flex:1;
+        position: relative;
+        &:after{
+            display: block;
             content: '';
-            width: 21rpx;
-            height: 26rpx;
-            margin:0 8rpx -3rpx 0;
-            background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/location-icon.png) no-repeat;
-            background-size: 100% 100%;
+            position: absolute;
+            width: 2rpx;
+            height: 30rpx;
+            background: #C7E1FF;
+            top: 35rpx;
+            right: 0;
         }
-    }
-    .sex{
-        padding-left: 22rpx;
-    }
-    .man:before{
-        display: inline-block;
-        content: '';
-        width: 26rpx;
-        height: 26rpx;
-        margin: 0 8rpx -3rpx 0;
-        background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/man-icon.png) no-repeat;
-        background-size: 100% 100%;
-    }
-    .woman:before{
-        display: inline-block;
-        content: '';
-        width:15rpx;
-        height: 26rpx;
-        margin: 0 8rpx -3rpx 0;
-        background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/woman-icon.png) no-repeat;
-        background-size: 100% 100%;
-    }
-    .actions{
-        display: flex;
-        margin-top: 40rpx;
-        .action{
-            flex:1;
-            position: relative;
-            &:after{
-                display: block;
-                content: '';
-                position: absolute;
-                width: 2rpx;
-                height: 30rpx;
-                background: #C7E1FF;
-                top: 35rpx;
-                right: 0;
-            }
-            &:last-child::after{
-                display: none;
-            }
-            .num{
-                font-size: 46rpx;
-                color: #333;
-                line-height: 65rpx;
-            }
-            .title{
-                font-size: 24rpx;
-                color: #93B0D1;
-                line-height: 33rpx;
-            }
+        &:last-child::after{
+            display: none;
+        }
+        .num{
+            font-size: 46rpx;
+            color: #333;
+            line-height: 65rpx;
+        }
+        .title{
+            font-size: 24rpx;
+            color: #93B0D1;
+            line-height: 33rpx;
         }
     }
 }

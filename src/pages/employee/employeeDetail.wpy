@@ -72,7 +72,7 @@
 </template>
 <script>
 import wepy from 'wepy';
-import Mixin from '../mixin';
+import Mixin from '../../mixin';
 
 export default class staffDetail extends wepy.page {
     mixins = [Mixin]

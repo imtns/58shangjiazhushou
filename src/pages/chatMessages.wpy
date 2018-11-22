@@ -6,7 +6,10 @@
                     <view class="message_tips" wx:if="{{item.unReadCount > 0}}">{{item.unReadCount}}</view>
                 </view>
                 <view class="message_info">
-                    <view class="chat_name">{{item.nickName}}</view>
+                    <view class="chat_info">
+                        <view class="chat_name">{{item.nickName}}</view>
+                        <view class="chat_note">名字太长名称写得太长了hahahahhaha</view>
+                    </view>
                     <view class="chat_info">{{item.content}}</view>
                     <view class="chat_time">{{item.sendTime}}</view>
                 </view>
@@ -222,9 +225,22 @@ export default class chatMessages extends wepy.page {
             position: relative;
             overflow: hidden;
             .chat_name{
+                float: left;
                 font-size: 34rpx;
                 color: #000000;
                 line-height: 55rpx;
+            }
+            .chat_note{
+                float: left;
+                font-size: 24rpx;
+                color: #93B0D1;
+                line-height: 30rpx;
+                background: #F5F9FF;
+                max-width: 300rpx;
+                margin:12rpx 0 0 10rpx;
+                overflow: hidden;
+                white-space:nowrap; 
+                text-overflow:ellipsis;
             }
             .chat_info{
                 font-size: 28rpx;
