@@ -13,7 +13,7 @@
                 <view class="flow-wrapper">
                     <view class="flow">
                         <view class="circle">1</view>
-                        点击下方去【认证按钮】
+                        点击右上角关闭小程序
                     </view>
                     <view class="flow">
                         <view class="circle">2</view>
@@ -21,7 +21,7 @@
                     </view>
                     <view class="flow">
                         <view class="circle">3</view>
-                        点击【创建小程序】申请模板消息
+                        点击【创建小程序申请】模板消息
                     </view>
                 </view>
             </view>

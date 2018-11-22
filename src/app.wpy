@@ -130,6 +130,8 @@ export default class extends wepy.app {
             'pages/regist/notice', // 创建小程序提示页
             'pages/regist/edit', // 创建小程序页面
             'pages/regist/guide', // 注册引导
+            // 红包活动
+            'pages/activity/spreadRedpacket', // 红包推广活动
         ],
         subPackages: [
             {

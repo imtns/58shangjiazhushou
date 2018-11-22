@@ -116,4 +116,39 @@ module.exports = {
             ],
         },
     },
+    // 红包推广渲染数据
+    SPREAD_REDPACKET: {
+        header: {
+            dx: 80,
+            dy: 208,
+            dWidth: 72,
+            dHeight: 72,
+            radius: '50%',
+        },
+        code: {
+            dx: 67,
+            dy: 954,
+            dWidth: 192,
+            dHeight: 192,
+        },
+        userName: {
+            color: '#333',
+            lineHeight: 40,
+            fontSize: 36,
+            x: 188,
+            y: 219,
+            maxWidth: 488,
+            ellipsis: true,
+        },
+        moment: {
+            color: '#333',
+            lineHeight: 50,
+            fontSize: 28,
+            x: 80,
+            y: 310,
+            maxWidth: 660,
+            ellipsis: true,
+            lineClamp: 2,
+        },
+    },
 };

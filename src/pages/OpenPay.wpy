@@ -114,7 +114,7 @@ export default class OpenPay extends wepy.page {
     async saveAgreeProtocol () {
         // 开通支付后回传状态
         const OpenPayStatus = wepy.getStorageSync('OpenPay');
-        if (OpenPayStatus !== '0' && false) return;
+        if (OpenPayStatus !== '0') return;
         wepy.removeStorageSync('OpenPay');
         get('/mpInfo/agree')
             .catch(err => toast(err));
