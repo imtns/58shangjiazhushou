@@ -27,7 +27,7 @@
         <view class="edit-wrapper"  hidden="{{!editLayer[component.id]}}"  >
             <view class="edit-btn" capture-catch:tap="goEdit" data-name="{{component.name}}" data-id="{{component.id}}">{{noEdit?'暂时不能编辑':'去编辑'}}</view>
         </view>   
-     </view>
+     </view>+++++
   </block>
   <!-- <view class="userinfo-authorize-mask" wx:if="{{showUserinfoAuthorize}}"></view>
   <view class="userinfo-authorize-container" wx:if="{{showUserinfoAuthorize}}">

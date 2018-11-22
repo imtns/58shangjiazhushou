@@ -14,8 +14,8 @@ var Page = {
   test: '',
   pop: function pop(cont) {
     var NONE = 'none',
-        $ele = $('div.mask,div._dialog'),
-        $tips2 = $('._dialog p.dialog-content');
+      $ele = $('div.mask,div._dialog'),
+      $tips2 = $('._dialog p.dialog-content');
     $tips2.text(cont);
     $ele.removeClass(NONE);
   },
@@ -25,7 +25,7 @@ var Page = {
     var $ele = void 0;
     $ele = mask ? $('div.win2') : $('div.mask,div.win2');
     var NONE = 'none',
-        $tips2 = $('div.tips2');
+      $tips2 = $('div.tips2');
 
     $tips2.addClass(NONE); // 这一步的目的是为了防止目前有在显示的窗口冲突
     $ele.removeClass(NONE);
@@ -54,7 +54,7 @@ var Page = {
     Page.id = Page.getKey('id');
     Page.group = Page.getKey('group');
     Page.mpId = Page.getKey('mpId');
-    Page.test = '';
+    Page.test = 'test';
     $('.item-file-div').removeClass('none');
     if (Page.id && Page.id != 'undefined') {
       document.title = '商品编辑';
@@ -67,53 +67,67 @@ var Page = {
     window.editor = ZEditor('#editor', {
       selectImage: function selectImage(cb) {
         // 商品详情内容编辑
-        $('.icon-tupian-btn').on('change', function () {
-          // 上传中
-          var NONE = 'none',
-              $ele = $('div.mask,div.win2'),
-              $tips2 = $('div.tips2'),
-              $uploading = $('.tips-submiting');
-          $('.tips-submiting p').text('上传中');
-
-          $tips2.addClass(NONE);
-          $ele.removeClass(NONE);
-          $uploading.removeClass(NONE);
-          var self = this;
-          var formData = new FormData();
-          formData.append('source', $(self).get(0).files[0]);
-          document.domain = '58.com';
-          $.ajax({
-            url: 'https://yaofa.58.com/picRotateUpload',
-            type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function success(data) {
-              var data = JSON.parse(data);
-              $ele.addClass(NONE);
-              $uploading.addClass(NONE);
-              if (data.state == 100) {
-                var url = '//pic1.58cdn.com.cn' + data.data.source;
-                cb(url + '?w=750');
-                $('.icon-tupian-btn').replaceWith('<input type="file" accept="image/*" class="icon-tupian icon-tupian-btn" data-type="image">');
-              } else {
-                Page.toast($errorPop, data.msg);
-              }
+        $('.icon-tupian-btn').on('click', function () {
+          wx.chooseImage({
+            count: 1,
+            sizeType: ['original', 'compressed'],
+            sourceType: ['album', 'camera'],
+            success(res) {
+              // 上传中
+              var NONE = "none",
+                $ele = $("div.mask,div.win2"),
+                $tips2 = $("div.tips2"),
+                $uploading = $(".tips-submiting");
+              $(".tips-submiting p").text("上传中");
+              wx.uploadImage({
+                localId: res.localIds.toString(), // 需要上传的图片的本地ID，由chooseImage接口获得
+                isShowProgressTips: 1, // 默认为1，显示进度提示
+                success: function (response) {
+                  $tips2.addClass(NONE);
+                  $ele.removeClass(NONE);
+                  $uploading.removeClass(NONE);
+                  $.ajax({
+                    type: 'POST',
+                    url: '/fileUpload',
+                    data: {
+                      mediaId: response.serverId,
+                    },
+                    success: function success(res) {
+                      var res = JSON.parse(res);
+                      var src = res.data.mediaUrl;
+                      $ele.addClass(NONE);
+                      $uploading.addClass(NONE);
+                      if (src) {
+                        $ele.addClass(NONE);
+                        $uploading.addClass(NONE);
+                        if (src) {
+                          var url = "//pic1.58cdn.com.cn" + src;
+                          cb(url + "?w=750");
+                        } else {
+                          Page.toast($errorPop, data.msg);
+                        }
+                      } else {
+                        Page.toast($errorPop, res.msg);
+                      }
+                    },
+                    error: function error(err) {
+                      $ele.addClass(NONE);
+                      $uploading.addClass(NONE);
+                      Page.toast($errorPop, e);
+                    }
+                  });
+                }
+              });
             },
-            error: function error(e) {
-              $ele.addClass(NONE);
-              $uploading.addClass(NONE);
-
-              Page.toast($errorPop, e);
-            }
           });
+
         });
       }
     });
-    $("#pName").on('keyup',function(e) {
-        if (e.target.value.length >= 15) {
-            e.target.value = e.target.value.substr(0,15);
-        }
+    $("#pName").on('keyup', function (e) {
+      if (e.target.value.length >= 15) {
+        e.target.value = e.target.value.substr(0, 15);
+      }
     });
     $(".icon-bold").on("click", function () {
       if ($(this).attr("src").indexOf('unbold') > 1) {
@@ -147,49 +161,50 @@ var Page = {
     });
 
     // 上传头图
-    $('#item-file-btn').on('change', function () {
-      var self = this,
-          formData = new FormData(),
+    $('#item-file-btn').on('click', function () {
+      wx.chooseImage({
+        count: 1,
+        sizeType: ['original', 'compressed'],
+        sourceType: ['album', 'camera'],
+        success(res) {
+          // 上传中
+          var NONE = "none",
+            $ele = $("div.mask,div.win2"),
+            $tips2 = $("div.tips2"),
+            $uploading = $(".tips-submiting");
+          $('.tips-submiting p').text('上传中');
+          wx.uploadImage({
+            localId: res.localIds.toString(), // 需要上传的图片的本地ID，由chooseImage接口获得
+            isShowProgressTips: 1, // 默认为1，显示进度提示
+            success: function (response) {
+              $tips2.addClass(NONE);
+              $ele.removeClass(NONE);
+              $uploading.removeClass(NONE);
 
-
-      // 上传中
-      NONE = 'none',
-          $ele = $('div.mask,div.win2'),
-          $tips2 = $('div.tips2'),
-          $uploading = $('.tips-submiting');
-      $('.tips-submiting p').text('上传中');
-
-      $tips2.addClass(NONE);
-      $ele.removeClass(NONE);
-      $uploading.removeClass(NONE);
-
-      formData.append('sources', $(self).get(0).files[0]);
-      $.ajax({
-        url: 'https://yaofa.58.com/picRotateUpload',
-        type: 'POST',
-        data: formData,
-        contentType: false,
-        processData: false,
-        success: function success(res) {
-          var res = JSON.parse(res);
-          var src = res.data.sources;
-          $ele.addClass(NONE);
-          $uploading.addClass(NONE);
-          if (src) {
-            $('#cover').attr('src', 'https://pic1.58cdn.com.cn' + src);
-            $('.item-upload-img').removeClass('none');
-            $('.item-file-div').addClass('none');
-          } else {
-            Page.toast($errorPop, res.msg);
-          }
+              $.ajax({
+                type: 'POST',
+                url: '/fileUpload',
+                data: {
+                  mediaId: response.serverId,
+                },
+                success: function success(res) {
+                  var res = JSON.parse(res);
+                  var src = res.data.mediaUrl;
+                  $ele.addClass(NONE);
+                  $uploading.addClass(NONE);
+                  if (src) {
+                    $('#cover').attr('src', 'https://pic1.58cdn.com.cn' + src + '?w=120');
+                    $('.item-upload-img').removeClass('none');
+                    $('.item-file-div').addClass('none');
+                  } else {
+                    Page.toast($errorPop, res.msg);
+                  }
+                }
+              });
+            }
+          });
         },
-        error: function error(e) {
-          $ele.addClass(NONE);
-          $uploading.addClass(NONE);
-
-          Page.toast($errorPop, e);
-        }
-      });
+      })
     });
     // 重新上传
     $('.exchange-img').on('click', function () {
@@ -199,15 +214,15 @@ var Page = {
     $('.save-btn').on('click', function () {
 
       var group = Page.group,
-          title = $('._title').val().trim(),
-          description = $('.zeditor-content').html(),
-          stock = $('._source').val() || 0,
-          price = $('.item-input._author').val() || 0,
-          temp = $('.zeditor-content').find('p'),
-          content = $('.zeditor-content').html(),
-          pics = $('#cover').attr('src') ? $('#cover').attr('src').split('.cn')[1].replace(/([/])\1+/g, '$1') : '',
-          sku = [],
-          skuType = 1;
+        title = $('._title').val().trim(),
+        description = $('.zeditor-content').html(),
+        stock = $('._source').val() || 0,
+        price = $('.item-input._author').val() || 0,
+        temp = $('.zeditor-content').find('p'),
+        content = $('.zeditor-content').html(),
+        pics = $('#cover').attr('src') ? $('#cover').attr('src').split('.cn')[1].replace(/([/])\1+/g, '$1') : '',
+        sku = [],
+        skuType = 1;
       if (Number(price) > 999999) {
         Page.toast($errorPop, '商品价格不能大于99999');
         return;
@@ -393,7 +408,7 @@ var Page = {
       var flag = $(this).hasClass('selected');
       if (!flag) {
         var name = $(this).data('name'),
-            group = $(this).data('id');
+          group = $(this).data('id');
         Page.group = group;
         $(this).addClass('selected').siblings('.group-dialog-item').removeClass('selected');
         $('._chose-btn').data('name', name).data('group', group);
@@ -403,13 +418,13 @@ var Page = {
     });
     $('._chose-btn').on('click', function () {
       var name = $(this).data('name'),
-          group = $(this).data('group');
+        group = $(this).data('group');
       if (!name) {
         Page.toast($errorPop, '请选择商品分组！');
         return;
       }
       $('.item-chose').text(name);
-      Page.name = name; 
+      Page.name = name;
       Page.group = group;
       $('.mask,.group-dialog').addClass('none');
       $(this).data(name, '');
@@ -434,7 +449,7 @@ var Page = {
         $('.group-dialog-list').html('');
         if (res.state == 100) {
           var data = res.data,
-              html = '';
+            html = '';
           for (var i = 0; i < data.length; i++) {
             if (Page.group && Page.group == data[i].data.id) {
               $('.item-chose').text(data[i].data.name);
@@ -504,6 +519,7 @@ var Page = {
     });
   }
 };
+
 if (typeof Object.assign != 'function') {
   // Must be writable: true, enumerable: false, configurable: true
   Object.defineProperty(Object, "assign", {

@@ -1,13 +1,15 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta http-equiv="X-UA-Compatible"
         content="ie=edge">
   <title>商品添加</title>
+  <link rel="stylesheet"
+        href="https://c.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/css/goods-component-add.min.css">
   <script>
     (function (win, lib) {
       var doc = win.document;
@@ -36,6 +38,7 @@
           doc.body.style.fontSize = 12 + "px"
         }, false)
       }
+
       function refreshRem() {
         var width = docEl.getBoundingClientRect().width;
         var rem = width / 7.5;
@@ -73,18 +76,21 @@
     })(window, window["lib"] || (window["lib"] = {}));
 
   </script>
-  <script>
-        window.__staticConfigUrl = 'https://j1.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/js/goods-add-version.js';
-    </script>
-  <script type="text/javascript"
-          src="https://j1.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/js/static-loader.js"></script>
+  <!-- <script>
+    window.__staticConfigUrl = 'https://j1.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/js/goods-add-version.js';
+
+  </script> -->
+  <!-- <script type="text/javascript"
+          src="https://j1.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/js/static-loader.js"></script> -->
+
 </head>
 
 <body>
   <div class="wrap">
     <div class="wrap-items">
       <div class="item-flex">
-        <div class="item-text required" style="width:2.3rem;">商品名称</div>
+        <div class="item-text required"
+             style="width:2.3rem;">商品名称</div>
         <div class="item-input-div">
           <input type="text"
                  maxlength="15"
@@ -103,11 +109,10 @@
         </div>
 
         <div class="item-file-div none">
-          <div class="item-upload">添加图片</div>
-          <input type="file"
-                 accept="image/*"
+          <div class="item-upload"  id="item-file-btn">添加图片</div>
+          <input type="hidden"
                  class="item-file-btn"
-                 id="item-file-btn">
+                >
         </div>
       </div>
     </div>
@@ -128,8 +133,7 @@
             <input id="radio-1"
                    name="size"
                    type="radio"
-                   value="multi"
-                   >
+                   value="multi">
             <label for="radio-1"
                    class="radio-label">多规格</label>
           </div>
@@ -138,14 +142,17 @@
             <input id="radio-2"
                    name="size"
                    value="single"
-                   type="radio" checked>
+                   type="radio"
+                   checked>
             <label for="radio-2"
                    class="radio-label">单规格</label>
           </div>
         </div>
       </div>
-      <div class="item-flex-s size" style="display:none;">
-        <div class="item-text full required" id="size-text">商品规格</div>
+      <div class="item-flex-s size"
+           style="display:none;">
+        <div class="item-text full required"
+             id="size-text">商品规格</div>
         <!-- <div class="size-info-wrapper">
           <div class="size-info">
             <div class="info-line">
@@ -201,11 +208,11 @@
       <img src='//static.58.com/lbg/shangjiaxcxht/zhushou/img/unbold.png'
            class='icon-bold'>
       <img src='//static.58.com/lbg/shangjiaxcxht/zhushou/img/upload-icon.png'
-           class='icon-tupian'>
-      <input type='file'
+           class='icon-tupian icon-tupian-btn'>
+      <!-- <input type='file'
              accept="image/*"
              class='icon-tupian icon-tupian-btn'
-             data-type="image">
+             data-type="image"> -->
     </div>
     <div id="editor"
          class="editor _content">
@@ -268,4 +275,42 @@
 </html>
 <!-- html -->
 <script type="text/javascript"
-        src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
+        src="https://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+<script src="https://j1.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/js/zepto.min.js"></script>
+<script src="https://j1.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/js/editor.min.js"></script>
+<script src="https://static.58.com/lbg/shangjiaxcxht/zhushou/js/goods-component-add.js?2323"></script>
+<script>
+  $(function () {
+    var signURL = 'https://yaofa.58.com/cmtHunter/getJsSign';
+    var data = {
+      url: window.location.href.split('#')[0],
+    }
+    var returnData = {};
+    $.ajax({
+      url: signURL,
+      type: 'POST',
+      data: {
+        url: window.location.href.split('#')[0],
+      },
+      success: function success(res) {
+        res = JSON.parse(res);
+        console.log(res);
+        returnData = res.data;
+        wx.config({
+          debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+          appId: returnData.appId, // 必填，公众号的唯一标识
+          timestamp: returnData.timestamp, // 必填，生成签名的时间戳
+          nonceStr: returnData.nonceStr, // 必填，生成签名的随机串
+          signature: returnData.signature, // 必填，签名
+          jsApiList: ['chooseImage','uploadImage'] // 必填，需要使用的JS接口列表
+        });
+
+      }
+    })
+    wx.ready(function () {
+      // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
+     console.log('初始化成功')
+    });
+  });
+
+</script>

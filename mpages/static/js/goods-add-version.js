@@ -19,7 +19,7 @@ window.__staticConfig = {
     {
         name: 'js',
         version: '20181024',
-        url: '/lbg/shangjiaxcxht/zhushou/js/goods-component-add.min.js',
+        url: '/lbg/shangjiaxcxht/zhushou/js/goods-component-add.js',
     }
 ],
 };
