@@ -43,19 +43,17 @@ export default class Index extends wepy.component {
             type: String,
             default: '确定',
         },
-        onConfirm: Function,
-        onCancel: Function,
     }
     onLoad() {
         console.log('onLoad');
     }
     methods = {
         handleConfirm() {
-            this.onConfirm && this.onConfirm();
+            this.$emit('onConfirm');
             this.show = false;
         },
         handleCancel() {
-            this.onCancel && this.onCancel();
+            this.$emit('onCancel');
             this.show = false;
         },
     }
