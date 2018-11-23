@@ -19,12 +19,12 @@
                     </block>
                 </view>
                 <view class="viewer-block">
-                    <view class="noViewer" wx:if="{{icons.length}}">暂时还没有访客哦~</view>
+                    <view class="noViewer" wx:if="{{!card.visitPicList.length}}">暂时还没有访客哦~</view>
                     <view class="viewers" wx:else>
                         <view class="view-number">最近{{card.visitPicList.length}}个人访问过</view>
                         <view class="viewers-icons">
-                            <repeat for="{{card.visitPicList}}" key="index" index="index" item="item">
-                                <image mode="aspectFill"  src="{{item}}"></image>
+                            <repeat for="{{card.visitPicList}}" wx:if="{{index<6}}" key="index" index="index" item="item">
+                                <image mode="aspectFill"  src="https://pic8.58cdn.com.cn{{item}}?w=60"></image>
                             </repeat>
                         </view>
                         <image class="arrow" ode="scaleToFill" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/arrow-right.png?w=15"></image>
@@ -198,6 +198,8 @@ export default class Employee extends wepy.component {
   }
   .viewers {
     position: relative;
+    height: 106rpx;
+    padding-top:1rpx;
     .view-number {
       font-size: 24rpx;
       color: #999;

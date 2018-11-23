@@ -550,7 +550,7 @@ export default class Home extends wepy.page {
                   console.log(err);
               });
 
-          await this.loadData();
+          //   await this.loadData();
           if (!this.userLogin) return;
           // 每日一言 打开弹窗
           const cardId = wepy.getStorageSync('current_cardId');

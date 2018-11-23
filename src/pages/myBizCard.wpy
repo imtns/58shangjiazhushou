@@ -41,12 +41,12 @@
                         </view>
                         <view class="line"></view>
                         <view class="otherbox">
-                            <view class="num vote">{{visitPV}}</view>
+                            <view class="num vote">{{vote}}</view>
                             <view class="type">被点赞总数</view>
                         </view>
                         <view class="line"></view>
                         <view class="otherbox">
-                            <view class="num share">{{share}}</view>
+                            <view class="num share">{{contact}}</view>
                             <view class="type">咨询总数</view>
                         </view>
                     </view>
