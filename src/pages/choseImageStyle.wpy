@@ -376,7 +376,7 @@ export default class choseImageStyle extends wepy.page {
         const cardId = wepy.getStorageSync('current_cardId');
         try {
             const { data } = await get('/share', {
-                path: 'pages/index/index',
+                path: 'pages/index58/index58',
                 sceneId: `card_${cardId}`,
                 cardId,
             });
