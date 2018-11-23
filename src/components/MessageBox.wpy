@@ -3,7 +3,12 @@
         <view class="mask"></view>
         <view class="modal-container">
             <view class="modal-container-title">{{ title }}</view>
-            <view class="modal-container-content">{{ content }}</view>
+            <view class="modal-container-content">
+                <block wx:if="{{ !content }}">
+                    <slot name="content"></slot>
+                </block>
+                <block wx:else>{{ content }}</block>
+            </view>
             <view class="options">
                 <button class="options-cancel btn-item" @tap="handleCancel" wx:if="{{ showCancel }}">{{ cancelText }}</button>
                 <button class="options-confirm btn-item" @tap="handleConfirm">{{ confirmText }}</button>
@@ -43,19 +48,18 @@ export default class Index extends wepy.component {
             type: String,
             default: '确定',
         },
-        onConfirm: Function,
-        onCancel: Function,
     }
     onLoad() {
+        console.log(this);
         console.log('onLoad');
     }
     methods = {
         handleConfirm() {
-            this.onConfirm && this.onConfirm();
+            this.$emit('onConfirm');
             this.show = false;
         },
         handleCancel() {
-            this.onCancel && this.onCancel();
+            this.$emit('onCancel');
             this.show = false;
         },
     }
