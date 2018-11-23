@@ -4,7 +4,7 @@
         <view class="tab-item {{ item.pageKey === pageType ? 'current' : '' }}"
         wx:for="{{tabBarItems}}" wx:key="pageKey"
         bindtap="switchTab" data-item="{{ item }}">
-            <image class="tab-item-icon" src="/{{ item.pageKey === pageType ? item.selectedIconPath : item.iconPath }}"></image>
+            <image class="tab-item-icon" src="/packageEditor/{{ item.pageKey === pageType ? item.selectedIconPath : item.iconPath }}"></image>
             <view class="tab-item-text">{{item.text}}</view>
         </view>
     </view>
