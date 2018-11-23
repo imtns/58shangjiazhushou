@@ -194,6 +194,11 @@
         </form>
         <!-- 每日一言弹窗模块 -->
         <everyday-modal :show.sync="everydayShow" :unread.sync="everydayUnread" />
+        <!-- 商家推广模块 -->
+        <spread-modal 
+            :userID.sync="spreadUserID"
+            :show.sync="spreadRPShow"
+            :first.sync="spreadRPFirst"></spread-modal>
         <!-- 添加到我的小程序步骤提示 -->
         <view class="add-myapp-modal" wx:if="{{showTipModal}}">
             <view class="add-step">
@@ -224,6 +229,7 @@ import { alert, formatDuring } from '../utils';
 import { post, get } from '../utils/ajax';
 import { globalData, setTabBar } from '../utils/globalData';
 import { SendClickLog } from '../utils/maidian';
+import { SendEventLog } from '../utils/eventLog';
 
 import {
     CHAT_LOGIN,
@@ -232,6 +238,7 @@ import {
     INSERT_SESSION,
     GET_EXT_JSON,
     GET_SHARE,
+    CHECK_CANSPREAD,
 } from '../utils/url';
 
 import { sdkLogin, onMsgNotify, sdkLogout } from '../utils/IM/IM';
@@ -243,6 +250,7 @@ import EverydayModal from '../components/EverydayModal';
 import Mask from '../components/Mask';
 import ActionDialog from '../components/ActionDialog';
 import Employee from '../components/Employee';
+import SpreadModal from '../components/SpreadModal';
 
 export default class Home extends wepy.page {
   mixins = [Mixin, RegistMixin];
@@ -257,6 +265,7 @@ export default class Home extends wepy.page {
       'everyday-modal': EverydayModal,
       actionDialog: ActionDialog,
       employee: Employee,
+      'spread-modal': SpreadModal,
   };
   data = {
       code: '',
@@ -310,6 +319,12 @@ export default class Home extends wepy.page {
       currentAccountType: '店长',
       isAuto: 0,
       cardId: '',
+      // 红包推广 是否显示红包推广
+      spreadRPShow: false,
+      // 红包推广 是否今天第一次进入首页
+      spreadRPFirst: false,
+      spreadUserID: '',
+      fromQuery: '', // 打开来源
   };
   events = {
       changeIdentity() {
@@ -498,6 +513,8 @@ export default class Home extends wepy.page {
               await this.hideMask();
               // 切换小程序，重新登录IM
               await this.chatLogin();
+              // 重新判断是否显示推广
+              this.initSpreadRedpacket();
           }
       },
       hideModal() {
@@ -538,7 +555,9 @@ export default class Home extends wepy.page {
       if (options.mask && !wepy.getStorageSync('mask')) {
           this.maskShow = true;
       }
-      const from = options.from || ''; // from=daypic 打开每日一言的弹窗
+      // from=daypic 打开每日一言的弹窗
+      // from=redpacket 打开红包推广
+      this.fromQuery = options.from || '';
       try {
       // 快速注册判断跳转
       // 如果用户在快速注册的流程中，则让用户跳转到注册流程的相应页面
@@ -554,7 +573,7 @@ export default class Home extends wepy.page {
           if (!this.userLogin) return;
           // 每日一言 打开弹窗
           const cardId = wepy.getStorageSync('current_cardId');
-          if (cardId && from === 'daypic') {
+          if (cardId && this.fromQuery === 'daypic') {
               this.everydayShow = true;
           }
           // 聊天登录，监控未读消息
@@ -587,6 +606,8 @@ export default class Home extends wepy.page {
           this.cardId = wepy.getStorageSync('cardId') || '';
           await this.loadData();
           if (!this.userLogin) return;
+          // 初始化红包推广活动
+          this.initSpreadRedpacket();
           SendClickLog('sjzh_click_home_onload');
           await this.loadShareActivity();
           this.loadCode();
@@ -891,6 +912,7 @@ export default class Home extends wepy.page {
   setGlobalMpId(id) {
       if (id) {
           wepy.setStorageSync('current_mpid', id);
+          console.log('----------set success-----------');
       }
   }
   checkBeforeJump(text) {
@@ -1166,10 +1188,32 @@ export default class Home extends wepy.page {
       seft.everydayIconShow = !!cardId; // 是否显示每日一言悬浮icon
       seft.$apply();
   }
+  /**
+   * 红包推广
+   */
+  async initSpreadRedpacket() {
+      console.log('-----business----------');
+      const mpId = wepy.getStorageSync('current_mpid');
+      const { data } = await get(CHECK_CANSPREAD, { mpId });
+      // 判断是否有推广功能
+      this.spreadRPShow = data.activity;
+      // 当天第一次进入首页或者从推送进来则自动显示推广弹窗
+      // 如果当天第一次进入但是从每日一言进入的，则不自动弹窗
+      this.spreadRPFirst = this.fromQuery === 'redpacket' || (this.fromQuery !== 'daypic' && data.first);
+      this.spreadUserID = this.business.userId;
+      this.spreadRPFirst && SendEventLog({
+          page: 'home',
+          button: '',
+          window: 'redpacketWindow',
+          action: 'show',
+      });
+      this.$apply();
+  }
 }
 </script>
 
 <style lang="scss">
+@import '../css/drawLoading';
 page {
   overflow: auto !important;
 }
@@ -2054,64 +2098,6 @@ scroll-view {
       background: url('https://img.58cdn.com.cn/lbg/jianzhan/images/youxiang/icon-share-pyq.png')
         center left no-repeat;
       background-size: 40rpx 40rpx;
-    }
-  }
-  .draw-loading {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    background: #fff;
-    display: flex;
-    align-items: center;
-
-    .spinner {
-      width: 40rpx;
-      height: 40rpx;
-      position: relative;
-      margin: 0 auto;
-    }
-
-    .bounce,
-    .spinner::before,
-    .spinner::after {
-      width: 40rpx;
-      height: 40rpx;
-      background-color: rgba(0, 0, 0, 0.514);
-      border-radius: 100%;
-      animation: bouncedelay 1.4s infinite ease-in-out;
-      animation-fill-mode: both;
-    }
-
-    .spinner::before {
-      content: ' ';
-      position: absolute;
-      top: 0;
-      left: -60rpx;
-      animation-delay: -0.32s;
-    }
-
-    .bounce {
-      animation-delay: -0.16s;
-    }
-
-    .spinner::after {
-      content: ' ';
-      position: absolute;
-      top: 0;
-      right: -60rpx;
-    }
-
-    @keyframes bouncedelay {
-      0%,
-      80%,
-      100% {
-        transform: scale(0);
-      }
-      40% {
-        transform: scale(1);
-      }
     }
   }
 }

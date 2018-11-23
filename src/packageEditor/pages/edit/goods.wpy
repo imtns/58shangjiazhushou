@@ -1,0 +1,475 @@
+<template>
+    <view class="mod-view mod-goods" wx:if="{{pageData[0].props.data && pageData[0].props.data.length > 0}}">
+        <view class="mod-head" wx:if="{{pageData[0].props.cfg.title && pageData[0].props.cfg.title.length>0}}">{{pageData[0].props.cfg.title}}</view>
+        <view wx:if="{{pageData[0].props.cfg.theme!=='4'}}" class="mod-goods-list}}">
+            <block wx:for="{{pageData[0].props.data}}" wx:key="{{item.id}}" wx:for-index="idx">
+                <!-- 中图/小图/双图 -->
+                <block wx:if="{{pageData[0].props.cfg.theme==='2' || pageData[0].props.cfg.theme==='3'}}">
+                    <view  class="mod-goods-item-{{~idx%pageData[0].props.cfg.theme===0?pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName+' last-child':pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName}}">
+                        <image class="mod-goods-image-{{pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName}}" src="{{item.img || 'http://pic1.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png'}}?w=690" mode="aspectFill" />
+                        <view class="mod-goods-title-{{pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName}}">{{item.title}}</view>
+                        <view class="mod-goods-price-{{pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName}}">￥
+                            <view class="price-content">{{item.price}}</view>
+                        </view>
+                    </view>
+                </block>
+                <block wx:elif="{{pageData[0].props.cfg.theme==='6'}}">
+                    <view  class="mod-goods-item-{{~idx%2===0?pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName+' last-child':pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName}}">
+                        <image class="mod-goods-image-{{pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName}}" src="{{item.img || 'http://pic1.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png'}}?w=690" mode="aspectFill" />
+                        <view class="mod-goods-title-{{pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName}}">{{item.title}}</view>
+                        <view class="mod-goods-price-{{pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName}}">￥
+                            <view class="price-content">{{item.price}}</view>
+                        </view>
+                    </view>
+                </block>
+                <!-- 横向列表 -->
+                <block wx:elif="{{pageData[0].props.cfg.theme==='5'}}">
+                    <view class="mod-goods-item-{{ pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName}}">
+                        <image class="mod-goods-image-{{pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName}}" src="{{item.img || 'http://pic1.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png'}}?w=690" mode="aspectFill" />
+                        <view class="mod-goods-title-{{pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName}}">{{item.title}}</view>
+                        <view class="mod-goods-price-{{pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName}}">￥
+                            <view class="price-content">{{item.price}}</view>
+                        </view>
+                    </view>
+                </block>
+                <!-- 1大2中 -->
+                <block wx:elif="{{pageData[0].props.cfg.theme==='7'}}">
+                    <view  class="mod-goods-item-{{ pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName+'-'+(idx%3+1)}}">
+                        <image class="mod-goods-image-{{ pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName+'-'+(idx%3+1)}}" src="{{item.img || 'http://pic1.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png'}}?w=690" mode="aspectFill" />
+                        <view class="mod-goods-title-{{ pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName+'-'+(idx%3+1)}}">{{item.title}}</view>
+                        <view class="mod-goods-price-{{ pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName+'-'+(idx%3+1)}}">￥
+                            <view class="price-content">{{item.price}}</view>
+                        </view>
+                    </view>
+                </block>
+                <!-- 大图 -->
+                <block wx:else>
+                    <view  class="mod-goods-item-one">
+                        <image class="mod-goods-image-one" src="{{item.img || 'http://pic1.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png'}}?w=690" mode="aspectFill" />
+                        <view class="mod-goods-title-one">{{item.title}}</view>
+                        <view class="mod-goods-price-one">￥
+                            <view class="price-content">{{item.price}}</view></view>
+                    </view>
+                </block>
+            </block>
+        </view>
+        <block wx:else>
+            <!-- 横向滑动 -->
+            <scroll-view class="mod-goods-list-four" scroll-x bindscrolltolower="loadMore" data-index="{{index}}" data-good-page="{{goodPage+1}}"
+            data-type="goods" data-good-size="{{goodSize}}" data-total="{{total}}">
+                <block wx:for="{{pageData[0].props.data}}" wx:key="{{item.id}}" wx:for-index="idx">
+                    <view class="mod-goods-item-{{ pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName}}">
+                        <image class="mod-goods-image-{{pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName}}" src="{{item.img || 'http://pic1.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png'}}?w=690" mode="aspectFill" />
+                        <view class="mod-goods-title-{{pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName}}">{{item.title}}</view>
+                        <view class="mod-goods-price-{{pageData[0].props.cfg.themes[pageData[0].props.cfg.theme-1].styleName}}">
+                            ￥<view class="price-content">{{item.price}}</view>
+                        </view>
+                    </view>
+                </block>
+            </scroll-view>
+        </block>
+        <!-- <view class="mod-more mod-more-goods {{pageData[0].props.cfg.showAll?'mod-more-up':''}}" data-index="{{index}}" bindtap='loadMore' wx:if="{{data.length>pageSize}}">
+            {{pageData[0].props.cfg.showAll ? '收起':'查看更多'}}
+        </view> -->
+    </view>
+    <view class="goods-editLayer">
+        <view class="saveBar">
+            <text class="save" @tap="save">保存</text>
+        </view>
+        <view class="edit-cell">
+            <view class="edit-label">标题名称</view>
+            <view class="edit-input">
+                <input data-name="name" value="{{pageModule.cfg.title}}"   maxlength="16" class="weui-input" name="name" bindinput="bindNameInput"  placeholder="16字以内"  />
+            </view>
+        </view>
+        <view class="edit-cell space">
+            <view class="edit-label" @tap="showGroup">{{goodsGroupName || '请选择分组'}}<view class="arrow"></view></view>
+            <view class="edit-input">
+                <checkbox-group bindchange="selectAll">
+                    <label class="checkbox">
+                        <checkbox class="checkSqure" value="全选当前分组" checked="{{false}}" />全选当前分组
+                    </label>
+                </checkbox-group>
+            </view>
+        </view>
+        <view class="nogoods" wx:if="{{list.length==0}}">
+            您还没有商品哦~
+        </view>
+        <scroll-view wx:else scroll-y class="goods-scroll"> 
+            <checkbox-group bindchange="checkboxBoxChange">
+                <repeat for="{{list}}" index="index" item="item"> 
+                    <label class="goods-checkbox"> 
+                        <checkbox class="checkSqure" value="{{item.id}}" checked="{{item.checked}}" />{{item.title}}
+                    </label>
+                </repeat>
+            </checkbox-group>
+        </scroll-view>
+    </view>
+    <view class="goods-group" hidden="{{!showGroup}}">
+        <scroll-view scroll-y>
+            <repeat for="{{group}}" index="index" item="item">
+                <view class="group" @tap="selectGroup" data-name="{{item.data.name}}" data-id="{{item.data.id}}">{{item.data.name}}</view>    
+            </repeat>
+        </scroll-view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+import Mixin from './mixin';
+import { toast } from '../../../utils';
+import { globalData } from '../../../utils/globalData';
+
+const { get } = require('../../../utils/ajax');
+
+export default class goods extends wepy.page {
+  config = {
+      navigationBarTitleText: '商品管理',
+      disableScroll: true,
+  };
+  mixins = [Mixin];
+  data = {
+      list: {},
+      showGroup: false,
+      group: {},
+      goodsGroupName: '',
+      goodsGroupId: '',
+      params: {
+          goodsGroupId: '0',
+          goodsPage: '1',
+          goodsSize: '4',
+          goodsIds: '0',
+      },
+  };
+  methods = {
+      addgoods() {
+          wepy.navigateTo({
+              url: `/pages/goodsComponentAdd?id=${this.pageId}`,
+          });
+      },
+      showGroup() {
+          this.showGroup = !this.showGroup;
+      },
+      async selectGroup(e) {
+          const { id, name } = e.currentTarget.dataset;
+          this.goodsGroupName = name;
+          this.params.goodsGroupId = id;
+          await this.loadgoodsList(true);
+          this.showGroup = false;
+          this.$apply();
+      },
+      selectAll(e) {
+          console.log(e);
+          this.list.forEach(item => {
+              item.checked = e.detail.value.length !== 0;
+          });
+          this.list.forEach((item) => {
+              if (item.checked) {
+                  this.appendData(item, true);
+              } else {
+                  this.appendData(item, false);
+              }
+          });
+      },
+      async checkboxBoxChange(e) {
+          this.list.map(item => {
+              if (e.detail.value.indexOf(item.id) === -1) {
+                  item.checked = false;
+              } else {
+                  item.checked = true;
+              }
+              return item;
+          });
+          this.list.forEach((item) => {
+              if (item.checked) {
+                  this.appendData(item, true);
+              } else {
+                  this.appendData(item, false);
+              }
+          });
+          this.$apply();
+      },
+      bindNameInput(e) {
+          this.pageModule.cfg.title = e.detail.value;
+      },
+      save() {
+          if (this.pageData[0].props.data.length === 0) {
+              toast('至少选择一个商品');
+              return;
+          }
+          console.log(JSON.stringify(this.params));
+          this.pageModule.params = this.params;
+          const selectGoods = this.list.filter(obj => obj.checked === true);
+          this.params.goodsIds = selectGoods.map(good => good.id).join(',');
+          globalData.pageData[this.pageIndex].props = this.pageData[0].props;
+          globalData.modules[this.pageIndex] = this.pageModule;
+          toast('已保存');
+          setTimeout(() => {
+              wx.navigateBack({
+                  delta: 1,
+              });
+          }, 1000);
+      },
+  };
+  appendData(item, isPush) {
+      const filter = this.pageData[0].props.data.find(obj => obj.id === item.id);
+      if ((filter && isPush) || (!filter && !isPush)) return;
+      if (!isPush) {
+          const index = this.pageData[0].props.data.findIndex(obj => obj.id === item.id);
+          this.pageData[0].props.data.splice(index, 1);
+      } else {
+          this.pageData[0].props.data.push({
+              id: item.id,
+              img: item.pics.indexOf('?') > -1 ? item.pics.substr(0, item.pics.indexOf('?')) : item.pics,
+              price: item.price,
+              stock: 0,
+              oldPrice: '',
+              title: item.title,
+              unit: '',
+              unitName: '',
+              priority: false,
+          });
+      }
+  }
+  async onLoad() {
+      [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
+      this.pageModule.cfg.title = '';
+      delete this.pageModule.data;
+      console.log(this.pageModule);
+      this.params.goodsGroupId = this.pageModule.params.goodsGroupId;
+      await this.loadgoodsGroup();
+      if (this.goodsGroupName) {
+          this.loadgoodsList();
+      }
+  }
+  async loadgoodsList(fromGroup) {
+      const { data } = await get('/goods/list', {
+          mpId: wx.getStorageSync('current_mpid'), groupId: this.params.goodsGroupId, pageNum: 1, pageSize: 1000,
+      });
+      console.log(data);
+      this.list = data.data;
+      if (fromGroup) {
+          this.pageData[0].props.data = [];
+          this.list.forEach((item) => {
+              item.checked = true;
+              this.appendData(item, true);
+          });
+      } else {
+          this.list.forEach(item => {
+              this.pageData[0].props.data.forEach(item1 => {
+                  if (item.id === item1.id) {
+                      item.checked = true;
+                  }
+              });
+          });
+      }
+      this.$apply();
+  }
+  async loadgoodsGroup() {
+      const { data } = await get('/goods/groups/specail', {
+          mpId: wx.getStorageSync('current_mpid'),
+      });
+      this.group = data;
+      if (this.pageData[0].params && Object.keys(JSON.parse(this.pageData[0].params)).length !== 0) {
+          this.goodsGroupName = this.group.find(obj => obj.data.id === JSON.parse(this.pageData[0].params).goodsGroupId).data.name;
+          this.params.goodsGroupId = this.group.find(obj => obj.data.id === JSON.parse(this.pageData[0].params).goodsGroupId).data.id;
+      }
+      this.$apply();
+  }
+}
+</script>
+<style lang="scss">
+page {
+  overflow: auto !important;
+}
+.mod-goods-list {
+  padding-bottom: 670rpx;
+}
+.goods-group {
+  width: 296rpx;
+  height: 363rpx;
+  border-radius: 8rpx;
+  background: white;
+  z-index: 999;
+  white-space: nowrap;
+  overflow: scroll;
+  position: absolute;
+  left: 30rpx;
+  bottom: 60rpx;
+  .group {
+    width: 256rpx;
+    margin: 0 auto;
+    font-size: 28rpx;
+    color: #666;
+    padding: 20rpx 0;
+    border-bottom: 1rpx solid #f3f3f3;
+  }
+}
+.nogoods {
+  width: 100%;
+  height: 393rpx;
+  text-align: center;
+  line-height: 393rpx;
+  color: #999;
+  font-size: 30rpx;
+}
+
+.goods-editLayer {
+  width: 100%;
+  box-sizing: border-box;
+  height: 660rpx;
+  position: fixed;
+  bottom: 0;
+  background: rgb(91, 93, 95);
+  z-index: 10;
+  padding: 0 30rpx;
+  .saveBar {
+    height: 86rpx;
+    box-sizing: border-box;
+    margin: 0 -30rpx;
+    padding-right: 30rpx;
+    background: #46484a;
+    color: white;
+    line-height: 86rpx;
+    font-size: 32rpx;
+    .label {
+      width: 200rpx;
+      margin-left: 30rpx;
+      text-align: left;
+    }
+    .save {
+      width: 100rpx;
+      float: right;
+      text-align: right;
+    }
+  }
+  .edit-cell {
+    height: 88rpx;
+    display: flex;
+    font-size: 30rpx;
+    background: #545658;
+    columns: #333333;
+    align-items: center;
+    margin: 0 -30rpx;
+    padding: 0 30rpx;
+    border-bottom: 1rpx solid #585d5f;
+    .edit-label {
+      width: 324rpx;
+      color: #999;
+      .arrow {
+        position: relative;
+        top: -4rpx;
+        display: inline-block;
+        width: 0;
+        height: 0;
+        margin-left: 10rpx;
+        border-style: solid;
+        border-width: 10rpx 10rpx 0 10rpx;
+        border-color: #ffffff transparent transparent transparent;
+      }
+    }
+    .edit-input {
+      width: 396rpx;
+      color: #d8d8d8;
+      text-align: right;
+    }
+  }
+  .goods-scroll {
+    background: #545658;
+    height: 328rpx;
+    padding: 0 30rpx 30rpx;
+    margin: 20rpx -30rpx 0;
+    margin-top:0;
+    .goods-checkbox {
+      width: 640rpx;
+      display: flex;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #dbdbdb;
+      height: 82rpx;
+      border-bottom: 1rpx solid #5b5d5f;
+      font-size: 30rpx;
+      align-items: center;
+      checkbox .wx-checkbox-input {
+        width: 36rpx;
+        height: 36rpx;
+        top: -2rpx;
+        background: transparent;
+        border: 1rpx solid #bdbdbd;
+        border-radius: 50%;
+      }
+      checkbox .wx-checkbox-input.wx-checkbox-input-checked {
+        background: #4e88ff !important;
+      }
+      checkbox .wx-checkbox-input.wx-checkbox-input-checked::before {
+        font-size: 40rpx;
+        color: transparent;
+        position: relative;
+        border: 0;
+        top: -1rpx;
+        left: -1rpx;
+        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAAXNSR0IArs4c6QAAAxBJREFUSA3Fl01oE0EUx/+zUdSDHz0YtSBWQSkqingRP6rVnlQwUkEFBbV68GC1CKnH4BdJQLSCtkVBLyKKQgS1thVUBEWw1vp10KNgNR4snrw04/tvdpPdbDaNMUsHNjvz5s37zZt5M/uiUEaJaW0MJbB6VCGiNFbKkFrr4ehvfLTCQEgjtbwdL2JKZdhRqqhSnfuu6ckjP9AqRo9rjXApXbtPKaRlcudmzMLF6/vVH1te+PYFR5K6WWDn5ZlbOKictkzgqzxtqai6W0zfKBRqrdW2uD6TyeBOpVDa5FjaoC3aLOS4BFSIJHFTBu0sVPyftnh+KxXFbqVkE6zi8jiSwOlqQ8mhTdq2oXznPOaecmmcndWuGwZ22Htughm9v9L4zH2pNsxpjwFXE8YiRru51OaRCRjKCdAxslg3eDnwnLJRrbJ+MXD1MLC3wWuRLDLV9rheOwo896pUJtm4FDiyWTySTfz5GzjY6bUTAtYZvAa9XZVJGh1QWVbc8HGHTMO6eysjOUY1LgFaLU8JvdwLPPngUHBUyWRw8cL3FC7VqV1AxwFgwRi39AZCt2SXl9DOPqBvyGPSKaj1BYenA8vmAXUzgZMygfk+cAbSUQe0S6C9b52MonUTXLTn+wjQ/y7bNXVK1vtCOKHHtuY97eoHHo0N5bWl6TG/p0XLpZ78PhFOz7kCLA0OT9nuJnSQtTKKxnCovinWLKp1fuqvvgCza0RBlnrSRGBNPTBBpnuoCQhx2lK6ZXl7yoWKvoTPe14eA+Zonx+JFVy4Dzz9mFWYJp7vkYshBxVPH/4D1LRi4LXBdMWHmRMT3vEAePYpJzIrVx4L9I1bVk7LyOCe4vU1mMSwHAOfuM2b4hFr2QSsWgjcfllW9OYHWzX5UKRXRDFHTAGRuI5KdpbwaAUgkLBoT51QSTM8mJjxkxUAx2WSDLIoNMH8PoqwzaUVQIMMO/O0DgTAzEDW/WwAPNMkbdvZBwXmHtuwcUv2mAWa2WAVPc966s4wPR7bnvMddELvWmonmPVx+QvjnAQvmWr/afsLtJkfavwu5egAAAAASUVORK5CYII=');
+        background-size: cover;
+      }
+    }
+  }
+}
+checkbox .wx-checkbox-input {
+  width: 25rpx;
+  height: 25rpx;
+  position: relative;
+  top: -1rpx;
+}
+.space {
+  margin-top: 20rpx !important;
+}
+.goods-container {
+  height: 100%;
+  overflow: hidden;
+  background: white;
+  margin-top: 20rpx;
+  .list {
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 30rpx;
+    background: wihte;
+    .item {
+      display: flex;
+      margin-bottom: 0;
+      padding: 30rpx 0;
+      position: relative;
+      border-bottom: 1rpx solid #f3f3f3;
+      .thumb {
+        width: 192rpx;
+        height: 144rpx;
+        image {
+          width: 100%;
+          overflow: hidden;
+          height: 100%;
+        }
+      }
+      .goodsDesc {
+        width: 470rpx;
+        margin-left: 26rpx;
+        .title {
+          font-size: 28rpx;
+          color: #353538;
+        }
+        .desc {
+          width: 470rpx;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          font-size: 24rpx;
+          color: #aaa;
+          margin-top: 9rpx;
+        }
+      }
+    }
+  }
+}
+</style>
+
+

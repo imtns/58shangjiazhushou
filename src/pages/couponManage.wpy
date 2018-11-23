@@ -60,7 +60,10 @@
         </view>
 
         <view class="options">
-            <button class="edit" @tap="edit">{{ isEditing ? '取消' : '编辑' }}</button>
+            <button
+                wx:if="{{ coupons.length }}"
+                class="edit"
+                @tap="edit">{{ isEditing ? '取消' : '编辑' }}</button>
             <button wx:if="{{ isEditing }}" @tap="deleteItems">删除</button>
             <button wx:else @tap="addCoupon">添加优惠券</button>
         </view>
@@ -234,6 +237,7 @@ button::after {
         border-radius: 0;
         color: #FFF;
         background-color: #4e88ff;
+        flex-grow: 1;
 
         &::after {
             border: none;

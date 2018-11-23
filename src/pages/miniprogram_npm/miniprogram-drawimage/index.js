@@ -7,7 +7,7 @@ const px = (n) => {
     if (typeof n === 'undefined') return void 0;
     if (!n) return 0;
     return parseInt(n, 10) / 750 * windowWidth;
-}
+};
 
 /**
     shape Radial/Linear
@@ -46,7 +46,7 @@ const roundRect = (ctx, px, py, width, height, radius, lineWidth) => {
     ctx.lineTo(x, y + r);
     ctx.arc(x + r, y + r, r, Math.PI, Math.PI * 1.5);
     ctx.clip();
-}
+};
 
 const formatBorder = (border) => {
     if (!border) return [0, 'rgba(0,0,0,0)'];
@@ -54,7 +54,7 @@ const formatBorder = (border) => {
     borderArr[0] = px(borderArr[0]);
     if (!borderArr[1]) borderArr[1] = 'rgba(0,0,0,0)';
     return borderArr;
-}
+};
 
 const formatPadding = (padding) => {
     let paddingArr = [];
@@ -65,7 +65,7 @@ const formatPadding = (padding) => {
         paddingArr = padding.split(' ').map(p => px(p));
     }
     return paddingArr;
-}
+};
 
 const formatText = (ctx, text, pxMW, pxLH) => {
     const textArr = [];
@@ -90,8 +90,8 @@ const formatText = (ctx, text, pxMW, pxLH) => {
     const textWidth = textArr.length > 1 ? pxMW : ctx.measureText(text).width;
     const textHeight = textArr.length * pxLH;
 
-    return {textArr, textWidth, textHeight};
-}
+    return { textArr, textWidth, textHeight };
+};
 
 function drawed() {
     const {
@@ -113,7 +113,7 @@ function drawed() {
                 imageUrl: res.tempFilePath,
             });
             self.triggerEvent('toTempFile', res);
-        }
+        },
     }, this);
 }
 
@@ -159,7 +159,7 @@ Component({
                 dy = 0,
                 dWidth = width,
                 dHeight = height,
-                color
+                color,
             } = background;
             // 背景颜色
             if (color) {
@@ -167,7 +167,7 @@ Component({
                     start,
                     end,
                     colorStop,
-                    shape = 'Linear'
+                    shape = 'Linear',
                 } = color;
                 fillColor(ctx, start, end, colorStop, shape);
             }
@@ -192,6 +192,8 @@ Component({
                     radius = 0,
                     padding = 0,
                     bgColor = null,
+                    ellipsis = false,
+                    lineClamp = 1,
                 } = layer;
                 const pxx = px(x);
                 const pxy = px(y);
@@ -206,7 +208,7 @@ Component({
                 // padding 上右下左
                 const [pt, pr, pb, pl] = formatPadding(padding);
 
-                const {textArr, textWidth, textHeight} = formatText(ctx, text, pxMW, pxLH);
+                let { textArr, textWidth, textHeight } = formatText(ctx, text, pxMW, pxLH);
 
                 // 背景
                 // if (bgColor) {
@@ -235,16 +237,22 @@ Component({
                     realY = pxy - pt;
                 }
 
-                // 边框
-                ctx.save();
-                ctx.setStrokeStyle(bc);
-                roundRect(ctx, realX, realY, realWidth, realHeight, pxRadius, pxbw);
-                if (bgColor) {
-                    ctx.setFillStyle(bgColor);
-                    ctx.fillRect(realX, realY, realWidth, realHeight);
+                // 多行文本超出添加省略号
+                if (ellipsis && textArr.length > lineClamp) {
+                    textArr = textArr.slice(0, lineClamp);
+                    textArr[lineClamp - 1] = textArr[lineClamp - 1].replace(/.{2}$/, '...');
                 }
-                ctx.stroke();
-                ctx.restore();
+
+                // 边框
+                // ctx.save();
+                // ctx.setStrokeStyle(bc);
+                // roundRect(ctx, realX, realY, realWidth, realHeight, pxRadius, pxbw);
+                // if (bgColor) {
+                //     ctx.setFillStyle(bgColor);
+                //     ctx.fillRect(realX, realY, realWidth, realHeight);
+                // }
+                // ctx.stroke();
+                // ctx.restore();
 
                 ctx.setFillStyle(color);
                 ctx.setTextBaseline('top');
@@ -259,7 +267,7 @@ Component({
                     start,
                     end,
                     colorStop,
-                    shape = 'Linear'
+                    shape = 'Linear',
                 } = layer;
                 fillColor(ctx, start, end, colorStop, shape);
             }
@@ -272,7 +280,7 @@ Component({
                     radius = 0,
                     dWidth = width,
                     dHeight = height,
-                    border
+                    border,
                 } = layer;
                 const [pxbw, bc] = formatBorder(border);
                 const [pxdx, pxdy, pxdWidth, pxdHeight, pxdRadius] =
@@ -291,11 +299,13 @@ Component({
         });
 
         ctx.draw(false, () => {
-            drawed.call(this);
+            setTimeout(() => {
+                drawed.call(this);
+            }, 700);
         });
 
         setTimeout(() => {
             drawed.call(this);
         }, 3000);
-    }
+    },
 });
