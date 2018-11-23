@@ -925,7 +925,6 @@ export default class Home extends wepy.page {
   setGlobalMpId(id) {
       if (id) {
           wepy.setStorageSync('current_mpid', id);
-          console.log('----------set success-----------');
       }
   }
   checkBeforeJump(text) {
@@ -1211,7 +1210,6 @@ export default class Home extends wepy.page {
    * 红包推广
    */
   async initSpreadRedpacket() {
-      console.log('-----business----------');
       const mpId = wepy.getStorageSync('current_mpid');
       const { data } = await get(CHECK_CANSPREAD, { mpId });
       // 判断是否有推广功能
