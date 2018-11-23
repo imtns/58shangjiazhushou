@@ -98,7 +98,7 @@
                 }, SPREAD_REDPACKET.code),
             ];
             imgs = imgs.concat(moment.pics.splice(0, 4).map((item, index) => ({
-                url: item,
+                url: `${item}?crop=1&w=140&h=140`,
                 dx: 80 + (index * 150),
                 dy: 430,
                 dWidth: 140,
