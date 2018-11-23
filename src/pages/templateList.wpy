@@ -138,7 +138,7 @@ export default class Index extends wepy.page {
               wx.setStorageSync('releaseId', data.id);
           }
           wx.navigateTo({
-              url: 'index/index',
+              url: '/packageEditor/pages/index/index',
           });
       },
       async publish(e) {

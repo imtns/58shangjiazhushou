@@ -1,0 +1,37 @@
+<!--index.wxml-->
+<import src="../mod/information/information.wxml" />
+<import src="../mod/imageSwiper/imageSwiper.wxml" />
+<import src="../mod/images/images.wxml" />
+<import src="../mod/text/text.wxml" />
+<import src="../mod/title/title.wxml" />
+<import src="../mod/video/video.wxml" />
+<import src="../mod/call/call.wxml" />
+<import src="../mod/article/article.wxml" />
+<import src="../mod/services/services.wxml" />
+<import src="../mod/goods/goods.wxml" />
+<import src="../mod/evaluation/evaluation.wxml" />
+<import src="../mod/reserve/reserve.wxml" />
+<import src="../mod/coupon/coupon.wxml" />
+<import src="../mod/me/me.wxml" />
+<import src="../mod/tabBar/tabBar.wxml" />
+
+<import src="../mod/pay/pay.wxml" />
+<import src="../mod/branch/branch.wxml" />
+<view class="container {{ isIphoneX ? 'iphonex' : '' }}">
+    <view class="btn-area"> 
+      <view class="cancel" bindtap="cancelClick" >{{isEditing?'取消':'发布'}}</view>
+      <view class="save" bindtap="editClick">{{isEditing?'保存':'编辑'}}</view> 
+  </view>
+    <block wx:for="{{page_data}}" wx:for-item="component" wx:key="{{component.name}}">
+        <block wx:if="{{!env58 && component.name=='pay'}}">
+        </block>
+        <block wx:else>
+            <template is="{{component.name}}" data="{{...component.props, index, env58, tabBarItems, isIphoneX}}" />
+            <view class="layer" hidden="{{!layer}}"></view>
+            <view class="edit-wrapper"  hidden="{{!editLayer[component.id]}}"  >
+                <view class="edit-btn" capture-catch:tap="goEdit" data-name="{{component.name}}" data-id="{{component.id}}">{{noEdit?'暂时不能编辑':'去编辑'}}</view>
+            </view>   
+        </block>
+    </block>
+</view>
+<template is="tabBar" data="{{tabBarItems, pageType, isIphoneX}}" wx:if="{{ env58 && tabBarItems.length > 1 }}" />
