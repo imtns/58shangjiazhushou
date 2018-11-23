@@ -12,7 +12,7 @@
                             <view wx:if="{{visitInfo.otherInfo.gender}}" class="{{visitInfo.otherInfo.gender === 1 ? 'male' : 'female'}}"></view>
                         </view>
                         <view class="address">{{visitInfo.otherInfo.city}}</view>
-                        <view class="note">添加备注</view>
+                        <view class="note" @tap="showDialog">添加备注</view>
                     </view>
                     <view class="from">
                         <view class="from-text">来自买智超的分享</view>
@@ -45,6 +45,18 @@
                 <text class="action">{{item.action}}</text>
             </view>
         </view>
+        <view class="mask" wx:if="{{showPop}}">
+            <view class="pop">
+                <view class="pop-title">编辑备注</view>
+                <view class="pop-body">
+                    <input placeholder="请输入备注信息" cursor-spacing="80" @input="input" value="{{content}}"></input>
+                </view>
+                <view class="pop-options">
+                    <view class="pop-btn" @tap="close">取消</view>
+                    <view class="pop-btn enter" @tap="add">确定</view>
+                </view>
+            </view>
+        </view>
     </scroll-view>
 </template>
 
@@ -66,6 +78,8 @@ export default class visitorInfo extends wepy.page {
     data = {
         cardId: '',
         consumerId: '',
+        showPop: false,
+        content: '',
         sendParams: {
             pageNum: 1,
             pageSize: 10,
@@ -89,6 +103,32 @@ export default class visitorInfo extends wepy.page {
         },
         sendMsg() {
             SendClickLog('sjzh_click_visitorInfo_sendMsg');
+        },
+        showDialog() {
+            this.showPop = true;
+            this.$apply();
+        },
+        input(e) {
+            this.content = e.detail.value;
+            this.$apply();
+        },
+        close() {
+            this.showPop = false;
+            this.$apply();
+        },
+        async add() {
+            const content = this.content.trim();
+            if (!content) {
+                toast('请填写分组名称');
+                return;
+            }
+            if (content.length > 15) {
+                toast('分组名称过长');
+                return;
+            }
+            this.$emit('addGroup', content);
+            this.content = '';
+            this.$apply();
         },
     }
     onLoad (option) {
@@ -329,6 +369,66 @@ view,scroll-view{
         color: #666;
         background: #f6f6f6;
         margin-right: 30rpx;
+    }
+}
+.mask{
+    width:100%;
+    height:100%;
+    position:fixed;
+    background:rgba(0,0,0,.5);
+    z-index:9999;
+    left:0;top:0;
+}
+.pop{
+    width:560rpx;
+    height:291rpx;
+    position:fixed;
+    background:#fff;
+    border-radius: 8rpx;
+    left:0;
+    top:0;
+    right:0;
+    bottom:0;
+    margin:auto;
+    z-index:9999;
+    .pop-title{
+        font-family: PingFangSC-Regular;
+        font-size: 36rpx;
+        color: #000000;
+        text-align: center;
+        height:50rpx;
+        line-height:50rpx;
+        margin:20rpx 20rpx 0;
+    }
+    .pop-body input{
+        background: #F6F6F6;
+        border-radius: 4rpx;
+        font-family: PingFangSC-Regular;
+        font-size: 28rpx;
+        color: #888888;
+        margin:30rpx 20rpx;
+        padding:0 20rpx;
+        box-sizing:border-box;
+        height:60rpx;
+        line-height:60rpx;
+    }
+    .pop-options{
+        display:flex;
+        border-top:1rpx solid #E5E5E5;
+        .pop-btn{
+            flex:1;
+            height:100rpx;
+            line-height:100rpx;
+            text-align:center;
+            font-family: PingFangSC-Regular;
+            font-size: 36rpx;
+            color: #666666;
+            text-align: center;
+        }
+        .enter.pop-btn{
+            color: #4E88FF;
+            border-left:1rpx solid #E5E5E5;
+        }
     }
 }
 </style>
