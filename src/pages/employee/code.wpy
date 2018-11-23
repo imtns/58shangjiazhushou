@@ -71,7 +71,10 @@ export default class Code extends wepy.page {
           if (postData.code) {
               toast('登录成功');
               wepy.setStorageSync('isEmployee', true);
-              wepy.setStorageSync('employee', JSON.stringify(data));
+              wepy.setStorageSync('cardSession', data.cardSession);
+              wepy.setStorageSync('isAuto', data.isAuto);
+              wepy.setStorageSync('cardId', data.cardId);
+              //   wepy.setStorageSync('employee', JSON.stringify(data));
               await sleep(1000);
               wepy.reLaunch({ url: '/pages/home' });
           }

@@ -2,7 +2,7 @@
     <view class="login-container">
         <view class="login-home" style="left:{{left}}">
             <image class="logo" src="/pages/assets/logo.png" mode="aspectFit"></image>
-            <view class="input"> <input placeholder-class="phcolor" value="{{mobile}}" @input="inputTap" type="number" maxlength="13" placeholder="请输入手机号" auto-focus /></view>
+            <view class="input"> <input placeholder-class="phcolor" value="{{mobile}}" @input="inputTap" type="number" maxlength="13" placeholder="请输入手机号" auto-focus/></view>
             <button class="login-button" @tap="login" disabled="{{disabled}}">登录</button>
         </view>
     </view>

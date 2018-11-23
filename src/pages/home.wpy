@@ -4,8 +4,8 @@
             <image mode="aspectFit" class="switchIcon" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/switchAccount.png?w=68"></image>
             <text class="switchName">{{currentAccountType}}账号</text>
         </view>
-        <block wx:if="{{currentAccountType === '员工'}}">
-            <employee></employee>
+        <block wx:if="{{isEmployee}}">
+            <employee :isEmployee.sync="isEmployee" :isAuto.sync="isAuto" :cardId.sync="cardId"></employee>
         </block>
         <view wx:else class="dianzhang">
             <guideMask :show.sync="maskShow" :type="maskType"></guideMask>
@@ -305,8 +305,11 @@ export default class Home extends wepy.page {
       everydayShow: false,
       // 每日一言 是否显示每日一言icon
       everydayIconShow: false,
+      isEmployee: false,
       // 是否是员工
       currentAccountType: '店长',
+      isAuto: 0,
+      cardId: '',
   };
   events = {
       changeIdentity() {
@@ -321,9 +324,11 @@ export default class Home extends wepy.page {
       },
   }
   methods = {
-      switchEmployee() {
-          this.currentAccountType = this.currentAccountType === '店长' ? '员工' : '店长';
-          wepy.setStorageSync('isEmployee', this.currentAccountType === '员工' || false);
+      async switchEmployee() {
+          this.isEmployee = !this.isEmployee;
+          this.currentAccountType = this.isEmployee ? '店长' : '员工';
+          await this.chatLogin();
+          wepy.setStorageSync('isEmployee', this.isEmployee || false);
       },
       handleLogin() {
           loginHelper.goLogin();
@@ -545,7 +550,7 @@ export default class Home extends wepy.page {
                   console.log(err);
               });
 
-          await this.loadData();
+          //   await this.loadData();
           if (!this.userLogin) return;
           // 每日一言 打开弹窗
           const cardId = wepy.getStorageSync('current_cardId');
@@ -576,9 +581,10 @@ export default class Home extends wepy.page {
   }
   async onShow() {
       try {
-          if (wepy.getStorageSync('isEmployee')) {
-              this.currentAccountType = '员工';
-          }
+          this.currentAccountType = wepy.getStorageSync('isEmployee') ? '店长' : '员工';
+          this.isEmployee = wepy.getStorageSync('isEmployee');
+          this.isAuto = wepy.getStorageSync('isAuto') || 0;
+          this.cardId = wepy.getStorageSync('cardId') || '';
           await this.loadData();
           if (!this.userLogin) return;
           SendClickLog('sjzh_click_home_onload');
@@ -591,6 +597,7 @@ export default class Home extends wepy.page {
               this.showModal = true;
           }
           this.$apply();
+          this.$broadcast('getData');
       } catch (err) {
           console.log(err);
       }
@@ -1096,8 +1103,8 @@ export default class Home extends wepy.page {
               contactList: [],
           };
           Object.assign(globalData.chat, chat);
-
-          const { cardId = '' } = this.business.selected;
+          const cardId = this.isEmployee ? wepy.getStorageSync('cardId') : this.business.selected.cardId;
+          console.log(cardId);
           if (!cardId) return;
           /**
                 tim 包含 sdkAppID identifier userSig

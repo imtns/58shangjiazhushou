@@ -4,15 +4,15 @@
         <view class="employee-info-block">
             <view class="info-block">
                 <text>手机</text>
-                <input type="number" maxlength="11" @input="setValue('mobile')" placeholder="请填写手机号" auto-focus />
+                <input type="number" maxlength="11" @input="setValue('mobile')" placeholder="请填写手机号" auto-focus/>
             </view>
             <view class="info-block">
                 <text>姓名</text>
-                <input type="text" maxlength="10" @input="setValue('realName')" placeholder="请填写姓名" />
+                <input type="text" maxlength="10" @input="setValue('realName')" placeholder="请填写姓名"/>
             </view>
             <view class="info-block">
                 <text>职位</text>
-                <input type="text" maxlength="12" @input="setValue('position')" placeholder="请填写职位" />
+                <input type="text" maxlength="12" @input="setValue('position')" placeholder="请填写职位"/>
             </view>
         </view>
         <button class="add-button" disabled="{{disabled}}" @tap="add">创建名片</button>
@@ -67,10 +67,12 @@ export default class Index extends wepy.page {
                     delta: 1, // 返回的页面数，如果 delta 大于现有页面数，则返回到首页,
                 });
             } catch (err) {
+                this.modalShow = !this.modalShow;
                 this.modalContent = `${
                     this.form.realName
                 }已为其他店长的员工， \r\n 不可再次创建`;
                 this.added = true;
+                this.$apply();
             }
         },
     }
