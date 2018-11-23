@@ -27,7 +27,7 @@
                             <view class="visitor_time">1小时前访问过你</view>
                         </view>
                         <view class="visitor_tel">
-                            <view class="visitor_make_phone">拨打电话</view>
+                            <view class="visitor_make_phone" @tap="bindPhoneCall" data-mobile="{{visitInfo.mobile}}">拨打电话</view>
                         </view>
                     </view>
                 </view>
@@ -45,6 +45,7 @@
 <script>
 import wepy from 'wepy';
 import { CONSUMER_RECORDS } from '../utils/url';
+// import { makeTelCall } from '../utils/service';
 import { post } from '../utils/ajax';
 import { alert } from '../utils';
 import { SendClickLog } from '../utils/maidian';

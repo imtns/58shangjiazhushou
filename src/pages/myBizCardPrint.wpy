@@ -1,7 +1,12 @@
 <template>
-    <view class="choseStyle">
-        <drawimage wx:if="{{showCanvas}}" bind:toTempFile="toTempFile1" id="drawStyle1" width="530" height="940" background="{{firstStyle.background}}" layers="{{firstStyle.layers}}" />
-        <button class="saveCard" bindtap="saveImgToPhotosAlbum">保存</button>
+    <view class="myCardPrint">
+        <view wx:if="{{showCanvas}}">
+            <drawimage bind:toTempFile="toTempFile1" id="drawStyle1" width="586" height="368" background="{{cardOppBg}}" layers="{{firstStyle.layers}}" />
+            <button class="saveCard" bindtap="saveImgToPhotosAlbum">下载名片（正面）</button>
+            <drawimage bind:toTempFile="toTempFile1" id="drawStyle2" width="586" height="368" background="{{cardPosBg}}" layers="{{firstStyle.layers}}" />
+            <button class="saveCard" bindtap="saveImgToPhotosAlbum">下载名片（反面）</button>
+        </view>
+        <view class="print-tip">这是58为你特制的高科技名片哦，快下载后打印出来发送给好友，可获得特别商机哦</view>
     </view>
 </template>
 
@@ -22,10 +27,8 @@ export default class choseImageStyle extends wepy.page {
         },
     }
     data = {
-        tmpLogo: '',
-        tmpQrcode: '',
-        headImg: '',
-        mycardCode: '',
+        cardOppBg: '',
+        cardPosBg: '',
         showCanvas: false,
         styleImage1: '',
         styleImage2: '',
@@ -155,16 +158,36 @@ export default class choseImageStyle extends wepy.page {
         that.$apply();
     }
     async touchImage() {
-        const cardStyleBoxBg = 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/card_chosestyle_box_bg.png';
-        const cardStyleBg = 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/card_style_bg.png';
+        const cardOppBg = 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/card_opposite.png';
+        const cardPosBg = 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/card_positive.png';
         // 转成本地路径
-        this.tmpLogo = await getTmpFilePath(cardStyleBg);
-        this.tmpQrcode = await getTmpFilePath(cardStyleBoxBg);
-        this.headImg = await getTmpFilePath(this.headImg);
+        this.cardOppBg = await getTmpFilePath(cardOppBg);
+        this.cardPosBg = await getTmpFilePath(cardPosBg);
+        console.log(this.cardOppBg);
+        console.log(this.cardPosBg);
         this.$apply();
     }
 }
 </script>
 
 <style lang="scss">
+#drawStyle1,
+#drawStyle2{
+    margin: auto;
+}
+.saveCard{
+    font-size: 32rpx;
+    color: #fff;
+    text-align: center;
+    width: 586rpx;
+    line-height: 94rpx;
+    background: #4E88FF;
+    border-radius: 4px;
+}
+.print-tip{
+    font-size: 24rpx;
+    color: #999;
+    width:586rpx;
+    margin: 40rpx auto 0;
+}
 </style>
