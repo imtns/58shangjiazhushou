@@ -82,3 +82,9 @@ export const EMPLOYEE_LOGIN = '/mpCardBusiness/subCard/login'; // 员工登录
 export const EMPLOYEE_CARD_LIST = '/mpCardBusiness/myTeamForU'; // 员工名片列表
 export const EMPLOYEE_CARD_ADD = '/mpCardBusiness/saveStaffCard'; // 员工名片添加
 export const EMPLOYEE_CARD_GET = '/mpCardBusiness/myCardByCardId'; // 员工名片查询
+// 红包推广活动
+export const LOAD_SPREADRP_INFO = '/businessMoment/get'; // 获取推广信息
+export const CHECK_CANSPREAD = '/businessMoment/visit'; // 判断是否第一次进入首页&是否有推广权限
+
+// 收集formId
+export const SAVE_FORMID = '/formidcollect/collect'; // formid收集

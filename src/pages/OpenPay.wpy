@@ -75,7 +75,6 @@ import { get } from '../utils/ajax';
 import Mixin from '../mixin';
 
 export default class OpenPay extends wepy.page {
-    mixins = [Mixin]
     config = {
         navigationBarTitleText: '开通支付',
         disableScroll: true,
@@ -118,24 +117,14 @@ export default class OpenPay extends wepy.page {
         const OpenPayStatus = wepy.getStorageSync('OpenPay');
         if (OpenPayStatus !== '0') return;
         wepy.removeStorageSync('OpenPay');
-        const { state, msg } = await get('/mpInfo/agree');
-        if (state !== 100) toast(msg);
+        get('/mpInfo/agree')
+            .catch(err => toast(err));
     }
     async getOpenedInfo () {
         // 获取用户是否开通支付
-        // if更改支收款微信
-        // else开通支付
-        // const [e, res] = await get(`${appinfoApi}/${mpid}`);
-        // if (e) {
-        //     toast(e);
-        //     return;
-        // }
-        const { state, msg, data } = await get('/mplogic/getPayOpenStatus');
-        if (state !== 100) {
-            toast(msg);
-            return;
-        }
-        const { payOpenStatus, payOpenType } = data;
+        const { data: res } = await get('/mplogic/getPayOpenStatus')
+            .catch(err => toast(err));
+        const { payOpenStatus, payOpenType } = res;
         Object.assign(this, {
             payOpenStatus,
             payOpenType,

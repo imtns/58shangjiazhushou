@@ -1,0 +1,162 @@
+<template>
+    <view class="spread-modal" wx:if="{{show}}">
+        <!-- 推广按钮 -->
+        <form data-name="redpacketIconButton" report-submit="true" @submit="handleFormidCollect">
+            <button class="spread-float" hover-class="none" form-type="submit" @tap="openSpreadPage"></button>
+        </form>
+        <!-- 推广入口广告 -->
+        <block wx:if="{{showAd||first}}">
+            <view class="spread-ad" @touchmove.stop="handleStopScroll">
+                <view class="spread-ad-body" />
+                <form data-name="redpacketWindowButton" report-submit="true" @submit="handleFormidCollect">
+                    <button class="spread-ad-btn" hover-class="none" form-type="submit" @tap="openSpreadPage">立即免费推广</button>
+                </form>
+                <view class="spread-ad-close" hover-class="none" form-type="submit" @tap="handleClose"></view>
+            </view>
+        </block>
+    </view>
+</template>
+<script>
+    import wepy from 'wepy';
+    import { post } from '../utils/ajax';
+    import { SAVE_FORMID } from '../utils/url';
+    import { SendEventLog } from '../utils/eventLog';
+
+    export default class SpreadModal extends wepy.component {
+        data = {
+            showAd: false, // 推广入口广告弹窗是否显示
+            link: './activity/spreadRedpacket', // 跳转的页面
+        }
+        props = {
+            show: {
+                type: Boolean,
+                default: false,
+            },
+            first: {
+                type: Boolean,
+                default: false,
+            },
+            userID: {
+                type: String,
+                default: '',
+            },
+        }
+        methods = {
+            /**
+             * 跳转前往推广页
+             */
+            openSpreadPage() {
+                // 跳转后关闭弹窗
+                const self = this;
+                setTimeout(() => {
+                    self.methods.handleClose.call(self);
+                }, 1000);
+                // 跳转
+                wepy.navigateTo({ url: `${this.link}` });
+            },
+            /**
+             * 关闭广告弹窗
+             */
+            handleClose(auto) {
+                this.showAd = false;
+                this.first = false;
+                this.$apply();
+                auto && SendEventLog({
+                    page: 'home',
+                    button: 'redpacketWindowClose',
+                    window: 'redpacketWindow',
+                });
+            },
+            /**
+             * 弹窗显示时阻止后面页面的滑动
+             */
+            handleStopScroll() {
+                return false;
+            },
+            /**
+             * formid收集
+             */
+            handleFormidCollect(e) {
+                const { formId } = e.detail;
+                if (!formId) return;
+                SendEventLog({
+                    page: 'home',
+                    button: e.target.dataset.name || '',
+                });
+                post(SAVE_FORMID, {
+                    consumerId: this.userID,
+                    formId,
+                });
+            },
+        }
+    }
+</script>
+<style lang="scss" scoped>
+    $requestPath: 'http://img.58cdn.com.cn/lbg/jianzhan/images';
+    $zIndex: 101;
+    @mixin bg($pic, $size: cover) {
+        background: url('#{$requestPath}/#{$pic}.png') center no-repeat;
+        background-size: $size;
+    }
+    .spread-float {
+        position: fixed;
+        right: 10rpx;
+        bottom: 100rpx;
+        padding: 0;
+        width: 185rpx;
+        height: 127rpx;
+        @include bg('spread-redpacket-icon', contain);
+        animation: redpacket-shake-animation 3s linear infinite;
+    }
+    .spread-ad {
+        z-index: $zIndex;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: block;
+        background: rgba(0, 0, 0, 0.7);
+    }
+    .spread-ad-body {
+        margin: 195rpx auto 0;
+        width: 500rpx;
+        height: 670rpx;
+        border-radius: 20rpx;
+        @include bg('spread-redpacket-bg');
+        background-color: #f5f5f5;
+    }
+    .spread-ad-btn {
+        margin: 64rpx auto 0;
+        width: 325rpx;
+        height: 90rpx;
+        color: #fff;
+        border-radius: 70rpx;
+        @include bg('btn-yellow-bg');
+    }
+    .spread-ad-close {
+        position: absolute;
+        top: 60rpx;
+        right: 60rpx;
+        width: 58rpx;
+        height: 58rpx;
+        @include bg('home-cancle-btn');
+    }
+    @keyframes redpacket-shake-animation {
+        4% {
+            transform: rotate(15deg)
+        }
+        8% {
+            transform: rotate(-10deg)
+        }
+        12% {
+            transform: rotate(5deg)
+        }
+        16% {
+            transform: rotate(-5deg)
+        }
+        20%, 100% {
+            transform: rotate(0deg)
+        }
+    }
+</style>

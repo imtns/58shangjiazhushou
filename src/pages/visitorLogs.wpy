@@ -192,6 +192,7 @@ page{
                 height: 24rpx;
                 background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_female.png) no-repeat left center;
                 background-size: contain;
+                vertical-align: middle;
             }
             .visitor_from{
                 line-height: 42rpx;

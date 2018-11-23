@@ -1,0 +1,216 @@
+<template>
+    <view class="text-editLayer">
+        <view class="saveBar">
+            <text class="label" @tap="addText">+添加文本</text>
+            <text class="save" @tap="save">保存</text>
+        </view>
+    </view>
+    <view class="text-edit-content">
+        <repeat for="{{pageData[0].props.cfg.texts}}" index="index" item="item">
+            <view class="edit-text-section">
+                <view class="label">文本内容</view>
+                <view class="del" data-index="{{index}}" @tap="del">
+                    <image src="../assets/text-del.png" mode="aspectFill" />
+                </view>
+                <view class="text-content">
+                    <textarea bindinput="textAreaInput" data-index="{{index}}" value="{{pageData[0].props.cfg.texts[index].text}}" maxlength="42" />
+                    <text class="textLimit">{{textLimit[index] || 0}}/42</text>
+                    </view>
+                </view> 
+            </repeat>
+        </view>
+</template>
+<script>
+import wepy from 'wepy';
+import Mixin from './mixin';
+import { toast } from '../../../utils';
+import { globalData } from '../../../utils/globalData';
+
+export default class TextEdit extends wepy.page {
+    config = {
+        navigationBarTitleText: '文本编辑',
+    };
+    mixins = [Mixin];
+
+    data = {
+        list: [1],
+        textLength: 3,
+        textLimit: [],
+        theme: '',
+    };
+    onLoad() {
+        [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
+        if (Object.keys(this.pageData[0].props.cfg).length > 0) {
+            this.pageData[0].props.cfg.texts.forEach(item => {
+                this.textLimit.push(item.text.length);
+            });
+        }
+    }
+    methods = {
+        textAreaInput(e) {
+            const { index } = e.currentTarget.dataset;
+            this.textLimit[index] = e.detail.value.length;
+            this.pageData[0].props.cfg.texts[index].text = e.detail.value;
+        },
+        del(e) {
+            const { index } = e.currentTarget.dataset;
+            this.pageData[0].props.cfg.texts.splice(index, 1);
+            this.textLimit.splice(index, 1);
+        },
+        addText() {
+            if (this.pageData[0].props.cfg.texts.length >= 5) {
+                toast('最多添加5条');
+                return;
+            }
+            this.pageData[0].props.cfg.texts.push({
+                text: '',
+                item: 1,
+            });
+            this.textLimit.push(0);
+        },
+        save() {
+            //   const empty = this.pageData[0].props.cfg.texts.every((element) => element.text);
+            this.pageData[0].props.cfg.texts = this.pageData[0].props.cfg.texts
+                .filter(item => item.text.trim());
+            if (
+                this.pageData[0].props.cfg.texts
+                    .filter(item => item.text !== '')
+                    .length === 0
+            ) {
+                toast('请至少输入一行文本');
+                return;
+            }
+            this.pageData[0].props.cfg.texts.forEach(item => {
+                item.text = item.text.trim();
+            });
+            this.pageData[0].props.cfg.theme = '2';
+            this.pageModule.cfg = this.pageData[0].props.cfg;
+            [globalData.pageData[this.pageIndex]] = this.pageData;
+            globalData.modules[this.pageIndex] = this.pageModule;
+            wx.navigateBack({
+                delta: 1,
+            });
+        },
+    };
+}
+</script>
+<style lang="scss">
+page {
+    background: rgb(91, 93, 95);
+}
+.text-edit-content {
+    width: 100vw;
+    min-height: 400rpx;
+    position: relative;
+    top: 0;
+    .edit-text-section {
+        margin-top: 20rpx;
+        font-size: 30rpx;
+        position: relative;
+        background: #545658;
+        padding: 30rpx;
+        .del {
+            position: absolute;
+            top: 45rpx;
+            right: 30rpx;
+            width: 28rpx;
+            height: 28rpx;
+            image {
+                width: 100%;
+                height: 100%;
+            }
+        }
+        .label {
+            color: #999;
+            padding: 20rpx 0;
+        }
+        .text-content {
+            width: 690rpx;
+            height: 166rpx;
+            color: #dbdbdb;
+            textarea {
+                height: 110rpx;
+                width: 100%;
+            }
+        }
+        .textLimit {
+            font-size: 24rpx;
+            color: #999;
+            position: absolute;
+            right: 30rpx;
+            bottom: 20rpx;
+        }
+    }
+}
+.text-editLayer {
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    top: 0;
+    background: rgb(91, 93, 95);
+    z-index: 9999;
+    padding: 0 30rpx;
+    .radio {
+        font-size: 28rpx;
+        radio .wx-radio-input {
+            width: 24rpx;
+            height: 24rpx;
+            background: transparent;
+            border: 1rpx solid #bdbdbd;
+            border-radius: 50%;
+        }
+        radio .wx-radio-input.wx-radio-input-checked {
+            background: #4e88ff !important;
+        }
+        radio .wx-radio-input.wx-radio-input-checked::before {
+            font-size: 24rpx;
+            color: #fff;
+        }
+    }
+    .saveBar {
+        height: 86rpx;
+        box-sizing: border-box;
+        margin: 0 -30rpx;
+        padding-right: 30rpx;
+        background: #46484a;
+        color: white;
+        line-height: 86rpx;
+        font-size: 32rpx;
+        .label {
+            width: 200rpx;
+            margin-left: 30rpx;
+            text-align: left;
+        }
+        .save {
+            width: 100rpx;
+            float: right;
+            text-align: right;
+        }
+    }
+    .edit-cell {
+        height: 88rpx;
+        display: flex;
+        font-size: 30rpx;
+        background: #545658;
+        columns: #333333;
+        align-items: center;
+        margin: 0 -30rpx;
+        padding: 0 30rpx;
+        border-bottom: 1rpx solid #585d5f;
+        .edit-label {
+            width: 224rpx;
+            color: #999;
+        }
+        .edit-input {
+            width: 496rpx;
+            color: #d8d8d8;
+            text-align: right;
+        }
+    }
+}
+.space {
+    margin-top: 20rpx !important;
+}
+</style>
+
+

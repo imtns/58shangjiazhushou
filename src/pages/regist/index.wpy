@@ -132,7 +132,7 @@ export default class Index extends wepy.page {
                     }
                 });
 
-                Object.assign(data, { userId: this.userId, formId });
+                Object.assign(data, { inviterUserid: this.userId, formId });
 
                 await post(SAVE_BASICINFO, data);
 

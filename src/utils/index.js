@@ -265,3 +265,12 @@ export const getPathName = (n = 0) => {
 
     return pages[(l - 1) + n].route;
 };
+
+/**
+ * 截取字符串后几位
+ */
+
+export const getString = (str, n) => {
+    if (!n) return str;
+    return str.substring(str.length - n, str.length);
+}
