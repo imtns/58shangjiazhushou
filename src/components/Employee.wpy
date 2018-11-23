@@ -2,33 +2,35 @@
     <view class="index-loaded-header">
         <view class="welcome-block">
             <view wx:if="{{userLogin}}" class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
-            <view wx:else class="welcome-title">欢迎 服务小能手</view>
+            <view wx:else class="welcome-title">欢迎 {{card.realName}}</view>
             <view @tap="changeIdentity" class="item-switch">账号切换</view>
         </view>
         <view class="item-detail">
-            <view class="employee-block"> 
-                <block wx:if="{{isComplete}}">
-                    <image class="icon" mode="aspectFill" src="https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375"></image>
-                    <view class="name">{{card.realName}}</view>
-                    <view class="company">{{card.company}}</view>
-                </block>
-                <block wx:else>
-                    <view class="tip">您还未完善名片信息</view>
-                    <view class="finishCard" @tap="navigate('newBizCard')">去完善名片</view>
-                </block>
-            </view>
-            <view class="viewer-block">
-                <view class="noViewer" wx:if="{{icons.length}}">暂时还没有访客哦~</view>
-                <view class="viewers" wx:else>
-                    <view class="view-number">最近301个人访问过</view>
-                    <view class="viewers-icons">
-                        <repeat for="{{icons}}" key="index" index="index" item="item">
-                            <image mode="aspectFill"  src="{{item}}"></image>
-                        </repeat>
-                    </view>
-                    <image class="arrow" ode="scaleToFill" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/arrow-right.png?w=15"></image>
+            <block wx:if="{{!loading}}">
+                <view class="employee-block"> 
+                    <block wx:if="{{card.company}}">
+                        <image class="icon" mode="aspectFill" src="{{'https://pic8.58cdn.com.cn'+card.picImg + '?w=100' || 'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=125&h=125'}}"></image>
+                        <view class="name">{{card.realName}}</view>
+                        <view class="company">{{card.company}}</view>
+                    </block>
+                    <block wx:else>
+                        <view class="tip">您还未完善名片信息</view>
+                        <view class="finishCard" @tap="navigate('newBizCard')">去完善名片</view>
+                    </block>
                 </view>
-            </view>
+                <view class="viewer-block">
+                    <view class="noViewer" wx:if="{{icons.length}}">暂时还没有访客哦~</view>
+                    <view class="viewers" wx:else>
+                        <view class="view-number">最近{{card.visitPicList.length}}个人访问过</view>
+                        <view class="viewers-icons">
+                            <repeat for="{{card.visitPicList}}" key="index" index="index" item="item">
+                                <image mode="aspectFill"  src="{{item}}"></image>
+                            </repeat>
+                        </view>
+                        <image class="arrow" ode="scaleToFill" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/arrow-right.png?w=15"></image>
+                    </view>
+                </view>
+            </block>
         </view>
     </view>
     <view class="index-block" >
@@ -70,65 +72,69 @@ export default class Employee extends wepy.component {
           'https://t1.58cdn.com.cn/bidding/tiny/n_v1bkuymczvuqxfr3drs5gq.jpg?w=160&h=120',
           'https://t1.58cdn.com.cn/bidding/tiny/n_v1bkuymczvuqxfr3drs5gq.jpg?w=160&h=120',
       ],
-      isComplete: false,
       card: {},
       modalShow: false,
       modalContent: '',
       showCancel: true,
+      loading: true,
       modalConfirmText: '去完善',
       modalCancelText: '取消',
       modalTitle: '提示',
-      employee: {},
-      isEmployee: false,
   };
   components = {
       messageBox: MessageBox,
   };
   props = {
-
+      isEmployee: {
+          type: Boolean,
+          default: false,
+      },
+      isAuto: {
+          type: Number,
+          default: 0,
+      },
+      cardId: {
+          type: String,
+          default: '',
+      },
   };
-  onLoad() {
-      this.isEmployee = wepy.getStorageSync('isEmployee');
-      if (this.isEmployee) {
-          this.employee = wepy.getStorageSync('employee');
-          this.getData();
-      }
-  }
-  async getData() {
-      if (this.employee) {
-          this.employee = JSON.parse(this.employee);
-      }
-      this.isComplete = this.employee.isAuto !== 1 || false;
-      if (this.employee.isAuto === 1) {
-          const realName = wepy.getStorageSync('realName');
-          wx.showModal({
-              title: '提示', // 提示的标题,
-              content: `${realName}邀请你完善名片信息`, // 提示的内容,
-              showCancel: true, // 是否显示取消按钮,
-              cancelText: '取消', // 取消按钮的文字，默认为取消，最多 4 个字符,
-              cancelColor: '#000', // 取消按钮的文字颜色,
-              confirmText: '去完善', // 确定按钮的文字，默认为取消，最多 4 个字符,
-              confirmColor: '#4E88FF', // 确定按钮的文字颜色,
-              success: res => {
-                  if (res.confirm) {
-                      this.methods.navigate('newBizCard');
-                  }
-              },
-          });
-      }
-      try {
-          const { data } = await get(EMPLOYEE_CARD_GET, {
-              cardId: this.employee.cardId,
-          });
-          this.card = data;
-          this.$apply();
-      } catch (err) {
-          toast(err);
-      }
-  }
+  onLoad() {}
+  events = {
+      getData: async () => {
+          if (this.isAuto === 1) {
+              const realName = wepy.getStorageSync('realName');
+              wx.showModal({
+                  title: '提示', // 提示的标题,
+                  content: `${realName}邀请你完善名片信息`, // 提示的内容,
+                  showCancel: true, // 是否显示取消按钮,
+                  cancelText: '取消', // 取消按钮的文字，默认为取消，最多 4 个字符,
+                  cancelColor: '#000', // 取消按钮的文字颜色,
+                  confirmText: '去完善', // 确定按钮的文字，默认为取消，最多 4 个字符,
+                  confirmColor: '#4E88FF', // 确定按钮的文字颜色,
+                  success: res => {
+                      if (res.confirm) {
+                          this.methods.navigate(`newBizCard?cardId=${this.cardId}`);
+                      }
+                  },
+              });
+          }
+          try {
+              const { data } = await get(EMPLOYEE_CARD_GET, {
+                  cardId: this.cardId,
+              });
+              this.card = data;
+              this.loading = false;
+              this.$apply();
+          } catch (err) {
+              toast(err);
+          }
+      },
+  };
   methods = {
       navigate(url) {
-          wepy.navigateTo({ url });
+          wepy.navigateTo({
+              url: this.cardId ? `${url}?cardId=${this.cardId}` : url,
+          });
       },
       changeIdentity() {
           this.$emit('changeIdentity');
@@ -140,6 +146,7 @@ export default class Employee extends wepy.component {
 <style lang="scss" scope>
 .home .index-loaded-header .item-detail {
   padding-top: 1rpx !important;
+  min-height: 300rpx;
 }
 .employee-block {
   width: 100%;

@@ -24,19 +24,19 @@
                 <view class="title">团队员工 ({{cardData.cards.length}})</view>
                 <view class="member-block">
                     <repeat for="{{cardData.cards}}" key="index" key="index" index="index" item="item">
-                        <view class="member">
+                        <view class="member" @tap="navigate('detail')">
                             <image class="icon" src="{{item.picImg || 'https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/emptyIcon.png?w=120&h=120'}}" mode="aspectFit"></image>
                             <view class="nameWrap">
                                 <view class="name">{{item.realName}}</view>
                                 <view class="views">访客人数：{{item.totalCount}}</view>
                             </view>
                             <image class="arrow" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png?w=25" mode="aspectFit"> </image>
-                            <button class="notice" open-type="share" data-name="{{item.realName}}" wx:if="{{item.isNew}}">提醒他完善信息</button>
+                            <button class="notice" @tap.stop="empty" open-type="share" data-name="{{item.realName}}" wx:if="{{item.isNew}}">提醒他完善信息</button>
                         </view>
                     </repeat>
                 </view>
             </view>
-            <view class="add-button" @tap="add">点击添加员工名片</view>
+            <view wx:if="{{cardData.cards.length<5}}" class="add-button" @tap="navigate('add')">点击添加员工名片</view>
         </view>
     </view>
 </template>
@@ -78,8 +78,11 @@ export default class Index extends wepy.page {
       }
   }
   methods = {
-      add() {
-          wepy.navigateTo({ url: 'add' });
+      empty() {
+
+      },
+      navigate(url) {
+          wepy.navigateTo({ url });
       },
       onShareAppMessage(e) {
           console.log(e);

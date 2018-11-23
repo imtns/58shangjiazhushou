@@ -20,12 +20,12 @@
                     </view>
                     <view class="other_entery">
                         <view class="otherbox">
-                            <view class="num vote">{{visit}}</view>
+                            <view class="num vote">{{visitUV}}</view>
                             <view class="type">访问</view>
                         </view>
                         <view class="line"></view>
                         <view class="otherbox">
-                            <view class="num vote">{{vote}}</view>
+                            <view class="num vote">{{visitPV}}</view>
                             <view class="type">浏览总数</view>
                         </view>
                         <view class="line"></view>
@@ -36,12 +36,12 @@
                     </view>
                     <view class="other_entery">
                         <view class="otherbox">
-                            <view class="num vote">{{vote}}</view>
+                            <view class="num vote">{{notice}}</view>
                             <view class="type">被关注总数</view>
                         </view>
                         <view class="line"></view>
                         <view class="otherbox">
-                            <view class="num vote">{{visit}}</view>
+                            <view class="num vote">{{visitPV}}</view>
                             <view class="type">被点赞总数</view>
                         </view>
                         <view class="line"></view>
@@ -101,7 +101,6 @@ import { myCardItems } from '../utils/introData';
 import Mixin from '../mixin';
 import { SendClickLog } from '../utils/maidian';
 import Mask from '../components/Mask';
-import { globalData } from '../utils/globalData';
 
 export default class myBizCard extends wepy.page {
     mixins = [Mixin]
@@ -121,8 +120,10 @@ export default class myBizCard extends wepy.page {
         maskShow: false,
         maskType: 'card',
         share: '',
-        visit: '',
-        vote: '',
+        vote: '', // 被点赞
+        visitPV: '', // 浏览总数
+        visitUV: '', // 访问
+        notice: '', // 被关注
         myCardItems,
         cardId: '',
         isSalesman: false, // 判断是否为销售
@@ -174,10 +175,11 @@ export default class myBizCard extends wepy.page {
             });
         },
     };
-    onLoad () {
+    onLoad ({ cardId }) {
         if (wepy.getStorageSync('cardMask')) {
             this.maskShow = true;
         }
+        if (cardId) this.cardId = cardId;
         /**
          * @author zhouwunan
          */
@@ -195,11 +197,11 @@ export default class myBizCard extends wepy.page {
         if (!currentMpid) {
             return;
         }
+        this.isEmployee = wepy.getStorageSync('isEmployee');
         const hasCard = await this.loadData(currentMpid);
-        if (hasCard) {
-            this.loadCard(currentMpid);
+        if ((hasCard && !this.isEmployee) || this.isEmployee) {
+            this.loadCard();
         }
-        this.isEmployee = globalData.isEmployee;
     }
     async loadData(currentMpid) {
         // data是true 或者 false 表示有无名片
@@ -210,10 +212,10 @@ export default class myBizCard extends wepy.page {
         this.$apply();
         return data;
     }
-    async loadCard(currentMpid) {
+    async loadCard() {
         // data是object，是
         const { data } = await post(CARD_HAS_DETAIL, {
-            mpId: currentMpid,
+            cardId: this.isEmployee ? this.cardId : wepy.getStorageSync('current_cardId'),
         });
         const {
             company,
@@ -225,6 +227,9 @@ export default class myBizCard extends wepy.page {
             visit,
             vote,
             cardId,
+            visitPV,
+            visitUV,
+            notice,
         } = data;
         Object.assign(this, {
             company,
@@ -236,6 +241,9 @@ export default class myBizCard extends wepy.page {
             visit,
             vote,
             cardId,
+            visitPV,
+            visitUV,
+            notice,
         });
         wepy.setStorageSync('realName', realName);
         this.$apply();

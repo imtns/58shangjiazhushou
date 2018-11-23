@@ -86,6 +86,7 @@ export default class newBizCard extends wepy.page {
         serviceTagArr: [], // 服务标签数组
         hasCompany: false, // 页面有无公司名称，disable input 用,
         isAuthLocation: 1, // 1、授权状态未知 2、授权成功  3、拒绝授权
+        cardId: '',
     }
     methods = {
         async setLogo () {
@@ -179,6 +180,10 @@ export default class newBizCard extends wepy.page {
             }
             const { data } = await post(CARD_CREATE_NEW_CARD, subData);
             if (data.mpCard.id) {
+                if (wepy.getStorageSync('isEmployee')) {
+                    wepy.setStorageSync('isAuto', 0);
+                }
+
                 wepy.navigateTo({
                     url: 'choseStyle',
                 });
@@ -269,7 +274,8 @@ export default class newBizCard extends wepy.page {
         this.isAuthLocation = res.authSetting['scope.userLocation'] !== false ? 2 : 3;
         this.$apply();
     }
-    async onLoad () {
+    async onLoad ({ cardId }) {
+        if (cardId) this.cardId = cardId;
         await this.settingLocation();
         await this.loadData();
     }
@@ -285,9 +291,13 @@ export default class newBizCard extends wepy.page {
         if (!currentMpid) {
             return;
         }
-        const { data } = await post(CARD_FIRST_EDIT, {
+        const postData = {
             mpId: currentMpid,
-        });
+        };
+        if (this.cardId) {
+            Object.assign(postData, { cardId: this.cardId });
+        }
+        const { data } = await post(CARD_FIRST_EDIT, postData);
         Object.assign(this, data);
         if (this.serviceTag) {
             this.serviceTagArr = this.serviceTag.split(',');

@@ -74,7 +74,7 @@
 import wepy from 'wepy';
 import Mixin from '../../mixin';
 
-export default class staffDetail extends wepy.page {
+export default class Detail extends wepy.page {
     mixins = [Mixin]
     config = {
         navigationBarTitleText: '员工详情',

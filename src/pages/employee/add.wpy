@@ -67,10 +67,12 @@ export default class Index extends wepy.page {
                     delta: 1, // 返回的页面数，如果 delta 大于现有页面数，则返回到首页,
                 });
             } catch (err) {
+                this.modalShow = !this.modalShow;
                 this.modalContent = `${
                     this.form.realName
                 }已为其他店长的员工， \r\n 不可再次创建`;
                 this.added = true;
+                this.$apply();
             }
         },
     }
