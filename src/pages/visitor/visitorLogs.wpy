@@ -27,7 +27,7 @@
                             <view class="visitor_time">1小时前访问过你</view>
                         </view>
                         <view class="visitor_tel">
-                            <view class="visitor_make_phone" @tap="bindPhoneCall" data-mobile="{{visitInfo.mobile}}">拨打电话</view>
+                            <view class="visitor_make_phone" @tap="call('{{item.mobileSign}}')" >拨打电话</view>
                         </view>
                     </view>
                 </view>
@@ -44,12 +44,12 @@
 
 <script>
 import wepy from 'wepy';
-import { CONSUMER_RECORDS } from '../utils/url';
-// import { makeTelCall } from '../utils/service';
-import { post } from '../utils/ajax';
-import { alert } from '../utils';
-import { SendClickLog } from '../utils/maidian';
-import Mixin from '../mixin';
+import { CONSUMER_RECORDS, CALL_VISITOR } from '../../utils/url';
+// import { makeTelCall } from '../../utils/service';
+import { post } from '../../utils/ajax';
+import { alert } from '../../utils';
+import { SendClickLog } from '../../utils/maidian';
+import Mixin from '../../mixin';
 
 export default class visitorLogs extends wepy.page {
     mixins = [Mixin]
@@ -69,6 +69,18 @@ export default class visitorLogs extends wepy.page {
                 url: `visitorInfo?cardId=${cardId}&consumerId=${consumerId}`,
             });
         },
+        async call(sign) {
+            console.log(sign);
+            try {
+                const { data } = await post(CALL_VISITOR, {
+                    sign,
+                    from: 0,
+                });
+                wx.makePhoneCall({ phoneNumber: data });
+            } catch (err) {
+                console.log(err);
+            }
+        },
     }
     onLoad () {
         this.loadData();
@@ -81,14 +93,14 @@ export default class visitorLogs extends wepy.page {
         this.loadData();
     }
     async loadData() {
-        const currentMpid = wepy.getStorageSync('current_mpid');
+        const cardId = wepy.getStorageSync('isEmployee') ? wepy.getStorageSync('cardId') : wepy.getStorageSync('current_cardId');
         console.log('this.allowLoadMore', this.allowLoadMore);
-        if (!currentMpid || !this.allowLoadMore) {
+        if (!cardId || !this.allowLoadMore) {
             return;
         }
         try {
             const visitorList = await post(CONSUMER_RECORDS, {
-                mpId: currentMpid,
+                cardId,
                 pageNum: this.pageNum,
                 pageSize: this.pageSize,
             });
@@ -144,7 +156,9 @@ page{
             padding: 24rpx 0;
             border-bottom: 1rpx solid #F3F3F3;
             display: flex;
+            min-width: 0;
             position: relative;
+            flex-grow: 1;
             .visitor_header{
                 image {
                     width: 82rpx;
@@ -160,6 +174,10 @@ page{
                 font-size: 30rpx;
                 color: #333;
                 position: absolute;
+                width:300rpx;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space:nowrap
             }
             .visitor_status{
                 font-size: 24rpx;
@@ -198,8 +216,12 @@ page{
                 line-height: 42rpx;
                 font-size: 24rpx;
                 color: #999999;
-                flex:1;
                 text-align: right;
+                width:250rpx;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space:nowrap;
+                margin-left: auto;
             }
             .visitor_count{
                 line-height: 42rpx;

@@ -92,6 +92,9 @@ page {
       justify-content: center;
       align-items: center;
       border-bottom: 2rpx solid #f3f3f3;
+      input{
+          height:1.6rem;
+      }
     }
   }
 
@@ -111,6 +114,7 @@ page {
   }
   .phcolor {
     color: #aaaaaa;
+    font-size:40rpx;
   }
 }
 </style>

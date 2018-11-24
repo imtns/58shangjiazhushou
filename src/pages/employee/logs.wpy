@@ -1,11 +1,11 @@
 <template>
     <view class="visitors">
-        <view class="tips" wx:if="{{visitorList.length > 0}}">以下客户访问过您的名片，可联系他们哦</view>
+        <view class="tips" wx:if="{{visitorList.length > 0}}">以下客户访问过ta的名片</view>
         <view class="visitor_content" wx:if="{{visitorList.length > 0}}">
             <repeat for="{{visitorList}}" key="index" index="index" item="item">
                 <view class="visitor_box" @tap="toVisitorInfo({{item.cardId}}, {{item.consumerId}})">
                     <view class="visitor_header">
-                        <image mode="aspectFit" src="{{item.portrait}}?w=82&h=83&ss=1"></image>
+                        <image mode="aspectFit" src="{{item.portrait}}"></image>
                     </view>
                     <view class="visitor_info">
                         <view class="visitor_name">
@@ -16,18 +16,18 @@
                     </view>
                     <view class="visitor_count">
                         访问您的名片
-                        <text class="visitor_num">{{item.visitCount}}</text> 
+                        <text class="visitor_num">{{item.visitCount}}</text>
                         次
                     </view>
                 </view>
             </repeat>
-        </view>  
+        </view>
         <view wx:if="{{visitorList.length == 0}}">
             <view class="empty-wrap">
-                <image class="img-no-data" src="//img.58cdn.com.cn/lbg/jianzhan/images/empty.png"/>
+                <image class="img-no-data" src="//img.58cdn.com.cn/lbg/jianzhan/images/empty.png" />
                 <view class="txt-no-data">暂无访客记录</view>
             </view>
-        </view>  
+        </view>
     </view>
 </template>
 
@@ -49,6 +49,7 @@ export default class Logs extends wepy.page {
         pageSize: 12,
         pageNum: 1,
         allowLoadMore: true,
+        cardId: '',
     }
     methods = {
         toVisitorInfo(cardId, consumerId) {
@@ -58,8 +59,8 @@ export default class Logs extends wepy.page {
             });
         },
     }
-    onLoad () {
-        this.loadData();
+    onLoad ({ cardId }) {
+        this.loadData(cardId);
     }
     onShow () {
         console.log('onshow');
@@ -68,15 +69,13 @@ export default class Logs extends wepy.page {
         console.log('onReachBottom');
         this.loadData();
     }
-    async loadData() {
-        const currentMpid = wepy.getStorageSync('current_mpid');
-        console.log('this.allowLoadMore', this.allowLoadMore);
-        if (!currentMpid || !this.allowLoadMore) {
+    async loadData(cardId) {
+        if (!cardId || !this.allowLoadMore) {
             return;
         }
         try {
             const visitorList = await post(CONSUMER_RECORDS, {
-                mpId: currentMpid,
+                cardId,
                 pageNum: this.pageNum,
                 pageSize: this.pageSize,
             });
@@ -105,89 +104,93 @@ export default class Logs extends wepy.page {
 </script>
 
 <style lang="scss">
-.visitors{
-    .tips{
-        font-size: 24rpx;
-        color: #D38658;
-        line-height: 56rpx;
-        height: 56rpx;
-        font-size: 24rpx;
-        padding-left: 80rpx;
-        background: #FFF9DF url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_log_tips.png') no-repeat 30rpx 50%;
-        background-size: 40rpx 40rpx;
-    }
-    .visitor_content{
-        background: white;
-        .visitor_box{
-            height: 130rpx;
-            padding: 24rpx 30rpx;
-            border-bottom: 1rpx solid #F3F3F3;
-            display: flex;
-            .visitor_header{
-                image {
-                    width: 82rpx;
-                    height: 82rpx;
-                    border-radius: 100%;
-                }
-            }
-            .visitor_info{
-                padding-left: 30rpx;
-            }
-            .visitor_name{
-                line-height: 42rpx;
-                font-size: 30rpx;
-                color: #333;
-                position: absolute;
-            }
-            .visitor_from{
-                font-size: 24rpx;
-                color: #999;
-                margin-top: 50rpx;
-                line-height: 33rpx;
-            }
-            .male{
-                display: inline-block;
-                margin: 2rpx 0 0 10rpx;
-                width: 24rpx;
-                height: 24rpx;
-                background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_male.png) no-repeat center;
-                background-size: contain;
-            }
-            .female{
-                display: inline-block;
-                margin: 8rpx 0 0 10rpx;
-                width: 24rpx;
-                height: 24rpx;
-                background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_female.png) no-repeat left center;
-                background-size: contain;
-            }
-            .visitor_count{
-                line-height: 42rpx;
-                font-size: 24rpx;
-                color: #999999;
-                flex:1;
-                text-align: right;
-                /* background: url(https://static.58.com/lbg/mengchong/image/icon/arrow-right.png) no-repeat right;
-                background-size: 18rpx 32rpx; */
-                padding-right: 30rpx;
-                .visitor_num{
-                    font-size: 28rpx;
-                    color: #151515;
-                }
-            }
+.visitors {
+  .tips {
+    font-size: 24rpx;
+    color: #d38658;
+    line-height: 56rpx;
+    height: 56rpx;
+    font-size: 24rpx;
+    padding-left: 80rpx;
+    background: #fff9df
+      url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_log_tips.png')
+      no-repeat 30rpx 50%;
+    background-size: 40rpx 40rpx;
+  }
+  .visitor_content {
+    background: white;
+    .visitor_box {
+      height: 130rpx;
+      padding: 24rpx 30rpx;
+      border-bottom: 1rpx solid #f3f3f3;
+      display: flex;
+      .visitor_header {
+        image {
+          width: 82rpx;
+          height: 82rpx;
+          border-radius: 100%;
         }
-    }
-    .img-no-data {
-        display: block;
-        width: 180rpx;
-        height: 180rpx;
-        margin: 200rpx auto 20rpx;
-    }
-    .txt-no-data {
-        line-height: 88rpx;
-        text-align: center;
+      }
+      .visitor_info {
+        padding-left: 30rpx;
+      }
+      .visitor_name {
+        line-height: 42rpx;
         font-size: 30rpx;
-        color: #ccc;
+        color: #333;
+        position: absolute;
+      }
+      .visitor_from {
+        font-size: 24rpx;
+        color: #999;
+        margin-top: 50rpx;
+        line-height: 33rpx;
+      }
+      .male {
+        display: inline-block;
+        margin: 2rpx 0 0 10rpx;
+        width: 24rpx;
+        height: 24rpx;
+        background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_male.png)
+          no-repeat center;
+        background-size: contain;
+      }
+      .female {
+        display: inline-block;
+        margin: 8rpx 0 0 10rpx;
+        width: 24rpx;
+        height: 24rpx;
+        background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_female.png)
+          no-repeat left center;
+        background-size: contain;
+      }
+      .visitor_count {
+        line-height: 42rpx;
+        font-size: 24rpx;
+        color: #999999;
+        flex: 1;
+        text-align: right;
+        /* background: url(https://static.58.com/lbg/mengchong/image/icon/arrow-right.png) no-repeat right;
+                background-size: 18rpx 32rpx; */
+        padding-right: 30rpx;
+        .visitor_num {
+          font-size: 28rpx;
+          color: #151515;
+        }
+      }
     }
+  }
+  .img-no-data {
+    display: block;
+    width: 180rpx;
+    height: 180rpx;
+    margin: 200rpx auto 20rpx;
+  }
+  .txt-no-data {
+    line-height: 88rpx;
+    text-align: center;
+    font-size: 30rpx;
+    color: #ccc;
+  }
 }
 </style>

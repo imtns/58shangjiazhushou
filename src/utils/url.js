@@ -48,7 +48,9 @@ export const LOAD_ASSIST_AUTH_LIST = '/wechat/bizAssistAuth/list'; // 获取对�
 export const SHARE = '/mplogic/share'; // 分享小程序
 
 // 访客记录接口
-export const CONSUMER_RECORDS = '/mpCardBusiness/consumerRecords';
+// export const CONSUMER_RECORDS = '/mpCardBusiness/consumerRecords';
+export const CONSUMER_RECORDS = '/mpCardBusiness/consumerRecordsByCardId';
+
 // 底部消息tab，获取contact列表
 export const CHAT_CONTACT_LIST = '/chat/contactList';
 
@@ -88,3 +90,6 @@ export const CHECK_CANSPREAD = '/businessMoment/visit'; // 判断是否第一次
 
 // 收集formId
 export const SAVE_FORMID = '/formidcollect/collect'; // formid收集
+
+// 访客拨打电话
+export const CALL_VISITOR = '/businessShopBranch/phone';

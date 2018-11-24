@@ -92,8 +92,9 @@ export default class extends wepy.app {
 
             'pages/chatMessages', // 消息tab 消息列表
 
-            'pages/visitorLogs', // 访客记录页面
-            'pages/visitorInfo', // 访客信息页面
+            'pages/visitor/visitorLogs', // 访客记录页面
+            'pages/visitor/visitorInfo', // 访客信息页面
+
             'pages/myBizCard', // 我的名片页面
             'pages/myBizCardSave', // 我的名片保存页面
             'pages/myBizCardPrint', // 我的名片打印页面
@@ -146,6 +147,7 @@ export default class extends wepy.app {
                     'pages/edit/images', // 预览图编辑
                     'pages/edit/goods', // 商品编辑
                     'pages/edit/textEdit', // 文本编辑
+                    'pages/edit/card', // 名片编辑
 
                     // 底部tab页面
                     'pages/index/index', // 首页

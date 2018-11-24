@@ -70,7 +70,7 @@ export default class Index extends wepy.page {
                 this.modalShow = !this.modalShow;
                 this.modalContent = `${
                     this.form.realName
-                }已为其他店长的员工， \r\n 不可再次创建`;
+                }已为其他店长的员工,\r\n不可再次创建`;
                 this.added = true;
                 this.$apply();
             }

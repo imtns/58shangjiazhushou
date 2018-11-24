@@ -4,7 +4,7 @@
             <view class="wrapper">
                 <image class="icon" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/emptyIcon.png?w=120&h=120" mode="scaleToFill"></image>
                 <view class="tip">您还未创建员工名片</view>
-                <view class="createEmployee" @tap="add">创建员工名片</view>
+                <view class="createEmployee" @tap="navigate('add')">创建员工名片</view>
             </view>
         </view>
         <view wx:else class="employee-content">
@@ -24,13 +24,13 @@
                 <view class="title">团队员工 ({{cardData.cards.length}})</view>
                 <view class="member-block">
                     <repeat for="{{cardData.cards}}" key="index" key="index" index="index" item="item">
-                        <view class="member" @tap="navigate('detail')">
+                        <view class="member" @tap="navigate('detail','{{item.cardId}}')">
                             <image class="icon" src="{{item.picImg?'https://pic8.58cdn.com.cn'+item.picImg+'?w=120' : 'https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/emptyIcon.png?w=120&h=120'}}" mode="scaleToFill"></image>
                             <view class="nameWrap">
                                 <view class="name">{{item.realName}}</view>
                                 <view class="views">访客人数：{{item.totalCount}}</view>
                             </view>
-                            <image class="arrow" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png?w=25" mode="aspectFit"> </image>
+                            <image class="arrow" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png?w=25" mode="scaleToFill"> </image>
                             <button class="notice" @tap.stop="empty" open-type="share" data-name="{{item.realName}}" wx:if="{{item.isNew}}">提醒他完善信息</button>
                         </view>
                     </repeat>
@@ -81,8 +81,9 @@ export default class Index extends wepy.page {
       empty() {
 
       },
-      navigate(url) {
-          wepy.navigateTo({ url });
+      navigate(url, cardId) {
+          console.log(cardId);
+          wepy.navigateTo({ url: cardId ? `${url}?cardId=${cardId}` : url });
       },
       onShareAppMessage(e) {
           console.log(e);
@@ -191,6 +192,7 @@ page {
             top: 50%;
             transform: translateY(-50%);
             width: 15rpx;
+            height:25rpx;
           }
           .notice {
             width: 240rpx;

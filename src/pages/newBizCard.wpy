@@ -168,6 +168,11 @@ export default class newBizCard extends wepy.page {
                 addressLatitude: this.addressLatitude, // 地址纬度
                 mpId: currentMpid,
             };
+            if (wepy.getStorageSync('isEmployee')) {
+                Object.assign(subData, {
+                    cardId: wepy.getStorageSync('cardId'),
+                });
+            }
             if (!this.isFullyFilled(subData)) {
                 wepy.showModal({
                     title: '提示',
@@ -274,8 +279,10 @@ export default class newBizCard extends wepy.page {
         this.isAuthLocation = res.authSetting['scope.userLocation'] !== false ? 2 : 3;
         this.$apply();
     }
-    async onLoad ({ cardId }) {
-        if (cardId) this.cardId = cardId;
+    async onLoad () {
+        if (wepy.getStorageSync('isEmployee')) {
+            this.cardId = wepy.getStorageSync('cardId');
+        }
         await this.settingLocation();
         await this.loadData();
     }

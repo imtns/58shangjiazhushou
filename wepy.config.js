@@ -1,4 +1,4 @@
-const merge = require('merge'); 
+const merge = require('merge');
 
 const prod = process.env.NODE_ENV === 'production';
 
@@ -11,6 +11,7 @@ const config = {
             outputStyle: 'expanded',
         },
         babel: {
+            sourceMap: !prod,
             presets: [
                 'stage-2',
                 'env',

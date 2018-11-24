@@ -22,11 +22,11 @@
                     <view class="noViewer" wx:if="{{!card.visitPicList.length}}">暂时还没有访客哦~</view>
                     <view class="viewers" wx:else>
                         <view class="view-number">最近{{card.visitPicList.length}}个人访问过</view>
-                        <view class="viewers-icons">
+                        <navigator url="visitor/visitorLogs" class="viewers-icons">
                             <repeat for="{{card.visitPicList}}" wx:if="{{index<6}}" key="index" index="index" item="item">
-                                <image mode="aspectFill"  src="https://pic8.58cdn.com.cn{{item}}?w=60"></image>
+                                <image mode="aspectFill"  src="{{item}}"></image>
                             </repeat>
-                        </view>
+                        </navigator>
                         <image class="arrow" ode="scaleToFill" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/arrow-right.png?w=15"></image>
                     </view>
                 </view>
@@ -60,7 +60,7 @@
 
 import wepy from 'wepy';
 import { get } from '../utils/ajax';
-import { toast } from '../utils/index';
+// import { toast } from '../utils/index';
 import { EMPLOYEE_CARD_GET } from '../utils/url';
 import MessageBox from '../components/MessageBox';
 
@@ -124,9 +124,15 @@ export default class Employee extends wepy.component {
               });
               this.card = data;
               this.loading = false;
-              this.$apply();
           } catch (err) {
-              toast(err);
+              // toast(err);
+              console.log(err);
+              wepy.redirectTo({
+                  url: '/pages/employee/login',
+              });
+          } finally {
+              this.loading = false;
+              this.$apply();
           }
       },
   };
