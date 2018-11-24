@@ -1,4 +1,3 @@
-import { post } from './ajax';
 import { globalData } from './globalData';
 /**
  * 获取userID，从ppu中截取
@@ -30,6 +29,7 @@ function getUid() {
  * redPktPlan:红包策略              红包策略
  * extend:扩展字段                  不用管
  */
+const host = 'https://yaofa.58.com';
 function SendEventLog(params) {
     const uid = getUid();
     const { model, system, brand } = wx.getSystemInfoSync();
@@ -50,7 +50,13 @@ function SendEventLog(params) {
     }, params || {});
 
     if (uid) {
-        post('/eventLog/write', paramsJSON);
+        const url = '/eventLog/write';
+        wx.request({
+            url: host + url + (~url.indexOf('?') ? '' : '?') + (+new Date()).toString(36).substr(3),
+            data: paramsJSON,
+            method: 'post',
+            success() {},
+        });
     } else {
         console.error('SendEventLog 方法 uid参数为空，请求被拒绝');
     }

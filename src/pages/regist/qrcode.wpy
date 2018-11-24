@@ -87,7 +87,7 @@ export default class Index extends wepy.page {
                 toast('保存成功');
             } catch (err) {
                 console.log(err);
-                if (err && err.errMsg === 'saveImageToPhotosAlbum:fail:auth denied') {
+                if (err && ~err.errMsg.indexOf('auth deny')) {
                     alert('由于您拒绝了授权，为了更好的体验，请您重新授权');
                     this.showOpenSetting = true;
                     this.$apply();
