@@ -1,9 +1,9 @@
 <template>
     <view class="myCardPrint">
         <view wx:if="{{showCanvas}}">
-            <drawimage bind:toTempFile="toTempFile1" id="drawStyle1" width="586" height="368" background="{{cardOppBg}}" layers="{{firstStyle.layers}}" />
+            <drawimage bind:toTempFile="toTempFile1" id="drawStyle1" width="586" height="368" background="{{cardOppStyle.background}}" layers="{{cardOppStyle.layers}}" />
             <button class="saveCard" bindtap="saveImgToPhotosAlbum">下载名片（正面）</button>
-            <drawimage bind:toTempFile="toTempFile1" id="drawStyle2" width="586" height="368" background="{{cardPosBg}}" layers="{{firstStyle.layers}}" />
+            <drawimage bind:toTempFile="toTempFile1" id="drawStyle2" width="586" height="368" background="{{cardPosStyle.background}}" layers="{{cardPosStyle.layers}}" />
             <button class="saveCard" bindtap="saveImgToPhotosAlbum">下载名片（反面）</button>
         </view>
         <view class="print-tip">这是58为你特制的高科技名片哦，快下载后打印出来发送给好友，可获得特别商机哦</view>
@@ -15,7 +15,6 @@ import wepy from 'wepy';
 import { CARD_FIRST_EDIT } from '../utils/url';
 import { post } from '../utils/ajax';
 import Mixin from '../mixin';
-import { firstStyle, secondStyle } from '../utils/introData';
 import { getTmpFilePath, alert } from '../utils/index';
 
 export default class choseImageStyle extends wepy.page {
@@ -27,13 +26,13 @@ export default class choseImageStyle extends wepy.page {
         },
     }
     data = {
-        cardOppBg: '',
-        cardPosBg: '',
-        showCanvas: false,
-        styleImage1: '',
-        styleImage2: '',
-        firstStyle,
-        secondStyle,
+        cardOppBg: '', // 名片正面背景
+        cardPosBg: '', // 名片反面背景
+        showCanvas: false, // 是否展示名片
+        cardOppImg: '', // 生成的名片正面图片
+        cardPosImg: '', // 生成的名片反面图片
+        cardOppStyle: {}, // 名片正面数据
+        cardPosStyle: {}, // 名片反面数据
     }
     methods = {
         // 下载名片
@@ -74,6 +73,7 @@ export default class choseImageStyle extends wepy.page {
         await that.loadData();
         await that.touchImage();
         await that.drawimageStyle1();
+        await that.drawimageStyle2();
     }
     async loadData() {
         const currentMpid = wepy.getStorageSync('current_mpid');
@@ -84,77 +84,75 @@ export default class choseImageStyle extends wepy.page {
             mpId: currentMpid,
         });
         Object.assign(this, data);
-        this.serviceTagArr = this.serviceTag.split(',');
-        this.headImg = `https://pic1.58cdn.com.cn${this.picImg}`;
+        console.log(this);
+        // this.serviceTagArr = this.serviceTag.split(',');
+        // this.headImg = `https://pic1.58cdn.com.cn${this.picImg}`;
         this.$apply();
     }
     async drawimageStyle1() {
         const that = this;
-        // 转成本地路径
-        const { layers } = this.secondStyle;
-        this.secondStyle.layers = [
-            {
-                type: 'color', // 颜色
-                start: [0, 0, 561, 741], // Array [x0, y0, x1, y1]
-                end: [0, 0, 561, 741], // Array [x, y, width, height]
-                colorStop: [[1, 'white']], // Array [stop, color]
-                shape: 'Linear', // Linear || Circular
+        // 生成名片正面的数据
+        this.cardOppStyle = {
+            width: 586,
+            height: 368,
+            background: {
+                imageResource: that.cardOppBg,
+                dx: 0,
+                dy: 0,
+                dWidth: 586,
+                dHeight: 368,
             },
-            {
-                type: 'image', // 头像图片
-                imageResource: that.headImg,
-                dx: 34,
-                dy: 34,
-                dWidth: 106,
-                dHeight: 106,
+            layers: [
+                {
+                    type: 'text', // 姓名text
+                    textBaseline: 'top',
+                    textAlign: 'left',
+                    fontSize: 39,
+                    text: that.realName,
+                    x: 165,
+                    y: 36,
+                    color: '#333',
+                    lineHeight: '',
+                    maxWidth: '460',
+                },
+            ],
+        };
+        that.$apply();
+        console.log(this.cardOppStyle);
+        console.log('===========');
+    }
+    async drawimageStyle2() {
+        const that = this;
+        // 生成名片正面的数据
+        this.cardPosStyle = {
+            width: 586,
+            height: 368,
+            background: {
+                imageResource: that.cardPosBg,
+                dx: 0,
+                dy: 0,
+                dWidth: 586,
+                dHeight: 368,
             },
-            {
-                type: 'text', // 姓名text
-                textBaseline: 'top',
-                textAlign: 'left',
-                fontSize: 39,
-                text: that.realName,
-                x: 165,
-                y: 36,
-                color: '#333',
-                lineHeight: '',
-                maxWidth: '460',
-            },
-            {
-                type: 'text', // 公司名称text
-                textBaseline: 'top',
-                textAlign: 'left',
-                fontSize: 24,
-                text: that.company,
-                x: 165,
-                y: 107,
-                color: '#666',
-                lineHeight: '',
-                maxWidth: '460',
-            },
-            {
-                type: 'image', // 二维码图片
-                imageResource: that.mycardCode,
-                dx: 75,
-                dy: 200,
-                dWidth: 410,
-                dHeight: 410,
-            },
-            {
-                type: 'text', // 个性签名text
-                textBaseline: 'top',
-                textAlign: 'center',
-                fontSize: 24,
-                text: '长按识别二维码，马上和我微聊',
-                x: 270,
-                y: 645,
-                color: '#999',
-                lineHeight: '24',
-                maxWidth: '460',
-            },
-        ].concat(layers);
+            layers: [
+                {
+                    type: 'text', // 姓名text
+                    textBaseline: 'top',
+                    textAlign: 'left',
+                    fontSize: 39,
+                    text: that.realName,
+                    x: 165,
+                    y: 36,
+                    color: '#333',
+                    lineHeight: '',
+                    maxWidth: '460',
+                },
+            ],
+        };
         wx.hideLoading();
         this.showCanvas = true;
+        console.log(this.cardPosStyle);
+        console.log('-----');
         that.$apply();
     }
     async touchImage() {
@@ -181,6 +179,7 @@ export default class choseImageStyle extends wepy.page {
     text-align: center;
     width: 586rpx;
     line-height: 94rpx;
+    margin: 10rpx auto;
     background: #4E88FF;
     border-radius: 4px;
 }
