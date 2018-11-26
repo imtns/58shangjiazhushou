@@ -15,17 +15,17 @@
                     <view class="realName">{{realName}}</view>
                     <view class="position">{{position}}</view>
                     <view class="mobile">{{mobile}}</view>
-                    <view class="picImg" style="background:url(https://pic1.58cdn.com.cn{{picImg}}) no-repeat center">
+                    <view class="picImg" style="background:url(https://pic1.58cdn.com.cn{{picImg}}?w=140) no-repeat center">
                         <view class="empty_bg"></view>
                     </view>
                     <view class="other_entery">
                         <view class="otherbox">
-                            <view class="num vote">{{visit}}</view>
+                            <view class="num vote">{{visitUV}}</view>
                             <view class="type">访问</view>
                         </view>
                         <view class="line"></view>
                         <view class="otherbox">
-                            <view class="num vote">{{vote}}</view>
+                            <view class="num vote">{{visitPV}}</view>
                             <view class="type">浏览总数</view>
                         </view>
                         <view class="line"></view>
@@ -36,17 +36,17 @@
                     </view>
                     <view class="other_entery">
                         <view class="otherbox">
-                            <view class="num vote">{{vote}}</view>
+                            <view class="num vote">{{notice}}</view>
                             <view class="type">被关注总数</view>
                         </view>
                         <view class="line"></view>
                         <view class="otherbox">
-                            <view class="num vote">{{visit}}</view>
+                            <view class="num vote">{{vote}}</view>
                             <view class="type">被点赞总数</view>
                         </view>
                         <view class="line"></view>
                         <view class="otherbox">
-                            <view class="num share">{{share}}</view>
+                            <view class="num share">{{contact}}</view>
                             <view class="type">咨询总数</view>
                         </view>
                     </view>
@@ -54,7 +54,7 @@
                 <view class="btns">
                     <repeat for="{{myCardItems}}" key="index" index="index" item="item">
                         <block wx:if="{{ item.id !== 'regist_qrcode' || (item.id === 'regist_qrcode' && isSalesman) }}">
-                            <view class="item_box" wx:if="{{item.type == 'innerJump'}}"  @tap="toinnerJump({{item.path}})">
+                            <view class="item_box" wx:if="{{item.type == 'innerJump' && (item.name !== '我的团队' || !isEmployee)}}"   @tap="toinnerJump({{item.path}})">
                                 <image class="img" src="{{ item.src + '?w=64&h=64&ss=1' }}"></image>
                                 <view class="text">{{item.name}}</view>
                             </view>
@@ -102,7 +102,6 @@ import Mixin from '../mixin';
 import { SendClickLog } from '../utils/maidian';
 import Mask from '../components/Mask';
 
-
 export default class myBizCard extends wepy.page {
     mixins = [Mixin]
     config = {
@@ -121,12 +120,16 @@ export default class myBizCard extends wepy.page {
         maskShow: false,
         maskType: 'card',
         share: '',
-        visit: '',
-        vote: '',
+        contact: '', // 咨询总数
+        vote: '', // 被点赞
+        visitPV: '', // 浏览总数
+        visitUV: '', // 访问
+        notice: '', // 被关注
         myCardItems,
         cardId: '',
         isSalesman: false, // 判断是否为销售
         isShowDialogShare: false,
+        isEmployee: false, // 判断是否为店长
     }
     methods = {
         toinnerJump(path) {
@@ -173,10 +176,11 @@ export default class myBizCard extends wepy.page {
             });
         },
     };
-    onLoad () {
+    onLoad ({ cardId }) {
         if (wepy.getStorageSync('cardMask')) {
             this.maskShow = true;
         }
+        if (cardId) this.cardId = cardId;
         /**
          * @author zhouwunan
          */
@@ -194,9 +198,10 @@ export default class myBizCard extends wepy.page {
         if (!currentMpid) {
             return;
         }
+        this.isEmployee = wepy.getStorageSync('isEmployee');
         const hasCard = await this.loadData(currentMpid);
-        if (hasCard) {
-            this.loadCard(currentMpid);
+        if ((hasCard && !this.isEmployee) || this.isEmployee) {
+            this.loadCard();
         }
     }
     async loadData(currentMpid) {
@@ -208,10 +213,11 @@ export default class myBizCard extends wepy.page {
         this.$apply();
         return data;
     }
-    async loadCard(currentMpid) {
+    async loadCard() {
         // data是object，是
+        console.log(this.isEmployee);
         const { data } = await post(CARD_HAS_DETAIL, {
-            mpId: currentMpid,
+            cardId: this.isEmployee ? wepy.getStorageSync('cardId') : wepy.getStorageSync('current_cardId'),
         });
         const {
             company,
@@ -223,6 +229,10 @@ export default class myBizCard extends wepy.page {
             visit,
             vote,
             cardId,
+            visitPV,
+            visitUV,
+            notice,
+            contact,
         } = data;
         Object.assign(this, {
             company,
@@ -234,7 +244,12 @@ export default class myBizCard extends wepy.page {
             visit,
             vote,
             cardId,
+            visitPV,
+            visitUV,
+            notice,
+            contact,
         });
+        wepy.setStorageSync('realName', realName);
         this.$apply();
     }
     /**

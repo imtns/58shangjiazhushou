@@ -27,29 +27,8 @@ export default class extends wepy.app {
             'pages/passport/passport',
             'pages/passport/login/login',
 
-            'pages/edit/textEdit',
             // 登录之后的主页
             'pages/templateList',
-            'pages/index/index',
-
-            // 模板编辑页面
-            'pages/edit/coupon', // 优惠券编辑
-            'pages/edit/consumer', // 个人中心编辑
-            'pages/edit/text', // 文本编辑
-            'pages/edit/order', // 订单标记
-            'pages/edit/imageSwiper', // 轮播图编辑
-            'pages/edit/video', // 门店视频编辑
-            'pages/edit/title', // 标题编辑
-            'pages/edit/article', // 文章编辑
-            'pages/edit/images', // 预览图编辑
-            'pages/edit/goods', // 商品编辑
-            // 底部tab页面
-            'pages/contact/contact', // 关于我们
-            'pages/news/news', // 新闻介绍
-            'pages/product/product', // 产品预览
-            'pages/custom/custom', // 用户自定义界面
-            'pages/article/article', // 文章
-
 
             'pages/intro', // 没有登录的介绍页面
             'pages/myMp', // 我的小程序
@@ -104,7 +83,6 @@ export default class extends wepy.app {
             'pages/couponPreview', // 优惠券预览
             'pages/orderComponentEdit', // 预约编辑
             'pages/OpenPay', // 开通支付
-            'pages/CateSelector', // 类目选择
             'pages/multiSelector', // 多级选择页面
             'pages/followPublic', // 关注公众号页
             'pages/purchase', // 购买
@@ -114,8 +92,9 @@ export default class extends wepy.app {
 
             'pages/chatMessages', // 消息tab 消息列表
 
-            'pages/visitorLogs', // 访客记录页面
-            'pages/visitorInfo', // 访客信息页面
+            'pages/visitor/visitorLogs', // 访客记录页面
+            'pages/visitor/visitorInfo', // 访客信息页面
+
             'pages/myBizCard', // 我的名片页面
             'pages/myBizCardSave', // 我的名片保存页面
             'pages/myBizCardPrint', // 我的名片打印页面
@@ -135,14 +114,48 @@ export default class extends wepy.app {
 
             'pages/employee/index', // 我的员工首页
             'pages/employee/add', // 添加员工
-            'pages/employee/employeeDetail', // 员工详情
-            'pages/employee/employeeLogs', // ta的访客记录
+            'pages/employee/detail', // 员工详情
+            'pages/employee/login', // login
+            'pages/employee/logs', // ta的访客记录
+            'pages/employee/code',
+            // 红包活动
+            'pages/activity/spreadRedpacket', // 红包推广活动
         ],
         subPackages: [
+            // 聊天分包
             {
                 root: 'packageChat',
                 pages: [
                     'wechat/chat', // 聊天
+                ],
+            },
+            // 编辑器分包
+            {
+                root: 'packageEditor',
+                name: 'editor',
+                pages: [
+
+                    // 模板编辑页面
+                    'pages/edit/coupon', // 优惠券编辑
+                    'pages/edit/consumer', // 个人中心编辑
+                    'pages/edit/text', // 文本编辑
+                    'pages/edit/order', // 订单标记
+                    'pages/edit/imageSwiper', // 轮播图编辑
+                    'pages/edit/video', // 门店视频编辑
+                    'pages/edit/title', // 标题编辑
+                    'pages/edit/article', // 文章编辑
+                    'pages/edit/images', // 预览图编辑
+                    'pages/edit/goods', // 商品编辑
+                    'pages/edit/textEdit', // 文本编辑
+                    'pages/edit/card', // 名片编辑
+
+                    // 底部tab页面
+                    'pages/index/index', // 首页
+                    'pages/contact/contact', // 关于我们
+                    'pages/news/news', // 新闻介绍
+                    'pages/product/product', // 产品预览
+                    'pages/custom/custom', // 用户自定义界面
+                    'pages/article/article', // 文章
                 ],
             },
         ],
@@ -289,21 +302,21 @@ export default class extends wepy.app {
 
 <style lang="scss">
 @import "css/common.scss";
-@import "components/mod/information/information.wxss";
-@import "components/mod/imageSwiper/imageSwiper.wxss";
-@import "components/mod/images/images.wxss";
-@import "components/mod/me/me.wxss";
-@import "components/mod/goods/goods.wxss";
-@import "components/mod/text/text.wxss";
-@import "components/mod/title/title.wxss";
-@import "components/mod/video/video.wxss";
-@import "components/mod/call/call.wxss";
-@import "components/mod/services/services.wxss";
-@import "components/mod/article/article.wxss";
-@import "components/mod/evaluation/evaluation.wxss";
-@import "components/mod/reserve/reserve.wxss";
-@import "components/mod/coupon/coupon.wxss";
-@import "components/mod/pay/pay.wxss";
-@import "components/mod/branch/branch.wxss";
-@import "components/mod/tabBar/tabBar.wxss";
+@import "packageEditor/pages/mod/information/information.wxss";
+@import "packageEditor/pages/mod/imageSwiper/imageSwiper.wxss";
+@import "packageEditor/pages/mod/images/images.wxss";
+@import "packageEditor/pages/mod/me/me.wxss";
+@import "packageEditor/pages/mod/goods/goods.wxss";
+@import "packageEditor/pages/mod/text/text.wxss";
+@import "packageEditor/pages/mod/title/title.wxss";
+@import "packageEditor/pages/mod/video/video.wxss";
+@import "packageEditor/pages/mod/call/call.wxss";
+@import "packageEditor/pages/mod/services/services.wxss";
+@import "packageEditor/pages/mod/article/article.wxss";
+@import "packageEditor/pages/mod/evaluation/evaluation.wxss";
+@import "packageEditor/pages/mod/reserve/reserve.wxss";
+@import "packageEditor/pages/mod/coupon/coupon.wxss";
+@import "packageEditor/pages/mod/pay/pay.wxss";
+@import "packageEditor/pages/mod/branch/branch.wxss";
+@import "packageEditor/pages/mod/tabBar/tabBar.wxss";
 </style>

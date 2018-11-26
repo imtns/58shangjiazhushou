@@ -1,4 +1,4 @@
-const merge = require('merge'); 
+const merge = require('merge');
 
 const prod = process.env.NODE_ENV === 'production';
 

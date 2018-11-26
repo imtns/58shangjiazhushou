@@ -48,13 +48,15 @@ export const LOAD_ASSIST_AUTH_LIST = '/wechat/bizAssistAuth/list'; // 获取对�
 export const SHARE = '/mplogic/share'; // 分享小程序
 
 // 访客记录接口
-export const CONSUMER_RECORDS = '/mpCardBusiness/consumerRecords';
+// export const CONSUMER_RECORDS = '/mpCardBusiness/consumerRecords';
+export const CONSUMER_RECORDS = '/mpCardBusiness/consumerRecordsByCardId';
+
 // 底部消息tab，获取contact列表
 export const CHAT_CONTACT_LIST = '/chat/contactList';
 
 // 我的名片页面——是否有名片
 export const CARD_HAS_CARD = '/mpCardBusiness/toMyCard';
-export const CARD_HAS_DETAIL = '/mpCardBusiness/myCard';
+export const CARD_HAS_DETAIL = '/mpCardBusiness/myCardByCardId';
 export const CARD_FIRST_EDIT = '/mpCardBusiness/editCard';
 
 // 新建名片
@@ -76,3 +78,18 @@ export const SAVE_MPINFO = '/register/mpInfo/insert'; // 创建小程序
 export const REGIST_PRE_CHECK = '/register/preCheck'; // 创建小程序，前置检查
 export const REGIST_INDUSTRY_CATE = '/register/cates'; // 创建小程序，所属行业（需与腾讯提供的行业匹配）
 export const CHECK_IS_SALESMAN = '/register/isSalesman'; // 判断是否为销售人员（非销售人员不展示注册二维码入口）
+
+
+export const EMPLOYEE_LOGIN = '/mpCardBusiness/subCard/login'; // 员工登录
+export const EMPLOYEE_CARD_LIST = '/mpCardBusiness/myTeamForU'; // 员工名片列表
+export const EMPLOYEE_CARD_ADD = '/mpCardBusiness/saveStaffCard'; // 员工名片添加
+export const EMPLOYEE_CARD_GET = '/mpCardBusiness/myCardByCardId'; // 员工名片查询
+// 红包推广活动
+export const LOAD_SPREADRP_INFO = '/businessMoment/get'; // 获取推广信息
+export const CHECK_CANSPREAD = '/businessMoment/visit'; // 判断是否第一次进入首页&是否有推广权限
+
+// 收集formId
+export const SAVE_FORMID = '/formidcollect/collect'; // formid收集
+
+// 访客拨打电话
+export const CALL_VISITOR = '/businessShopBranch/phone';

@@ -2,8 +2,13 @@
     <view class="message-box-container" wx:if="{{ show }}">
         <view class="mask"></view>
         <view class="modal-container">
-            <view class="modal-container-title" wx:if="{{ title }}">{{ title }}</view>
-            <view class="modal-container-content">{{ content }}</view>
+            <view class="modal-container-title">{{ title }}</view>
+            <view class="modal-container-content">
+                <block wx:if="{{ !content }}">
+                    <slot name="content"></slot>
+                </block>
+                <block wx:else>{{ content }}</block>
+            </view>
             <view class="options">
                 <button class="options-cancel btn-item" @tap="handleCancel" wx:if="{{ showCancel }}">{{ cancelText }}</button>
                 <button class="options-confirm btn-item" @tap="handleConfirm">{{ confirmText }}</button>
@@ -43,19 +48,14 @@ export default class Index extends wepy.component {
             type: String,
             default: '确定',
         },
-        onConfirm: Function,
-        onCancel: Function,
-    }
-    onLoad() {
-        console.log('onLoad');
     }
     methods = {
         handleConfirm() {
-            this.onConfirm && this.onConfirm();
+            this.$emit('onConfirm');
             this.show = false;
         },
         handleCancel() {
-            this.onCancel && this.onCancel();
+            this.$emit('onCancel');
             this.show = false;
         },
     }
@@ -86,20 +86,19 @@ export default class Index extends wepy.component {
         top: 294rpx;
         left: 107rpx;
         width: 560rpx;
-        padding-top:50rpx;
     }
     .modal-container-title {
         color: #000;
         font-size: 36rpx;
         line-height: 50rpx;
-        margin-bottom: 20rpx;
+        margin-top: 48rpx;
     }
     .modal-container-content {
         color: #888;
         font-size: 28rpx;
         text-align: center;
         width: 420rpx;
-        margin-bottom:50rpx
+        margin: 30rpx 0 40rpx;
     }
     .options {
         display: flex;

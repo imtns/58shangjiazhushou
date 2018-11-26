@@ -1,0 +1,456 @@
+<template>
+    <view class="containe">
+        <!-- 优惠券展示 -->
+        <scroll-view class="preview-scroll" scroll-y>
+            <view class="previewer"
+            :class="{ row: type == 'row' }">
+                <view class="coupons" :class="{ row: previewType === 'row' }">
+                    <block wx:if="{{ previewType === 'row' }}">
+                        <view class="coupon-row-item"
+                        wx:for="{{ previewList }}" wx:key="id">
+                            <view class="coupon-row-left">
+                                <view class="value" >
+                                    <!-- 打折 -->
+                                    <block wx:if="{{ item.couponType === 2 }}">
+                                        <text class="bold">{{ item.couponDiscard / 10 || 9 }}</text>折
+                                    </block>
+                                    <!-- 满减 -->
+                                    <block wx:else>
+                                        ￥<text class="bold">{{ item.reliefAmount }}</text>
+                                    </block>
+                                </view>
+                                <view class="subtitle">
+                                    满{{ item.limitAmount }}可用
+                                </view>
+                                <!-- 固定时间类型 -->
+                                <view class="valid-time" wx:if="{{ item.validType === 1}}">
+                                    {{ item.validEndtime }}前有效
+                                </view>
+                                <!-- 领取后生效 -->
+                                <view class="valid-time" wx:else>
+                                    领取后{{ item.validAfterDays ? (item.validAfterDays + '天') : '立即' }}生效
+                                </view>
+                            </view>
+                            <view class="coupon-row-right">
+                                点击领取
+                            </view>
+                        </view>
+                    </block>
+                    <block wx:else>
+                        <view class="coupon-item"
+                        wx:for="{{ previewList }}" wx:key="id">
+                            <view class="coupon-left">
+                                <!-- 打折 -->
+                                <view class="discount" wx:if="{{ item.couponType === 2 }}">
+                                    <text class="bold">{{ item.couponDiscard / 10 || 9 }}</text>折
+                                </view>
+                                <!-- 满减 -->
+                                <view class="reduce" wx:else>
+                                    ￥<text class="bold">{{ item.reliefAmount }}</text>
+                                </view>
+                            </view>
+                            <view class="coupon-right">
+                                <view class="info">
+                                    <view class="title">满{{ item.limitAmount }}可用</view>
+                                    <view class="type">{{ item.subTitle }}</view>
+                                    <!-- 固定时间类型 -->
+                                    <view class="time" wx:if="{{ item.validType === 1}}">
+                                        {{ item.validStarttime }}-{{ item.validEndtime }}
+                                    </view>
+                                    <!-- 领取后生效 -->
+                                    <view class="time" wx:else>
+                                        领取后{{ item.validAfterDays ? (item.validAfterDays + '天') : '立即' }}生效
+                                    </view>
+                                </view>
+                                <button>立即领取</button>
+                            </view>
+                        </view>
+                    </block>
+                </view>
+            </view>
+        </scroll-view>
+        <view class="select-scroll">
+            <scroll-view class="coupons small" scroll-y>
+                <block wx:if="{{ coupons.length }}">
+                    <view class="coupon-list-item" :class="{ unable: !item.usable, editing: isEditing }"
+                    @tap="choose({{ index }}, {{ '/pages/couponEdit?id=' + item.id }})"
+                    wx:for="{{ coupons }}" wx:key="id">
+                        <view class="coupon-list-left">
+                            <!-- 打折 -->
+                            <view class="discount" wx:if="{{ item.couponType === 2 }}">
+                                <text class="bold">{{ item.couponDiscard / 10 || 9 }}</text>折
+                            </view>
+                            <!-- 满减 -->
+                            <view class="reduce" wx:else>
+                                ￥<text class="bold">{{ item.reliefAmount }}</text>
+                            </view>
+                        </view>
+                        <view class="coupon-list-middle">
+                            <view class="info">
+                                <view class="title">满{{ item.limitAmount }}可用</view>
+                                <view class="type">{{ item.subTitle }}</view>
+                                <!-- 固定时间类型 -->
+                                <view class="time" wx:if="{{ item.validType === 1}}">
+                                    {{ item.validStarttime }}-{{ item.validEndtime }}
+                                </view>
+                                <!-- 领取后生效 -->
+                                <view class="time" wx:else>
+                                    领取后{{ item.validAfterDays ? (item.validAfterDays + '天') : '立即' }}生效
+                                </view>
+                            </view>
+                            <view class="disable" wx:if="{{ !item.usable }}">
+                                已失效
+                            </view>
+                        </view>
+                        <view class="coupon-list-right">
+                            <view>
+                                已领取
+                                <view class="count">
+                                    {{ item.getCount }}张
+                                </view>
+                            </view>
+                            <view>
+                                已使用
+                                <view class="count">
+                                    {{ item.useCount }}张
+                                </view>
+                            </view>
+                        </view>
+                        <view class="checkbox" :class="{ checked: item.checked }"></view>
+                        <!-- <view class="mask" @tap.stop="choose({{ index }})" wx:if="{{ isEditing }}"></view> -->
+                    </view>
+                </block>
+                <block wx:else>
+                    <view class="noCoupons">
+                        您还没有优惠券哦, 赶快去添加吧~
+                    </view>
+                </block>
+            </scroll-view>
+            <view class="options">
+                <navigator url="/pages/couponEdit">+添加优惠券</navigator>
+                <view class="save" @tap="save">保存</view>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import Mixin from './mixin';
+import CouponMixin from '../../../mixin/coupon';
+import { toast, alertP, globalService } from '../../../utils';
+import { globalData } from '../../../utils/globalData';
+
+const limitCouponCount = 5; // 限制选择张数
+const pageSize = 50;
+const pageNum = 1;
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '优惠券',
+        disableScroll: true,
+    };
+    data = {
+        coupons: [],
+        isEditing: true,
+        previewList: [],
+        previewType: '', // 实际展现形式
+        type: 'row', // 需要展现的形式
+    };
+
+    mixins = [CouponMixin, Mixin];
+
+    computed = {
+        previewType() {
+            if (this.type === 'column' || this.previewList.length < 2) {
+                return 'column';
+            }
+
+            return 'row';
+        },
+    };
+
+    async loadData() {
+        const mpId = wepy.getStorageSync('current_mpid');
+        const coupons = await this.getCoupons({
+            pageNum,
+            pageSize,
+            mpId,
+        });
+
+        // 去除掉无库存和过期的
+        this.coupons = coupons.filter(item => item.usable && item.totalCount > 0);
+        this.previewList.forEach(item => {
+            const { id } = item;
+            const target = this.coupons.find(c => {
+                if (c.id === id) {
+                    item.checked = true;
+                    return true;
+                }
+                return false;
+            });
+            if (target) {
+                target.checked = true;
+            }
+        });
+        this.$apply();
+    }
+
+    onShow() {
+        if (globalService.get('refresh')) {
+            globalService.set('refresh', false);
+            // 重新加载数据
+            this.loadData();
+        }
+    }
+
+    async onLoad() {
+        [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
+        const { data } = this.pageData[0].props; // 当前已添加的优惠券
+
+        // 过滤预制优惠券
+        if (data && data[0] && data[0].id) {
+            this.previewList = data.map(coupon => {
+                const { validStarttime, validEndtime } = coupon;
+                return Object.assign({}, coupon, {
+                    validStarttime: this.formatTime(validStarttime, 'YYYY.MM.DD'),
+                    validEndtime: this.formatTime(validEndtime, 'YYYY.MM.DD'),
+                });
+            });
+        }
+        // 优惠券展示样式
+        this.type = this.pageData[0].props.cfg.theme === 1 ? 'column' : 'row';
+
+        try {
+            this.loadData();
+        } catch (e) {
+            this.errorHandler(e);
+        }
+    }
+    methods = {
+        async save() {
+            const selectCoupons = this.coupons
+                .filter(obj => obj.checked === true)
+                .map(obj =>
+                    Object.assign({}, obj, {
+                        validStartDate: obj.validStarttime,
+                        validEndDate: obj.validEndtime,
+                    }));
+
+            if (!selectCoupons.length) {
+                const { confirm } = alertP('未选择优惠券，是否保存？');
+
+                if (confirm) {
+                    wepy.navigateBack();
+                }
+
+                return;
+            }
+
+            console.log(selectCoupons);
+            this.pageModule.params.couponIds = selectCoupons.map(c => c.id).join(',');
+            this.pageData[0].props.data = selectCoupons;
+            globalData.pageData[this.pageIndex].props = this.pageData[0].props;
+            globalData.modules[this.pageIndex] = this.pageModule;
+            toast('已保存');
+            setTimeout(() => {
+                wx.navigateBack({
+                    delta: 1,
+                });
+            }, 1000);
+        },
+        choose(index, url) {
+            if (this.isEditing) {
+                const coupon = this.coupons[index];
+
+                // 勾选时判断是否超出容量
+                if (!coupon.checked) {
+                    if (this.previewList.length >= limitCouponCount) {
+                        alertP(`最多只能选择${limitCouponCount}张优惠券`);
+                        return;
+                    }
+                }
+                coupon.checked = !coupon.checked;
+
+                this.chooseCoupon && this.chooseCoupon(coupon);
+            } else {
+                wepy.navigateTo({ url });
+            }
+        },
+    };
+    chooseCoupon(coupon) {
+        const { id } = coupon;
+        if (coupon.checked) {
+            this.previewList.unshift(coupon);
+        } else {
+        // 从列表中删除
+            this.previewList.splice(
+                this.previewList.findIndex(item => item.id === id),
+                1,
+            );
+        }
+        this.$apply();
+    }
+}
+</script>
+
+<style lang="scss">
+@import '../../../css/coupon.scss';
+
+$radius: 3.2rpx;
+
+.preview-scroll {
+  height: 492rpx;
+  width: 750rpx;
+
+  .previewer {
+    background-color: #fff;
+    margin-top: 30rpx;
+    padding: 0 20rpx;
+    overflow: hidden;
+
+    &.row {
+      background-color: inherit;
+      margin-top: 150rpx;
+    }
+  }
+}
+
+.options {
+  width: 100%;
+  height: 86rpx;
+  color: #fff;
+  font-size: 32rpx;
+  line-height: 86rpx;
+  display: flex;
+  justify-content: space-between;
+  background-color: #46484a;
+  padding: 0 30rpx;
+  position: absolute;
+  top: 0;
+}
+
+.select-scroll {
+  width: 100%;
+  height: 714rpx;
+  background-color: #5b5d5f;
+  position: fixed;
+  bottom: 0;
+
+  .coupons {
+    height: 628rpx;
+    margin-top: 86rpx;
+  }
+}
+
+.coupons.small {
+    .coupon-list-item {
+        width: 568rpx;
+        height: 144rpx;
+        margin: 30rpx 53rpx 0 20rpx;
+        display: flex;
+        box-shadow: 0 1rpx 8rpx 0 rgba(0,0,0,0.05);
+        border-radius: $radius;
+        position: relative;
+        transition: margin .5s;
+
+        &.editing {
+            margin-left: 129rpx;
+        }
+
+        .coupon-list-left {
+            width: 140rpx;
+            color: #FF552E;
+            font-size: 24rpx;
+            background-color: #fff;
+            line-height: 144rpx;
+            padding: 32 16rpx;
+            border-right: 1rpx dashed #FFB204;
+            border-radius: $radius 0 0 $radius;
+            text-align: center;
+
+            .discount .bold {
+                font-size: 56rpx;
+            }
+            .reduce .bold {
+                font-size: 50rpx;
+            }
+        }
+
+        .coupon-list-middle {
+            flex-grow: 1;
+            display: flex;
+            background-image: linear-gradient(135deg, #FFBD05 0%, #FF9602 100%);
+            padding: 20rpx 24rpx;
+            align-items: center;
+
+            .info {
+                flex-grow: 1;
+                color: #FFF;
+
+                .title {
+                    font-size: 26rpx;
+                    line-height: 37rpx;
+                }
+                .type {
+                    font-size: 22rpx;
+                    line-height: 30rpx;
+                    margin-bottom: 7rpx;
+                }
+                .time {
+                    font-size: 24rpx;
+                    color: #ffe37f;
+                    line-height: 30rpx;
+                }
+            }
+        }
+
+        .coupon-list-right {
+            background-image: linear-gradient(90deg, #FFAD00 0%, #FF9602 66%);
+            font-size: 22rpx;
+            width: 104rpx;
+            padding: 12rpx 20rpx 12rpx 18rpx;
+            line-height: 30rpx;
+            text-align: right;
+            color: #FFE37F;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-radius: 0 $radius $radius 0;
+
+            .count {
+                margin-top: 2rpx;
+                color: #FFF;
+            }
+        }
+
+        .checkbox {
+            width: 40rpx;
+            height: 40rpx;
+            background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/unselectd-icon.png');
+            background-size: 40rpx 40rpx;
+            position: absolute;
+            left: -89rpx;
+            top: 52rpx;
+
+            &.checked {
+                background-image: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/selected-icon.png');
+            }
+        }
+        .mask {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+    }
+}
+
+.noCoupons {
+  width: 100%;
+  height: 393rpx;
+  text-align: center;
+  line-height: 393rpx;
+  color: #999;
+  font-size: 30rpx;
+}
+</style>

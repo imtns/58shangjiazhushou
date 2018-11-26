@@ -58,7 +58,7 @@ export const myCardItems = [{
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_visitor_logs.png',
     name: '访客记录',
     type: 'innerJump',
-    path: 'visitorLogs',
+    path: '/pages/visitor/visitorLogs',
 }, {
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_edit_card.png',
     name: '编辑名片',
@@ -73,7 +73,7 @@ export const myCardItems = [{
     src: 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/mycard_group.png',
     name: '我的团队',
     type: 'innerJump',
-    path: 'employee/index',
+    path: '/pages/employee/index',
 }, {
     src: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_chat_msg.png',
     name: '消息',

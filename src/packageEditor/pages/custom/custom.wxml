@@ -1,0 +1,26 @@
+<!--index.wxml-->
+<import src="../mod/information/information.wxml" />
+<import src="../mod/imageSwiper/imageSwiper.wxml" />
+<import src="../mod/images/images.wxml" />
+<import src="../mod/text/text.wxml" />
+<import src="../mod/title/title.wxml" />
+<import src="../mod/video/video.wxml" />
+<import src="../mod/call/call.wxml" />
+<import src="../mod/article/article.wxml" />
+<import src="../mod/services/services.wxml" />
+<import src="../mod/goods/goods.wxml" />
+<import src="../mod/evaluation/evaluation.wxml" />
+<import src="../mod/reserve/reserve.wxml" />
+<import src="../mod/coupon/coupon.wxml" />
+<import src="../mod/me/me.wxml" />
+<import src="../mod/pay/pay.wxml" />
+<import src="../mod/branch/branch.wxml" />
+<view class="container">
+    <block wx:for="{{page_data}}" wx:for-item="component" wx:key="{{component.name}}">
+        <block wx:if="{{!env58 && component.name=='pay'}}">
+        </block>
+        <block wx:else>
+            <template is="{{component.name}}" data="{{...component.props, index, env58, tabBarItems, isIphoneX}}" />
+        </block>
+    </block>
+</view>

@@ -1,0 +1,316 @@
+<template>
+    <view class="contain">
+        <view class="staff-detail">
+            <view class="staff-info">
+                <view class="avator">
+                    <image class="avator-img" mode="scaleToFill" src="{{cardDetail.picImg? 'https://pic1.58cdn.com.cn'+cardDetail.picImg+'?w=100':'https://pic1.58cdn.com.cn/bizmp/n_v2a3d3462e64934aa9b1e33050b10f1a4b_dc08583cdc7209b8.jpg?w=112&h=112&ss=1'}}"></image>
+                </view>
+                <view class="info">
+                    <view class="info-name">{{cardDetail.realName}}</view>
+                    <view class="info-position">{{cardDetail.position}}</view>
+                    <view class="info-tel">{{cardDetail.mobile}}</view>
+                </view>
+                <view class="share" @tap="toShare">
+                    <image class="share-img" mode="aspectFit" src="https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/share-btn.png?w=64&h=64&ss=1"></image>
+                    <view class="share-text">分享TA的名片</view>
+                </view>
+            </view>
+            <view class="viewer-block">
+                <view class="noViewer" wx:if="{{!cardDetail.visitPicList.length}}">暂时还没有访客哦~</view>
+                <view class="viewers" wx:else @tap="goVisitors">
+                    <view class="view-number">最近{{cardDetail.visitPicList.length}}个人访问过</view>
+                    <view class="viewers-icons">
+                        <repeat for="{{cardDetail.visitPicList}}" wx:if="{{index<6}}" key="index" index="index" item="item">
+                            <image mode="aspectFill" src="{{item}}"></image>
+                        </repeat>
+                    </view>
+                    <image class="arrow" ode="scaleToFill" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png?w=25"></image>
+                </view>
+
+            </view>
+        </view>
+        <view class="staff-analysis">
+            <view class="title">数据分析</view>
+            <view class="data">
+                <view class="other_entery">
+                    <view class="otherbox">
+                        <view class="num vote">{{cardDetail.visitUV}}</view>
+                        <view class="type">访问</view>
+                    </view>
+                    <view class="line"></view>
+                    <view class="otherbox">
+                        <view class="num vote">{{cardDetail.visitPV}}</view>
+                        <view class="type">浏览总数</view>
+                    </view>
+                    <view class="line"></view>
+                    <view class="otherbox">
+                        <view class="num share">{{cardDetail.share}}</view>
+                        <view class="type">转发</view>
+                    </view>
+                    <view class="otherbox">
+                        <view class="num vote">{{cardDetail.notice}}</view>
+                        <view class="type">被关注总数</view>
+                    </view>
+                    <view class="line"></view>
+                    <view class="otherbox">
+                        <view class="num vote">{{cardDetail.visitPV}}</view>
+                        <view class="type">被点赞总数</view>
+                    </view>
+                    <view class="line"></view>
+                    <view class="otherbox">
+                        <view class="num share">{{cardDetail.contact}}</view>
+                        <view class="type">咨询总数</view>
+                    </view>
+                </view>
+            </view>
+        </view>
+        <view wx:if="{{isShowDialogShare}}" class="mycard-share-mask">
+            <view class="mycard-share">
+                <form report-submit="true" bindsubmit="handleFormidCollect">
+                    <navigator class="item_box" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="/pages/index58/index58?mpcardId={{cardId}}&from=zhushou_myBizCard" extra-data="" version="develop">
+                        <button hover-class="none" form-type="submit" class='dialog-share-item'>分享给好友</button>
+                    </navigator>
+                </form>
+                <form report-submit="true" bindsubmit="handleFormidCollect">
+                    <button hover-class="none" class='dialog-share-item line' @tap="share('make')">生成图片分享</button>
+                </form>
+                <button hover-class="none" class='dialog-share-item cancel' @tap="share('cancel')">取消</button>
+            </view>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+import Mixin from '../../mixin';
+import { CARD_HAS_DETAIL } from '../../utils/url';
+import { post } from '../../utils/ajax';
+
+export default class Detail extends wepy.page {
+  mixins = [Mixin];
+  config = {
+      navigationBarTitleText: '员工详情',
+  };
+  data = {
+      isShowDialogShare: false,
+      cardDetail: {},
+      cardId: '',
+  };
+  methods = {
+      toShare() {
+          this.isShowDialogShare = true;
+      },
+      share(type) {
+          this.isShowDialogShare = false;
+          if (type === 'make') {
+              wepy.navigateTo({
+                  url: '/pages/choseImageStyle',
+              });
+          }
+      },
+      goVisitors() {
+          wepy.navigateTo({
+              url: `logs?cardId=${this.cardId}`,
+          });
+      },
+  };
+  onLoad({ cardId }) {
+      this.cardId = cardId;
+      this.loadCard(cardId);
+  }
+  async loadCard(cardId) {
+      // data是object，是
+      const { data } = await post(CARD_HAS_DETAIL, {
+          cardId,
+      });
+
+      this.cardDetail = data;
+      this.$apply();
+  }
+}
+</script>
+<style lang="scss">
+page {
+  width: 100%;
+  height: 100%;
+  background: #fff;
+}
+.staff-detail {
+  padding-top: 40rpx;
+  .gray-bg {
+    background: #f9f9f9;
+    height: 20rpx;
+  }
+}
+.staff-info {
+  margin: 0 30rpx;
+  display: flex;
+  background: #fff;
+  .share {
+    flex: 1;
+    text-align: center;
+  }
+  .info {
+    flex: 3;
+  }
+  .avator-img {
+    width: 112rpx;
+    height: 112rpx;
+    margin-right: 30rpx;
+    border-radius: 100%;
+  }
+  .info-name {
+    font-size: 32rpx;
+    line-height: 50rpx;
+    color: #333;
+  }
+  .info-position,
+  .info-tel {
+    font-size: 24rpx;
+    line-height: 31rpx;
+    color: #aaa;
+  }
+  .share-img {
+    width: 64rpx;
+    height: 64rpx;
+    margin-top: 8rpx;
+  }
+  .share-text {
+    font-size: 20rpx;
+    color: #333;
+  }
+}
+.staff-visitor {
+  margin: 40rpx 30rpx;
+  padding: 10rpx 20rpx;
+  background: #f9f9f9;
+  position: relative;
+  &::after {
+    display: block;
+    content: '';
+    width: 18rpx;
+    height: 18rpx;
+    border-top: 1rpx solid #ccc;
+    border-right: 1rpx solid #ccc;
+    transform: rotate(45deg);
+    position: absolute;
+    top: 30rpx;
+    right: 20rpx;
+  }
+  text {
+    font-size: 24rpx;
+    color: #999999;
+  }
+}
+.viewer-block {
+  height: 106rpx;
+  margin: 38rpx 30rpx 20rpx;
+  background: #f9f9f9;
+  border-radius: 16rpx;
+  position: relative;
+  .noViewer {
+    font-size: 24rpx;
+    color: #999;
+    line-height: 106rpx;
+    text-align: center;
+  }
+  .viewers {
+    position: relative;
+    .view-number {
+      font-size: 24rpx;
+      color: #999;
+      margin: 14rpx 20rpx 4rpx;
+      padding-top: 10rpx;
+    }
+    .viewers-icons {
+      width: 100%;
+      padding-left: 35rpx;
+      position: relative;
+      image {
+        width: 50rpx;
+        height: 50rpx;
+        border-radius: 50%;
+        margin-left: -15rpx;
+      }
+    }
+  }
+  .arrow {
+    position: absolute;
+    right: 30rpx;
+    transform: translateY(-50%);
+    top: 50%;
+  }
+}
+.staff-analysis {
+  padding: 40rpx 30rpx;
+  text-align: center;
+  .title {
+    font-size: 30rpx;
+    color: #333;
+    margin-bottom: 30rpx;
+  }
+  .data {
+    padding: 30rpx 0;
+    background: #f9f9f9;
+  }
+  .other_entery {
+    display: flex;
+    flex-wrap: wrap;
+    .line {
+      height: 30rpx;
+      width: 2rpx;
+      background: #c7e1ff;
+      margin-top: 45rpx;
+    }
+    .otherbox {
+      width: 33%;
+      padding: 10rpx 0;
+      .num {
+        font-size: 46rpx;
+        color: #333333;
+        line-height: 64rpx;
+      }
+      .type {
+        font-size: 24rpx;
+        color: #999;
+        line-height: 34rpx;
+      }
+    }
+  }
+}
+.mycard-share-mask {
+  position: fixed;
+  width: 100%;
+  min-height: 100vh;
+  top: 0;
+  left: 0;
+  z-index: 99;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.7);
+  transition: all 0.6s ease-in-out;
+}
+.mycard-share {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+}
+.dialog-share-item {
+  line-height: 100rpx;
+  width: 100vw;
+  height: 100rpx;
+  background: #fff;
+  border-radius: 0;
+  text-align: center;
+  font-size: 36rpx;
+  color: #000;
+}
+.dialog-share-item.line {
+  border-top: 1rpx solid #f3f3f3;
+}
+.dialog-share-item.cancel {
+  margin-top: 12rpx;
+}
+.arrow {
+  width: 14rpx;
+  height: 25rpx;
+}
+</style>

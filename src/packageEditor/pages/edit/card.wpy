@@ -1,0 +1,199 @@
+<template>
+    <view class="card-container">
+        <view class="list">
+            <!-- <repeat for="{{list}}" index="index" item="item"> -->
+                <view class="item" >
+                    <view class="thumb">
+                        <image mode="aspectFill" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/emptyIcon.png?w=120&h=120"></image>
+                    </view>
+                    <view class="cardDesc">
+                        <view class="title">哈哈哈</view>
+                        <view class="desc">奥术大师多阿萨德</view>
+                    </view>
+                </view>
+                <view class="item" >
+                    <view class="thumb">
+                        <image mode="aspectFill" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/emptyIcon.png?w=120&h=120"></image>
+                    </view>
+                    <view class="cardDesc">
+                        <view class="title">哈哈哈</view>
+                        <view class="desc">奥术大师多阿萨德</view>
+                    </view>
+                </view>
+                <view class="item" >
+                    <view class="thumb">
+                        <image mode="aspectFill" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/emptyIcon.png?w=120&h=120"></image>
+                    </view>
+                    <view class="cardDesc">
+                        <view class="title">哈哈哈</view>
+                        <view class="desc">奥术大师多阿萨德</view>
+                    </view>
+                </view>
+            <!-- </repeat> -->
+        </view>
+    </view>
+    <view class="card-editLayer">
+        <view class="saveBar">
+            <text class="save" @tap="save">保存</text>
+        </view>
+        <view class="edit-cell">
+            <view class="edit-label">标题名称</view>
+            <view class="edit-input">
+                <input data-name="name" value="{{pageModule.cfg.title}}" maxlength="16" class="weui-input" name="name" bindinput="bindNameInput" placeholder="16字以内" />
+            </view>
+        </view>
+        <view class="nocard" wx:if="{{list.length==0}}">
+            您还没有商品哦~
+        </view>
+        <scroll-view wx:else scroll-y class="card-scroll">
+            <checkbox-group bindchange="checkboxBoxChange">
+                <repeat for="{{list}}" index="index" item="item">
+                    <label class="card-checkbox">
+                        <checkbox class="checkSqure" value="{{item.id}}" checked="{{item.checked}}" />{{item.title}}
+                    </label>
+                </repeat>
+            </checkbox-group>
+        </scroll-view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy';
+import Mixin from './mixin';
+// import { picSrcDomain, toast } from '../../../utils';
+// import { globalData } from '../../../utils/globalData';
+
+// const { get } = require('../../../utils/ajax');
+
+export default class Card extends wepy.page {
+  config = {
+      navigationBarTitleText: '名片',
+  };
+  mixins = [Mixin];
+  data = {
+      list: {},
+  };
+}
+</script>
+<style lang="scss">
+.card-editLayer {
+  width: 100%;
+  box-sizing: border-box;
+  height: 594rpx;
+  position: fixed;
+  bottom: 0;
+  background: rgb(91, 93, 95);
+  z-index: 10;
+  padding: 0 30rpx;
+  .saveBar {
+    height: 86rpx;
+    box-sizing: border-box;
+    margin: 0 -30rpx;
+    padding-right: 30rpx;
+    background: #46484a;
+    color: white;
+    line-height: 86rpx;
+    font-size: 32rpx;
+    .label {
+      width: 200rpx;
+      margin-left: 30rpx;
+      text-align: left;
+    }
+    .save {
+      width: 100rpx;
+      float: right;
+      text-align: right;
+    }
+  }
+  .edit-cell {
+    height: 88rpx;
+    display: flex;
+    font-size: 30rpx;
+    background: #545658;
+    columns: #333333;
+    align-items: center;
+    margin: 0 -30rpx;
+    padding: 0 30rpx;
+    border-bottom: 1rpx solid #585d5f;
+    .edit-label {
+      width: 324rpx;
+      color: #999;
+      .arrow {
+        position: relative;
+        top: -4rpx;
+        display: inline-block;
+        width: 0;
+        height: 0;
+        margin-left: 10rpx;
+        border-style: solid;
+        border-width: 10rpx 10rpx 0 10rpx;
+        border-color: #ffffff transparent transparent transparent;
+      }
+    }
+    .edit-input {
+      width: 396rpx;
+      color: #d8d8d8;
+      text-align: right;
+      checkbox .wx-checkbox-input {
+        background: transparent;
+        border: 1rpx solid #bdbdbd;
+      }
+      checkbox .wx-checkbox-input.wx-checkbox-input-checked {
+        background: #4e88ff;
+      }
+      checkbox .wx-checkbox-input.wx-checkbox-input-checked::before {
+        font-size: 30rpx;
+        color: transparent;
+        position: relative;
+        border: 0;
+        top: -1rpx;
+        left: -1rpx;
+        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAAAXNSR0IArs4c6QAAAfFJREFUSA3tls8rBGEYx78zfrfUrhKhyAnl4k4pJ0opm7ODu3Vz8PPCCTflD1DsYU+kOIn2tg5K2oOiiMiqtQc/1/M1M1nTO7N2m3HyHN55fz6feb7P29ujQSy8nG16fsUKsuiXYYhzHlgKGvYryhCJTmpXmgk5EUiNOC/1AJDr4k1gaYF16WYkfkAILGUAZOimXF5HkhsVYf26zHiVk1zn9n6IoD+xf5CjzB3NwNo4MNan3uKJdK11wPQI0FgL9HT4BGoIAvOjQKDCAGzFfQCFAsCCQILypW0eAbvHRt/eKqWjztSbujsZI2Ak9RIRbScBbBwafVWrBFFn6k3dqb/dyuUdmQkDLebawSmwvmff9XOsBFk6W3/NPFhWIiemhoH2JmMmcQ6sbkNeGXdTgqgz9aZRf+aB+dBkPDEIdLd9LeHsCliMAe8fxtitdXxMqXdNFTDQbeSB+UheA72dhruLO/mBKPDy5ub+e80RxC3UvbrScM58WDm5fQTmtoDM87ejfD2ldNYh6k79mQfLHjNyETaBhydr5ndfVxBdUH/mIZ4ELu+BWYHcSESFmja0lM13YQr1qdyfNyLlqSImCUoVca7QIymdJZGc+uUlLdT/135WQvs66y7ppH2CWeVWRGdxx7pLYHK3PJWRBWSMvsn4BExhe3rzGZlEAAAAAElFTkSuQmCC');
+        background-size: cover;
+      }
+    }
+  }
+  .card-scroll {
+    background: #545658;
+    height: 328rpx;
+    padding: 0 30rpx 30rpx;
+    margin: 20rpx -30rpx 0;
+    .card-checkbox {
+      width: 640rpx;
+      display: flex;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #dbdbdb;
+      height: 82rpx;
+      border-bottom: 1rpx solid #5b5d5f;
+      font-size: 30rpx;
+      align-items: center;
+      checkbox {
+        margin-right: 10rpx;
+      }
+      checkbox .wx-checkbox-input {
+        width: 36rpx;
+        height: 36rpx;
+        background: transparent;
+        border: 1rpx solid #bdbdbd;
+        border-radius: 50%;
+      }
+      checkbox .wx-checkbox-input.wx-checkbox-input-checked {
+        background: #4e88ff;
+      }
+      checkbox .wx-checkbox-input.wx-checkbox-input-checked::before {
+        font-size: 40rpx;
+        color: transparent;
+        position: relative;
+        border: 0;
+        top: -1rpx;
+        left: -1rpx;
+        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAAXNSR0IArs4c6QAAAxBJREFUSA3Fl01oE0EUx/+zUdSDHz0YtSBWQSkqingRP6rVnlQwUkEFBbV68GC1CKnH4BdJQLSCtkVBLyKKQgS1thVUBEWw1vp10KNgNR4snrw04/tvdpPdbDaNMUsHNjvz5s37zZt5M/uiUEaJaW0MJbB6VCGiNFbKkFrr4ehvfLTCQEgjtbwdL2JKZdhRqqhSnfuu6ckjP9AqRo9rjXApXbtPKaRlcudmzMLF6/vVH1te+PYFR5K6WWDn5ZlbOKictkzgqzxtqai6W0zfKBRqrdW2uD6TyeBOpVDa5FjaoC3aLOS4BFSIJHFTBu0sVPyftnh+KxXFbqVkE6zi8jiSwOlqQ8mhTdq2oXznPOaecmmcndWuGwZ22Htughm9v9L4zH2pNsxpjwFXE8YiRru51OaRCRjKCdAxslg3eDnwnLJRrbJ+MXD1MLC3wWuRLDLV9rheOwo896pUJtm4FDiyWTySTfz5GzjY6bUTAtYZvAa9XZVJGh1QWVbc8HGHTMO6eysjOUY1LgFaLU8JvdwLPPngUHBUyWRw8cL3FC7VqV1AxwFgwRi39AZCt2SXl9DOPqBvyGPSKaj1BYenA8vmAXUzgZMygfk+cAbSUQe0S6C9b52MonUTXLTn+wjQ/y7bNXVK1vtCOKHHtuY97eoHHo0N5bWl6TG/p0XLpZ78PhFOz7kCLA0OT9nuJnSQtTKKxnCovinWLKp1fuqvvgCza0RBlnrSRGBNPTBBpnuoCQhx2lK6ZXl7yoWKvoTPe14eA+Zonx+JFVy4Dzz9mFWYJp7vkYshBxVPH/4D1LRi4LXBdMWHmRMT3vEAePYpJzIrVx4L9I1bVk7LyOCe4vU1mMSwHAOfuM2b4hFr2QSsWgjcfllW9OYHWzX5UKRXRDFHTAGRuI5KdpbwaAUgkLBoT51QSTM8mJjxkxUAx2WSDLIoNMH8PoqwzaUVQIMMO/O0DgTAzEDW/WwAPNMkbdvZBwXmHtuwcUv2mAWa2WAVPc966s4wPR7bnvMddELvWmonmPVx+QvjnAQvmWr/afsLtJkfavwu5egAAAAASUVORK5CYII=');
+        background-size: cover;
+      }
+    }
+  }
+}
+</style>
+
+

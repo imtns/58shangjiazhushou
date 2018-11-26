@@ -1,13 +1,13 @@
 <template>
-    <scroll-view class="home" scroll-y style="height:100vh">
-        <view class="switchEmployee" @tap="switchEmployee">
+    <scroll-view class="home" scroll-y style="height:100vh" @scrolltolower="scrollBottom" @scrolltoupper="scrollTop">
+        <view class="switchEmployee" @tap="switchEmployee" wx:if="{{showButton}}">
             <image mode="aspectFit" class="switchIcon" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/switchAccount.png?w=68"></image>
             <text class="switchName">{{currentAccountType}}账号</text>
         </view>
         <block wx:if="{{isEmployee}}">
-            <employee></employee>
+            <employee :isEmployee.sync="isEmployee" :isAuto.sync="isAuto" :cardId.sync="cardId"></employee>
         </block>
-        <block wx:else>
+        <view wx:else class="dianzhang">
             <guideMask :show.sync="maskShow" :type="maskType"></guideMask>
             <actionDialog wx:if="{{showEditModal}}" :syncEditShow.sync="showEditModal" :syncEditData.sync="editDialog"></actionDialog>
             <view class="add-myapp" wx:if="{{showTip}}" @tap="showAddStep">
@@ -181,36 +181,38 @@
                 <navigator class="toshare-action" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="/pages/index58/index58?mpcardId={{business.selected.cardId}}&businessId={{business.userId}}&from=zhushou_home" extra-data="" version="develop">
                     <button hover-class="none" form-type="submit" class="toshare-btn" data-action="share" bindtap="handleActionRoute">立即分享</button>
                 </navigator>
-            </form>--> 
+            </form>-->
         </view>
-            <!-- <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{!Actfrom && !share.hasPromptToday && share.hasPerm}}">
+        <!-- <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{!Actfrom && !share.hasPromptToday && share.hasPerm}}">
             <button class="tomake-money" data-action="makemoney" bindtap="handleActionRoute" hover-class="none" form-type="submit"></button>
             </form> -->
-            <!-- 每日一言悬浮提示 -->
-            <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{everydayIconShow}}">
-                <button class="to-everyday" @tap="handleToEveryday" hover-class="none" form-type="submit">
-                    <view class="unread" wx:if="{{everydayIconShow && everydayUnread}}" />
-                </button>
-            </form>
-            <!-- 每日一言弹窗模块 -->
-            <everyday-modal :show.sync="everydayShow" :unread.sync="everydayUnread" />
-            <!-- 添加到我的小程序步骤提示 -->
-            <view class="add-myapp-modal" wx:if="{{showTipModal}}">
-                <view class="add-step">  
-                    <view class="step-text">
-                        1.点击
-                        <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step1.png" class="step-image1"></image>
-                    </view>
-                    <view class="step-text">2.点击【添加到我的小程序】</view>
-                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step2.png" class="step-image2"></image>
-                    <view class="step-text">3.在微信首页下拉，快速进入"58商家程序助手"</view>
-                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step3.png" class="step-image3"></image>
-                    <view class="cancle-btn" @tap="cancleTipModal">
-                        <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step4.png"></image>
-                    </view>
+        <!-- 每日一言悬浮提示 -->
+        <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{everydayIconShow}}">
+            <button class="to-everyday" @tap="handleToEveryday" hover-class="none" form-type="submit">
+                <view class="unread" wx:if="{{everydayIconShow && everydayUnread}}" />
+            </button>
+        </form>
+        <!-- 每日一言弹窗模块 -->
+        <everyday-modal :show.sync="everydayShow" :unread.sync="everydayUnread" />
+        <!-- 商家推广模块 -->
+        <spread-modal :userID.sync="spreadUserID" :show.sync="spreadRPShow" :first.sync="spreadRPFirst"></spread-modal>
+        <!-- 添加到我的小程序步骤提示 -->
+        <view class="add-myapp-modal" wx:if="{{showTipModal}}">
+            <view class="add-step">
+                <view class="step-text">
+                    1.点击
+                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step1.png" class="step-image1"></image>
+                </view>
+                <view class="step-text">2.点击【添加到我的小程序】</view>
+                <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step2.png" class="step-image2"></image>
+                <view class="step-text">3.在微信首页下拉，快速进入"58商家程序助手"</view>
+                <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step3.png" class="step-image3"></image>
+                <view class="cancle-btn" @tap="cancleTipModal">
+                    <image src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/add-step4.png"></image>
                 </view>
             </view>
-        </block>
+        </view>
+        </view>
     </scroll-view>
 </template>
 
@@ -224,6 +226,7 @@ import { alert, formatDuring } from '../utils';
 import { post, get } from '../utils/ajax';
 import { globalData, setTabBar } from '../utils/globalData';
 import { SendClickLog } from '../utils/maidian';
+import { SendEventLog } from '../utils/eventLog';
 
 import {
     CHAT_LOGIN,
@@ -232,6 +235,7 @@ import {
     INSERT_SESSION,
     GET_EXT_JSON,
     GET_SHARE,
+    CHECK_CANSPREAD,
 } from '../utils/url';
 
 import { sdkLogin, onMsgNotify, sdkLogout } from '../utils/IM/IM';
@@ -243,6 +247,7 @@ import EverydayModal from '../components/EverydayModal';
 import Mask from '../components/Mask';
 import ActionDialog from '../components/ActionDialog';
 import Employee from '../components/Employee';
+import SpreadModal from '../components/SpreadModal';
 
 export default class Home extends wepy.page {
   mixins = [Mixin, RegistMixin];
@@ -257,8 +262,10 @@ export default class Home extends wepy.page {
       'everyday-modal': EverydayModal,
       actionDialog: ActionDialog,
       employee: Employee,
+      'spread-modal': SpreadModal,
   };
   data = {
+      showButton: true,
       code: '',
       iv: '',
       encryptedData: '',
@@ -305,16 +312,48 @@ export default class Home extends wepy.page {
       everydayShow: false,
       // 每日一言 是否显示每日一言icon
       everydayIconShow: false,
-      // 是否是员工
       isEmployee: false,
-
+      // 是否是员工
       currentAccountType: '店长',
+      isAuto: 0,
+      cardId: '',
+      // 红包推广 是否显示红包推广
+      spreadRPShow: false,
+      // 红包推广 是否今天第一次进入首页
+      spreadRPFirst: false,
+      spreadUserID: '',
+      fromQuery: '', // 打开来源
+  };
+  events = {
+      changeIdentity() {
+          if (!this.userLogin) {
+              loginHelper.goLogin();
+              return;
+          }
+          SendClickLog('sjzh_click_home_switch_Identity');
+          wepy.navigateTo({
+              url: '/pages/app/accountList',
+          });
+      },
   };
   methods = {
-      switchEmployee() {
-          this.currentAccountType = this.currentAccountType === '店长' ? '员工' : '店长';
+      scrollTop() {
+          this.showButton = true;
+      },
+      scrollBottom() {
+          this.showButton = false;
+      },
+      async switchEmployee() {
           this.isEmployee = !this.isEmployee;
-          globalData.isEmployee = this.isEmployee;
+          this.currentAccountType = this.isEmployee ? '店长' : '员工';
+          wepy.setStorageSync('isEmployee', this.isEmployee || false);
+          await this.chatLogin();
+          if (this.isEmployee) {
+              this.$broadcast('getData');
+          } else {
+              await this.loadData();
+          }
+          this.$apply();
       },
       handleLogin() {
           loginHelper.goLogin();
@@ -484,6 +523,8 @@ export default class Home extends wepy.page {
               await this.hideMask();
               // 切换小程序，重新登录IM
               await this.chatLogin();
+              // 重新判断是否显示推广
+              this.initSpreadRedpacket();
           }
       },
       hideModal() {
@@ -524,8 +565,9 @@ export default class Home extends wepy.page {
       if (options.mask && !wepy.getStorageSync('mask')) {
           this.maskShow = true;
       }
-      this.isEmployee = globalData.isEmployee;
-      const from = options.from || ''; // from=daypic 打开每日一言的弹窗
+      // from=daypic 打开每日一言的弹窗
+      // from=redpacket 打开红包推广
+      this.fromQuery = options.from || '';
       try {
       // 快速注册判断跳转
       // 如果用户在快速注册的流程中，则让用户跳转到注册流程的相应页面
@@ -535,13 +577,16 @@ export default class Home extends wepy.page {
               })
               .catch(err => {
                   console.log(err);
+                  if (this.isEmployee) {
+                      this.$broadcast('getData');
+                  }
               });
 
-          await this.loadData();
+          //   await this.loadData();
           if (!this.userLogin) return;
           // 每日一言 打开弹窗
           const cardId = wepy.getStorageSync('current_cardId');
-          if (cardId && from === 'daypic') {
+          if (cardId && this.fromQuery === 'daypic') {
               this.everydayShow = true;
           }
           // 聊天登录，监控未读消息
@@ -551,7 +596,7 @@ export default class Home extends wepy.page {
           }
 
           // globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
-          this.setGlobalMpId(this.business.selected.id);
+
           this.loadExtJson();
           wepy.setStorageSync('showmodal', true);
           this.storageShowmodal = wepy.getStorageSync('showmodal');
@@ -568,8 +613,16 @@ export default class Home extends wepy.page {
   }
   async onShow() {
       try {
+          this.currentAccountType = wepy.getStorageSync('isEmployee')
+              ? '店长'
+              : '员工';
+          this.isEmployee = wepy.getStorageSync('isEmployee');
+          this.isAuto = wepy.getStorageSync('isAuto') || 0;
+          this.cardId = wepy.getStorageSync('cardId') || '';
           await this.loadData();
           if (!this.userLogin) return;
+          // 初始化红包推广活动
+          this.initSpreadRedpacket();
           SendClickLog('sjzh_click_home_onload');
           await this.loadShareActivity();
           this.loadCode();
@@ -578,8 +631,16 @@ export default class Home extends wepy.page {
           await this.getAssistAuth();
           if (!this.isFollow && wepy.getStorageSync('ppu')) {
               this.showModal = true;
-              this.$apply();
           }
+          if (this.isEmployee) {
+              const { token } = globalData.chat;
+              if (!token) {
+                  this.chatLogin();
+              }
+              this.$broadcast('getData');
+          }
+          this.setGlobalMpId(this.business.selected.id);
+          this.$apply();
       } catch (err) {
           console.log(err);
       }
@@ -626,6 +687,7 @@ export default class Home extends wepy.page {
           });
       }
   }
+
   /**
    * 事件操作：所有操作入口
    */
@@ -873,6 +935,7 @@ export default class Home extends wepy.page {
   setGlobalMpId(id) {
       if (id) {
           wepy.setStorageSync('current_mpid', id);
+          console.log('----------set success-----------');
       }
   }
   checkBeforeJump(text) {
@@ -904,7 +967,7 @@ export default class Home extends wepy.page {
                   return;
               }
               wepy.navigateTo({
-                  url: 'visitorLogs',
+                  url: 'visitor/visitorLogs',
               });
               break;
           case '收款记录':
@@ -1085,8 +1148,10 @@ export default class Home extends wepy.page {
               contactList: [],
           };
           Object.assign(globalData.chat, chat);
-
-          const { cardId = '' } = this.business.selected;
+          const cardId = this.isEmployee
+              ? wepy.getStorageSync('cardId')
+              : this.business.selected.cardId;
+          console.log(cardId);
           if (!cardId) return;
           /**
                 tim 包含 sdkAppID identifier userSig
@@ -1148,10 +1213,35 @@ export default class Home extends wepy.page {
       seft.everydayIconShow = !!cardId; // 是否显示每日一言悬浮icon
       seft.$apply();
   }
+  /**
+   * 红包推广
+   */
+  async initSpreadRedpacket() {
+      console.log('-----business----------');
+      const mpId = wepy.getStorageSync('current_mpid');
+      const { data } = await get(CHECK_CANSPREAD, { mpId });
+      // 判断是否有推广功能
+      this.spreadRPShow = data.activity;
+      // 当天第一次进入首页或者从推送进来则自动显示推广弹窗
+      // 如果当天第一次进入但是从每日一言进入的，则不自动弹窗
+      this.spreadRPFirst =
+      this.fromQuery === 'redpacket' ||
+      (this.fromQuery !== 'daypic' && data.first);
+      this.spreadUserID = this.business.userId;
+      this.spreadRPFirst &&
+      SendEventLog({
+          page: 'home',
+          button: '',
+          window: 'redpacketWindow',
+          action: 'show',
+      });
+      this.$apply();
+  }
 }
 </script>
 
 <style lang="scss">
+@import '../css/drawLoading';
 page {
   overflow: auto !important;
 }
@@ -1163,8 +1253,8 @@ page {
   bottom: 50rpx;
   display: flex;
   z-index: 98;
-  background:white;
-  box-shadow: 0 0 20px 0 rgba(0,0,0,0.20);
+  background: white;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
   border-radius: 100rpx 0px 0px 100rpx;
   align-items: center;
   .switchIcon {
@@ -1501,9 +1591,6 @@ scroll-view {
       font-family: PingFangSC-Medium;
       font-size: 28rpx;
       color: #333333;
-    }
-    &:last-child{
-        margin-bottom: 130rpx;
     }
   }
 
@@ -2036,64 +2123,6 @@ scroll-view {
       background: url('https://img.58cdn.com.cn/lbg/jianzhan/images/youxiang/icon-share-pyq.png')
         center left no-repeat;
       background-size: 40rpx 40rpx;
-    }
-  }
-  .draw-loading {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    background: #fff;
-    display: flex;
-    align-items: center;
-
-    .spinner {
-      width: 40rpx;
-      height: 40rpx;
-      position: relative;
-      margin: 0 auto;
-    }
-
-    .bounce,
-    .spinner::before,
-    .spinner::after {
-      width: 40rpx;
-      height: 40rpx;
-      background-color: rgba(0, 0, 0, 0.514);
-      border-radius: 100%;
-      animation: bouncedelay 1.4s infinite ease-in-out;
-      animation-fill-mode: both;
-    }
-
-    .spinner::before {
-      content: ' ';
-      position: absolute;
-      top: 0;
-      left: -60rpx;
-      animation-delay: -0.32s;
-    }
-
-    .bounce {
-      animation-delay: -0.16s;
-    }
-
-    .spinner::after {
-      content: ' ';
-      position: absolute;
-      top: 0;
-      right: -60rpx;
-    }
-
-    @keyframes bouncedelay {
-      0%,
-      80%,
-      100% {
-        transform: scale(0);
-      }
-      40% {
-        transform: scale(1);
-      }
     }
   }
 }

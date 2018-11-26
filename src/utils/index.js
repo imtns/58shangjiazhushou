@@ -151,7 +151,7 @@ export const withHttp = (list) => {
     list.forEach((item) => {
         const ele = item;
         if (ele.headImg && ele.headImg.indexOf('http') === -1) {
-            ele.headImg = `https://pic1.58cdn.com.cn${headImg}`;
+            ele.headImg = `https://pic1.58cdn.com.cn${ele.headImg}`;
         } else if (ele.senderPortrait && ele.senderPortrait.indexOf('http') === -1) {
             ele.senderPortrait = `https://pic1.58cdn.com.cn${ele.senderPortrait}`;
         }
@@ -172,8 +172,28 @@ export const getTmpFilePath = (url) => new Promise((resolve, reject) => {
             reject(err);
         },
     });
+});
+// 电话号添加空格
+export const mobileSpace = (e) => {
+    let number = e.replace(/\s*/g, '');
+    const result = [];
+    for (let i = 0; i < number.length; i++) {
+        if (i === 3 || i === 7) {
+            result.push(` ${number.charAt(i)}`);
+        } else {
+            result.push(number.charAt(i));
+        }
+    }
+    number = result.join('');
+    return number;
 };
-
+// 验证手机号
+export const checkMobile = (value) => {
+    let val = value;
+    val = val.replace(/\s+/g, '');
+    const reg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1})|(17[0-9]{1}))+\d{8})$/;
+    return !!reg.test(val);
+};
 // 获取当前小程序页面url
 export const getCurrentPageUrl = () => {
     const pages = getCurrentPages(); // 获取加载的页面
@@ -245,3 +265,12 @@ export const getPathName = (n = 0) => {
 
     return pages[(l - 1) + n].route;
 };
+
+/**
+ * 截取字符串后几位
+ */
+
+export const getString = (str, n) => {
+    if (!n) return str;
+    return str.substring(str.length - n, str.length);
+}
