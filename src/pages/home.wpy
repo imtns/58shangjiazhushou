@@ -589,24 +589,26 @@ export default class Home extends wepy.page {
           if (cardId && this.fromQuery === 'daypic') {
               this.everydayShow = true;
           }
-          // 聊天登录，监控未读消息
-          const { token } = globalData.chat;
-          if (!token) {
-              this.chatLogin();
-          }
+
 
           // globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
 
-          this.loadExtJson();
+          await this.loadExtJson();
           wepy.setStorageSync('showmodal', true);
           this.storageShowmodal = wepy.getStorageSync('showmodal');
           if (!this.isFollow && wepy.getStorageSync('ppu')) {
               this.showModal = true;
           }
+          // 聊天登录，监控未读消息
 
           // wepy在链式更改属性时，在手机预览会出现不生效的情况。
           this.status.loading = false;
           this.$apply();
+          //   const { token } = globalData.chat;
+          //   if (!token) {
+          //       this.chatLogin();
+          //   }
+          //   this.$apply();
       } catch (err) {
           console.log(err);
       }
@@ -632,11 +634,12 @@ export default class Home extends wepy.page {
           if (!this.isFollow && wepy.getStorageSync('ppu')) {
               this.showModal = true;
           }
+
+          const { token } = globalData.chat;
+          if (!token) {
+              this.chatLogin();
+          }
           if (this.isEmployee) {
-              const { token } = globalData.chat;
-              if (!token) {
-                  this.chatLogin();
-              }
               this.$broadcast('getData');
           }
           this.setGlobalMpId(this.business.selected.id);
