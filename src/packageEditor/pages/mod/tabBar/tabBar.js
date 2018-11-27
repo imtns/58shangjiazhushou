@@ -13,6 +13,7 @@ export default {
 
         this.route = route;
         this.setData({
+            editLayer: {}, // 清空编辑浮层
             isEditing: false,
             pageKey,
         });
