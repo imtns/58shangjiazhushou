@@ -1,12 +1,12 @@
 <template>
     <view class="myCardPrint">
         <view wx:if="{{showCanvas}}">
-            <drawimage bind:toTempFile="toTempFile1" id="drawStyle1" width="586" height="368" background="{{cardOppStyle.background}}" layers="{{cardOppStyle.layers}}" />
-            <button class="saveCard" bindtap="saveImgToPhotosAlbum">下载名片（正面）</button>
-            <drawimage bind:toTempFile="toTempFile1" id="drawStyle2" width="586" height="368" background="{{cardPosStyle.background}}" layers="{{cardPosStyle.layers}}" />
-            <button class="saveCard" bindtap="saveImgToPhotosAlbum">下载名片（反面）</button>
+            <drawimage bind:toTempFile="toTempFile1" id="drawStyle1" width="750" height="368" background="{{cardOppStyle.background}}" layers="{{cardOppStyle.layers}}" />
+            <button class="saveCard" bindtap="saveImgToPhotosAlbum(1)">下载名片（正面）</button>
+            <drawimage bind:toTempFile="toTempFile2" id="drawStyle2" width="750" height="368" background="{{cardPosStyle.background}}" layers="{{cardPosStyle.layers}}" />
+            <button class="saveCard" bindtap="saveImgToPhotosAlbum(2)">下载名片（反面）</button>
+            <view class="print-tip">这是58为你特制的高科技名片哦，快下载后打印出来发送给好友，可获得特别商机哦</view>
         </view>
-        <view class="print-tip">这是58为你特制的高科技名片哦，快下载后打印出来发送给好友，可获得特别商机哦</view>
     </view>
 </template>
 
@@ -28,6 +28,7 @@ export default class choseImageStyle extends wepy.page {
     data = {
         cardOppBg: '', // 名片正面背景
         cardPosBg: '', // 名片反面背景
+        cardCodeImg: '', // 名片二维码转换图片
         showCanvas: false, // 是否展示名片
         cardOppImg: '', // 生成的名片正面图片
         cardPosImg: '', // 生成的名片反面图片
@@ -36,13 +37,17 @@ export default class choseImageStyle extends wepy.page {
     }
     methods = {
         // 下载名片
-        async saveImgToPhotosAlbum() {
+        async saveImgToPhotosAlbum(e) {
+            console.log(e);
             let path = '';
-            if (this.style === 1) {
-                path = this.styleImage1;
-            } else if (this.style === 2) {
-                path = this.styleImage2;
+            if (e == 1) {
+                console.log('1121');
+                path = this.cardOppImg;
+            } else if (e == 2) {
+                console.log('22222');
+                path = this.cardPosImg;
             }
+            console.log(path);
             wx.saveImageToPhotosAlbum({
                 filePath: path,
                 success (res) {
@@ -53,13 +58,15 @@ export default class choseImageStyle extends wepy.page {
         },
         toTempFile1(res) {
             const { tempFilePath } = res.detail;
-            this.styleImage1 = tempFilePath;
+            this.cardOppImg = tempFilePath;
             this.$apply();
+            console.log(this.cardOppImg);
         },
         toTempFile2(res) {
             const { tempFilePath } = res.detail;
-            this.styleImage2 = tempFilePath;
+            this.cardPosImg = tempFilePath;
             this.$apply();
+            console.log(this.cardPosImg);
         },
     };
     async onLoad () {
@@ -97,7 +104,7 @@ export default class choseImageStyle extends wepy.page {
             height: 368,
             background: {
                 imageResource: that.cardOppBg,
-                dx: 0,
+                dx: 82,
                 dy: 0,
                 dWidth: 586,
                 dHeight: 368,
@@ -107,13 +114,31 @@ export default class choseImageStyle extends wepy.page {
                     type: 'text', // 姓名text
                     textBaseline: 'top',
                     textAlign: 'left',
-                    fontSize: 39,
+                    fontSize: 38,
                     text: that.realName,
-                    x: 165,
-                    y: 36,
-                    color: '#333',
+                    x: 358,
+                    y: 243,
+                    color: '#fff',
                     lineHeight: '',
                     maxWidth: '460',
+                }, {
+                    type: 'text', // 职位text
+                    textBaseline: 'top',
+                    textAlign: 'left',
+                    fontSize: 21,
+                    text: that.position,
+                    x: 358,
+                    y: 303,
+                    color: '#fff',
+                    lineHeight: '',
+                    maxWidth: '460',
+                }, {
+                    type: 'image', // 二维码图片
+                    imageResource: that.cardCodeImg,
+                    dx: 523,
+                    dy: 224,
+                    dWidth: 112,
+                    dHeight: 112,
                 },
             ],
         };
@@ -129,21 +154,43 @@ export default class choseImageStyle extends wepy.page {
             height: 368,
             background: {
                 imageResource: that.cardPosBg,
-                dx: 0,
+                dx: 82,
                 dy: 0,
                 dWidth: 586,
                 dHeight: 368,
             },
             layers: [
                 {
-                    type: 'text', // 姓名text
+                    type: 'text', // 电话text
                     textBaseline: 'top',
                     textAlign: 'left',
-                    fontSize: 39,
-                    text: that.realName,
-                    x: 165,
-                    y: 36,
-                    color: '#333',
+                    fontSize: 14,
+                    text: `Tel： ${that.realName}`,
+                    x: 358,
+                    y: 247,
+                    color: '#F1B620',
+                    lineHeight: '',
+                    maxWidth: '460',
+                }, {
+                    type: 'text', // 微信text
+                    textBaseline: 'top',
+                    textAlign: 'left',
+                    fontSize: 14,
+                    text: `Wechat： ${that.position}`,
+                    x: 358,
+                    y: 280,
+                    color: '#F1B620',
+                    lineHeight: '',
+                    maxWidth: '460',
+                }, {
+                    type: 'text', // 地址text
+                    textBaseline: 'top',
+                    textAlign: 'left',
+                    fontSize: 14,
+                    text: `Add： ${that.address}`,
+                    x: 358,
+                    y: 314,
+                    color: '#F1B620',
                     lineHeight: '',
                     maxWidth: '460',
                 },
@@ -156,13 +203,16 @@ export default class choseImageStyle extends wepy.page {
         that.$apply();
     }
     async touchImage() {
-        const cardOppBg = 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/card_opposite.png';
-        const cardPosBg = 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/card_positive.png';
+        const cardOppBg = 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/card_opposite.png?32';
+        const cardPosBg = 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/card_positive.png?32';
+        const cardCodeImg = 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/card_positive.png';
         // 转成本地路径
         this.cardOppBg = await getTmpFilePath(cardOppBg);
         this.cardPosBg = await getTmpFilePath(cardPosBg);
+        this.cardCodeImg = await getTmpFilePath(cardCodeImg);
         console.log(this.cardOppBg);
         console.log(this.cardPosBg);
+        console.log(this.cardCodeImg);
         this.$apply();
     }
 }
@@ -171,7 +221,7 @@ export default class choseImageStyle extends wepy.page {
 <style lang="scss">
 #drawStyle1,
 #drawStyle2{
-    margin: auto;
+    margin:20rpx auto;
 }
 .saveCard{
     font-size: 32rpx;
@@ -179,7 +229,7 @@ export default class choseImageStyle extends wepy.page {
     text-align: center;
     width: 586rpx;
     line-height: 94rpx;
-    margin: 10rpx auto;
+    margin: 30rpx auto;
     background: #4E88FF;
     border-radius: 4px;
 }
