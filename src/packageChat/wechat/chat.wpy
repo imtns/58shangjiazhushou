@@ -113,6 +113,7 @@ export default class Chat extends wepy.page {
         scrollHeight: 'calc(100vh - 100rpx)',
         keyboardHeight: 0,
         adjustSet: false,
+        remark: '',
     }
     methods = {
         showpanel() {
@@ -178,10 +179,10 @@ export default class Chat extends wepy.page {
     }
     async onLoad(options) {
         const { token, myId } = globalData.chat;
-        const { contact, nickName } = options;
+        const { contact, nickName, remark } = options;
 
         wepy.setNavigationBarTitle({
-            title: `${nickName}（${nickName}）`,
+            title: `${nickName}（${remark || nickName}）`,
         });
 
         globalData.chat.currentContactId = contact;
@@ -189,6 +190,7 @@ export default class Chat extends wepy.page {
         this.nickName = nickName;
         this.token = token;
         this.myId = myId;
+        this.remark = remark;
         await this.loadData();
         this.newMsgs();
         console.log(this.msgList);

@@ -93,3 +93,7 @@ export const SAVE_FORMID = '/formidcollect/collect'; // formid收集
 
 // 访客拨打电话
 export const CALL_VISITOR = '/businessShopBranch/phone';
+
+
+// 备注
+export const VISITOR_REMARK = '/chat/contactRemark';

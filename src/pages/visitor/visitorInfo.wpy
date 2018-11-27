@@ -12,7 +12,7 @@
                             <view wx:if="{{visitInfo.otherInfo.gender}}" class="{{visitInfo.otherInfo.gender === 1 ? 'male' : 'female'}}"></view>
                         </view>
                         <view class="address">{{visitInfo.otherInfo.city}}</view>
-                        <view class="note" @tap="showDialog">添加备注</view>
+                        <view class="note" @tap="showDialog">{{visitInfo.remark || '添加备注'}}</view>
                     </view>
                     <view class="from">
                         <view class="from-text">来自买智超的分享</view>
@@ -49,7 +49,7 @@
             <view class="pop">
                 <view class="pop-title">编辑备注</view>
                 <view class="pop-body">
-                    <input placeholder="请输入备注信息" cursor-spacing="80" @input="input" value="{{content}}"></input>
+                    <input placeholder="请输入备注信息" cursor-spacing="80" @input="input" value="{{visitInfo.remark}}"></input>
                 </view>
                 <view class="pop-options">
                     <view class="pop-btn" @tap="close">取消</view>
@@ -65,7 +65,7 @@ import wepy from 'wepy';
 import { get } from '../../utils/ajax';
 import { toast } from '../../utils';
 import { makeTelCall } from '../../utils/service';
-import { CONSUMER_INFO } from '../../utils/url';
+import { CONSUMER_INFO, VISITOR_REMARK } from '../../utils/url';
 import { globalData } from '../../utils/globalData';
 import { SendClickLog } from '../../utils/maidian';
 import Mixin from '../../mixin';
@@ -76,10 +76,10 @@ export default class visitorInfo extends wepy.page {
         navigationBarTitleText: '访客信息',
     }
     data = {
+        token: '',
         cardId: '',
         consumerId: '',
         showPop: false,
-        content: '',
         sendParams: {
             pageNum: 1,
             pageSize: 10,
@@ -95,6 +95,7 @@ export default class visitorInfo extends wepy.page {
             share: 0,
             visit: 0,
             vote: 0,
+            remark: '',
         },
     }
     methods = {
@@ -120,15 +121,27 @@ export default class visitorInfo extends wepy.page {
         async add() {
             const content = this.content.trim();
             if (!content) {
-                toast('请填写分组名称');
+                toast('请填写备注名称');
                 return;
             }
             if (content.length > 15) {
-                toast('分组名称过长');
+                toast('备注名称过长');
                 return;
             }
-            this.$emit('addGroup', content);
-            this.content = '';
+            try {
+                await get(VISITOR_REMARK, {
+                    token: this.token,
+                    contact: this.visitInfo.chatToken,
+                    value: content,
+                });
+                this.visitInfo.remark = content;
+                toast('设置成功');
+            } catch (err) {
+                console.log(err);
+                toast('设置失败');
+            }
+            this.showPop = false;
+
             this.$apply();
         },
     }
@@ -150,11 +163,11 @@ export default class visitorInfo extends wepy.page {
     async loadInfo() {
         if (this.loadComplete) return;
         try {
-            const { token } = globalData.chat;
-            this.sendParams = Object.assign(this.sendParams, { cardId: this.cardId, consumerId: this.consumerId, token });
+            this.token = globalData.chat.token;
+            this.sendParams = Object.assign(this.sendParams, { cardId: this.cardId, consumerId: this.consumerId, token: this.token });
             const { data } = await get(CONSUMER_INFO, this.sendParams);
             const {
-                actions, chatToken, mobile, nickName, otherInfo, portrait, share, visit, vote,
+                actions, chatToken, mobile, nickName, otherInfo, portrait, share, visit, vote, remark,
             } = data;
             this.visitInfo.chatToken = chatToken;
             this.visitInfo.mobile = mobile;
@@ -164,6 +177,7 @@ export default class visitorInfo extends wepy.page {
             this.visitInfo.share = share;
             this.visitInfo.visit = visit;
             this.visitInfo.vote = vote;
+            this.visitInfo.remark = remark;
             this.$apply();
             if (actions.length === 0) {
                 this.visitInfo.actions = this.visitInfo.actions;
