@@ -319,4 +319,5 @@ export default class extends wepy.app {
 @import "packageEditor/pages/mod/pay/pay.wxss";
 @import "packageEditor/pages/mod/branch/branch.wxss";
 @import "packageEditor/pages/mod/tabBar/tabBar.wxss";
+@import "packageEditor/pages/mod/card/card.wxss";
 </style>

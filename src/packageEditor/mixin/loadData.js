@@ -179,6 +179,12 @@ const parseCfgAndData = ({
             src: picSrcDomain() + img.src,
         }));
     }
+    if (name === 'card') {
+        modData.data.forEach(item => {
+            item.checked = params.indexOf(item.id) > -1;
+            return item;
+        });
+    }
     if (name === 'goods') {
         modData.data.forEach(img => {
             if (img.img.indexOf('?') > -1) {

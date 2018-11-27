@@ -1,0 +1,88 @@
+.mod-card {
+  background: white;
+  padding: 0 30rpx;
+  margin-top: 15rpx;
+  padding-bottom:30rpx;
+}
+
+.mod-card .mod-card-title {
+  padding: 30rpx 0;
+  text-align: center;
+  font-size: 34rpx;
+  color: #333;
+}
+
+.mod-card .mod-card-list {
+  width: 690rpx;
+  margin: 0 auto;
+  background: #ffffff;
+  box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.1);
+}
+.mod-card-list.first{
+    border-top-left-radius: 10rpx;
+    border-top-right-radius: 10rpx;
+}
+.mod-card-list.last{
+    border-bottom-left-radius: 10rpx;
+    border-bottom-right-radius: 10rpx;
+}
+.mod-card .mod-card-item {
+  width: 100%;
+  height: 142rpx;
+  display: flex;
+  align-items: center;
+  border-bottom: 1rpx solid #f3f3f3;
+}
+
+.mod-card .mod-card-item :last-child {
+  border: none;
+}
+
+.mod-card .mod-card-thumb {
+  width: 82rpx;
+  height: 82rpx;
+  margin-left: 30rpx;
+}
+
+.mod-card .mod-card-thumb image {
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+}
+
+.mod-card .mod-card-arrow {
+  margin-left: auto;
+  margin-right: 30rpx;
+  width: 15rpx;
+  height: 25rpx;
+}
+
+.mod-card .mod-card-cardDesc {
+  margin-left: 20rpx;
+}
+
+.mod-card .mod-card-name {
+  font-size: 30rpx;
+  color: #333;
+  display: inline-flex;
+}
+
+.mod-card .mod-card-tag {
+  background: #fcefeb;
+  color: #ff552e;
+  font-size: 20rpx;
+  padding: 0 10rpx;
+  text-align: center;
+  height: 28rpx;
+  line-height: 28rpx;
+  display: inline-flex;
+  margin-left: 10rpx;
+  position: relative;
+  top:-3rpx;
+}
+
+.mod-card .mod-card-desc {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 8rpx;
+}

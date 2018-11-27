@@ -1,36 +1,22 @@
 <template>
     <view class="card-container">
-        <view class="list">
-            <!-- <repeat for="{{list}}" index="index" item="item"> -->
-                <view class="item" >
+        <view class="title">{{pageData[0].props.cfg.title}}</view>
+        <scroll-view class="list" style="height:400rpx;" scroll-y scroll-with-animation @scroll="" >
+            <repeat for="{{pageData[0].props.data}}" index="index" item="item">
+                <view class="item" style="{{!item.checked?'display:none;':''}}">
                     <view class="thumb">
-                        <image mode="aspectFill" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/emptyIcon.png?w=120&h=120"></image>
+                        <image mode="aspectFill"  src="https://pic8.58cdn.com.cn{{item.picImg}}"></image>
                     </view>
                     <view class="cardDesc">
-                        <view class="title">哈哈哈</view>
-                        <view class="desc">奥术大师多阿萨德</view>
+                        <view class="name">{{item.realName}}</view>
+                        <view class="tag">{{item.level=='0'?'店长':'店员'}}</view>
+                        <view class="desc">{{item.position}}</view>
                     </view>
+                    <image class="arrow" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png?w=25" mode="scaleToFill" lazy-load="false">
+                    </image>
                 </view>
-                <view class="item" >
-                    <view class="thumb">
-                        <image mode="aspectFill" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/emptyIcon.png?w=120&h=120"></image>
-                    </view>
-                    <view class="cardDesc">
-                        <view class="title">哈哈哈</view>
-                        <view class="desc">奥术大师多阿萨德</view>
-                    </view>
-                </view>
-                <view class="item" >
-                    <view class="thumb">
-                        <image mode="aspectFill" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/emptyIcon.png?w=120&h=120"></image>
-                    </view>
-                    <view class="cardDesc">
-                        <view class="title">哈哈哈</view>
-                        <view class="desc">奥术大师多阿萨德</view>
-                    </view>
-                </view>
-            <!-- </repeat> -->
-        </view>
+            </repeat>
+        </scroll-view>
     </view>
     <view class="card-editLayer">
         <view class="saveBar">
@@ -39,17 +25,24 @@
         <view class="edit-cell">
             <view class="edit-label">标题名称</view>
             <view class="edit-input">
-                <input data-name="name" value="{{pageModule.cfg.title}}" maxlength="16" class="weui-input" name="name" bindinput="bindNameInput" placeholder="16字以内" />
+                <input data-name="name" value="{{pageData[0].props.cfg.title}}" maxlength="16" class="weui-input" name="name" bindinput="bindTitleInput" placeholder="16字以内" />
             </view>
         </view>
-        <view class="nocard" wx:if="{{list.length==0}}">
-            您还没有商品哦~
-        </view>
-        <scroll-view wx:else scroll-y class="card-scroll">
+        <scroll-view scroll-y class="card-scroll">
             <checkbox-group bindchange="checkboxBoxChange">
-                <repeat for="{{list}}" index="index" item="item">
+                <repeat for="{{pageData[0].props.data}}" index="index" item="item">
                     <label class="card-checkbox">
-                        <checkbox class="checkSqure" value="{{item.id}}" checked="{{item.checked}}" />{{item.title}}
+                        <checkbox class="checkSqure" value="{{item.id}}" checked="{{item.checked}}" />
+                        <view class="check-block">
+                            <view class="thumb">
+                                <image mode="aspectFill" src="https://pic8.58cdn.com.cn{{item.picImg}}"></image>
+                            </view>
+                            <view class="cardDesc">
+                                <view class="name">{{item.realName}}</view>
+                                <view class="tag">{{item.level=='0'?'店长':'店员'}}</view>
+                                <view class="desc">{{item.position}}</view>
+                            </view>
+                        </view>
                     </label>
                 </repeat>
             </checkbox-group>
@@ -59,26 +52,137 @@
 <script>
 import wepy from 'wepy';
 import Mixin from './mixin';
-// import { picSrcDomain, toast } from '../../../utils';
-// import { globalData } from '../../../utils/globalData';
-
-// const { get } = require('../../../utils/ajax');
+import { toast } from '../../../utils';
+import { globalData } from '../../../utils/globalData';
 
 export default class Card extends wepy.page {
   config = {
       navigationBarTitleText: '名片',
+      disableScroll: true,
   };
   mixins = [Mixin];
   data = {
-      list: {},
   };
+  onLoad() {
+      [this.pageModule] = this.tempModules.filter(obj => obj.id === this.pageId);
+  }
+  onShow() {
+
+  }
+  methods = {
+      checkboxBoxChange(e) {
+          this.pageData[0].props.data.map(item => {
+              if (e.detail.value.indexOf(item.id) === -1) {
+                  item.checked = false;
+              } else {
+                  item.checked = true;
+              }
+              return item;
+          });
+      },
+      bindTitleInput(e) {
+          this.pageData[0].props.cfg.title = e.detail.value;
+      },
+      save() {
+          if (!this.pageData[0].props.cfg.title.trim()) {
+              toast('请输入标题');
+              return;
+          }
+          this.pageModule.cfg = this.pageData[0].props.cfg;
+          const selectedIds = [];
+          this.pageData[0].props.data.map(item => {
+              if (item.checked) {
+                  selectedIds.push(item.id);
+              }
+              return item;
+          });
+          this.pageModule.params.selectCardIds = selectedIds;
+          [globalData.pageData[this.pageIndex]] = this.pageData;
+          globalData.modules[this.pageIndex] = this.pageModule;
+          toast('已保存');
+          setTimeout(() => {
+              wx.navigateBack({
+                  delta: 1,
+              });
+          }, 1000);
+      },
+  }
 }
 </script>
 <style lang="scss">
+.card-container {
+  background: white;
+  padding: 0 30rpx;
+  margin-top: 15rpx;
+  padding-bottom: 600rpx;
+  .title {
+    padding: 30rpx 0;
+    text-align: center;
+    font-size: 34rpx;
+    color: #333;
+  }
+  .list {
+    width: 690rpx;
+    margin: 0 auto;
+    background: #ffffff;
+    box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    .item {
+      width: 100%;
+      height: 142rpx;
+      display: flex;
+      align-items: center;
+      border-bottom: 1rpx solid #f3f3f3;
+      &:last-child {
+        border: none;
+      }
+      .thumb {
+        width: 82rpx;
+        height: 82rpx;
+        margin-left: 30rpx;
+        image {
+          width: 100%;
+          height: 100%;
+          border-radius: 100%;
+        }
+      }
+      .arrow {
+        margin-left: auto;
+        margin-right: 30rpx;
+        width: 15rpx;
+        height: 25rpx;
+      }
+      .cardDesc {
+        margin-left: 20rpx;
+        .name {
+          font-size: 30rpx;
+          color: #333;
+          display: inline-flex;
+        }
+        .tag {
+          background: #fcefeb;
+          color: #ff552e;
+          font-size: 20rpx;
+          padding: 0 10rpx;
+          text-align: center;
+          height: 28rpx;
+          line-height: 28rpx;
+          display: inline-flex;
+          margin-left: 10rpx;
+        }
+        .desc {
+          font-size: 24rpx;
+          color: #999;
+          margin-top: 8rpx;
+        }
+      }
+    }
+  }
+}
 .card-editLayer {
   width: 100%;
   box-sizing: border-box;
-  height: 594rpx;
+  height: 674rpx;
   position: fixed;
   bottom: 0;
   background: rgb(91, 93, 95);
@@ -154,7 +258,7 @@ export default class Card extends wepy.page {
   }
   .card-scroll {
     background: #545658;
-    height: 328rpx;
+    height: 428rpx;
     padding: 0 30rpx 30rpx;
     margin: 20rpx -30rpx 0;
     .card-checkbox {
@@ -164,12 +268,52 @@ export default class Card extends wepy.page {
       text-overflow: ellipsis;
       white-space: nowrap;
       color: #dbdbdb;
-      height: 82rpx;
+      height: 143rpx;
       border-bottom: 1rpx solid #5b5d5f;
       font-size: 30rpx;
       align-items: center;
       checkbox {
         margin-right: 10rpx;
+      }
+      .check-block {
+        width: 100%;
+        height: 142rpx;
+        display: flex;
+        align-items: center;
+        .thumb {
+          width: 82rpx;
+          height: 82rpx;
+          margin-left: 20rpx;
+          image {
+            width: 100%;
+            height: 100%;
+            border-radius: 100%;
+          }
+        }
+        .cardDesc {
+          margin-left: 20rpx;
+          .name {
+            font-size: 30rpx;
+            color: #dbdbdb;
+            display: inline-flex;
+          }
+          .tag {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 20rpx;
+            padding: 0 10rpx;
+            text-align: center;
+            height: 28rpx;
+            line-height: 28rpx;
+            display: inline-flex;
+            margin-left: 10rpx;
+          }
+          .desc {
+            font-size: 24rpx;
+            color: #dbdbdb;
+            margin-top: 8rpx;
+          }
+        }
       }
       checkbox .wx-checkbox-input {
         width: 36rpx;

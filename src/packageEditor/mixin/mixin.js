@@ -13,6 +13,7 @@ import evaluationComponent from '../pages/mod/evaluation/evaluation';
 import imagesMinx from '../pages/mod/images/images';
 import couponMinx from '../pages/mod/coupon/coupon';
 import callModMinx from '../pages/mod/call/call';
+import cardModMinx from '../pages/mod/card/card';
 import meMinx from '../pages/mod/me/me';
 import payMinx from '../pages/mod/pay/pay';
 import branchMinx from '../pages/mod/branch/branch';
@@ -97,6 +98,7 @@ module.exports = function mixin(config) {
         userinfoAuthorize,
         editLayerMinx,
         tabBarComponent,
+        cardModMinx,
     );
     return minx;
 };

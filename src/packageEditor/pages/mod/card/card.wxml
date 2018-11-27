@@ -1,0 +1,18 @@
+<template name="card">
+<view class="mod-view mod-card">
+    <view class="mod-card-title">{{cfg.title}}</view>
+    <view wx:for="{{data}}" wx:if="{{item.checked}}" wx:key="{{index}}"  class="mod-card-list {{index===0?'first':index===data.length-1?'last':''}}">
+        <view class="mod-card-item">
+            <view class="mod-card-thumb">
+                <image mode="aspectFill" src="https://pic8.58cdn.com.cn{{item.picImg}}?w=60"></image>
+            </view>
+            <view class="mod-card-cardDesc">
+                <view class="mod-card-name">{{item.realName}}</view>
+                <view class="mod-card-tag">{{item.level == 0?'店长':'店员'}}</view>
+                <view class="mod-card-desc">{{item.position}}</view>
+            </view>
+            <image class="mod-card-arrow" src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/arrow-right.png?w=25" mode="scaleToFill" lazy-load="false"></image>
+        </view>
+    </view>
+</view>
+</template>

@@ -3,7 +3,7 @@
         <view class="staff-detail">
             <view class="staff-info">
                 <view class="avator">
-                    <image class="avator-img" mode="scaleToFill" src="{{cardDetail.picImg? 'https://pic1.58cdn.com.cn'+cardDetail.picImg+'?w=100':'https://pic1.58cdn.com.cn/bizmp/n_v2a3d3462e64934aa9b1e33050b10f1a4b_dc08583cdc7209b8.jpg?w=112&h=112&ss=1'}}"></image>
+                    <image class="avator-img" mode="scaleToFill" src="{{cardDetail.picImg? 'https://pic1.58cdn.com.cn'+cardDetail.picImg+'?w=100':'https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/emptyIcon.png?w=120&h=120'}}"></image>
                 </view>
                 <view class="info">
                     <view class="info-name">{{cardDetail.realName}}</view>
@@ -67,7 +67,7 @@
         <view wx:if="{{isShowDialogShare}}" class="mycard-share-mask">
             <view class="mycard-share">
                 <form report-submit="true" bindsubmit="handleFormidCollect">
-                    <navigator class="item_box" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="/pages/index58/index58?mpcardId={{cardId}}&from=zhushou_myBizCard" extra-data="" version="develop">
+                    <navigator class="item_box" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="/pages/index58/index58?mpcardId={{cardId}}&from=zhushou_employee_detail" extra-data="" version="develop">
                         <button hover-class="none" form-type="submit" class='dialog-share-item'>分享给好友</button>
                     </navigator>
                 </form>
