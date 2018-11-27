@@ -356,12 +356,12 @@ export default class myBizCard extends wepy.page {
                     position: absolute;
                     top: 0;
                     right: 0;
-                    background-size: 100% 100% !important;
+                    background-size: 100% auto !important;
                     .empty_bg{
-                        width: 281.2rpx;
-                        height: 281.2rpx;
+                        width: 283rpx;
+                        height: 283rpx;
                         background: url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mycard_white_empty_02.png') no-repeat center;
-                        background-size: 100% 100%;
+                        background-size: 100% auto;
                     }
                 }
                 .other_entery{

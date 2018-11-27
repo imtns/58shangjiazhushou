@@ -11,6 +11,7 @@
 <import src="../mod/evaluation/evaluation.wxml" />
 <import src="../mod/reserve/reserve.wxml" />
 <import src="../mod/coupon/coupon.wxml" />
+<import src="../mod/card/card.wxml" />
 <import src="../mod/me/me.wxml" />
 <import src="../mod/pay/pay.wxml" />
 <import src="../mod/branch/branch.wxml" />
@@ -27,7 +28,7 @@
         <view class="edit-wrapper"  hidden="{{!editLayer[component.id]}}"  >
             <view class="edit-btn" capture-catch:tap="goEdit" data-name="{{component.name}}" data-id="{{component.id}}">{{noEdit?'暂时不能编辑':'去编辑'}}</view>
         </view>   
-     </view>+++++
+     </view>
   </block>
   <!-- <view class="userinfo-authorize-mask" wx:if="{{showUserinfoAuthorize}}"></view>
   <view class="userinfo-authorize-container" wx:if="{{showUserinfoAuthorize}}">

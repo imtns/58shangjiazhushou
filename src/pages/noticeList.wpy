@@ -23,7 +23,7 @@
             </view>
         </view>
         <block wx:if="{{cardList.length}}">
-            <scroll-view class="card-list" style="{{!isEmployee?'padding-top: 281rpx;':''}}" wx:if="{{cardList.length>0}}" scroll-y="true" scroll-with-animation="true" bindscrolltolower="cardListMore" lower-threshold="50" style="height: 100vh">
+            <scroll-view class="card-list"  wx:if="{{cardList.length>0}}" scroll-y="true" scroll-with-animation="true" bindscrolltolower="cardListMore" lower-threshold="50" style="height: 100vh;{{!isEmployee?'padding-top: 281rpx;':''}}">
                 <view class="card-time">{{lastedTime}}</view>
                 <block wx:for="{{cardList}}" wx:key="index">
                     <view class="card-list-item">
@@ -147,7 +147,7 @@ export default class cardList extends wepy.page {
           const arr = [];
           if (msglist.length === 0) {
               this.loadComplete = true;
-              toast('没有更多访客信息啦');
+              //   toast('没有更多消息啦');
               return;
           }
           msglist.forEach(item => {

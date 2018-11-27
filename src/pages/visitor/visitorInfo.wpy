@@ -84,6 +84,7 @@ export default class visitorInfo extends wepy.page {
             pageNum: 1,
             pageSize: 10,
         },
+        loadComplete: false,
         visitInfo: {
             actions: [],
             chatToken: '',
@@ -147,6 +148,7 @@ export default class visitorInfo extends wepy.page {
         this.loadInfo();
     }
     async loadInfo() {
+        if (this.loadComplete) return;
         try {
             const { token } = globalData.chat;
             this.sendParams = Object.assign(this.sendParams, { cardId: this.cardId, consumerId: this.consumerId, token });
@@ -165,6 +167,7 @@ export default class visitorInfo extends wepy.page {
             this.$apply();
             if (actions.length === 0) {
                 this.visitInfo.actions = this.visitInfo.actions;
+                this.loadComplete = true;
                 toast('没有更多行为记录啦');
                 return;
             }
