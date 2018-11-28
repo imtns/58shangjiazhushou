@@ -216,7 +216,7 @@ html, body{
     right:0.3rem;
     top: 0;
     width:0.4rem;
-    height:0.34rem;
+    height:1.34rem;
 }
 .item-input{
     width:100%;
@@ -237,6 +237,7 @@ html, body{
     position:absolute;
     right:0;
     top:0.32rem;
+    z-index: 999;
 }
 .icon-bold{
     width:0.35rem;

@@ -67,7 +67,7 @@ var Page = {
     window.editor = ZEditor('#editor', {
       selectImage: function selectImage(cb) {
         // 商品详情内容编辑
-        $('.icon-tupian-btn').on('click', function () {
+        $('#mainTest').on('click', function () {
           wx.chooseImage({
             count: 1,
             sizeType: ['original', 'compressed'],
