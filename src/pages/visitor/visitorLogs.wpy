@@ -15,7 +15,7 @@
                                 </view>
                                 <view class="visitor_status">{{item.remark}}</view>
                             </view>
-                            <view class="visitor_from">来自 {{item.nickName}} 的分享</view>
+                            <view class="visitor_from">来自 {{item.formWho || ''}} 的分享</view>
                     </view>
                     <view class="visitor_box">
                         <view class="visitor_log">
@@ -24,7 +24,7 @@
                                 <text class="visitor_num">{{item.visitCount}}</text> 
                                 次
                             </view>
-                            <view class="visitor_time">1小时前访问过你</view>
+                            <view class="visitor_time">{{item.visitTime}}访问过你</view>
                         </view>
                         <view class="visitor_tel" wx:if="{{item.mobileSign}}">
                             <view class="visitor_make_phone" @tap="call('{{item.mobileSign}}')" >拨打电话</view>
