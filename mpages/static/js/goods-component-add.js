@@ -50,7 +50,7 @@ var Page = {
     return null;
   },
   init: function init() {
-    Page.ppu = decodeURIComponent('UID=30624233&UN=imtns&TT=70c87004d7ca3df69b9e5228a8e818b6&PBODY=Y797pn3LH5C5KCG0tOYRubjqaGtgJuiI5td674-yqnK6VHCDXpK-h2dZ-UmpVFuEhsFUNhcbNbiqh8fx0NwtJi_P4SzQrKeMBGAIqDpaD5Omtz-4T600hBcqwu7MG53_nTiYWRwAPlKF_75qFVoZvjgEj-X7Eud99yZOAXen7bE&VER=1'); //decodeURIComponent(Page.getKey('ppu'));
+    Page.ppu = Page.getKey('ppu');
     Page.id = Page.getKey('id');
     Page.group = Page.getKey('group');
     Page.mpId = Page.getKey('mpId');
@@ -67,7 +67,7 @@ var Page = {
     window.editor = ZEditor('#editor', {
       selectImage: function selectImage(cb) {
         // 商品详情内容编辑
-        $('.icon-tupian-btn').on('click', function () {
+        $('#detailIcon').on('click', function () {
           wx.chooseImage({
             count: 1,
             sizeType: ['original', 'compressed'],
@@ -553,8 +553,7 @@ if (typeof Object.assign != 'function') {
     configurable: true
   });
 }
-Page.init();
-Page.initEvent();
+
 $(function () {
   var signURL = '//yaofa.58.com/cmtHunter/getJsSign';
   var data = {
@@ -586,4 +585,6 @@ $(function () {
     // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
     console.log('初始化成功');
   });
+  Page.init();
+  Page.initEvent();
 })
