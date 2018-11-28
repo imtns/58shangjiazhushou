@@ -15,7 +15,7 @@
                         <view class="visitor_from" wx:if="{{item.formWho}}">来自 {{item.formWho}} 的分享</view>
                     </view>
                     <view class="visitor_count">
-                        访问您的名片
+                        访问TA的名片
                         <text class="visitor_num">{{item.visitCount}}</text>
                         次
                     </view>
