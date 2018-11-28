@@ -50,7 +50,7 @@ var Page = {
     return null;
   },
   init: function init() {
-    Page.ppu = decodeURIComponent('UID=30624233&UN=imtns&TT=70c87004d7ca3df69b9e5228a8e818b6&PBODY=Y797pn3LH5C5KCG0tOYRubjqaGtgJuiI5td674-yqnK6VHCDXpK-h2dZ-UmpVFuEhsFUNhcbNbiqh8fx0NwtJi_P4SzQrKeMBGAIqDpaD5Omtz-4T600hBcqwu7MG53_nTiYWRwAPlKF_75qFVoZvjgEj-X7Eud99yZOAXen7bE&VER=1');//decodeURIComponent(Page.getKey('ppu'));
+    Page.ppu = decodeURIComponent('UID=30624233&UN=imtns&TT=70c87004d7ca3df69b9e5228a8e818b6&PBODY=Y797pn3LH5C5KCG0tOYRubjqaGtgJuiI5td674-yqnK6VHCDXpK-h2dZ-UmpVFuEhsFUNhcbNbiqh8fx0NwtJi_P4SzQrKeMBGAIqDpaD5Omtz-4T600hBcqwu7MG53_nTiYWRwAPlKF_75qFVoZvjgEj-X7Eud99yZOAXen7bE&VER=1'); //decodeURIComponent(Page.getKey('ppu'));
     Page.id = Page.getKey('id');
     Page.group = Page.getKey('group');
     Page.mpId = Page.getKey('mpId');
@@ -555,3 +555,35 @@ if (typeof Object.assign != 'function') {
 }
 Page.init();
 Page.initEvent();
+$(function () {
+  var signURL = '//yaofa.58.com/cmtHunter/getJsSign';
+  var data = {
+    url: window.location.href.split('#')[0],
+  }
+  var returnData = {};
+  $.ajax({
+    url: signURL,
+    type: 'POST',
+    data: {
+      url: window.location.href.split('#')[0],
+    },
+    success: function success(res) {
+      res = typeof res === 'object' ? res : JSON.parse(res);
+      console.log(res);
+      returnData = res.data;
+      wx.config({
+        debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        appId: returnData.appId, // 必填，公众号的唯一标识
+        timestamp: returnData.timestamp, // 必填，生成签名的时间戳
+        nonceStr: returnData.nonceStr, // 必填，生成签名的随机串
+        signature: returnData.signature, // 必填，签名
+        jsApiList: ['chooseImage', 'uploadImage'] // 必填，需要使用的JS接口列表
+      });
+
+    }
+  })
+  wx.ready(function () {
+    // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
+    console.log('初始化成功');
+  });
+})
