@@ -17,11 +17,11 @@
 
 <script>
 import wepy from 'wepy';
-import { CARD_FIRST_EDIT } from '../utils/url';
-import { get, post } from '../utils/ajax';
-import Mixin from '../mixin';
-import { firstStyle, secondStyle } from '../utils/introData';
-import { getTmpFilePath, alert } from '../utils/index';
+// import { CARD_FIRST_EDIT } from '../utils/url';
+import { get, post } from '../../utils/ajax';
+import Mixin from '../../mixin';
+import { firstStyle, secondStyle } from '../../utils/introData';
+import { getTmpFilePath, alert } from '../../utils/index';
 
 export default class choseImageStyle extends wepy.page {
     mixins = [Mixin]
