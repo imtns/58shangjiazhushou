@@ -50,11 +50,11 @@ var Page = {
     return null;
   },
   init: function init() {
-    Page.ppu = decodeURIComponent('UID=30624233&UN=imtns&TT=70c87004d7ca3df69b9e5228a8e818b6&PBODY=Y797pn3LH5C5KCG0tOYRubjqaGtgJuiI5td674-yqnK6VHCDXpK-h2dZ-UmpVFuEhsFUNhcbNbiqh8fx0NwtJi_P4SzQrKeMBGAIqDpaD5Omtz-4T600hBcqwu7MG53_nTiYWRwAPlKF_75qFVoZvjgEj-X7Eud99yZOAXen7bE&VER=1'); //decodeURIComponent(Page.getKey('ppu'));
+    Page.ppu = decodeURIComponent(Page.getKey('ppu')) || '';
     Page.id = Page.getKey('id');
     Page.group = Page.getKey('group');
     Page.mpId = Page.getKey('mpId');
-    Page.test = Page.getKey('test') || '';
+    Page.test = 'test';
     $('.item-file-div').removeClass('none');
     if (Page.id && Page.id != 'undefined') {
       document.title = '商品编辑';
@@ -88,7 +88,7 @@ var Page = {
                   $uploading.removeClass(NONE);
                   $.ajax({
                     type: 'POST',
-                    url: '/fileUpload',
+                    url: '//yaofa.58.com/fileUpload',
                     data: {
                       mediaId: response.serverId,
                     },
@@ -183,7 +183,7 @@ var Page = {
 
               $.ajax({
                 type: 'POST',
-                url: '/fileUpload',
+                url: '//yaofa.58.com/fileUpload',
                 data: {
                   mediaId: response.serverId,
                 },
@@ -281,15 +281,15 @@ var Page = {
           sku.push(skuObj);
           skuRemoved.forEach(function (item) {
             $.ajax({
-              url: '/goods/sku/del',
+              url: '//yaofa.58.com/goods/sku/del',
               type: 'POST',
               data: {
                 id: item
               },
-              headers: {
-                'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-                PPU: Page.ppu || 'wanghongyue',
-                reqfrom: 'biz_assistant'
+              beforeSend: function (XMLHttpRequest) {
+                XMLHttpRequest.setRequestHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8");
+                XMLHttpRequest.setRequestHeader("PPU", Page.ppu || 'wanghongyue');
+                XMLHttpRequest.setRequestHeader("reqfrom", "biz_assistant");
               },
               success: function success(res) {
                 console.log(res);
@@ -302,9 +302,9 @@ var Page = {
       }
       var url = "";
       if (Page.id && Page.id != 'undefined') {
-        url = '/goods/modify';
+        url = '//yaofa.58.com/goods/modify';
       } else {
-        url = '/goods/insert';
+        url = '//yaofa.58.com/goods/insert';
       }
       var data = {
         groupId: group,
@@ -332,11 +332,11 @@ var Page = {
         url: url,
         type: 'POST',
         data: data,
-        headers: {
-          'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-          PPU: Page.ppu || 'wanghongyue',
-          reqfrom: 'biz_assistant'
-        },
+        beforeSend: function (XMLHttpRequest) {
+            XMLHttpRequest.setRequestHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8");
+            XMLHttpRequest.setRequestHeader("PPU", Page.ppu || 'wanghongyue');
+            XMLHttpRequest.setRequestHeader("reqfrom", "biz_assistant");
+          },
         success: function success(res) {
           var res = JSON.parse(res);
           if (res.state == 100) {
@@ -363,17 +363,17 @@ var Page = {
         return;
       }
       $.ajax({
-        url: '/goods/addGroup',
+        url: '//yaofa.58.com/goods/addGroup',
         data: {
           name: name,
           test: Page.test,
           mpId: Page.mpId
         },
-        headers: {
-          'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-          PPU: Page.ppu || 'wanghongyue',
-          reqfrom: 'biz_assistant'
-        },
+        beforeSend: function (XMLHttpRequest) {
+            XMLHttpRequest.setRequestHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8");
+            XMLHttpRequest.setRequestHeader("PPU", Page.ppu || 'wanghongyue');
+            XMLHttpRequest.setRequestHeader("reqfrom", "biz_assistant");
+          },
         success: function success(res) {
           var res = JSON.parse(res);
           if (res.state == 100) {
@@ -433,15 +433,15 @@ var Page = {
   },
   getGroup: function getGroup() {
     $.ajax({
-      url: '/goods/groups/specail',
+      url: 'https://yaofa.58.com/goods/groups/specail',
       data: {
         mpId: Page.mpId,
         test: Page.test
       },
-      headers: {
-        'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-        'PPU': Page.ppu || 'wanghongyue',
-        reqfrom: 'biz_assistant'
+      beforeSend: function (XMLHttpRequest) {
+        XMLHttpRequest.setRequestHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8");
+        XMLHttpRequest.setRequestHeader("PPU", Page.ppu || 'wanghongyue');
+        XMLHttpRequest.setRequestHeader("reqfrom", "biz_assistant");
       },
       success: function success(res) {
         var res = JSON.parse(res);
@@ -460,6 +460,9 @@ var Page = {
         } else {
           Page.toast($errorPop, res.msg);
         }
+      },
+      error:function(err){
+          console.log(err.statusText);
       }
     });
   },
@@ -477,15 +480,15 @@ var Page = {
   },
   loadGoodData: function loadGoodData() {
     $.ajax({
-      url: '/goods/get',
+      url: '//yaofa.58.com/goods/get',
       data: {
         goodId: Page.id,
         test: Page.test
       },
-      headers: {
-        'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-        PPU: Page.ppu || 'wanghongyue',
-        reqfrom: 'biz_assistant'
+      beforeSend: function (XMLHttpRequest) {
+        XMLHttpRequest.setRequestHeader("content-type", "application/x-www-form-urlencoded;charset=utf-8");
+        XMLHttpRequest.setRequestHeader("PPU", Page.ppu || 'wanghongyue');
+        XMLHttpRequest.setRequestHeader("reqfrom", "biz_assistant");
       },
       success: function success(res) {
         var res = JSON.parse(res);
@@ -553,37 +556,37 @@ if (typeof Object.assign != 'function') {
     configurable: true
   });
 }
-Page.init();
-Page.initEvent();
 $(function () {
-  var signURL = '//yaofa.58.com/cmtHunter/getJsSign';
-  var data = {
-    url: window.location.href.split('#')[0],
-  }
-  var returnData = {};
-  $.ajax({
-    url: signURL,
-    type: 'POST',
-    data: {
-      url: window.location.href.split('#')[0],
-    },
-    success: function success(res) {
-      res = typeof res === 'object' ? res : JSON.parse(res);
-      console.log(res);
-      returnData = res.data;
-      wx.config({
-        debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-        appId: returnData.appId, // 必填，公众号的唯一标识
-        timestamp: returnData.timestamp, // 必填，生成签名的时间戳
-        nonceStr: returnData.nonceStr, // 必填，生成签名的随机串
-        signature: returnData.signature, // 必填，签名
-        jsApiList: ['chooseImage', 'uploadImage'] // 必填，需要使用的JS接口列表
-      });
+//   var signURL = '//yaofa.58.com/cmtHunter/getJsSign';
+//   var data = {
+//     url: window.location.href.split('#')[0],
+//   }
+//   var returnData = {};
+//   $.ajax({
+//     url: signURL,
+//     type: 'POST',
+//     data: {
+//       url: window.location.href.split('#')[0],
+//     },
+//     success: function success(res) {
+//       res = typeof res === 'object' ? res : JSON.parse(res);
+//       console.log(res);
+//       returnData = res.data;
+//       wx.config({
+//         debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+//         appId: returnData.appId, // 必填，公众号的唯一标识
+//         timestamp: returnData.timestamp, // 必填，生成签名的时间戳
+//         nonceStr: returnData.nonceStr, // 必填，生成签名的随机串
+//         signature: returnData.signature, // 必填，签名
+//         jsApiList: ['chooseImage', 'uploadImage'] // 必填，需要使用的JS接口列表
+//       });
 
-    }
-  })
-  wx.ready(function () {
-    // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
-    console.log('初始化成功');
-  });
-})
+//     }
+//   })
+//   wx.ready(function () {
+//     // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
+//     console.log('初始化成功');
+//   });
+  Page.init();
+  Page.initEvent();
+});
