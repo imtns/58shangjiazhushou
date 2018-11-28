@@ -50,6 +50,7 @@ import { post } from '../../utils/ajax';
 import { alert } from '../../utils';
 import { SendClickLog } from '../../utils/maidian';
 import Mixin from '../../mixin';
+import { globalData } from '../../utils/globalData';
 
 export default class visitorLogs extends wepy.page {
     mixins = [Mixin]
@@ -100,6 +101,7 @@ export default class visitorLogs extends wepy.page {
         }
         try {
             const visitorList = await post(CONSUMER_RECORDS, {
+                token: globalData.chat.token,
                 cardId,
                 pageNum: this.pageNum,
                 pageSize: this.pageSize,

@@ -6,7 +6,7 @@ window.__staticConfig = {
         version: '20181024',
         url: '/lbg/shangjiaxcxht/zhushou/css/goods-component-add.min.css',
     }],
-    jsCdn: 'https://j1.58cdn.com.cn',
+    jsCdn: 'https://static.58.com',
     jsCfg: [{
         name: 'jq',
         version: '20181024',
