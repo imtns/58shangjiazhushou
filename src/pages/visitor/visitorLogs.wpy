@@ -15,7 +15,7 @@
                                 </view>
                                 <view class="visitor_status">{{item.remark}}</view>
                             </view>
-                            <view class="visitor_from">来自 {{item.nickName}} 的分享</view>
+                            <view wx:if="{{item.formWho}}" class="visitor_from">来自 {{item.formWho}} 的分享</view>
                     </view>
                     <view class="visitor_box">
                         <view class="visitor_log">
@@ -24,7 +24,7 @@
                                 <text class="visitor_num">{{item.visitCount}}</text> 
                                 次
                             </view>
-                            <view class="visitor_time">1小时前访问过你</view>
+                            <view class="visitor_time">{{item.visitTime}}访问过你</view>
                         </view>
                         <view class="visitor_tel" wx:if="{{item.mobileSign}}">
                             <view class="visitor_make_phone" @tap="call('{{item.mobileSign}}')" >拨打电话</view>
@@ -48,6 +48,7 @@ import { CONSUMER_RECORDS, CALL_VISITOR } from '../../utils/url';
 // import { makeTelCall } from '../../utils/service';
 import { post } from '../../utils/ajax';
 import { alert } from '../../utils';
+import { formatDateTimeLocal } from '../../utils/dateFomate';
 import { SendClickLog } from '../../utils/maidian';
 import Mixin from '../../mixin';
 import { globalData } from '../../utils/globalData';
@@ -112,6 +113,8 @@ export default class visitorLogs extends wepy.page {
                 if (item.otherInfos) {
                     info = JSON.parse(item.otherInfos) || '';
                 }
+                visitor.visitTime = formatDateTimeLocal(item.visitTime);
+                console.log(visitor.visitTime);
                 visitor.gender = info.gender || '';
                 return visitor;
             });
@@ -207,7 +210,7 @@ page{
             }
             .female{
                 display: inline-block;
-                margin: 8rpx 0 0 10rpx;
+                margin: 0 0 0 10rpx;
                 width: 24rpx;
                 height: 24rpx;
                 background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_female.png) no-repeat left center;

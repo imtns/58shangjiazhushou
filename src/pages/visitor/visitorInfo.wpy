@@ -14,8 +14,8 @@
                         <view class="address">{{visitInfo.otherInfo.city}}</view>
                         <view class="note" @tap="showDialog">{{visitInfo.remark || '添加备注'}}</view>
                     </view>
-                    <view class="from">
-                        <view class="from-text">来自买智超的分享</view>
+                    <view class="from" wx:if="{{visitInfo.formWho}}" >
+                        <view class="from-text">来自{{visitInfo.formWho}}的分享</view>
                     </view>
                 </view>
                 <view class="actions">
@@ -49,7 +49,7 @@
             <view class="pop">
                 <view class="pop-title">编辑备注</view>
                 <view class="pop-body">
-                    <input placeholder="请输入备注信息" maxlength="12" cursor-spacing="80" @input="input" value="{{visitInfo.remark}}"></input>
+                    <input placeholder="请输入备注信息" maxlength="11" cursor-spacing="80" @input="input" value="{{visitInfo.remark}}"></input>
                 </view>
                 <view class="pop-options">
                     <view class="pop-btn" @tap="close">取消</view>

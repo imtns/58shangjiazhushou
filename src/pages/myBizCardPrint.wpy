@@ -40,10 +40,10 @@ export default class choseImageStyle extends wepy.page {
         async saveImgToPhotosAlbum(e) {
             console.log(e);
             let path = '';
-            if (e === 1) {
+            if (e == 1) {
                 console.log('1121');
                 path = this.cardOppImg;
-            } else if (e === 2) {
+            } else if (e == 2) {
                 console.log('22222');
                 path = this.cardPosImg;
             }
@@ -171,7 +171,7 @@ export default class choseImageStyle extends wepy.page {
                     fontSize: 14,
                     text: `Tel： ${that.realName}`,
                     x: 358,
-                    y: 247,
+                    y: 250,
                     color: '#F1B620',
                     lineHeight: '',
                     maxWidth: '460',
@@ -182,7 +182,7 @@ export default class choseImageStyle extends wepy.page {
                     fontSize: 14,
                     text: `Wechat： ${that.position}`,
                     x: 358,
-                    y: 280,
+                    y: 283,
                     color: '#F1B620',
                     lineHeight: '',
                     maxWidth: '460',
@@ -193,7 +193,7 @@ export default class choseImageStyle extends wepy.page {
                     fontSize: 14,
                     text: `Add： ${that.address}`,
                     x: 358,
-                    y: 314,
+                    y: 317,
                     color: '#F1B620',
                     lineHeight: '',
                     maxWidth: '460',

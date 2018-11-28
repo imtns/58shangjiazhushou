@@ -30,18 +30,21 @@
                     <view class="left-label">支付方式</view>
                     <view wx:if="{{order.payType==1}}" class="right-text {{fontClass[order.status] || ''}}">免费预约</view>
                     <view wx:if="{{order.payType==2}}" class="right-text {{fontClass[order.status] || ''}}">线上支付</view>
-                    <view wx:if="{{order.payType==3}}" class="right-text {{fontClass[order.status] || ''}}">线上支付订金</view>
+                    <view wx:if="{{order.payType==3}}" class="right-text {{fontClass[order.status] || ''}}">订金</view>
                 </view>
             </view>
             <view class="order-status">
                 <view class="left-label">当前状态</view>
-                <view class="right-text {{fontClass[order.status] || ''}}">
+                <view wx:if="{{order.payType==1 && order.status==0}}" class="right-text {{fontClass[order.status] || ''}}">
+                    免费预约，待接单
+                </view>
+                <view wx:else class="right-text {{fontClass[order.status] || ''}}">
                     {{statusSet[order.status]}}
                 </view>
             </view>
             <view class="order-table">
                 <view class="order-row">
-                    <view wx:if="{{order.payType==1}}" class="left-label">订单总价</view>
+                    <view wx:if="{{order.payType==1}}" class="left-label">预计服务价格</view>
                     <view wx:if="{{order.payType==2}}" class="left-label">一口价</view>
                     <view wx:if="{{order.payType==3}}" class="left-label">订金价格</view>
                     <view wx:if="{{order.payType==1}}" class="right-text">{{order.originalAmount}}元</view>
@@ -56,7 +59,10 @@
                     <view class="right-text">实际支付 <view class="{{fontClass[order.status] || ''}}">{{order.realAmount}}元</view></view>
                 </view>
             </view>
-            <view class="order-desc" wx:if="{{contentSet[order.status]}}">{{contentSet[order.status]}}</view>
+            <view class="order-desc" wx:if="{{order.payType==1 && order.status==0}}">顾客已下单，未支付，记得在服务时提醒顾客买单</view>
+            <view class="order-desc" wx:elif="{{order.payType==1 && order.status==2}}">服务已结束，本订单为免费预约订单，记得在服务时提醒顾客买单</view>
+            <view class="order-desc" wx:elif="{{order.payType==3 && order.status==2}}">服务已结束，资金将在1-4天打到您的银行卡账户</view>
+            <view class="order-desc" wx:else="{{contentSet[order.status]}}">{{contentSet[order.status]}}</view>
             <block wx:if="{{order.status==9}}">
                 <view class="order-evaluate">
                     <view class="left-label">服务评分</view>
@@ -85,7 +91,7 @@
             <view wx:if="{{order.status==10 && order.applyStatus==0}}" class="order-apply" @tap="bindApplyPlat" data-orderId="{{order.id}}">申请平台介入</view>
             <view wx:if="{{order.status==10 && order.applyStatus!=0}}" class="order-apply">已申请平台介入</view>
         </view>
-        <view class="ordersuccess" wx:if = "{{submitSuccess}}">
+        <view class="ordersuccess" wx:if="{{submitSuccess}}">
             <view class="ordersuccess-container">
                 <image class="ordersuccess-icon" src="https://img.58cdn.com.cn/lbg/jianzhan/images/paysuccess-icon.png"/>
                 <view class="ordersuccess-title">接单成功</view> 

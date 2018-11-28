@@ -17,8 +17,8 @@
 
 <script>
 import wepy from 'wepy';
-// import { CARD_FIRST_EDIT } from '../utils/url';
-import { get, post } from '../../utils/ajax';
+import { EMPLOYEE_MPCARD_GET } from '../../utils/url';
+import { get } from '../../utils/ajax';
 import Mixin from '../../mixin';
 import { firstStyle, secondStyle } from '../../utils/introData';
 import { getTmpFilePath, alert } from '../../utils/index';
@@ -94,8 +94,6 @@ export default class choseImageStyle extends wepy.page {
         const { cardId } = option;
         this.cardId = cardId;
         this.$apply();
-        console.log(option);
-        console.log('onload');
     }
     async onShow () {
         wx.showLoading({
@@ -110,17 +108,18 @@ export default class choseImageStyle extends wepy.page {
         await that.drawimageStyle2();
     }
     async loadData() {
-        const currentMpid = wepy.getStorageSync('current_mpid');
-        if (!currentMpid) {
-            return;
+        try {
+            const { data } = await get(EMPLOYEE_MPCARD_GET, {
+                mpcardId: this.cardId,
+            });
+            console.log(data);
+            Object.assign(this, data);
+            this.serviceTagArr = this.tags.split(',');
+            this.headImg = `https://pic1.58cdn.com.cn${this.picUrl}`;
+            this.$apply();
+        } catch (err) {
+            console.log(err);
         }
-        const { data } = await post('/mpCardBusiness/myCardByCardId', {
-            cardId: currentMpid,
-        });
-        Object.assign(this, data);
-        this.serviceTagArr = this.serviceTag.split(',');
-        this.headImg = `https://pic1.58cdn.com.cn${this.picImg}`;
-        this.$apply();
     }
     async drawimageStyle1() {
         const that = this;
@@ -163,6 +162,7 @@ export default class choseImageStyle extends wepy.page {
             },
             {
                 type: 'text', // 职位text
+                textBaseline: 'top',
                 textAlign: 'center',
                 fontSize: 24,
                 text: that.position,
