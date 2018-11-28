@@ -70,7 +70,7 @@
                     <button hover-class="none" form-type="submit" class='dialog-share-item'>分享给好友</button>
                 </navigator>
                 <button hover-class="none" class='dialog-share-item line' @tap="share" data-type="make" data-id="{{cardId}}">生成图片分享</button>
-                <button hover-class="none" class='dialog-share-item cancel' @tap="share('cancel')">取消</button>
+                <button hover-class="none" class='dialog-share-item cancel' @tap="share" data-type="cancel" data-id="{{cardId}}">取消</button>
             </view>
         </view>
     </view>

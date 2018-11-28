@@ -120,12 +120,14 @@ const year = 265 * nDay;
 
 function formatDateTimeLocal(dateString) {
     const date = moment(dateString);
-    const dateTime = date.valueOf();
+    const dayTime = new Date(dateString.replace(/-/g, '/'));
     const todayTime = new Date();
+    const dateTime = date.valueOf();
 
     const minute = autoFixed(date.minutes());
     const hour = autoFixed(date.hours());
-    if (todayTime - dateTime < nDay) {
+
+    if (dayTime.setHours(0, 0, 0, 0) === todayTime.setHours(0, 0, 0, 0)) {
         return `${hour}:${minute}`;
     }
 
