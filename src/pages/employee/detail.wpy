@@ -101,7 +101,7 @@ export default class Detail extends wepy.page {
       },
       share(e) {
           console.log(e);
-          const { id, type } = e.currentTarget.dataset
+          const { id, type } = e.currentTarget.dataset;
           this.isShowDialogShare = false;
           if (type === 'make') {
               wepy.navigateTo({
