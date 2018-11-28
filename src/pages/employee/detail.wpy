@@ -72,7 +72,7 @@
                     </navigator>
                 </form>
                 <form report-submit="true" bindsubmit="handleFormidCollect">
-                    <button hover-class="none" class='dialog-share-item line' @tap="share('make')">生成图片分享</button>
+                    <button hover-class="none" class='dialog-share-item line' @tap="share" data-type="make" data-id="{{cardId}}">生成图片分享</button>
                 </form>
                 <button hover-class="none" class='dialog-share-item cancel' @tap="share('cancel')">取消</button>
             </view>
@@ -99,11 +99,13 @@ export default class Detail extends wepy.page {
       toShare() {
           this.isShowDialogShare = true;
       },
-      share(type) {
+      share(e) {
+          console.log(e);
+          const { id, type } = e.currentTarget.dataset
           this.isShowDialogShare = false;
           if (type === 'make') {
               wepy.navigateTo({
-                  url: '/pages/choseImageStyle',
+                  url: `/pages/employee/cardImage?cardId=${id}`,
               });
           }
       },

@@ -13,7 +13,7 @@
 <script>
 import wepy from 'wepy';
 import { CARD_FIRST_EDIT } from '../utils/url';
-import { post } from '../utils/ajax';
+import { post, get } from '../utils/ajax';
 import Mixin from '../mixin';
 import { getTmpFilePath, alert } from '../utils/index';
 
@@ -40,10 +40,10 @@ export default class choseImageStyle extends wepy.page {
         async saveImgToPhotosAlbum(e) {
             console.log(e);
             let path = '';
-            if (e == 1) {
+            if (e === 1) {
                 console.log('1121');
                 path = this.cardOppImg;
-            } else if (e == 2) {
+            } else if (e === 2) {
                 console.log('22222');
                 path = this.cardPosImg;
             }
@@ -78,6 +78,7 @@ export default class choseImageStyle extends wepy.page {
         });
         const that = this;
         await that.loadData();
+        await that.getCardCode();
         await that.touchImage();
         await that.drawimageStyle1();
         await that.drawimageStyle2();
@@ -91,10 +92,15 @@ export default class choseImageStyle extends wepy.page {
             mpId: currentMpid,
         });
         Object.assign(this, data);
-        console.log(this);
-        // this.serviceTagArr = this.serviceTag.split(',');
-        // this.headImg = `https://pic1.58cdn.com.cn${this.picImg}`;
         this.$apply();
+    }
+    async getCardCode() {
+        const cardId = wepy.getStorageSync('current_cardId');
+        const { data } = await get('/share2', {
+            cardId,
+            type: 'redPacket',
+        });
+        this.cardCodeImg = await getTmpFilePath(`https://pic1.58cdn.com.cn${data}`);
     }
     async drawimageStyle1() {
         const that = this;
@@ -143,8 +149,6 @@ export default class choseImageStyle extends wepy.page {
             ],
         };
         that.$apply();
-        console.log(this.cardOppStyle);
-        console.log('===========');
     }
     async drawimageStyle2() {
         const that = this;
@@ -193,32 +197,35 @@ export default class choseImageStyle extends wepy.page {
                     color: '#F1B620',
                     lineHeight: '',
                     maxWidth: '460',
+                }, {
+                    type: 'image', // 二维码图片
+                    imageResource: that.cardCodeImg,
+                    dx: 539,
+                    dy: 47,
+                    dWidth: 112,
+                    dHeight: 112,
                 },
             ],
         };
         wx.hideLoading();
         this.showCanvas = true;
-        console.log(this.cardPosStyle);
-        console.log('-----');
         that.$apply();
     }
     async touchImage() {
         const cardOppBg = 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/card_opposite.png?32';
         const cardPosBg = 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/card_positive.png?32';
-        const cardCodeImg = 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/card_positive.png';
         // 转成本地路径
         this.cardOppBg = await getTmpFilePath(cardOppBg);
         this.cardPosBg = await getTmpFilePath(cardPosBg);
-        this.cardCodeImg = await getTmpFilePath(cardCodeImg);
-        console.log(this.cardOppBg);
-        console.log(this.cardPosBg);
-        console.log(this.cardCodeImg);
         this.$apply();
     }
 }
 </script>
 
 <style lang="scss">
+.myCardPrint{
+    padding-top: 40rpx;
+}
 #drawStyle1,
 #drawStyle2{
     margin:20rpx auto;
@@ -229,7 +236,7 @@ export default class choseImageStyle extends wepy.page {
     text-align: center;
     width: 586rpx;
     line-height: 94rpx;
-    margin: 30rpx auto;
+    margin: 20rpx auto 40rpx;
     background: #4E88FF;
     border-radius: 4px;
 }
@@ -237,6 +244,6 @@ export default class choseImageStyle extends wepy.page {
     font-size: 24rpx;
     color: #999;
     width:586rpx;
-    margin: 40rpx auto 0;
+    margin:0 auto;
 }
 </style>

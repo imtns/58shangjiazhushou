@@ -118,6 +118,7 @@ export default class extends wepy.app {
             'pages/employee/login', // login
             'pages/employee/logs', // ta的访客记录
             'pages/employee/code',
+            'pages/employee/cardImage', // 员工详情分享名片
             // 红包活动
             'pages/activity/spreadRedpacket', // 红包推广活动
         ],
