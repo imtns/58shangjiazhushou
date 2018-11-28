@@ -235,6 +235,10 @@ export default class chatMessages extends wepy.page {
                 float: left;
                 font-size: 34rpx;
                 color: #000000;
+                max-width:250rpx;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
                 line-height: 55rpx;
                 height:55rpx;
             }

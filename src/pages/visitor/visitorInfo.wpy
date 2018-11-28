@@ -49,7 +49,7 @@
             <view class="pop">
                 <view class="pop-title">编辑备注</view>
                 <view class="pop-body">
-                    <input placeholder="请输入备注信息" cursor-spacing="80" @input="input" value="{{visitInfo.remark}}"></input>
+                    <input placeholder="请输入备注信息" maxlength="12" cursor-spacing="80" @input="input" value="{{visitInfo.remark}}"></input>
                 </view>
                 <view class="pop-options">
                     <view class="pop-btn" @tap="close">取消</view>
@@ -122,10 +122,6 @@ export default class visitorInfo extends wepy.page {
             const content = this.content.trim();
             if (!content) {
                 toast('请填写备注名称');
-                return;
-            }
-            if (content.length > 15) {
-                toast('备注名称过长');
                 return;
             }
             try {
