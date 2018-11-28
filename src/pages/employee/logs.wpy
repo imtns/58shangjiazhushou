@@ -12,7 +12,7 @@
                             {{item.nickName || ''}}
                             <view wx:if="{{item.gender}}" class="{{item.gender == 1 ? 'male' : 'female'}}"></view>
                         </view>
-                        <view class="visitor_from">来自 {{item.nickName}} 的分享</view>
+                        <view class="visitor_from" wx:if="{{item.formWho}}">来自 {{item.formWho}} 的分享</view>
                     </view>
                     <view class="visitor_count">
                         访问您的名片

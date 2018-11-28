@@ -204,6 +204,8 @@ export default class extends wepy.app {
             'ppu',
             'UID=47350441209367&UN=%E8%A2%81%E7%AD%B1%E4%B8%B90803&TT=b1ce9a3bf0dbe2fda2da594405532c38&PBODY=BPap2Dvi_m5L2imfEcj-FU_MDPTuQq26GBasfK-ItJHahjEy_bWyGsg39BqTSmck89_XCeUyHZ8sXnIN2FhO8hTveC4zvNGzJB_Z9MHGxAlCjSgUHCw3cMoMVxMfvj_bVe0PbGyyS2Q5EaUt--KqqpHJv569rteEzsnBFGtf3xI&VER=1',
         );
+        // hfll
+        // wx.setStorageSync('ppu', 'UID=55436982950166&UN=w86fs5j5i&TT=228e53d8b65abd80e3d239fe041a4e29&PBODY=B6pFTqhvsy8WuuZHLYC4hI2XfNbm8eyEXWSVb7XEZ3GOllYS9sZm2feHe6C_Vo-EUTwFPvt3v3RZFQes4jPJCfNQmpUA9iFpeM3OufnunHuvW87H8WWbMM18Ovpjc83ag4jgteaKCgwE62xPHA8q2mHgm1WKh_4Y6d7Ij6OJpYU&VER=1');
         console.log('onlaunch');
     }
     onShow (options) {
