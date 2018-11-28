@@ -244,15 +244,15 @@ Component({
                 }
 
                 // 边框
-                // ctx.save();
-                // ctx.setStrokeStyle(bc);
-                // roundRect(ctx, realX, realY, realWidth, realHeight, pxRadius, pxbw);
-                // if (bgColor) {
-                //     ctx.setFillStyle(bgColor);
-                //     ctx.fillRect(realX, realY, realWidth, realHeight);
-                // }
-                // ctx.stroke();
-                // ctx.restore();
+                ctx.save();
+                ctx.setStrokeStyle(bc);
+                roundRect(ctx, realX, realY, realWidth, realHeight, pxRadius, pxbw);
+                if (bgColor) {
+                    ctx.setFillStyle(bgColor);
+                    ctx.fillRect(realX, realY, realWidth, realHeight);
+                }
+                ctx.stroke();
+                ctx.restore();
 
                 ctx.setFillStyle(color);
                 ctx.setTextBaseline('top');
