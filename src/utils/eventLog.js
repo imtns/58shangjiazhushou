@@ -28,10 +28,12 @@ function getUid() {
  * scene:场景值                     场景值
  * redPktPlan:红包策略              红包策略
  * extend:扩展字段                  不用管
+ * mpId: 小程序id
  */
 const host = 'https://yaofa.58.com';
 function SendEventLog(params) {
     const uid = getUid();
+    const mpId = wx.getStorageSync('current_mpid');
     const { model, system, brand } = wx.getSystemInfoSync();
     const paramsJSON = Object.assign({}, {
         page: '',
@@ -46,6 +48,7 @@ function SendEventLog(params) {
         appid: 'wxf03e52adc4b13448',
         window: '',
         scene: globalData.appScene,
+        mpId: mpId,
         redPktPlan: '',
     }, params || {});
 
