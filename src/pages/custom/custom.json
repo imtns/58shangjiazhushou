@@ -1,8 +1,0 @@
-{
-    "navigationBarTitleText": "预览",
-    "enablePullDownRefresh": true,
-    "usingComponents":{
-        "consumer-button":"../../components/mod/consumerButton/consumerButton",
-        "switch-tab":"../../components/mod/consumerButton/consumerButton"
-    }
-}
