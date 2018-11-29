@@ -54,7 +54,11 @@ function SendEventLog(params) {
         wx.request({
             url: host + url + (~url.indexOf('?') ? '' : '?') + (+new Date()).toString(36).substr(3),
             data: paramsJSON,
-            method: 'post',
+            method: 'get',
+            dataType: 'json',
+            header: {
+                'content-type': 'application/json',
+            },
             success() {},
         });
     } else {
