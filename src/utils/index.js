@@ -174,7 +174,7 @@ export const getTmpFilePath = (url) => new Promise((resolve, reject) => {
     });
 });
 // 电话号添加空格
-export const addMobileBlank = (e) => {
+export const mobileSpace = (e) => {
     let number = e.replace(/\s*/g, '');
     const result = [];
     for (let i = 0; i < number.length; i++) {
