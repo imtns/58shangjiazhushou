@@ -36,7 +36,7 @@
         <view class="visitor-action">
             <view class="has-mobile" wx:if="{{visitInfo.mobile}}" @tap="bindPhoneCall" data-mobile="{{visitInfo.mobile}}">拨打电话</view>
             <view class="call" wx:else>拨打电话</view>
-            <navigator url="../../packageChat/wechat/chat?contact={{visitInfo.chatToken}}&nickName={{visitInfo.nickName}}&remark={{visitInfo.remark}}" class="send-msg" open-type="navigate" hover-class="none" @tap="sendMsg">发送信息</navigator>
+            <navigator url="../../packageChat/wechat/chat?contact={{visitInfo.chatToken}}&nickName={{visitInfo.nickName}}" class="send-msg" open-type="navigate" hover-class="none" @tap="sendMsg">发送信息</navigator>
         </view>
         <view class="visitor-log" wx:if="{{visitInfo.actions.length > 0}}">当前访客的行为记录</view>
         <view class="visitor-list" wx:if="{{visitInfo.actions.length > 0}}">
@@ -148,18 +148,6 @@ export default class visitorInfo extends wepy.page {
         this.$apply();
     }
     onShow () {
-        this.visitInfo = {
-            actions: [],
-            chatToken: '',
-            mobile: '',
-            nickName: '',
-            otherInfo: '',
-            portrait: '',
-            share: 0,
-            visit: 0,
-            vote: 0,
-            remark: '',
-        };
         this.loadInfo();
         console.log('onshow');
     }
