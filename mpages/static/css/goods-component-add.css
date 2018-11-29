@@ -190,7 +190,11 @@ html, body{
             flex:1;
 }
 .item-input-div1{
-    width:38%;
+    width:45%;
+}
+.item-input-div1 .radio{
+    width:1.5rem;
+    float:left;
 }
 .item-chose{
     text-align:right;
