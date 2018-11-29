@@ -1,7 +1,7 @@
-import { globalData } from '../utils/globalData';
-import switchTab from '../utils/switchTab';
+import { globalData } from '../../utils/globalData';
+import switchTab from './switchTab';
 
-const route = require('./route.js');
+const route = require('../../utils/route.js');
 
 module.exports = {
     getRoute (pageKey) {

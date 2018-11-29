@@ -212,9 +212,17 @@ const parseCfgAndData = ({
     return pd;
 });
 
+/**
+ * 格式化路由地址
+ * 去除路由前面的 packageEditor/
+ * TODO: 考虑将page.js中的map修改下，以及tabbar上的pathName修改下
+ * @param {string} route 路由地址
+ */
+const formatRoute = (route) => route.split('packageEditor/').join('');
+
 module.exports = {
     async loadData(cb) {
-        const page = getPage(this.route, this.options) || 'index';
+        const page = getPage(formatRoute(this.route), this.options) || 'index';
         // const page = 'index';
         /* global getCurrentPages:true */
         const {

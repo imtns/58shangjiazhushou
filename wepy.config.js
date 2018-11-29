@@ -11,6 +11,7 @@ const config = {
             outputStyle: 'expanded',
         },
         babel: {
+            sourceMap: !prod,
             presets: [
                 'stage-2',
                 'env',

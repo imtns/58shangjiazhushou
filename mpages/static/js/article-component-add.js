@@ -219,7 +219,7 @@ var Page = {
                         Page.toast($('div.tips-success'));
                         setTimeout(function () {
                             wx.miniProgram.redirectTo({
-                                url: '/pages/edit/article?id=' + Page.id
+                                url: '/packageEditor/pages/edit/article?id=' + Page.id
                             });
                         }, 2000);
                     } else {

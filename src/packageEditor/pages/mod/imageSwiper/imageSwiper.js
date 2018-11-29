@@ -1,6 +1,7 @@
 /*eslint-disable */
 const { previewImage } = require('../../../../utils/index');
-import switchTab from '../../../../utils/switchTab';
+const { switchTab } = require('../../../utils/switchTab');
+
 module.exports = {
   imageSwiperChange(e) {
     const { index } = e.currentTarget.dataset;

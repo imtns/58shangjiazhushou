@@ -1,5 +1,5 @@
 import { previewImage } from '../../../../utils/index';
-import switchTab from '../../../../utils/switchTab';
+import { switchTab } from '../../../utils/switchTab';
 
 export default {
     onImageClick(e) {
@@ -7,14 +7,14 @@ export default {
             index, current, pagekey, action,
         } = e.currentTarget.dataset;
         if (action === '2') {
-            switchTab(pagekey);
+            switchTab.bind(this)(pagekey);
         } else if (action === '3') {
             const images = this.data.page_data[current].props.cfg.images.map(img => img.src);
             previewImage(images, index);
         } else if (typeof action === 'undefined' && pagekey) {
             // 老版中没有action字段
             // 兼容老版页面跳转
-            switchTab(pagekey);
+            switchTab.bind(this)(pagekey);
         } else if (typeof action === 'undefined' && !pagekey) {
             // 老版中没有action字段
             // 兼容老版点击放大

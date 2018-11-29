@@ -23,7 +23,6 @@ export default class Mixin extends wepy.mixin {
         noEdit: false,
     }
     onLoad(options) {
-        console.log(options);
         this.saveAvaliable = false;
         this.pageId = options.id;
         const result = globalData.pageData.filter(obj => obj.id === this.pageId);
@@ -43,7 +42,6 @@ export default class Mixin extends wepy.mixin {
             key: item.pageKey,
             name: item.pageName,
         }));
-        console.log(result);
     }
     // onShow() {
     //     const result = globalData.pageData.filter(obj => obj.id === this.pageId);
