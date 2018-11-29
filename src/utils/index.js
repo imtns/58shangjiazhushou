@@ -273,4 +273,4 @@ export const getPathName = (n = 0) => {
 export const getString = (str, n) => {
     if (!n) return str;
     return str.substring(str.length - n, str.length);
-}
+};
