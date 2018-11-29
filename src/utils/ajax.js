@@ -32,10 +32,10 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
     const header = {
         'content-type': method === 'GET' ? 'application/json' : 'application/x-www-form-urlencoded;charset=utf-8',
         PPU: ppu || 'wanghongyue',
-        // YkuYdY8rk5As4T2QaJ7v: '47350441209367',
+        YkuYdY8rk5As4T2QaJ7v: '47350441209367',
         reqfrom: 'biz_assistant',
         // YkuYdY8rk5As4T2QaJ7v: '55436982950166',
-        YkuYdY8rk5As4T2QaJ7v: 33433383496455,
+        // YkuYdY8rk5As4T2QaJ7v: 33433383496455,
     };
     if (wepy.getStorageSync('isEmployee')) {
         Object.assign(header, {
