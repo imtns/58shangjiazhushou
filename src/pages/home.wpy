@@ -577,12 +577,6 @@ export default class Home extends wepy.page {
       // from=daypic 打开每日一言的弹窗
       // from=redpacket 打开红包推广
       this.fromQuery = options.from || '';
-      // 记录from
-      SendEventLog({
-          page: 'home',
-          action: 'show',
-          extend: this.fromQuery ? JSON.stringify({ from: this.fromQuery }) : '',
-      });
       try {
       // 快速注册判断跳转
       // 如果用户在快速注册的流程中，则让用户跳转到注册流程的相应页面
@@ -1224,11 +1218,18 @@ export default class Home extends wepy.page {
       // 如果当天第一次进入但是从每日一言进入的，则不自动弹窗
       this.spreadRPFirst = this.fromQuery === 'redpacket' || (this.fromQuery !== 'daypic' && data.first);
       this.spreadUserID = this.business.userId;
+      // 每天第一次显示时打日志
       this.spreadRPFirst && SendEventLog({
           page: 'home',
           button: '',
           window: 'redpacketWindow',
           action: 'show',
+      });
+      // 是活动商家进入首页时打日志
+      this.spreadRPShow && SendEventLog({
+          page: 'home',
+          action: 'show',
+          extend: this.fromQuery ? JSON.stringify({ from: this.fromQuery }) : '',
       });
       this.$apply();
   }

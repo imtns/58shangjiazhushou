@@ -290,12 +290,6 @@
                     page: 'activity/spreadRedpacket',
                     button: key || '',
                 });
-                // 分享行为的埋点
-                SendEventLog({
-                    page: 'activity/spreadRedpacket',
-                    button: key || '',
-                    action: 'share',
-                });
             },
         }
     }
