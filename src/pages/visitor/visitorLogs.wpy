@@ -48,7 +48,7 @@ import { CONSUMER_RECORDS, CALL_VISITOR } from '../../utils/url';
 // import { makeTelCall } from '../../utils/service';
 import { post } from '../../utils/ajax';
 import { alert } from '../../utils';
-import { formatLogTime } from '../../utils/dateFomate';
+import { formatDateTimeLocal } from '../../utils/dateFomate';
 import { SendClickLog } from '../../utils/maidian';
 import Mixin from '../../mixin';
 import { globalData } from '../../utils/globalData';
@@ -85,10 +85,14 @@ export default class visitorLogs extends wepy.page {
         },
     }
     onLoad () {
-        this.loadData();
+
     }
     onShow () {
         console.log('onshow');
+        this.visitorList = [];
+        this.allowLoadMore = true;
+        this.pageNum = 1;
+        this.loadData();
     }
     onReachBottom() {
         console.log('onReachBottom');
@@ -113,7 +117,7 @@ export default class visitorLogs extends wepy.page {
                 if (item.otherInfos) {
                     info = JSON.parse(item.otherInfos) || '';
                 }
-                visitor.visitTime = formatLogTime(item.visitTime);
+                visitor.visitTime = formatDateTimeLocal(item.visitTime);
                 console.log(visitor.visitTime);
                 visitor.gender = info.gender || '';
                 return visitor;

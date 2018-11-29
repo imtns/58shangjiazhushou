@@ -12,7 +12,7 @@
             </view>
             <view class="info-block">
                 <text>职位</text>
-                <input type="text" maxlength="12" @input="setValue('position')" placeholder="请填写职位"/>
+                <input type="text" maxlength="10" @input="setValue('position')" placeholder="请填写职位"/>
             </view>
         </view>
         <button class="add-button" disabled="{{disabled}}" @tap="add">创建名片</button>

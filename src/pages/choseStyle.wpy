@@ -128,6 +128,9 @@ export default class choseStyle extends wepy.page {
                     style: this.style,
                     mpId: currentMpid,
                 };
+                if (wepy.getStorageSync('isEmployee')) {
+                    Object.assign(subData, { cardId: wepy.getStorageSync('cardId') });
+                }
                 const { data } = await post(CARD_CREATE_NEW_CARD, subData);
                 if (data.mpCard.id) {
                     wepy.navigateTo({
@@ -149,9 +152,13 @@ export default class choseStyle extends wepy.page {
         if (!currentMpid) {
             return;
         }
-        const { data } = await post(CARD_FIRST_EDIT, {
+        const subData = {
             mpId: currentMpid,
-        });
+        };
+        if (wepy.getStorageSync('isEmployee')) {
+            Object.assign(subData, { cardId: wepy.getStorageSync('cardId') });
+        }
+        const { data } = await post(CARD_FIRST_EDIT, subData);
         Object.assign(this, data);
         this.serviceTagArr = this.serviceTag.split(',');
         this.headImg = `https://pic1.58cdn.com.cn${this.picImg}`;
