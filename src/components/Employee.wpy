@@ -138,10 +138,6 @@ export default class Employee extends wepy.component {
   };
   methods = {
       navigate(url) {
-          if (this.isAuto === 1) {
-              this.events.getData();
-              return;
-          }
           wepy.navigateTo({
               url: this.cardId ? `${url}?cardId=${this.cardId}` : url,
           });

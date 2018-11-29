@@ -12,12 +12,12 @@
             </view>
             <view class="info-block">
                 <text>职位</text>
-                <input type="text" maxlength="10" @input="setValue('position')" placeholder="请填写职位"/>
+                <input type="text" maxlength="12" @input="setValue('position')" placeholder="请填写职位"/>
             </view>
         </view>
         <button class="add-button" disabled="{{disabled}}" @tap="add">创建名片</button>
     </view>
-    <messageBox :show.sync="modalShow" :content.sync="modalContent" :title.sync="modalTitle" :showCancel.sync="showCancel" :confirmText.sync="modalConfirmText"></messageBox>
+    <messageBox :show.sync="modalShow" :content.sync="modalContent" :title.sync="modalTitle" :confirmText.sync="modalConfirmText"></messageBox>
 </template>
 
 <script>
@@ -42,7 +42,6 @@ export default class Index extends wepy.page {
         modalContent: '',
         modalConfirmText: '确认',
         modalTitle: '提示',
-        showCancel: true,
         disabled: true,
         form: {
             mobile: '',
@@ -69,7 +68,6 @@ export default class Index extends wepy.page {
                 });
             } catch (err) {
                 this.modalShow = !this.modalShow;
-                this.showCancel = false;
                 this.modalContent = `${
                     this.form.realName
                 }已为其他店长的员工,\r\n不可再次创建`;
@@ -83,7 +81,6 @@ export default class Index extends wepy.page {
             if (this.verify()) {
                 this.modalShow = !this.modalShow;
                 this.added = false;
-                this.showCancel = true;
                 this.modalContent = `是否确定为${
                     this.form.realName
                 }创建名片,\r\n名片创建后不可撤销`;
@@ -95,10 +92,9 @@ export default class Index extends wepy.page {
     };
     updateForm(data) {
         const res = data;
-        this.form = Object.assign({}, this.form, { ...res });
-
-        const vals = Object.keys(this.form).map((key) => this.form[key]);
-        vals.forEach(item => {
+        const { form } = this.data;
+        this.form = Object.assign({}, form, { ...res });
+        Object.values(this.form).every(item => {
             if (!item) {
                 this.disabled = true;
                 return false;
@@ -118,7 +114,6 @@ export default class Index extends wepy.page {
     }
     onLoad() {}
 }
-
 </script>
 
 <style lang="scss">

@@ -141,6 +141,42 @@ function formatDateTimeLocal(dateString) {
     return `${month}/${day} ${hour}:${minute}`;
 }
 
+/**
+ * 时间格式化：
+ * 从现在的开始算，1小时以内显示几分钟以前（一分钟以内就按一分钟算）；
+ * 1小时后今天内显示多少个小时以前；
+ * 昨天访问过显示昨天；
+ * 昨天以前显示年月日；
+ * @param {*} dateTime 时间格式：2018-09-07 14:06:26
+ */
+function formatLogTime(dateString) {
+    const dayDate = moment(dateString);
+    const dayTime = new Date(dateString.replace(/-/g, '/'));
+    const dayYear = autoFixed(dayDate.year());
+    const dayMonth = autoFixed(dayDate.month() + 1);
+    const dayDay = autoFixed(dayDate.date());
+    const dayHour = autoFixed(dayDate.hours()); 
+    const dayMinute = autoFixed(dayDate.minutes());
+
+    const todayTime = new Date();
+    const yesterDay = todayTime.getFullYear() + "-" + (todayTime.getMonth() + 1) + "-" + (todayTime.getDate() - 1);
+    const yesterTime = new Date(yesterDay.replace(/-/g, '/'));
+    const todayHour = todayTime.getHours();
+    const todayMinute = todayTime.getMinutes();
+    if (todayTime.setMinutes(0, 0, 0) === dayTime.setMinutes(0, 0, 0)) {
+        const minutes = parseInt(todayMinute - dayMinute + 1);
+        return  `${minutes}分钟之前`;
+    }
+    if (todayTime.setHours(0, 0, 0, 0) === dayTime.setHours(0, 0, 0, 0)) {
+        const hours = parseInt(todayHour - dayHour);
+        return  `${hours}小时之前`;
+    }
+    if (yesterTime.setHours(0, 0, 0, 0) === dayTime.setHours(0, 0, 0, 0)) {
+        return '昨天';
+    }
+    return `${dayYear}/${dayMonth}/${dayDay} ${dayHour}:${dayMinute}`;
+}
+
 module.exports = {
     addHour,
     addDay,
@@ -150,4 +186,5 @@ module.exports = {
     toDateString,
     formatTimeExtra,
     formatDateTimeLocal,
+    formatLogTime,
 };

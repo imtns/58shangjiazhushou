@@ -180,9 +180,13 @@ export default class Chat extends wepy.page {
     async onLoad(options) {
         const { token, myId } = globalData.chat;
         const { contact, nickName, remark } = options;
-
+        console.log(remark);
+        let note = '';
+        if (remark !== 'undefined') {
+            note = remark;
+        }
         wepy.setNavigationBarTitle({
-            title: `${nickName}（${remark || nickName}）`,
+            title: `${nickName}${note}`,
         });
 
         globalData.chat.currentContactId = contact;
