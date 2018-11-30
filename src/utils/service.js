@@ -90,3 +90,10 @@ export const makeTelCall = async (e) => {
 };
 
 export const getRegistPreCheck = async () => get(REGIST_PRE_CHECK);
+// export const getRegistPreCheck = () => ({
+//     headImg: 'sdfsd',
+//     cate1Name: 'sdfsdf',
+//     cate2Name: 'sdfds',
+//     nickName: '',
+//     signature: '',
+// });

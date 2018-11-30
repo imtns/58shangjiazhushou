@@ -95,6 +95,7 @@ import { post } from '../../utils/ajax';
 import globalService from '../../utils/globalService';
 import RegistMixin from './mixin';
 import MessageBox from '../../components/MessageBox';
+import { getRegistPreCheck } from '../../utils/service';
 
 export default class Index extends wepy.page {
     mixins = [RegistMixin]
@@ -134,6 +135,38 @@ export default class Index extends wepy.page {
     components = {
         messageBox: MessageBox,
         helpModal: HelpModal,
+    }
+    async onLoad() {
+        const { data: preCheckData } = await getRegistPreCheck();
+        const {
+            headImg,
+            cate1Name,
+            cate2Name,
+            nickName,
+            signature,
+        } = preCheckData;
+
+        const fields = [
+            headImg,
+            cate2Name,
+            nickName,
+            signature,
+        ];
+
+        const lines = fields.filter(v => v !== '').length + 1;
+
+        if (lines === 1) {
+            return;
+        }
+
+        this.resolvePartError(lines);
+        this.form = Object.assign({}, this.form, {
+            avatarUrl: headImg,
+            wubaFirstName: cate1Name,
+            wubaSecondName: cate2Name,
+            nickName,
+            signature,
+        });
     }
     onShow() {
         const cate = globalService.get('multiSelector');
@@ -213,13 +246,11 @@ export default class Index extends wepy.page {
         }
 
         // 若大于3行，多加1，跳过所属行业的两个字段
-        if (line >= 3) {
-            line += 1;
-        }
+        const fillLine = line >= 3 ? line + 1 : line; // 需要填充的行数
 
         // 清空需要充填的值
-        for (let i = line - 1; i < lines.length; i += 1) {
-            const k = lines[i];
+        for (let i = fillLine - 1; i < fillLine.length; i += 1) {
+            const k = fillLine[i];
             this.form[k] = '';
         }
 
