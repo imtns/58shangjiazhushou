@@ -92,12 +92,15 @@ export default class Card extends wepy.page {
           }
           this.pageModule.cfg = this.pageData[0].props.cfg;
           const selectedIds = [];
+          const selectedItem = [];
           this.pageData[0].props.data.map(item => {
               if (item.checked) {
                   selectedIds.push(item.id);
+                  selectedItem.push(item);
               }
               return item;
           });
+          this.pageModule.cfg.selectCards = selectedItem;
           this.pageModule.params.selectCardIds = selectedIds;
           [globalData.pageData[this.pageIndex]] = this.pageData;
           globalData.modules[this.pageIndex] = this.pageModule;
