@@ -61,6 +61,7 @@
             </view>
             <view class="order-desc" wx:if="{{order.payType==1 && order.status==0}}">顾客已下单，未支付，记得在服务时提醒顾客买单</view>
             <view class="order-desc" wx:elif="{{order.payType==1 && order.status==2}}">服务已结束，本订单为免费预约订单，记得在服务时提醒顾客买单</view>
+            <view class="order-desc" wx:elif="{{order.payType==1 && order.status==9}}">服务已结束，本订单为免费预约订单，记得在服务时提醒顾客买单</view>
             <view class="order-desc" wx:elif="{{order.payType==3 && order.status==2}}">服务已结束，资金将在1-4天打到您的银行卡账户</view>
             <view class="order-desc" wx:else="{{contentSet[order.status]}}">{{contentSet[order.status]}}</view>
             <block wx:if="{{order.status==9}}">
