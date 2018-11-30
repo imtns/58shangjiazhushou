@@ -298,7 +298,7 @@ export default class newBizCard extends wepy.page {
     }
     async loadData() {
         const currentMpid = wepy.getStorageSync('current_mpid');
-        if (!currentMpid) {
+        if (!currentMpid && !this.cardId) {
             return;
         }
         const postData = {
