@@ -185,7 +185,7 @@
         <!-- 每日一言悬浮提示 -->
         <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{everydayIconShow}}">
             <button class="to-everyday" @tap="handleToEveryday" hover-class="none" form-type="submit">
-                <view class="unread" />
+                <view class="unread" wx:if="{{everydayIconShow && everydayUnread}}" />
             </button>
         </form>
         <!-- 每日一言弹窗模块 -->
