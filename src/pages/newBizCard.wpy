@@ -151,7 +151,7 @@ export default class newBizCard extends wepy.page {
         async creatCard() {
             SendClickLog('sjzh_click_newBizCard_creatCard');
             const currentMpid = wepy.getStorageSync('current_mpid');
-            if (!currentMpid) {
+            if (!currentMpid && !this.cardId) {
                 return;
             }
             const subData = {

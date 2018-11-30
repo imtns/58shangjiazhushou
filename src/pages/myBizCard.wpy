@@ -181,6 +181,7 @@ export default class myBizCard extends wepy.page {
             this.maskShow = true;
         }
         if (cardId) this.cardId = cardId;
+
         /**
          * @author zhouwunan
          */
@@ -194,12 +195,18 @@ export default class myBizCard extends wepy.page {
             });
     }
     async onShow () {
+        if (wepy.getStorageSync('cardId')) {
+            this.cardId = wepy.getStorageSync('cardId');
+        }
         const currentMpid = wepy.getStorageSync('current_mpid');
-        if (!currentMpid) {
+        if (!currentMpid && !this.cardId) {
             return;
         }
         this.isEmployee = wepy.getStorageSync('isEmployee');
-        const hasCard = await this.loadData(currentMpid);
+        let hasCard = null;
+        if (!this.isEmployee) {
+            hasCard = await this.loadData(currentMpid);
+        }
         if ((hasCard && !this.isEmployee) || this.isEmployee) {
             this.loadCard();
         }
