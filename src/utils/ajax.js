@@ -60,6 +60,9 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
 
                 reject(msg);
 
+            } else if (state === 99999) {
+                // 仅用于快速注册，待后续产品更改整个快速注册流程后会删除
+                resolve(response.data);
             } else {
                 reject(msg);
             }
