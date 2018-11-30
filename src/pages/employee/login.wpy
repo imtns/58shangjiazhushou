@@ -60,7 +60,11 @@ export default class Login extends wepy.page {
           }
       },
   };
-  onLoad() {}
+  onLoad() {
+      if (wepy.getStorageSync('isEmployee') && wepy.getStorageSync('cardId')) {
+          wepy.reLaunch({ url: '/pages/home' });
+      }
+  }
   onShow() {}
 }
 </script>

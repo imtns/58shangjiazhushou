@@ -280,9 +280,12 @@ export default class newBizCard extends wepy.page {
         this.$apply();
     }
     async onLoad () {
+        console.log(`isEmployee:${wepy.getStorageSync('isEmployee')}`);
+
         if (wepy.getStorageSync('isEmployee')) {
             this.cardId = wepy.getStorageSync('cardId');
         }
+        console.log(`cardId,,,:${this.cardId}`);
         await this.settingLocation();
         await this.loadData();
     }
