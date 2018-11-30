@@ -67,7 +67,7 @@
         <view wx:if="{{isShowDialogShare}}" class="mycard-share-mask">
             <view class="mycard-share">
                 <navigator class="item_box" hover-class="none" target="miniProgram" open-type="navigate" app-id="wx86c7b0019914401c" path="/pages/index58/index58?mpcardId={{cardId}}&from=zhushou_employee_detail" extra-data="" version="develop">
-                    <button hover-class="none" form-type="submit" class='dialog-share-item'>分享给好友</button>
+                    <button hover-class="none" @tap.stop="shareFriend" form-type="submit" class='dialog-share-item'>分享给好友</button>
                 </navigator>
                 <button hover-class="none" class='dialog-share-item line' @tap="share" data-type="make" data-id="{{cardId}}">生成图片分享</button>
                 <button hover-class="none" class='dialog-share-item cancel' @tap="share" data-type="cancel" data-id="{{cardId}}">取消</button>
@@ -97,17 +97,22 @@ export default class Detail extends wepy.page {
           SendClickLog('sjzh_click_employeeDetail_share_btn');
           this.isShowDialogShare = true;
       },
+      shareFriend() {
+          SendClickLog('sjzh_click_employeeDetail_shareto_friends');
+      },
       share(e) {
           console.log(e);
           const { id, type } = e.currentTarget.dataset;
           this.isShowDialogShare = false;
           if (type === 'make') {
+              SendClickLog('sjzh_click_employeeDetail_shareto_moments');
               wepy.navigateTo({
                   url: `/pages/employee/cardImage?cardId=${id}`,
               });
           }
       },
       goVisitors() {
+          SendClickLog('sjzh_click_employeeDetail_govisitors_btn');
           wepy.navigateTo({
               url: `logs?cardId=${this.cardId}`,
           });

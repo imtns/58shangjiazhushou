@@ -54,6 +54,7 @@ import wepy from 'wepy';
 import Mixin from './mixin';
 import { toast } from '../../../utils';
 import { globalData } from '../../../utils/globalData';
+import { SendClickLog } from '../../../utils/maidian';
 
 export default class Card extends wepy.page {
   config = {
@@ -84,6 +85,7 @@ export default class Card extends wepy.page {
           this.pageData[0].props.cfg.title = e.detail.value;
       },
       save() {
+          SendClickLog('sjzh_click_editEard_save_btn');
           if (!this.pageData[0].props.cfg.title.trim()) {
               toast('请输入标题');
               return;

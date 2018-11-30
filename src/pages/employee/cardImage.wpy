@@ -22,6 +22,7 @@ import { get } from '../../utils/ajax';
 import Mixin from '../../mixin';
 import { firstStyle, secondStyle } from '../../utils/introData';
 import { getTmpFilePath, alert } from '../../utils/index';
+import { SendClickLog } from '../../utils/maidian';
 
 export default class choseImageStyle extends wepy.page {
     mixins = [Mixin]
@@ -65,6 +66,7 @@ export default class choseImageStyle extends wepy.page {
         },
         // 下载名片
         async saveImgToPhotosAlbum() {
+            SendClickLog('sjzh_click_employeeImage_download_btn');
             let path = '';
             if (this.style === 1) {
                 path = this.styleImage1;
