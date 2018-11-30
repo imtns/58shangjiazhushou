@@ -1,5 +1,5 @@
 <template>
-    <view class="orderlist" wx:if="{{userLogin}}">
+    <view class="orderlist" wx:if="{{userLogin && !isEmployee}}">
         <tabs></tabs>
         <view class="listWrapper">
             <block wx:if="{{orderType === 'product'}}">
@@ -39,6 +39,7 @@ export default class OrderList extends wepy.page {
     data = {
         orderType: 'service',
         status: '',
+        isEmployee: false,
         userLogin: true,
     };
     events = {
@@ -74,6 +75,7 @@ export default class OrderList extends wepy.page {
         await this.getOrderList(this.orderType, this.status);
     }
     onLoad() {
+        this.isEmployee = wx.getStorageSync('isEmployee');
         console.log('onload');
     }
 }

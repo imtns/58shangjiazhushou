@@ -54,7 +54,7 @@
                 <view class="btns">
                     <repeat for="{{myCardItems}}" key="index" index="index" item="item">
                         <block wx:if="{{ item.id !== 'regist_qrcode' || (item.id === 'regist_qrcode' && isSalesman) }}">
-                            <view class="item_box" wx:if="{{item.type == 'innerJump' && (item.name !== '我的团队' || !isEmployee)}}"   @tap="toinnerJump({{item.path}})">
+                            <view class="item_box" wx:if="{{item.type == 'innerJump' && (item.name !== '我的团队' && item.name !=='开通支付' || !isEmployee)}}"   @tap="toinnerJump({{item.path}})">
                                 <image class="img" src="{{ item.src + '?w=64&h=64&ss=1' }}"></image>
                                 <view class="text">{{item.name}}</view>
                             </view>
