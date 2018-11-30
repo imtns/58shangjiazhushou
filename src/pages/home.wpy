@@ -347,6 +347,7 @@ export default class Home extends wepy.page {
           this.isEmployee = !this.isEmployee;
           this.currentAccountType = this.isEmployee ? '店长' : '员工';
           wepy.setStorageSync('isEmployee', this.isEmployee || false);
+          SendClickLog(`sjzh_click_home_switchType_${this.isEmployee}`);
           await this.chatLogin();
           if (this.isEmployee) {
               this.$broadcast('getData');

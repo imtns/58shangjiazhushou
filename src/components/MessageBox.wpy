@@ -23,6 +23,7 @@
  * @description 提示弹窗组件
  */
 import wepy from 'wepy';
+import { SendClickLog } from '../utils/maidian';
 
 export default class Index extends wepy.component {
     props = {
@@ -51,10 +52,12 @@ export default class Index extends wepy.component {
     }
     methods = {
         handleConfirm() {
+            SendClickLog('sjzh_click_employeeAdd_confirm_btn');
             this.$emit('onConfirm');
             this.show = false;
         },
         handleCancel() {
+            SendClickLog('sjzh_click_employeeAdd_cancle_btn')
             this.$emit('onCancel');
             this.show = false;
         },

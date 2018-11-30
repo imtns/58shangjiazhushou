@@ -49,6 +49,7 @@ import wepy from 'wepy';
 import { get } from '../../utils/ajax';
 import { toast } from '../../utils/index';
 import { EMPLOYEE_CARD_LIST } from '../../utils/url';
+import { SendClickLog } from '../../utils/maidian';
 
 export default class Index extends wepy.page {
   config = {
@@ -79,9 +80,12 @@ export default class Index extends wepy.page {
   }
   methods = {
       empty() {
-
+          SendClickLog('sjzh_click_employeeIndex_notice');
       },
       navigate(url, cardId, isNew) {
+          if (url === 'add') {
+              SendClickLog('sjzh_click_employeeIndex_add');
+          }
           if (typeof isNew !== 'object' && isNew) return;
           console.log(cardId);
           wepy.navigateTo({ url: cardId ? `${url}?cardId=${cardId}` : url });

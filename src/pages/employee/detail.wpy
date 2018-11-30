@@ -80,6 +80,7 @@ import wepy from 'wepy';
 import Mixin from '../../mixin';
 import { CARD_HAS_DETAIL } from '../../utils/url';
 import { post } from '../../utils/ajax';
+import { SendClickLog } from '../../utils/maidian';
 
 export default class Detail extends wepy.page {
   mixins = [Mixin];
@@ -93,6 +94,7 @@ export default class Detail extends wepy.page {
   };
   methods = {
       toShare() {
+          SendClickLog('sjzh_click_employeeDetail_share_btn');
           this.isShowDialogShare = true;
       },
       share(e) {
