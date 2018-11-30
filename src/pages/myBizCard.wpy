@@ -263,7 +263,7 @@ export default class myBizCard extends wepy.page {
      * 数据请求：收集FormID,用于给用户推送服务通知
      */
     requestFormidCollect(formId) {
-        if (formId) {
+        if (formId && wx.getStorageSync('ppu')) {
             get('/formidcollect/collect', {
                 consumerId: wx.getStorageSync('ppu').split('UID=')[1].split('&')[0] || '', // 当前用户 ID
                 formId,

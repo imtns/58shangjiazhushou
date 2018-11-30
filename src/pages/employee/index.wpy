@@ -97,7 +97,7 @@ export default class Index extends wepy.page {
           return {
               title: `${realName}邀请你完善名片信息`,
               path: '/pages/employee/login',
-              imageUrl: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/share.png',
+              imageUrl: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/invite.png',
               success(data) {
                   console.log(data);
               },

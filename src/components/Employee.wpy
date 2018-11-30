@@ -3,7 +3,7 @@
         <view class="welcome-block">
             <view wx:if="{{userLogin}}" class="welcome-title">欢迎 <text>{{ business.name }}</text></view>
             <view wx:else class="welcome-title">欢迎 {{card.realName}}</view>
-            <view @tap="changeIdentity" class="item-switch">账号切换</view>
+            <view @tap="changeIdentity" wx:if="{{hasPPU}}" class="item-switch">账号切换</view>
         </view>
         <view class="item-detail">
             <block wx:if="{{!loading}}">
@@ -80,6 +80,7 @@ export default class Employee extends wepy.component {
       modalConfirmText: '去完善',
       modalCancelText: '取消',
       modalTitle: '提示',
+      hasPPU: false,
   };
   components = {
       messageBox: MessageBox,
@@ -98,7 +99,11 @@ export default class Employee extends wepy.component {
           default: '',
       },
   };
-  onLoad() {}
+  onLoad() {
+      if (wepy.getStorageSync('ppu')) {
+          this.hasPPU = true;
+      }
+  }
   onShow () {
       SendClickLog('sjzh_show_employee_num');
   }
