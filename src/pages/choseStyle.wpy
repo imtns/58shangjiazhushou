@@ -105,6 +105,7 @@ export default class choseStyle extends wepy.page {
         style: '',
         selected1: false,
         selected2: false,
+        cardId: '',
     }
     methods = {
         selectStyle(e) {
@@ -120,7 +121,7 @@ export default class choseStyle extends wepy.page {
         async saveCard() {
             SendClickLog('sjzh_click_visitorLogs_saveCard');
             const currentMpid = wepy.getStorageSync('current_mpid');
-            if (!currentMpid) {
+            if (!currentMpid && !this.cardId) {
                 return;
             }
             if (this.selected1 || this.selected2) {
@@ -142,6 +143,7 @@ export default class choseStyle extends wepy.page {
     };
     onLoad () {
         console.log('onload');
+        this.cardId = wepy.getStorageSync('cardId');
     }
     async onShow () {
         await this.loadData();
@@ -149,7 +151,7 @@ export default class choseStyle extends wepy.page {
     }
     async loadData() {
         const currentMpid = wepy.getStorageSync('current_mpid');
-        if (!currentMpid) {
+        if (!currentMpid && !this.cardId) {
             return;
         }
         const subData = {
