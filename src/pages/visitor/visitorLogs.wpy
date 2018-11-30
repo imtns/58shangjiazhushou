@@ -72,7 +72,7 @@ export default class visitorLogs extends wepy.page {
             });
         },
         async call(sign) {
-            console.log(sign);
+            SendClickLog('sjzh_click_visitorLogs_makecall_btn');
             try {
                 const { data } = await post(CALL_VISITOR, {
                     sign,

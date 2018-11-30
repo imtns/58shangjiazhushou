@@ -107,6 +107,7 @@ export default class visitorInfo extends wepy.page {
             SendClickLog('sjzh_click_visitorInfo_sendMsg');
         },
         showDialog() {
+            SendClickLog('sjzh_click_visitorInfo_addNote_btn');
             this.showPop = true;
             this.$apply();
         },
@@ -115,10 +116,12 @@ export default class visitorInfo extends wepy.page {
             this.$apply();
         },
         close() {
+            SendClickLog('sjzh_click_visitorInfo_addClose_btn');
             this.showPop = false;
             this.$apply();
         },
         async add() {
+            SendClickLog('sjzh_click_visitorInfo_addConfirm_btn');
             const content = this.content.trim();
             if (!content) {
                 toast('请填写备注名称');
