@@ -24,7 +24,7 @@
                 <view class="title">团队员工 ({{cardData.cards.length}})</view>
                 <view class="member-block">
                     <repeat for="{{cardData.cards}}" key="index" key="index" index="index" item="item">
-                        <view class="member" @tap="navigate('detail','{{item.cardId}}')">
+                        <view class="member" @tap="navigate('detail','{{item.cardId}}','{{item.isNew}}')">
                             <image class="icon" src="{{item.picImg?'https://pic8.58cdn.com.cn'+item.picImg+'?w=120' : 'https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/emptyIcon.png?w=120&h=120'}}" mode="scaleToFill"></image>
                             <view class="nameWrap">
                                 <view class="name">{{item.realName}}</view>
@@ -82,10 +82,11 @@ export default class Index extends wepy.page {
       empty() {
           SendClickLog('sjzh_click_employeeIndex_notice');
       },
-      navigate(url, cardId) {
+      navigate(url, cardId, isNew) {
           if (url === 'add') {
-            SendClickLog('sjzh_click_employeeIndex_add');
+              SendClickLog('sjzh_click_employeeIndex_add');
           }
+          if (typeof isNew !== 'object' && isNew) return;
           console.log(cardId);
           wepy.navigateTo({ url: cardId ? `${url}?cardId=${cardId}` : url });
       },

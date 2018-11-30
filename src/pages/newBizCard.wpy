@@ -280,9 +280,12 @@ export default class newBizCard extends wepy.page {
         this.$apply();
     }
     async onLoad () {
+        console.log(`isEmployee:${wepy.getStorageSync('isEmployee')}`);
+
         if (wepy.getStorageSync('isEmployee')) {
             this.cardId = wepy.getStorageSync('cardId');
         }
+        console.log(`cardId,,,:${this.cardId}`);
         await this.settingLocation();
         await this.loadData();
     }
@@ -295,7 +298,7 @@ export default class newBizCard extends wepy.page {
     }
     async loadData() {
         const currentMpid = wepy.getStorageSync('current_mpid');
-        if (!currentMpid) {
+        if (!currentMpid && !this.cardId) {
             return;
         }
         const postData = {

@@ -1,7 +1,7 @@
 <template>
     <view class="myBizCard">
         <mask :show.sync="maskShow" :type="maskType"></mask>
-        <view class="tocreatCard" wx:if="{{hasCard === false}}">
+        <view class="tocreatCard" wx:if="{{hasCard === false && !isEmployee}}">
             <view class="empty_box">
                 <view class="empty_header"></view>
                 <view class="empty_tips">您还没有名片，赶快创建名片吧</view>

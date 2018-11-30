@@ -54,9 +54,6 @@
 </template>
 
 <script>
-/**
- * @desc 优惠券组件，给用户看的
- */
 
 import wepy from 'wepy';
 import { get } from '../utils/ajax';
@@ -103,7 +100,7 @@ export default class Employee extends wepy.component {
   };
   onLoad() {}
   onShow () {
-    SendClickLog('sjzh_show_employee_num');
+      SendClickLog('sjzh_show_employee_num');
   }
   events = {
       getData: async () => {
@@ -144,6 +141,10 @@ export default class Employee extends wepy.component {
   };
   methods = {
       navigate(url) {
+          if (this.isAuto === 1) {
+              this.events.getData();
+              return;
+          }
           wepy.navigateTo({
               url: this.cardId ? `${url}?cardId=${this.cardId}` : url,
           });
