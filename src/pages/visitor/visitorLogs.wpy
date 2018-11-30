@@ -182,7 +182,7 @@ page{
                 width:300rpx;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                white-space:nowrap
+                white-space:nowrap;
             }
             .visitor_status{
                 font-size: 24rpx;

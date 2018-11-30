@@ -18,6 +18,7 @@ import { post } from '../../utils/ajax';
 import { mobileSpace, checkMobile, toast } from '../../utils/index';
 import { EMPLOYEE_LOGIN } from '../../utils/url';
 import MessageBox from '../../components/MessageBox';
+import { SendClickLog } from '../../utils/maidian';
 
 export default class Login extends wepy.page {
   config = {
@@ -45,12 +46,14 @@ export default class Login extends wepy.page {
           wepy.setStorageSync('mobile', this.mobile);
       },
       async login() {
+          SendClickLog('sjzh_click_employeeLogin_login_btn');
           if (!checkMobile(this.mobile)) {
               toast('手机号格式不正确');
               return;
           }
           try {
               await post(EMPLOYEE_LOGIN, { mobile: this.mobile.replace(/\s+/g, '') });
+              SendClickLog('sjzh_click_employeeLogin_success_num')
               wepy.navigateTo({ url: 'code' });
           } catch (err) {
               this.modalShow = true;

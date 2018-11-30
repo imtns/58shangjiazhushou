@@ -62,9 +62,12 @@ import wepy from 'wepy';
 import { get } from '../utils/ajax';
 // import { toast } from '../utils/index';
 import { EMPLOYEE_CARD_GET } from '../utils/url';
+import Mixin from '../mixin';
+import { SendClickLog } from '../utils/maidian';
 import MessageBox from '../components/MessageBox';
 
 export default class Employee extends wepy.component {
+  mixins = [Mixin]
   data = {
       icons: [
           'https://t1.58cdn.com.cn/bidding/tiny/n_v1bkuymczvuqxfr3drs5gq.jpg?w=160&h=120',
@@ -99,6 +102,9 @@ export default class Employee extends wepy.component {
       },
   };
   onLoad() {}
+  onShow () {
+    SendClickLog('sjzh_show_employee_num');
+  }
   events = {
       getData: async () => {
           if (this.isAuto === 1) {

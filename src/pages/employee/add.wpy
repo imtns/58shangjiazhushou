@@ -29,6 +29,7 @@ import { post } from '../../utils/ajax';
 import MessageBox from '../../components/MessageBox';
 import { toast, sleep } from '../../utils';
 import { EMPLOYEE_CARD_ADD } from '../../utils/url';
+import { SendClickLog } from '../../utils/maidian';
 
 export default class Index extends wepy.page {
     config = {
@@ -78,6 +79,7 @@ export default class Index extends wepy.page {
     }
     methods = {
         add() {
+            SendClickLog('sjzh_click_employeeAdd_add_btn')
             if (this.verify()) {
                 this.modalShow = !this.modalShow;
                 this.added = false;
