@@ -16,7 +16,9 @@
                         src="{{ form.avatarUrl ? form.avatarUrl + '?w=72&h=72&ss=1' : '' }}"></image>
                     <text class="arrow"></text>
                 </view>
-                <navigator class="form-item" url="/pages/multiSelector?type=registCate">
+                <view
+                    class="form-item"
+                    @tap="handleSelectCate">
                     <view class="label">所属行业</view>
                     <view class="selector">
                         <block wx:if="{{ form.wubaSecondName }}">
@@ -27,14 +29,15 @@
                         </block>
                     </view>
                     <text class="arrow"></text>
-                </navigator>
+                </view>
                 <view class="form-item">
                     <view class="label">小程序名称</view>
                     <input
                         @input="handleInput('nickName')"
                         class="input" type="text"
                         maxlength="20" placeholder-class="placeholder"
-                        placeholder="请输入" value="{{ form.nickName }}"/>
+                        placeholder="请输入" value="{{ form.nickName }}"
+                        disabled="{{ block.nickName }}"/>
                 </view>
                 <view class="form-text-item">小程序名称提交后不可修改，请谨慎写</view>
                 <view class="form-item column">
@@ -45,7 +48,8 @@
                         @input="handleInput('signature')"
                         placeholder="请输入"
                         placeholder-class="placeholder"
-                        value="{{ form.signature }}">
+                        value="{{ form.signature }}"
+                        disabled="{{ block.signature }}">
                         <view class="textarea-num">{{signatureNum}}/100</view>
                     </textarea>
                 </view>
@@ -107,8 +111,18 @@ export default class Index extends wepy.page {
             wubaSecondId: null,
             wechatFirstId: null,
             wechatSecondId: null,
+            wubaFirstName: '',
+            wubaSecondName: '',
             avatarUrl: '', // 头像地址
             signature: '', // 简介
+        },
+
+        // 控制字段是否可以更改
+        block: {
+            avatarUrl: false,
+            wubaSecondName: false, // 用第二分类名标识
+            nickName: false,
+            signature: false,
         },
 
         signatureNum: 0,
@@ -186,7 +200,6 @@ export default class Index extends wepy.page {
      * @line {number} 从第几行开始要重新填写
      */
     resolvePartError(line) {
-        // cate1Name cate2Name
         const lines = [
             'avatarUrl',
             'wubaFirstName',
@@ -204,15 +217,38 @@ export default class Index extends wepy.page {
             line += 1;
         }
 
+        // 清空需要充填的值
         for (let i = line - 1; i < lines.length; i += 1) {
             const k = lines[i];
             this.form[k] = '';
         }
 
+        // 锁定不能填写的值
+        const blocks = [
+            'avatarUrl',
+            'wubaSecondName', // 用第二分类名标识
+            'nickName',
+            'signature',
+        ];
+        blocks.forEach((k, i) => {
+            if (i < line - 1) {
+                this.block[k] = true;
+            }
+        });
+
         this.$apply();
     }
 
     methods = {
+        handleSelectCate() {
+            if (this.block.wubaSecondName) {
+                return;
+            }
+
+            wepy.navigateTo({
+                url: '/pages/multiSelector?type=registCate',
+            });
+        },
         handleInput(prop, e) {
             const { value } = e.detail;
 
@@ -283,6 +319,10 @@ export default class Index extends wepy.page {
         },
         async handleUploadLogo() {
             try {
+                if (this.block.avatarUrl) {
+                    return;
+                }
+
                 const netStatus = await getNetStatus();
 
                 if (netStatus === 0) {
