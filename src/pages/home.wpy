@@ -21,7 +21,7 @@
                     <view @tap="changeIdentity" class="item-switch">账号切换</view>
                 </view>
                 <view class="item-detail">
-                    <view wx:if="{{userLogin}}">
+                    <view wx:if="{{userLogin}}" class="user-haslogin">
                         <view class="item-name" :class="{logoPadding : business.mpCount > 0 }">{{ business.miniProgramName }}</view>
                         <view class="item-title" :class="{logoPadding : business.mpCount > 0 }">
                             <view class="star-box" wx:if="{{ business.selected.score }}">
@@ -35,6 +35,7 @@
                             </view>
                             <view wx:else>可上传素材、提交注册信息到当前小程序</view>
                         </view>
+                        <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">小程序切换</view>
                         <image class="haslogo" wx:if="{{business.mpCount > 0 }}" mode="aspectFit" src="{{business.selected.headImg ||'https://pic8.58cdn.com.cn/bizmp/n_v285d6a16d725a446694db35df23c9db24.png?w=375&h=375'}}"></image>
                         <view class="index-block-body index-item">
                             <view class="index-loaded-item {{item.text === '通知' && business.unread ? 'new-msg' : ''}}" :class="{new-mingpian: item.text === '名片管理'}" wx:for="{{items}}" wx:key="index" bindtap="link({{item.text}})">
@@ -42,8 +43,11 @@
                                 <view class="item-text">{{item.text}}</view>
                             </view>
                         </view>
+                        <view bindtap="checkProgress" class="item-detail-progress">
+                            <view class="current-progress"></view>
+                            <view class="remind-title">{{ business.progressText}}</view>
+                        </view>
                     </view>
-                    <view @tap="changeAction" wx:if="{{business.mpCount >= 2}}" class="item-switch">小程序切换</view>
                     <view wx:if="{{!userLogin}}">
                         <view class="unlogin">
                             <text class="login-tip">您还没有登录，授权登录后可管理小程序赚大钱</text>
@@ -1249,6 +1253,9 @@ export default class Home extends wepy.page {
 page {
   overflow: auto !important;
 }
+.user-haslogin{
+    margin-top: .2rem;
+}
 .switchEmployee {
   position: fixed;
   width: 220rpx;
@@ -1943,6 +1950,7 @@ scroll-view {
   bottom: 60rpx;
 }
 .unlogin {
+  margin-top: .8rem;
   text-align: center;
 }
 .login-tip {
