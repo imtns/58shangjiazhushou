@@ -126,7 +126,8 @@ export default class choseImageStyle extends wepy.page {
                     y: 243,
                     color: '#fff',
                     lineHeight: '',
-                    maxWidth: '460',
+                    maxWidth: '200',
+                    ellipsis: true,
                 }, {
                     type: 'text', // 职位text
                     textBaseline: 'top',
