@@ -92,8 +92,10 @@ export default class choseImageStyle extends wepy.page {
             this.$apply();
         },
     };
-    async onLoad () {
-        console.log('onload');
+    async onLoad (option) {
+        const { cardId = '' } = option;
+        this.cardId = cardId;
+        this.$apply();
     }
     async onShow () {
         wx.showLoading({
@@ -108,25 +110,9 @@ export default class choseImageStyle extends wepy.page {
         await that.drawimageStyle2();
     }
     async loadData() {
-        let sendData;
-        const currentMpid = wepy.getStorageSync('current_mpid');
-        this.isEmployee = wepy.getStorageSync('isEmployee');
-        if (wepy.getStorageSync('cardId')) {
-            this.cardId = wepy.getStorageSync('cardId');
-        }
-        if (!currentMpid && !this.cardId) {
-            return;
-        }
-        if (!this.isEmployee) {
-            sendData = {
-                mpId: currentMpid,
-            }
-        } else {
-            sendData = {
-                cardId: this.cardId,
-            }
-        }
-        const { data } = await post(CARD_FIRST_EDIT, sendData);
+        const { data } = await post(CARD_FIRST_EDIT, {
+            cardId: this.cardId,
+        });
         Object.assign(this, data);
         this.serviceTagArr = this.serviceTag.split(',');
         this.headImg = `https://pic1.58cdn.com.cn${this.picImg}`;

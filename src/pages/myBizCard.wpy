@@ -172,7 +172,7 @@ export default class myBizCard extends wepy.page {
         choseStyle() {
             this.isShowDialogShare = false;
             wepy.navigateTo({
-                url: 'choseImageStyle',
+                url: `choseImageStyle?cardId=${this.cardId}`,
             });
         },
     };

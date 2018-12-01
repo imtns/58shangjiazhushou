@@ -195,7 +195,7 @@ export default class choseImageStyle extends wepy.page {
                     textBaseline: 'top',
                     textAlign: 'left',
                     fontSize: 14,
-                    text: `Wechat : ${that.wxCode}`,
+                    text: `Wechat : ${that.wxCode}` || '暂无微信号',
                     x: 358,
                     y: 283,
                     color: '#F1B620',
