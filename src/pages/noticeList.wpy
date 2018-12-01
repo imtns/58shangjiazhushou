@@ -147,7 +147,7 @@ export default class cardList extends wepy.page {
           const arr = [];
           if (msglist.length === 0) {
               this.loadComplete = true;
-              //   toast('没有更多消息啦');
+              toast('没有更多消息啦');
               return;
           }
           msglist.forEach(item => {

@@ -211,17 +211,17 @@ Component({
                 let { textArr, textWidth, textHeight } = formatText(ctx, text, pxMW, pxLH);
 
                 // 背景
-                // if (bgColor) {
-                //     ctx.setStrokeStyle(bgColor);
-                //     ctx.setLineJoin(radius ? 'round' : 'miter');
-                //     const textBgWidth = pxMW + pl + pr;
-                //     const textBgHeight = textHeight + pt + pb;
-                //     ctx.setFillStyle(bgColor);
-                //     ctx.fillRect(pxx - pl, pxy, pxMW + pl + pr, textHeight);
-                //     ctx.setLineWidth(pxRadius);
-                //     ctx.strokeRect(pxx - pl, pxy - pt,
-                //         textBgWidth, textBgHeight - pxRadius);
-                // }
+                if (bgColor) {
+                    ctx.setStrokeStyle(bgColor);
+                    ctx.setLineJoin(radius ? 'round' : 'miter');
+                    const textBgWidth = pxMW + pl + pr;
+                    const textBgHeight = textHeight + pt + pb;
+                    ctx.setFillStyle(bgColor);
+                    ctx.fillRect(pxx - pl, pxy, pxMW + pl + pr, textHeight);
+                    ctx.setLineWidth(pxRadius);
+                    ctx.strokeRect(pxx - pl, pxy - pt,
+                        textBgWidth, textBgHeight - pxRadius);
+                }
 
                 // 真实宽高
                 const realWidth = textWidth + pl + pr;

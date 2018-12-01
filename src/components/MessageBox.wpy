@@ -57,7 +57,7 @@ export default class Index extends wepy.component {
             this.show = false;
         },
         handleCancel() {
-            SendClickLog('sjzh_click_employeeAdd_cancle_btn')
+            SendClickLog('sjzh_click_employeeAdd_cancle_btn');
             this.$emit('onCancel');
             this.show = false;
         },

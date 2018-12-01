@@ -14,10 +14,6 @@
                     <view class="left-label">服务联系人</view>
                     <view class="right-text">{{order.consumerName}}</view>
                 </view>
-                <!-- <view class="order-row">
-                    <view class="left-label">联系电话</view>
-                    <view class="right-text">{{order.consumerMobile}}</view>
-                </view> -->
                 <view class="order-row" wx:if="{{order.status!=3}}" >
                     <view class="left-label">服务地址</view>
                     <view class="right-text">{{order.consumerAddress}}</view>
@@ -62,7 +58,7 @@
             <view class="order-desc" wx:if="{{order.payType==1 && order.status==0}}">顾客已下单，未支付，记得在服务时提醒顾客买单</view>
             <view class="order-desc" wx:elif="{{order.payType==1 && order.status==2}}">服务已结束，本订单为免费预约订单，记得在服务时提醒顾客买单</view>
             <view class="order-desc" wx:elif="{{order.payType==1 && order.status==9}}">服务已结束，本订单为免费预约订单，记得在服务时提醒顾客买单</view>
-            <view class="order-desc" wx:elif="{{order.payType==3 && order.status==2}}">服务已结束，资金将在1-4天打到您的银行卡账户</view>
+            <!-- <view class="order-desc" wx:elif="{{order.payType==3 && order.status==2}}">服务已结束，资金将在1-4天打到您的银行卡账户</view> -->
             <view class="order-desc" wx:else="{{contentSet[order.status]}}">{{contentSet[order.status]}}</view>
             <block wx:if="{{order.status==9}}">
                 <view class="order-evaluate">
@@ -120,7 +116,7 @@ export default class OrderDetail extends wepy.page {
         statusSet: ['已支付，待接单', '已接单，待服务', '已完成', '已取消', '已删除', '已下单，待支付', '退款成功', '退款失败', '已取消,系统自动取消', '已评价', '退款中', '', '退款中'],
         contentSet: ['顾客已支付订单，请尽快确认订单',
             '您已接单，请在约定时间联系顾客',
-            '服务已经结束，订单费用已成功打入您的收款账户，谢谢您的服务',
+            '服务已结束，资金将在1-4天打到您的银行卡账户',
             '顾客已取消订单',
             '系统已删除订单',
             '顾客已下单，还未支付订单',
