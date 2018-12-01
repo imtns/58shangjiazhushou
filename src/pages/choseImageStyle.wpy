@@ -126,14 +126,6 @@ export default class choseImageStyle extends wepy.page {
                 cardId: this.cardId,
             }
         }
-        // wepy.getStorageSync('isEmployee');
-        // if (wepy.getStorageSync('cardId')) {
-        //     this.cardId = wepy.getStorageSync('cardId');
-        // }
-        // const currentMpid = wepy.getStorageSync('current_mpid');
-        // if (!currentMpid && !this.cardId) {
-        //     return;
-        // }
         const { data } = await post(CARD_FIRST_EDIT, sendData);
         Object.assign(this, data);
         this.serviceTagArr = this.serviceTag.split(',');
