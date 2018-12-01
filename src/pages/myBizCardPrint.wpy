@@ -98,11 +98,11 @@ export default class choseImageStyle extends wepy.page {
         if (!this.isEmployee) {
             sendData = {
                 mpId: currentMpid,
-            }
+            };
         } else {
             sendData = {
                 cardId: this.cardId,
-            }
+            };
         }
         const { data } = await post(CARD_FIRST_EDIT, sendData);
         Object.assign(this, data);
@@ -195,7 +195,7 @@ export default class choseImageStyle extends wepy.page {
                     textBaseline: 'top',
                     textAlign: 'left',
                     fontSize: 14,
-                    text: `Wechat : ${that.wxCode}` || '暂无微信号',
+                    text: `Wechat : ${that.wxCode}`,
                     x: 358,
                     y: 283,
                     color: '#F1B620',
