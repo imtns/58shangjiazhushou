@@ -152,7 +152,7 @@ export default class choseImageStyle extends wepy.page {
     }
     async drawimageStyle2() {
         const that = this;
-        // 生成名片正面的数据
+        // 生成名片反面的数据
         this.cardPosStyle = {
             width: 586,
             height: 368,
@@ -169,7 +169,7 @@ export default class choseImageStyle extends wepy.page {
                     textBaseline: 'top',
                     textAlign: 'left',
                     fontSize: 14,
-                    text: `Tel : ${that.realName}`,
+                    text: `Tel : ${that.mobile}`,
                     x: 358,
                     y: 250,
                     color: '#F1B620',
@@ -180,7 +180,7 @@ export default class choseImageStyle extends wepy.page {
                     textBaseline: 'top',
                     textAlign: 'left',
                     fontSize: 14,
-                    text: `Wechat : ${that.position}`,
+                    text: `Wechat : ${that.wxCode}`,
                     x: 358,
                     y: 283,
                     color: '#F1B620',

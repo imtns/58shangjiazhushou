@@ -81,7 +81,7 @@ export default class Index extends wepy.page {
     }
     methods = {
         add() {
-            SendClickLog('sjzh_click_employeeAdd_add_btn')
+            SendClickLog('sjzh_click_employeeAdd_add_btn');
             if (this.verify()) {
                 this.modalShow = !this.modalShow;
                 this.added = false;
