@@ -191,13 +191,13 @@
             <button class="tomake-money" data-action="makemoney" bindtap="handleActionRoute" hover-class="none" form-type="submit"></button>
             </form> -->
         <!-- 每日一言悬浮提示 -->
-        <form bindsubmit="handleFormidCollect" report-submit="true" wx:if="{{everydayIconShow}}">
+        <form bindsubmit="handleFormidCollect"  report-submit="true" wx:if="{{everydayIconShow && showButton}}">
             <button class="to-everyday" @tap="handleToEveryday" hover-class="none" form-type="submit">
                 <view class="unread" wx:if="{{everydayIconShow && everydayUnread}}" />
             </button>
         </form>
         <!-- 每日一言弹窗模块 -->
-        <everyday-modal :show.sync="everydayShow" :unread.sync="everydayUnread" />
+        <everyday-modal  :show.sync="everydayShow" :unread.sync="everydayUnread" />
         <!-- 商家推广模块 -->
         <spread-modal :userID.sync="spreadUserID" :show.sync="spreadRPShow" :first.sync="spreadRPFirst"></spread-modal>
         <!-- 添加到我的小程序步骤提示 -->
@@ -2032,8 +2032,8 @@ scroll-view {
 }
 .to-everyday {
   position: fixed;
-  bottom: 408rpx;
-  right: 30rpx;
+  bottom: 25rpx;
+  left: 30rpx;
   width: 120rpx;
   height: 120rpx;
   background: url('https://img.58cdn.com.cn/lbg/jianzhan/images/youxiang/everyday-word-suspend.png')
