@@ -185,8 +185,13 @@ export default class Chat extends wepy.page {
         if (remark !== 'undefined') {
             note = remark;
         }
+        if (!note || note === 'null') {
+            note = nickName;
+        } else {
+            note = `${nickName}(${note})`;
+        }
         wepy.setNavigationBarTitle({
-            title: `${nickName}(${note === 'null' || !note ? nickName : note})`,
+            title: note,
         });
 
         globalData.chat.currentContactId = contact;

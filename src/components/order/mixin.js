@@ -39,7 +39,6 @@ export default class OrderMixin extends wepy.mixin {
         orderList: [],
         total: 0,
         noMore: false,
-        noOrder: false,
     };
     events = {
         bindLoadDown() {

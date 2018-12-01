@@ -130,6 +130,10 @@ export default class Logs extends wepy.page {
         line-height: 42rpx;
         font-size: 30rpx;
         color: #333;
+        width:300rpx;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
         position: absolute;
       }
       .visitor_from {

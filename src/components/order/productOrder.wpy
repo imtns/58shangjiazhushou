@@ -81,8 +81,14 @@ export default class ProductOrder extends wepy.component {
     props = {
         orderList: Object,
         statusSet: Object,
-        noMore: Boolean,
-        noOrder: Boolean,
+        noMore: {
+            type: Boolean,
+            default: false,
+        },
+        noOrder: {
+            type: Boolean,
+            default: false,
+        },
     };
     async getMpShareImg(id, nickName) {
         const subData = {

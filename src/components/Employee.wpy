@@ -22,7 +22,7 @@
                     <view class="noViewer" wx:if="{{!card.visitPicList.length}}">暂时还没有访客哦~</view>
                     <view class="viewers" wx:else>
                         <view class="view-number">最近{{card.visitPicList.length}}个人访问过</view>
-                        <navigator url="visitor/visitorLogs" class="viewers-icons">
+                        <navigator url="/pages/employee/logs?cardId={{card.cardId}}" class="viewers-icons">
                             <repeat for="{{card.visitPicList}}" wx:if="{{index<6}}" key="index" index="index" item="item">
                                 <image mode="aspectFill"  src="{{item}}"></image>
                             </repeat>
