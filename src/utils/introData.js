@@ -205,10 +205,10 @@ export const firstStyle = {
 };
 
 export const secondStyle = {
-    width: 530,
-    height: 940,
+    width: 560,
+    height: 740,
     background: {
-        imageResource: 'https://static.58.com/lbg/shangjiaxcxht/zhushou/img/card_style_bg.png',
+        imageResource: 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/white.png',
         dx: 0,
         dy: 0,
         dWidth: 560,

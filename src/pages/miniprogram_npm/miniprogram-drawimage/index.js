@@ -217,10 +217,10 @@ Component({
                     const textBgWidth = pxMW + pl + pr;
                     const textBgHeight = textHeight + pt + pb;
                     ctx.setFillStyle(bgColor);
-                    ctx.fillRect(pxx - pl, pxy, pxMW + pl + pr, textHeight);
-                    ctx.setLineWidth(pxRadius);
-                    ctx.strokeRect(pxx - pl, pxy - pt,
-                        textBgWidth, textBgHeight - pxRadius);
+                    // ctx.fillRect(pxx - pl, pxy, pxMW + pl + pr, textHeight);
+                    // ctx.setLineWidth(pxRadius);
+                    // ctx.strokeRect(pxx - pl, pxy - pt,
+                    // textBgWidth, textBgHeight - pxRadius);
                 }
 
                 // 真实宽高

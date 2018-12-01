@@ -1254,7 +1254,7 @@ page {
   overflow: auto !important;
 }
 .user-haslogin{
-    margin-top: .2rem;
+    margin-top: .7rem;
 }
 .switchEmployee {
   position: fixed;
@@ -1322,7 +1322,7 @@ scroll-view {
       border-radius: 100rpx;
     }
     .logoPadding {
-      padding-left: 45rpx;
+      padding-left: 90rpx;
     }
     .default {
       padding: 0 40rpx;
