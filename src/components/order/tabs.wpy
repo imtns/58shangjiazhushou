@@ -95,12 +95,14 @@ export default class Tabs extends wepy.component {
   }
   methods = {
       tabClick(e) {
+          if (wepy.getStorageSync('isEmployee')) return;
           const { id, index } = e.currentTarget.dataset;
           if (index === this.currentTab) return;
           this.currentTab = index;
           this.$emit('getStatus', id);
       },
       switch(num, type) {
+          if (wepy.getStorageSync('isEmployee')) return;
           if (this.currentSwitch === num) return;
           this.currentSwitch = num;
           this.currentTab = num === '0' ? 3 : 4;

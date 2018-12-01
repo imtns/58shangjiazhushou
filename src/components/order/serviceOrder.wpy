@@ -50,194 +50,199 @@
 import wepy from 'wepy';
 
 export default class ServiceOrder extends wepy.component {
-    props = {
-        orderList: Object,
-        noMore: Boolean,
-        noOrder: Boolean,
-    };
-
-    data = {
-        statusSet: {
-            0: '已支付，待接单',
-            1: '已接单，待服务',
-            2: '已完成',
-            3: '已取消',
-            4: '已删除',
-            5: '已下单，待支付',
-            6: '退款成功',
-            7: '退款失败',
-            8: '已取消,系统自动取消',
-            9: '已评价',
-            10: '退款中',
-            11: '买单支付',
-            12: '退款中',
-            13: '配送中',
-            14: '已送达',
-            15: '商家拒绝接单',
-        },
-    };
-    methods = {
-        bindLoadDown() {
-            this.$emit('bindLoadDown');
-        },
-    };
+  props = {
+      orderList: Object,
+      noMore: {
+          type: Boolean,
+          default: false,
+      },
+      noOrder: {
+          type: Boolean,
+          default: false,
+      },
+  };
+  data = {
+      statusSet: {
+          0: '已支付，待接单',
+          1: '已接单，待服务',
+          2: '已完成',
+          3: '已取消',
+          4: '已删除',
+          5: '已下单，待支付',
+          6: '退款成功',
+          7: '退款失败',
+          8: '已取消,系统自动取消',
+          9: '已评价',
+          10: '退款中',
+          11: '买单支付',
+          12: '退款中',
+          13: '配送中',
+          14: '已送达',
+          15: '商家拒绝接单',
+      },
+  };
+  methods = {
+      bindLoadDown() {
+          this.$emit('bindLoadDown');
+      },
+  };
 }
 </script>
 <style lang="scss">
 .orders-ul,
 .empty-wrap {
-    .order-ul-li {
-        margin-top: 20rpx;
-        background: #fff;
-        .order-ul-li-row {
-            padding: 0 30rpx;
-            font-size: 28rpx;
-            color: #333333;
-            &.header-row {
-                line-height: 88rpx;
-                display: flex;
-                justify-content: space-between;
-                box-sizing: border-box;
-                width: 100%;
-                border-bottom: 2rpx solid #f3f3f3;
-                .order-status {
-                    text-align: right;
-                    color: #ff552e;
-                    &.active {
-                        color: #ff552e;
-                    }
-                    &.cancel {
-                        color: #bdbdbd;
-                    }
-                    &.finish {
-                        color: #333;
-                    }
-                    &.complete {
-                        color: #999;
-                    }
-                }
-            }
-            &.logo-row {
-                padding: 0 30rpx;
-                position: relative;
-                display: flex;
-                .order-mplogo {
-                    width: 58rpx;
-                    height: 58rpx;
-                    margin-right: 20rpx;
-                    border-radius: 50%;
-                    background: #f3f3f3;
-                }
-                .order-mpname {
-                    flex: 1;
-                    align-self: center;
-                    font-family: PingFangSC-Medium;
-                    font-size: 32rpx;
-                    color: #333333;
-                    letter-spacing: 0.48rpx;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-            }
-            &.order-servicename {
-                font-size: 32rpx;
-                color: #333333;
-                margin-bottom: 10rpx;
-                .order-servicename-tit,
-                .order-servicename-txt {
-                    display: inline-block;
-                }
-                .order-servicename-tit {
-                    margin-right: 30rpx;
-                    color: #999;
-                }
-                .order-servicename-tit {
-                    margin-right: 30rpx;
-                    color: #999;
-                }
-            }
-            &.order-servicetime {
-                font-size: 32rpx;
-                color: #333333;
-                margin-bottom: 10rpx;
-                .order-servicetime-tit,
-                .order-servicetime-txt {
-                    display: inline-block;
-                }
-                .order-servicetime-tit {
-                    margin-right: 30rpx;
-                    color: #999;
-                }
-            }
-            &.order-createtime {
-                font-size: 32rpx;
-                color: #333333;
-                margin-bottom: 24rpx;
-                .order-createtime-tit,
-                .order-createtime-txt {
-                    display: inline-block;
-                }
-                .order-createtime-tit {
-                    margin-right: 30rpx;
-                    color: #999;
-                }
-            }
-            &.footer-row {
-                width: 100%;
-                display: table;
-                line-height: 100rpx;
-                box-sizing: border-box;
-                border-top: 2rpx solid #f3f3f3;
-                margin-top: 24rpx;
-                .order-total,
-                .order-fee {
-                    display: table-cell;
-                }
-                .order-fee {
-                    text-align: right;
-                    .order-fee-txt {
-                        display: inline-block;
-                        font-family: PingFangSC-Semibold;
-                        font-size: 34rpx;
-                    }
-                    &.finish {
-                        color: #333;
-                    }
-                    &.complete {
-                        color: #999;
-                    }
-                }
-            }
+  .order-ul-li {
+    margin-top: 20rpx;
+    background: #fff;
+    .order-ul-li-row {
+      padding: 0 30rpx;
+      font-size: 28rpx;
+      color: #333333;
+      &.header-row {
+        line-height: 88rpx;
+        display: flex;
+        justify-content: space-between;
+        box-sizing: border-box;
+        width: 100%;
+        border-bottom: 2rpx solid #f3f3f3;
+        .order-status {
+          text-align: right;
+          color: #ff552e;
+          &.active {
+            color: #ff552e;
+          }
+          &.cancel {
+            color: #bdbdbd;
+          }
+          &.finish {
+            color: #333;
+          }
+          &.complete {
+            color: #999;
+          }
         }
+      }
+      &.logo-row {
+        padding: 0 30rpx;
+        position: relative;
+        display: flex;
+        .order-mplogo {
+          width: 58rpx;
+          height: 58rpx;
+          margin-right: 20rpx;
+          border-radius: 50%;
+          background: #f3f3f3;
+        }
+        .order-mpname {
+          flex: 1;
+          align-self: center;
+          font-family: PingFangSC-Medium;
+          font-size: 32rpx;
+          color: #333333;
+          letter-spacing: 0.48rpx;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+      &.order-servicename {
+        font-size: 32rpx;
+        color: #333333;
+        margin-bottom: 10rpx;
+        .order-servicename-tit,
+        .order-servicename-txt {
+          display: inline-block;
+        }
+        .order-servicename-tit {
+          margin-right: 30rpx;
+          color: #999;
+        }
+        .order-servicename-tit {
+          margin-right: 30rpx;
+          color: #999;
+        }
+      }
+      &.order-servicetime {
+        font-size: 32rpx;
+        color: #333333;
+        margin-bottom: 10rpx;
+        .order-servicetime-tit,
+        .order-servicetime-txt {
+          display: inline-block;
+        }
+        .order-servicetime-tit {
+          margin-right: 30rpx;
+          color: #999;
+        }
+      }
+      &.order-createtime {
+        font-size: 32rpx;
+        color: #333333;
+        margin-bottom: 24rpx;
+        .order-createtime-tit,
+        .order-createtime-txt {
+          display: inline-block;
+        }
+        .order-createtime-tit {
+          margin-right: 30rpx;
+          color: #999;
+        }
+      }
+      &.footer-row {
+        width: 100%;
+        display: table;
+        line-height: 100rpx;
+        box-sizing: border-box;
+        border-top: 2rpx solid #f3f3f3;
+        margin-top: 24rpx;
+        .order-total,
+        .order-fee {
+          display: table-cell;
+        }
+        .order-fee {
+          text-align: right;
+          .order-fee-txt {
+            display: inline-block;
+            font-family: PingFangSC-Semibold;
+            font-size: 34rpx;
+          }
+          &.finish {
+            color: #333;
+          }
+          &.complete {
+            color: #999;
+          }
+        }
+      }
     }
+  }
 }
 
 .font-yellow {
-    color: #ff552e;
+  color: #ff552e;
 }
 .img-no-data {
-    display: block;
-    width: 180rpx;
-    height: 180rpx;
-    margin: 100rpx auto 20rpx;
+  display: block;
+  width: 180rpx;
+  height: 180rpx;
+  margin: 100rpx auto 20rpx;
 }
 .txt-no-data {
-    line-height: 88rpx;
-    text-align: center;
-    font-size: 30rpx;
-    color: #ccc;
+  line-height: 88rpx;
+  text-align: center;
+  font-size: 30rpx;
+  color: #ccc;
 }
 .logo-row.unread::after {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 15rpx;
-    left: 73rpx;
-    width: 20rpx;
-    height: 20rpx;
-    border-radius: 100%;
-    background: #f43530;
+  content: '';
+  display: block;
+  position: absolute;
+  top: 15rpx;
+  left: 73rpx;
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 100%;
+  background: #f43530;
 }
 //     /* 下拉刷新 */
 //     .img-no-data {
