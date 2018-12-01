@@ -34,6 +34,8 @@ export default class choseImageStyle extends wepy.page {
         cardPosImg: '', // 生成的名片反面图片
         cardOppStyle: {}, // 名片正面数据
         cardPosStyle: {}, // 名片反面数据
+        cardId: '',
+        isEmployee: false, // 判断是否是店长
     }
     methods = {
         // 下载名片
@@ -84,13 +86,25 @@ export default class choseImageStyle extends wepy.page {
         await that.drawimageStyle2();
     }
     async loadData() {
+        let sendData;
         const currentMpid = wepy.getStorageSync('current_mpid');
-        if (!currentMpid) {
+        this.isEmployee = wepy.getStorageSync('isEmployee');
+        if (wepy.getStorageSync('cardId')) {
+            this.cardId = wepy.getStorageSync('cardId');
+        }
+        if (!currentMpid && !this.cardId) {
             return;
         }
-        const { data } = await post(CARD_FIRST_EDIT, {
-            mpId: currentMpid,
-        });
+        if (!this.isEmployee) {
+            sendData = {
+                mpId: currentMpid,
+            }
+        } else {
+            sendData = {
+                cardId: this.cardId,
+            }
+        }
+        const { data } = await post(CARD_FIRST_EDIT, sendData);
         Object.assign(this, data);
         this.$apply();
     }

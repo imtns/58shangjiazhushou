@@ -34,6 +34,7 @@ export default class choseImageStyle extends wepy.page {
     data = {
         tmpLogo: '',
         tmpQrcode: '',
+        secondStyleBg: '', // 图片2背景
         headImg: '',
         mycardCode: '',
         showCanvas: false,
@@ -41,6 +42,8 @@ export default class choseImageStyle extends wepy.page {
         styleImage1: '',
         styleImage2: '',
         style: 1,
+        cardId: '',
+        isEmployee: false, // 判断是否是店长
         swiper: {
             indicatorDots: true,
             autoplay: false,
@@ -105,13 +108,25 @@ export default class choseImageStyle extends wepy.page {
         await that.drawimageStyle2();
     }
     async loadData() {
+        let sendData;
         const currentMpid = wepy.getStorageSync('current_mpid');
-        if (!currentMpid) {
+        this.isEmployee = wepy.getStorageSync('isEmployee');
+        if (wepy.getStorageSync('cardId')) {
+            this.cardId = wepy.getStorageSync('cardId');
+        }
+        if (!currentMpid && !this.cardId) {
             return;
         }
-        const { data } = await post(CARD_FIRST_EDIT, {
-            mpId: currentMpid,
-        });
+        if (!this.isEmployee) {
+            sendData = {
+                mpId: currentMpid,
+            }
+        } else {
+            sendData = {
+                cardId: this.cardId,
+            }
+        }
+        const { data } = await post(CARD_FIRST_EDIT, sendData);
         Object.assign(this, data);
         this.serviceTagArr = this.serviceTag.split(',');
         this.headImg = `https://pic1.58cdn.com.cn${this.picImg}`;
@@ -242,16 +257,23 @@ export default class choseImageStyle extends wepy.page {
     }
     async drawimageStyle2() {
         const that = this;
-        // 转成本地路径
         const { layers } = this.secondStyle;
+        // 转成本地路径
+        this.secondStyle.background = {
+            imageResource: that.secondStyleBg,
+            dx: 0,
+            dy: 0,
+            dWidth: 560,
+            dHeight: 740,
+        };
         this.secondStyle.layers = [
-            {
-                type: 'color', // 颜色
-                start: [0, 0, 561, 741], // Array [x0, y0, x1, y1]
-                end: [0, 0, 561, 741], // Array [x, y, width, height]
-                colorStop: [[1, 'white']], // Array [stop, color]
-                shape: 'Linear', // Linear || Circular
-            },
+            // {
+            //     type: 'color', // 颜色
+            //     start: [0, 0, 561, 741], // Array [x0, y0, x1, y1]
+            //     end: [0, 0, 561, 741], // Array [x, y, width, height]
+            //     colorStop: [[1, 'white']], // Array [stop, color]
+            //     shape: 'Linear', // Linear || Circular
+            // },
             {
                 type: 'image', // 头像图片
                 imageResource: that.headImg,
@@ -365,9 +387,11 @@ export default class choseImageStyle extends wepy.page {
     async touchImage() {
         const cardStyleBoxBg = 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/card_chosestyle_box_bg.png';
         const cardStyleBg = 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/card_style_bg.png';
+        const secondStyleBg = 'https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/white.png';
         // 转成本地路径
         this.tmpLogo = await getTmpFilePath(cardStyleBg);
         this.tmpQrcode = await getTmpFilePath(cardStyleBoxBg);
+        this.secondStyleBg = await getTmpFilePath(secondStyleBg);
         this.headImg = await getTmpFilePath(this.headImg);
         this.$apply();
     }
