@@ -227,9 +227,7 @@ page{
                 color: #999999;
                 text-align: right;
                 width:250rpx;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space:nowrap;
+                white-space:wrap;
                 margin-left: auto;
             }
             .visitor_count{

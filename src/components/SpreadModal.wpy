@@ -101,7 +101,7 @@
     .spread-float {
         position: fixed;
         right: 10rpx;
-        bottom: 100rpx;
+        bottom: 500rpx;
         padding: 0;
         width: 185rpx;
         height: 127rpx;
