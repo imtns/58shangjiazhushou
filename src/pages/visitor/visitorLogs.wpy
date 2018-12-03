@@ -89,10 +89,12 @@ export default class visitorLogs extends wepy.page {
     }
     onShow () {
         console.log('onshow');
+        this.loadData();
+    }
+    onHide() {
         this.visitorList = [];
         this.allowLoadMore = true;
         this.pageNum = 1;
-        this.loadData();
     }
     onReachBottom() {
         console.log('onReachBottom');
