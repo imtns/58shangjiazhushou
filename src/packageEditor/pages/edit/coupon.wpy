@@ -72,7 +72,7 @@
         <view class="select-scroll">
             <scroll-view class="coupons small" scroll-y>
                 <block wx:if="{{ coupons.length }}">
-                    <view class="coupon-list-item" :class="{ unable: !item.usable, editing: isEditing }"
+                    <view class="coupon-list-item" :class="{ unable: !item.usable, editing: isEditing }" 
                     @tap="choose({{ index }}, {{ '/pages/couponEdit?id=' + item.id }})"
                     wx:for="{{ coupons }}" wx:key="id">
                         <view class="coupon-list-left">

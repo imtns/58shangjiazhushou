@@ -86,10 +86,6 @@ export default class Card extends wepy.page {
       },
       save() {
           SendClickLog('sjzh_click_editEard_save_btn');
-          //   if (!this.pageData[0].props.cfg.title.trim()) {
-          //       toast('请输入标题');
-          //       return;
-          //   }
           this.pageModule.cfg = this.pageData[0].props.cfg;
           const selectedIds = [];
           const selectedItem = [];

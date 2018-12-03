@@ -182,7 +182,6 @@ const parseCfgAndData = ({
     if (name === 'card') {
         modData.data.forEach(item => {
             item.checked = params.indexOf(item.id) > -1;
-            return item;
         });
     }
     if (name === 'goods') {
@@ -222,7 +221,7 @@ module.exports = {
     async loadData(cb) {
         const page = getPage(this.route, this.options) || 'index';
         // const page = 'index';
-        /* global getCurrentPages:true */
+        /* global getCurrentPages:true */   
         const {
             route,
         } = getCurrentPages()[getCurrentPages().length - 1];
