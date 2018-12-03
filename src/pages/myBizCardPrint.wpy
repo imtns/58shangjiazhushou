@@ -42,14 +42,11 @@ export default class choseImageStyle extends wepy.page {
         async saveImgToPhotosAlbum(e) {
             console.log(e);
             let path = '';
-            if (e == 1) {
-                console.log('1121');
+            if (e === 1) {
                 path = this.cardOppImg;
-            } else if (e == 2) {
-                console.log('22222');
+            } else if (e === 2) {
                 path = this.cardPosImg;
             }
-            console.log(path);
             wx.saveImageToPhotosAlbum({
                 filePath: path,
                 success (res) {
@@ -152,7 +149,8 @@ export default class choseImageStyle extends wepy.page {
                     y: 303,
                     color: '#fff',
                     lineHeight: '',
-                    maxWidth: '460',
+                    maxWidth: '200',
+                    ellipsis: true,
                 }, {
                     type: 'image', // 二维码图片
                     imageResource: that.cardCodeImg,
@@ -195,7 +193,7 @@ export default class choseImageStyle extends wepy.page {
                     textBaseline: 'top',
                     textAlign: 'left',
                     fontSize: 14,
-                    text: `Wechat : ${that.wxCode}`,
+                    text: that.wxCode ? `Wechat : ${that.wxCode}` : '右上角扫码沟通',
                     x: 358,
                     y: 283,
                     color: '#F1B620',
