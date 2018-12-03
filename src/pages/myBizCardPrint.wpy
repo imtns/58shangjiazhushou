@@ -98,11 +98,11 @@ export default class choseImageStyle extends wepy.page {
         if (!this.isEmployee) {
             sendData = {
                 mpId: currentMpid,
-            }
+            };
         } else {
             sendData = {
                 cardId: this.cardId,
-            }
+            };
         }
         const { data } = await post(CARD_FIRST_EDIT, sendData);
         Object.assign(this, data);

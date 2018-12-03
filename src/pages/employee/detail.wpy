@@ -107,7 +107,7 @@ export default class Detail extends wepy.page {
           if (type === 'make') {
               SendClickLog('sjzh_click_employeeDetail_shareto_moments');
               wepy.navigateTo({
-                  url: `/pages/employee/cardImage?cardId=${id}`,
+                  url: `/pages/choseImageStyle?cardId=${id}`,
               });
           }
       },
