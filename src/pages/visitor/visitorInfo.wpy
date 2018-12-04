@@ -18,7 +18,7 @@
                 >
                     <image src="{{visitInfo.portrait}}?w=120&h=120&ss=1" />
                 </view>
-                <view class="fromWho">{{visitInfo.fromWho || ''}}</view>
+                <!-- <view class="fromWho">{{visitInfo.fromWho || ''}}</view> -->
                 <view class="detail">
                     <view class="name">
                         {{visitInfo.nickName}}
@@ -35,9 +35,9 @@
                 </view>
                 <view
                     class="from"
-                    wx:if="{{visitInfo.formWho}}"
+                    wx:if="{{visitInfo.fromWho}}"
                 >
-                    <view class="from-text">来自{{visitInfo.formWho}}的分享</view>
+                    <view class="from-text">来自{{visitInfo.fromWho}}的分享</view>
                 </view>
             </view>
             <view class="actions">
@@ -152,6 +152,7 @@ export default class visitorInfo extends wepy.page {
           mobile: '',
           nickName: '',
           otherInfo: '',
+          fromWho: '',
           portrait: '',
           share: 0,
           visit: 0,
@@ -218,6 +219,7 @@ export default class visitorInfo extends wepy.page {
           mobile: '',
           nickName: '',
           otherInfo: '',
+          fromWho: '',
           portrait: '',
           share: 0,
           visit: 0,
@@ -258,6 +260,7 @@ export default class visitorInfo extends wepy.page {
               otherInfo,
               portrait,
               share,
+              fromWho,
               visit,
               vote,
               remark,
@@ -266,6 +269,7 @@ export default class visitorInfo extends wepy.page {
           this.visitInfo.mobile = mobile;
           this.visitInfo.nickName = nickName;
           this.visitInfo.otherInfo = otherInfo;
+          this.visitInfo.fromWho = fromWho;
           this.visitInfo.portrait = portrait;
           this.visitInfo.share = share;
           this.visitInfo.visit = visit;
