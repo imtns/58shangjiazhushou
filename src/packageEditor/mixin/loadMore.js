@@ -41,7 +41,7 @@ module.exports = {
         }
 
 
-        get(modDataByPageUrl, postData, (res) => {
+        get(modDataByPageUrl, postData, (err, res) => {
             const data = res[dataset.type];
             data.data && data.data.forEach(d => {
                 d[PIC_FIELD[name]] = picSrcDomain() + d[PIC_FIELD[name]];
