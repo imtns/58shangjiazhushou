@@ -1,124 +1,124 @@
 <template>
-    <scroll-view
-        class="visitor-container"
-        scroll-y
-        bindscrolltolower="loadMore"
-        style="height:100vh"
+  <scroll-view
+    class="visitor-container"
+    scroll-y
+    bindscrolltolower="loadMore"
+    style="height:100vh"
+  >
+    <image
+      class="visitor-bg"
+      src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor-bg.png"
+      mode="aspectFit"
+    />
+    <view class="visitor-card">
+      <view class="visitor-info">
+        <view
+          class="avator"
+          wx:if="{{visitInfo.portrait}}"
+        >
+          <image src="{{visitInfo.portrait}}?w=120&h=120&ss=1" />
+        </view>
+        <!-- <view class="fromWho">{{visitInfo.fromWho || ''}}</view> -->
+        <view class="detail">
+          <view class="name">
+            {{visitInfo.nickName}}
+          </view>
+          <view
+            wx:if="{{visitInfo.otherInfo.gender}}"
+            class="{{visitInfo.otherInfo.gender === 1 ? 'male' : 'female'}}"
+          ></view>
+          <view class="address">{{visitInfo.otherInfo.city}}</view>
+          <view
+            class="note"
+            @tap="showDialog"
+          >{{visitInfo.remark || '添加备注'}}</view>
+        </view>
+        <view
+          class="from"
+          wx:if="{{visitInfo.fromWho}}"
+        >
+          <view class="from-text">来自{{visitInfo.fromWho}}的分享</view>
+        </view>
+      </view>
+      <view class="actions">
+        <view class="action">
+          <view class="num">{{visitInfo.visit > 9999 ? '9999+' : visitInfo.visit}}</view>
+          <view class="title">访问次数</view>
+        </view>
+        <view class="action">
+          <view class="num">{{visitInfo.share > 9999 ? '9999+' : visitInfo.share }}</view>
+          <view class="title">转发次数</view>
+        </view>
+        <view class="action">
+          <view class="num">{{visitInfo.vote === '0' ? visitInfo.vote : '+' + visitInfo.vote }}</view>
+          <view class="title">点赞</view>
+        </view>
+      </view>
+    </view>
+    <view class="visitor-action">
+      <view
+        class="has-mobile"
+        wx:if="{{visitInfo.mobile}}"
+        @tap="bindPhoneCall"
+        data-mobile="{{visitInfo.mobile}}"
+      >拨打电话</view>
+      <view
+        class="call"
+        wx:else
+      >拨打电话</view>
+      <navigator
+        url="../../packageChat/wechat/chat?contact={{visitInfo.chatToken}}&nickName={{visitInfo.nickName}}&remark={{visitInfo.remark}}"
+        class="send-msg"
+        open-type="navigate"
+        hover-class="none"
+        @tap="sendMsg"
+      >发送信息</navigator>
+    </view>
+    <view
+      class="visitor-log"
+      wx:if="{{visitInfo.actions.length > 0}}"
+    >当前访客的行为记录</view>
+    <view
+      class="visitor-list"
+      wx:if="{{visitInfo.actions.length > 0}}"
     >
-        <image
-            class="visitor-bg"
-            src="https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor-bg.png"
-            mode="aspectFit"
-        />
-        <view class="visitor-card">
-            <view class="visitor-info">
-                <view
-                    class="avator"
-                    wx:if="{{visitInfo.portrait}}"
-                >
-                    <image src="{{visitInfo.portrait}}?w=120&h=120&ss=1" />
-                </view>
-                <!-- <view class="fromWho">{{visitInfo.fromWho || ''}}</view> -->
-                <view class="detail">
-                    <view class="name">
-                        {{visitInfo.nickName}}
-                        <view
-                            wx:if="{{visitInfo.otherInfo.gender}}"
-                            class="{{visitInfo.otherInfo.gender === 1 ? 'male' : 'female'}}"
-                        ></view>
-                    </view>
-                    <view class="address">{{visitInfo.otherInfo.city}}</view>
-                    <view
-                        class="note"
-                        @tap="showDialog"
-                    >{{visitInfo.remark || '添加备注'}}</view>
-                </view>
-                <view
-                    class="from"
-                    wx:if="{{visitInfo.fromWho}}"
-                >
-                    <view class="from-text">来自{{visitInfo.fromWho}}的分享</view>
-                </view>
-            </view>
-            <view class="actions">
-                <view class="action">
-                    <view class="num">{{visitInfo.visit > 9999 ? '9999+' : visitInfo.visit}}</view>
-                    <view class="title">访问次数</view>
-                </view>
-                <view class="action">
-                    <view class="num">{{visitInfo.share > 9999 ? '9999+' : visitInfo.share }}</view>
-                    <view class="title">转发次数</view>
-                </view>
-                <view class="action">
-                    <view class="num">{{visitInfo.vote === '0' ? visitInfo.vote : '+' + visitInfo.vote }}</view>
-                    <view class="title">点赞</view>
-                </view>
-            </view>
+      <view
+        class="item"
+        wx:for="{{visitInfo.actions}}"
+        wx:key="index"
+      >
+        <text class="time">{{item.createTime}}</text>
+        <text class="action">{{item.action}}</text>
+      </view>
+    </view>
+    <view
+      class="mask"
+      wx:if="{{showPop}}"
+    >
+      <view class="pop">
+        <view class="pop-title">编辑备注</view>
+        <view class="pop-body">
+          <input
+            placeholder="请输入备注信息"
+            maxlength="11"
+            cursor-spacing="80"
+            @input="input"
+            value="{{visitInfo.remark}}"
+          ></input>
         </view>
-        <view class="visitor-action">
-            <view
-                class="has-mobile"
-                wx:if="{{visitInfo.mobile}}"
-                @tap="bindPhoneCall"
-                data-mobile="{{visitInfo.mobile}}"
-            >拨打电话</view>
-            <view
-                class="call"
-                wx:else
-            >拨打电话</view>
-            <navigator
-                url="../../packageChat/wechat/chat?contact={{visitInfo.chatToken}}&nickName={{visitInfo.nickName}}&remark={{visitInfo.remark}}"
-                class="send-msg"
-                open-type="navigate"
-                hover-class="none"
-                @tap="sendMsg"
-            >发送信息</navigator>
+        <view class="pop-options">
+          <view
+            class="pop-btn"
+            @tap="close"
+          >取消</view>
+          <view
+            class="pop-btn enter"
+            @tap="add"
+          >确定</view>
         </view>
-        <view
-            class="visitor-log"
-            wx:if="{{visitInfo.actions.length > 0}}"
-        >当前访客的行为记录</view>
-        <view
-            class="visitor-list"
-            wx:if="{{visitInfo.actions.length > 0}}"
-        >
-            <view
-                class="item"
-                wx:for="{{visitInfo.actions}}"
-                wx:key="index"
-            >
-                <text class="time">{{item.createTime}}</text>
-                <text class="action">{{item.action}}</text>
-            </view>
-        </view>
-        <view
-            class="mask"
-            wx:if="{{showPop}}"
-        >
-            <view class="pop">
-                <view class="pop-title">编辑备注</view>
-                <view class="pop-body">
-                    <input
-                        placeholder="请输入备注信息"
-                        maxlength="11"
-                        cursor-spacing="80"
-                        @input="input"
-                        value="{{visitInfo.remark}}"
-                    ></input>
-                </view>
-                <view class="pop-options">
-                    <view
-                        class="pop-btn"
-                        @tap="close"
-                    >取消</view>
-                    <view
-                        class="pop-btn enter"
-                        @tap="add"
-                    >确定</view>
-                </view>
-            </view>
-        </view>
-    </scroll-view>
+      </view>
+    </view>
+  </scroll-view>
 </template>
 
 <script>
@@ -269,7 +269,7 @@ export default class visitorInfo extends wepy.page {
           this.visitInfo.mobile = mobile;
           this.visitInfo.nickName = nickName;
           this.visitInfo.otherInfo = otherInfo;
-          this.visitInfo.fromWho = fromWho;
+          this.visitInfo.fromWho = fromWho ? `${fromWho.substr(0, 3)}...` : '';
           this.visitInfo.portrait = portrait;
           this.visitInfo.share = share;
           this.visitInfo.visit = visit;
@@ -310,14 +310,14 @@ scroll-view {
 }
 .fromWho {
   position: absolute;
-  max-width:260rpx;
+  max-width: 260rpx;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   right: 60rpx;
   top: 78rpx;
-  padding:0 10rpx;
-  background: rgba(#93B0D1,.2);
+  padding: 0 10rpx;
+  background: rgba(#93b0d1, 0.2);
   font-size: 22rpx;
   color: #93b0d1;
 }
@@ -342,7 +342,7 @@ scroll-view {
   padding: 0 40rpx;
   display: flex;
   .detail {
-    flex: 1;
+    flex: 0.9;
   }
   .avator {
     margin-right: 30rpx;
@@ -353,52 +353,58 @@ scroll-view {
     }
   }
   .name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 190rpx;
+    display: inline-block;
     font-size: 30rpx;
     color: #333;
+    vertical-align: bottom;
     line-height: 42rpx;
-    margin-bottom: 5rpx;
-  }
-  .address {
-    line-height: 40rpx;
-    font-size: 24rpx;
-    color: #999;
-  }
-  .from {
-    flex: 1;
-    text-align: right;
-    position: relative;
-    .from-text {
-      font-size: 24rpx;
-      color: #93b0d1;
-      background: #edf3ff;
-      height: 33rpx;
-      line-height: 33rpx;
-      position: absolute;
-      right: 0;
-    }
   }
   .male {
     display: inline-block;
-    margin: 2rpx 0 0 10rpx;
+    margin: 2rpx 0 0 6rpx;
     width: 24rpx;
     height: 24rpx;
     background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_male.png)
       no-repeat center;
     background-size: contain;
   }
+
   .female {
     display: inline-block;
-    margin: 8rpx 0 0 10rpx;
+    margin: 8rpx 0 0 6rpx;
     width: 24rpx;
     height: 24rpx;
     background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_female.png)
       no-repeat left center;
     background-size: contain;
   }
+  .address {
+    margin: 4rpx 0 8rpx;
+    font-size: 24rpx;
+    color: #999;
+  }
+  .from {
+    flex: 1.3;
+    text-align: right;
+    position: relative;
+    .from-text {
+      font-size: 24rpx;
+      color: #93b0d1;
+      background: #edf3ff;
+      padding: 5rpx 6rpx;
+      text-align: center;
+      margin-top:8rpx;
+    }
+  }
+
   .note {
     font-size: 24rpx;
     color: #93b0d1;
-    max-width: 300rpx;
+    max-width: 230rpx;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
