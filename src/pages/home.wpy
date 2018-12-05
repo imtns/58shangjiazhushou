@@ -256,6 +256,9 @@ import SpreadModal from '../components/SpreadModal';
 export default class Home extends wepy.page {
   mixins = [Mixin, RegistMixin];
   config = {
+      backgroundColor: '#4E88FF',
+      navigationBarBackgroundColor: '#4E88FF',
+      navigationBarTextStyle: 'white',
       navigationBarTitleText: '首页',
       usingComponents: {
           drawimage: 'miniprogram-drawimage',
@@ -947,7 +950,6 @@ export default class Home extends wepy.page {
   setGlobalMpId(id) {
       if (id) {
           wepy.setStorageSync('current_mpid', id);
-          console.log('----------set success-----------');
       }
   }
   checkBeforeJump(text) {
@@ -1229,33 +1231,35 @@ export default class Home extends wepy.page {
    * 红包推广
    */
   async initSpreadRedpacket() {
-      console.log('-----business----------');
       const mpId = wepy.getStorageSync('current_mpid');
       const { data } = await get(CHECK_CANSPREAD, { mpId });
       // 判断是否有推广功能
       this.activeShow = data.activity;
-      if (this.isEmployee == false) {
-        // 登录员工首页成功，不展示推广icon
-        this.spreadRPShow = this.activeShow && !this.isEmployee;
+      if (this.isEmployee === false) {
+          // 登录员工首页成功，不展示推广icon
+          this.spreadRPShow = this.activeShow && !this.isEmployee;
       } else {
-        // 首页初始化进入店长首页，但是此时isEmployee并没有存到缓存里
-        this.spreadRPShow = this.activeShow;
+          // 首页初始化进入店长首页，但是此时isEmployee并没有存到缓存里
+          this.spreadRPShow = this.activeShow;
       }
-      console.log(this.isEmployee);
-      console.log('==========');
-      this.spreadRPShow = this.activeShow && !this.isEmployee;
       // 当天第一次进入首页或者从推送进来则自动显示推广弹窗
       // 如果当天第一次进入但是从每日一言进入的，则不自动弹窗
       this.spreadRPFirst =
       this.fromQuery === 'redpacket' ||
       (this.fromQuery !== 'daypic' && data.first);
       this.spreadUserID = this.business.userId;
-      this.spreadRPFirst &&
-      SendEventLog({
+      // 每天第一次显示时打日志
+      this.spreadRPFirst && SendEventLog({
           page: 'home',
           button: '',
           window: 'redpacketWindow',
           action: 'show',
+      });
+      // 是活动商家进入首页时打日志
+      this.spreadRPShow && SendEventLog({
+          page: 'home',
+          action: 'show',
+          extend: this.fromQuery ? JSON.stringify({ from: this.fromQuery }) : '',
       });
       this.$apply();
   }
@@ -1408,7 +1412,7 @@ scroll-view {
     .welcome-block {
       width: 100%;
       height: 306rpx;
-      background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/welcome-block.png)
+      background: url(https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/welcome-block.png)
         no-repeat;
       background-size: 100% auto;
       padding: 40rpx 40rpx 0 40rpx;
@@ -2046,19 +2050,19 @@ scroll-view {
 }
 .to-everyday {
   position: fixed;
-  bottom: 25rpx;
-  left: 30rpx;
-  width: 120rpx;
-  height: 120rpx;
-  background: url('https://img.58cdn.com.cn/lbg/jianzhan/images/youxiang/everyday-word-suspend.png')
+  bottom: 408rpx;
+  right: 30rpx;
+  width: 134rpx;
+  height: 134rpx;
+  background: url('https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/everyday-word-suspend.png')
     center no-repeat;
   background-size: 100% 100%;
   z-index: 59;
 
   .unread {
     position: absolute;
-    top: 5rpx;
-    right: 10rpx;
+    top: 0;
+    right: 5rpx;
     width: 20rpx;
     height: 20rpx;
     border-radius: 100%;

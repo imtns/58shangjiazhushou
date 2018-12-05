@@ -195,7 +195,8 @@ export default class OrderDetail extends wepy.page {
             ret.endTime = data.endTime.replace(reg, '$2.$3 $4:$5');
             ret.consumerName = adressJson.name;
             ret.consumerMobile = adressJson.telephone;
-            ret.consumerAddress = `${serviceAddress.provinceStr || ''} ${serviceAddress.cityStr || ''} ${serviceAddress.areaStr || ''} ${adressJson.address || ''}`;
+            const oldAddress = `${serviceAddress.provinceStr || ''} ${serviceAddress.cityStr || ''} ${serviceAddress.areaStr || ''} ${adressJson.address || ''}`;
+            ret.consumerAddress = adressJson.fullAddress || oldAddress;
         } catch (e) {
             toast(e);
         }

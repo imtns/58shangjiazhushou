@@ -1,5 +1,5 @@
 // import { previewImage } from '../utils/index.js';
-import { getRoute, navigateTo } from '../../utils/getRoute';
+import { getRoute, navigateTo } from '../utils/getRoute';
 
 // 跳转页面
 module.exports = {

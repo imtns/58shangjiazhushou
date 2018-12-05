@@ -1,98 +1,97 @@
 {
-  "description": "项目配置文件。",
-  "packOptions": {
-    "ignore": []
-  },
-  "setting": {
-    "urlCheck": false,
-    "es6": false,
-    "postcss": false,
-    "minified": false,
-    "newFeature": true,
-    "nodeModules": true
-  },
-  "compileType": "miniprogram",
-  "libVersion": "1.9.98",
-  "appid": "wxf03e52adc4b13448",
-  "projectname": "mingpian1.1.1",
-  "svr": "/",
-  "client": "/",
-  "qcloudRoot": "/",
-  "miniprogramRoot": "./",
-  "pluginRoot": "/",
-  "scripts": {},
-  "condition": {
-    "search": {
-      "current": -1,
-      "list": []
-    },
-    "conversation": {
-      "current": -1,
-      "list": []
-    },
-    "plugin": {
-      "current": -1,
-      "list": []
-    },
-    "game": {
-      "list": []
-    },
-    "miniprogram": {
-      "current": -1,
-      "list": [
-        {
-          "id": -1,
-          "name": "消息通知",
-          "pathName": "pages/noticeList",
-          "query": ""
-        },
-        {
-          "id": -1,
-          "name": "入账提醒",
-          "pathName": "pages/accountNoticeList",
-          "query": ""
-        },
-        {
-          "id": -1,
-          "name": "订单提醒",
-          "pathName": "pages/orderNoticeList",
-          "query": ""
-        },
-        {
-          "id": 3,
-          "name": "开通支付",
-          "pathName": "pages/OpenPay",
-          "query": ""
-        },
-        {
-          "id": 4,
-          "name": "跳转进首页",
-          "pathName": "pages/home",
-          "query": "",
-          "scene": "1038",
-          "referrerInfo": {
-            "appId": "wxf03e52adc4b13448",
-            "extraData": "{\"ppu\":\"UID=48917864286479&UN=zf3e85&TT=d81202a65af05aa8cb1ea5f6d92254d1&PBODY=JhH_NY6a8n2PvW6ZgBv_B1CwuIJH84mNnuJt4PxcpEQDl5QPvba4IdoMpCpk_GxpEfRtc9RPAvrK6G4o9J3zhKHmVv33iBDKO8EVnmRq6yp2ETgstCBISr9016TKao2yDyUeZG32vv_2yuyG01uAnqTlUL1vaRpLJ3fRd9NqySA&VER=1\"}"
-          }
-        },
-        {
-          "id": -1,
-          "name": "我的小程序",
-          "pathName": "pages/myMp",
-          "query": "",
-          "scene": "1038",
-          "referrerInfo": {
-            "appId": "wxf03e52adc4b13448",
-            "extraData": "{\"ppu\":\"UID=48917864286479&UN=zf3e85&TT=d81202a65af05aa8cb1ea5f6d92254d1&PBODY=JhH_NY6a8n2PvW6ZgBv_B1CwuIJH84mNnuJt4PxcpEQDl5QPvba4IdoMpCpk_GxpEfRtc9RPAvrK6G4o9J3zhKHmVv33iBDKO8EVnmRq6yp2ETgstCBISr9016TKao2yDyUeZG32vv_2yuyG01uAnqTlUL1vaRpLJ3fRd9NqySA&VER=1\"}"
-          }
-        },
-        {
-          "id": -1,
-          "name": "类目选择",
-          "pathName": "pages/CateSelector",
-          "query": ""
-        }
-      ]
-    }
-  }
+	"description": "项目配置文件。",
+	"packOptions": {
+		"ignore": []
+	},
+	"setting": {
+		"urlCheck": false,
+		"es6": false,
+		"postcss": false,
+		"minified": false,
+		"newFeature": true
+	},
+	"compileType": "miniprogram",
+	"libVersion": "1.9.98",
+	"appid": "wxf03e52adc4b13448",
+	"projectname": "%E5%95%86%E5%AE%B6%E5%8A%A9%E6%89%8B",
+	"svr": "/",
+	"client": "/",
+	"qcloudRoot": "/",
+	"miniprogramRoot": "/",
+	"pluginRoot": "/",
+	"scripts": {},
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"plugin": {
+			"current": -1,
+			"list": []
+		},
+		"game": {
+			"list": []
+		},
+		"miniprogram": {
+			"current": -1,
+			"list": [
+				{
+					"id": -1,
+					"name": "消息通知",
+					"pathName": "pages/noticeList",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "入账提醒",
+					"pathName": "pages/accountNoticeList",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "订单提醒",
+					"pathName": "pages/orderNoticeList",
+					"query": ""
+				},
+				{
+					"id": 3,
+					"name": "开通支付",
+					"pathName": "pages/OpenPay",
+					"query": ""
+				},
+				{
+					"id": 4,
+					"name": "跳转进首页",
+					"pathName": "pages/home",
+					"query": "",
+					"scene": "1038",
+					"referrerInfo": {
+						"appId": "wxf03e52adc4b13448",
+						"extraData": "{\"ppu\":\"UID=48917864286479&UN=zf3e85&TT=d81202a65af05aa8cb1ea5f6d92254d1&PBODY=JhH_NY6a8n2PvW6ZgBv_B1CwuIJH84mNnuJt4PxcpEQDl5QPvba4IdoMpCpk_GxpEfRtc9RPAvrK6G4o9J3zhKHmVv33iBDKO8EVnmRq6yp2ETgstCBISr9016TKao2yDyUeZG32vv_2yuyG01uAnqTlUL1vaRpLJ3fRd9NqySA&VER=1\"}"
+					}
+				},
+				{
+					"id": -1,
+					"name": "我的小程序",
+					"pathName": "pages/myMp",
+					"query": "",
+					"scene": "1038",
+					"referrerInfo": {
+						"appId": "wxf03e52adc4b13448",
+						"extraData": "{\"ppu\":\"UID=48917864286479&UN=zf3e85&TT=d81202a65af05aa8cb1ea5f6d92254d1&PBODY=JhH_NY6a8n2PvW6ZgBv_B1CwuIJH84mNnuJt4PxcpEQDl5QPvba4IdoMpCpk_GxpEfRtc9RPAvrK6G4o9J3zhKHmVv33iBDKO8EVnmRq6yp2ETgstCBISr9016TKao2yDyUeZG32vv_2yuyG01uAnqTlUL1vaRpLJ3fRd9NqySA&VER=1\"}"
+					}
+				},
+				{
+					"id": -1,
+					"name": "类目选择",
+					"pathName": "pages/CateSelector",
+					"query": ""
+				}
+			]
+		}
+	}
 }

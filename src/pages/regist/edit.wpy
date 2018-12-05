@@ -13,10 +13,12 @@
                 <view class="form-item logo" @tap="handleUploadLogo">
                     <text class="label">上传小程序标志</text>
                     <image class="logo" mode="aspectFill"
-                        src="{{ logo ? logo + '?w=72&h=72&ss=1' : '' }}"></image>
+                        src="{{ form.avatarUrl ? form.avatarUrl + '?w=72&h=72&ss=1' : '' }}"></image>
                     <text class="arrow"></text>
                 </view>
-                <navigator class="form-item" url="/pages/multiSelector?type=registCate">
+                <view
+                    class="form-item"
+                    @tap="handleSelectCate">
                     <view class="label">所属行业</view>
                     <view class="selector">
                         <block wx:if="{{ form.wubaSecondName }}">
@@ -27,20 +29,27 @@
                         </block>
                     </view>
                     <text class="arrow"></text>
-                </navigator>
+                </view>
                 <view class="form-item">
                     <view class="label">小程序名称</view>
-                    <input class="input" name="nickName" type="text" maxlength="20" placeholder-class="placeholder" placeholder="请输入"/>
+                    <input
+                        @input="handleInput('nickName')"
+                        class="input" type="text"
+                        maxlength="20" placeholder-class="placeholder"
+                        placeholder="请输入" value="{{ form.nickName }}"
+                        disabled="{{ block.nickName }}"/>
                 </view>
                 <view class="form-text-item">小程序名称提交后不可修改，请谨慎写</view>
                 <view class="form-item column">
                     <view class="label">小程序功能介绍</view>
-                    <textarea name="signature"
+                    <textarea
                         class="textarea"
                         maxlength="100"
-                        @input="handleInput"
+                        @input="handleInput('signature')"
                         placeholder="请输入"
-                        placeholder-class="placeholder">
+                        placeholder-class="placeholder"
+                        value="{{ form.signature }}"
+                        disabled="{{ block.signature }}">
                         <view class="textarea-num">{{signatureNum}}/100</view>
                     </textarea>
                 </view>
@@ -86,6 +95,7 @@ import { post } from '../../utils/ajax';
 import globalService from '../../utils/globalService';
 import RegistMixin from './mixin';
 import MessageBox from '../../components/MessageBox';
+import { getRegistPreCheck } from '../../utils/service';
 
 export default class Index extends wepy.page {
     mixins = [RegistMixin]
@@ -94,7 +104,6 @@ export default class Index extends wepy.page {
     }
     data = {
         helpModalShow: false,
-        logo: '',
 
         form: {
             nickName: '', // 小程序名称
@@ -103,8 +112,18 @@ export default class Index extends wepy.page {
             wubaSecondId: null,
             wechatFirstId: null,
             wechatSecondId: null,
+            wubaFirstName: '',
+            wubaSecondName: '',
             avatarUrl: '', // 头像地址
             signature: '', // 简介
+        },
+
+        // 控制字段是否可以更改
+        block: {
+            avatarUrl: false,
+            wubaSecondName: false, // 用第二分类名标识
+            nickName: false,
+            signature: false,
         },
 
         signatureNum: 0,
@@ -116,6 +135,38 @@ export default class Index extends wepy.page {
     components = {
         messageBox: MessageBox,
         helpModal: HelpModal,
+    }
+    async onLoad() {
+        const { data: preCheckData } = await getRegistPreCheck();
+        const {
+            headImg,
+            cate1Name,
+            cate2Name,
+            nickName,
+            signature,
+        } = preCheckData;
+
+        const fields = [
+            headImg,
+            cate2Name,
+            nickName,
+            signature,
+        ];
+
+        const lines = fields.filter(v => v !== '').length + 1;
+
+        if (lines === 1) {
+            return;
+        }
+
+        this.resolvePartError(lines);
+        this.form = Object.assign({}, this.form, {
+            avatarUrl: headImg,
+            wubaFirstName: cate1Name,
+            wubaSecondName: cate2Name,
+            nickName,
+            signature,
+        });
     }
     onShow() {
         const cate = globalService.get('multiSelector');
@@ -176,23 +227,99 @@ export default class Index extends wepy.page {
         return { msg: '' };
     }
 
+    /**
+     * 处理小程序信息部分填写错误
+     *
+     * @line {number} 从第几行开始要重新填写
+     */
+    resolvePartError(line) {
+        const lines = [
+            'avatarUrl',
+            'wubaFirstName',
+            'wubaSecondName',
+            'nickName',
+            'signature',
+        ];
+
+        if (line > lines.length + 1) {
+            return;
+        }
+
+        // 若大于3行，多加1，跳过所属行业的两个字段
+        const fillLine = line >= 3 ? line + 1 : line; // 需要填充的行数
+
+        // 清空需要充填的值
+        for (let i = fillLine - 1; i < fillLine.length; i += 1) {
+            const k = fillLine[i];
+            this.form[k] = '';
+        }
+
+        // 锁定不能填写的值
+        const blocks = [
+            'avatarUrl',
+            'wubaSecondName', // 用第二分类名标识
+            'nickName',
+            'signature',
+        ];
+        blocks.forEach((k, i) => {
+            if (i < line - 1) {
+                this.block[k] = true;
+            }
+        });
+
+        this.$apply();
+    }
+
     methods = {
-        handleInput(e) {
-            this.signatureNum = e.detail.value.length;
+        handleSelectCate() {
+            if (this.block.wubaSecondName) {
+                return;
+            }
+
+            wepy.navigateTo({
+                url: '/pages/multiSelector?type=registCate',
+            });
+        },
+        handleInput(prop, e) {
+            const { value } = e.detail;
+
+            // 简介计算长度用于显示
+            if (prop === 'signature') {
+                this.signatureNum = value.length;
+            }
+
+            this.form[prop] = value;
         },
         async handleSubmit(e) {
             try {
-                const { value: data, formId } = e.detail;
-                const { nickName, signature } = data;
-                const avatarUrl = this.logo;
-                const { form } = this;
-
-                const postData = Object.assign({}, form, {
+                const { formId } = e.detail;
+                const {
                     nickName,
                     avatarUrl,
-                    formId,
                     signature,
-                });
+
+                    wubaFirstId,
+                    wubaSecondId,
+                    wechatFirstId,
+                    wechatSecondId,
+                    wubaFirstName,
+                    wubaSecondName,
+                } = this.form;
+
+                const postData = {
+                    nickName,
+                    avatarUrl,
+                    signature,
+
+                    wubaFirstId,
+                    wubaSecondId,
+                    wechatFirstId,
+                    wechatSecondId,
+                    wubaFirstName,
+                    wubaSecondName,
+
+                    formId,
+                };
 
                 const { msg } = this.validator(postData);
 
@@ -201,7 +328,15 @@ export default class Index extends wepy.page {
                     return;
                 }
 
-                await post(SAVE_MPINFO, postData);
+                const { state, data: resData, msg: resMsg } = await post(SAVE_MPINFO, postData);
+
+                if (state === 99999) {
+                    // 修改小程序信息部分失败，需要重新填写
+                    // data 返回一个数字，代表从第几个开始以下都需要重新填写
+                    this.resolvePartError(resData);
+                    this.showModal(resMsg);
+                    return;
+                }
 
                 await toast('创建成功！');
                 wepy.switchTab({ url: '/pages/home' });
@@ -215,6 +350,10 @@ export default class Index extends wepy.page {
         },
         async handleUploadLogo() {
             try {
+                if (this.block.avatarUrl) {
+                    return;
+                }
+
                 const netStatus = await getNetStatus();
 
                 if (netStatus === 0) {
@@ -232,7 +371,7 @@ export default class Index extends wepy.page {
                     console.log(msg);
                     return;
                 }
-                this.logo = picSrcDomain() + result[0];
+                this.form.avatarUrl = picSrcDomain() + result[0];
                 this.$apply();
             } catch (e) {
                 console.log(e);
