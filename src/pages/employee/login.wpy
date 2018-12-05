@@ -4,6 +4,7 @@
             <image class="logo" src="/pages/assets/logo.png" mode="aspectFit"></image>
             <view class="input"> <input placeholder-class="phcolor" value="{{mobile}}" style="height:2rem;" @input="inputTap" type="number" maxlength="13" placeholder="请输入手机号" auto-focus/></view>
             <button class="login-button" @tap="login" disabled="{{disabled}}">登录</button>
+            <button class="login-button home" @tap="gohome">返回首页</button>
         </view>
     </view>
     <messageBox :show.sync="modalShow" :content.sync="modalContent" :title.sync="modalTitle" :confirmText.sync="modalConfirmText"></messageBox>
@@ -62,6 +63,10 @@ export default class Login extends wepy.page {
               this.$apply();
           }
       },
+      gohome() {
+          wepy.setStorageSync('isEmployee', false);
+          wepy.switchTab({ url: '/pages/home' });
+      },
   };
   onLoad() {
       if (wepy.getStorageSync('isEmployee') && wepy.getStorageSync('cardId')) {
@@ -115,6 +120,9 @@ page {
     font-size: 32rpx;
     margin-top: 60rpx;
     border-radius: 4px;
+    &.home{
+        margin-top:30rpx;
+    }
   }
   button[disabled] {
     background: #dbdbdb;
