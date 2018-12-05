@@ -323,6 +323,8 @@ export default class Home extends wepy.page {
       cardId: '',
       // 红包推广 是否显示红包推广
       spreadRPShow: false,
+      // 红包推广，新增这个属性是因为员工不展示红包推广的icon
+      activeShow: false,
       // 红包推广 是否今天第一次进入首页
       spreadRPFirst: false,
       spreadUserID: '',
@@ -358,6 +360,8 @@ export default class Home extends wepy.page {
           } else {
               await this.loadData();
           }
+          // 重新判断是否推广
+          this.spreadRPShow = this.activeShow && !this.isEmployee;
           this.$apply();
       },
       handleLogin() {
@@ -1229,7 +1233,17 @@ export default class Home extends wepy.page {
       const mpId = wepy.getStorageSync('current_mpid');
       const { data } = await get(CHECK_CANSPREAD, { mpId });
       // 判断是否有推广功能
-      this.spreadRPShow = data.activity;
+      this.activeShow = data.activity;
+      if (this.isEmployee == false) {
+        // 登录员工首页成功，不展示推广icon
+        this.spreadRPShow = this.activeShow && !this.isEmployee;
+      } else {
+        // 首页初始化进入店长首页，但是此时isEmployee并没有存到缓存里
+        this.spreadRPShow = this.activeShow;
+      }
+      console.log(this.isEmployee);
+      console.log('==========');
+      this.spreadRPShow = this.activeShow && !this.isEmployee;
       // 当天第一次进入首页或者从推送进来则自动显示推广弹窗
       // 如果当天第一次进入但是从每日一言进入的，则不自动弹窗
       this.spreadRPFirst =
