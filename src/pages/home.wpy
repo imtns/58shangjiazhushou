@@ -2032,7 +2032,7 @@ scroll-view {
 }
 .to-everyday {
   position: fixed;
-  bottom: 25rpx;
+  bottom: 26rpx;
   left: 30rpx;
   width: 120rpx;
   height: 120rpx;
