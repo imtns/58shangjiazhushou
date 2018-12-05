@@ -2054,7 +2054,7 @@ scroll-view {
   left: 30rpx;
   width: 120rpx;
   height: 120rpx;
-  background: url('https://img.58cdn.com.cn/lbg/jianzhan/images/youxiang/everyday-word-suspend.png')
+  background: url('https://img.58cdn.com.cn/lbg/shangjiaxcxht/zhushou/everyday-word-suspend.png')
     center no-repeat;
   background-size: 100% 100%;
   z-index: 59;
