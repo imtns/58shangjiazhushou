@@ -2,9 +2,11 @@
     <view class="myCardPrint">
         <view wx:if="{{showCanvas}}">
             <drawimage bind:toTempFile="toTempFile1" id="drawStyle1" width="750" height="368" background="{{cardOppStyle.background}}" layers="{{cardOppStyle.layers}}" />
-            <button class="saveCard" bindtap="saveImgToPhotosAlbum(1)">下载名片（正面）</button>
+            <button class="saveCard" bindtap="saveAction(1)" hidden="{{saveImgBtnHidden}}">下载名片（正面）</button>
+            <button class="saveCard" open-type="openSetting" bindopensetting="handleSetting" hidden="{{openSettingBtnHidden}}">去授权</button>
             <drawimage bind:toTempFile="toTempFile2" id="drawStyle2" width="750" height="368" background="{{cardPosStyle.background}}" layers="{{cardPosStyle.layers}}" />
-            <button class="saveCard" bindtap="saveImgToPhotosAlbum(2)">下载名片（反面）</button>
+            <button class="saveCard" bindtap="saveAction(2)" hidden="{{saveImgBtnHidden}}">下载名片（反面）</button>
+            <button class="saveCard" open-type="openSetting" bindopensetting="handleSetting" hidden="{{openSettingBtnHidden}}">去授权</button>
             <view class="print-tip">这是58为你特制的高科技名片哦，快下载后打印出来发送给好友，可获得特别商机哦</view>
         </view>
     </view>
@@ -36,24 +38,57 @@ export default class choseImageStyle extends wepy.page {
         cardPosStyle: {}, // 名片反面数据
         cardId: '',
         isEmployee: false, // 判断是否是店长
+        saveImgBtnHidden: false,
+        openSettingBtnHidden: true,
     }
     methods = {
         // 下载名片
-        async saveImgToPhotosAlbum(e) {
-            console.log(e);
-            let path = '';
-            if (e === 1) {
-                path = this.cardOppImg;
-            } else if (e === 2) {
-                path = this.cardPosImg;
-            }
-            wx.saveImageToPhotosAlbum({
-                filePath: path,
-                success (res) {
-                    console.log(res);
-                    alert('成功保存图片到相册');
+        async saveAction(e) {
+            const that = this;
+            // 获取相册授权
+            wx.getSetting({
+                success(res) {
+                    // 进行授权检测，未授权则进行弹层授权
+                    if (!res.authSetting['scope.writePhotosAlbum']) {
+                        wx.authorize({
+                            scope: 'scope.writePhotosAlbum',
+                            success () {
+                                that.saveImgToPhotosAlbum(e);
+                            },
+                            // 拒绝授权时，则进入手机设置页面，可进行授权设置
+                            fail() {
+                                that.saveImgBtnHidden = true;
+                                that.openSettingBtnHidden = false;
+                            },
+                        });
+                    } else {
+                        // 已授权则直接进行保存图片
+                        that.saveImgToPhotosAlbum(e);
+                    }
                 },
             });
+            // this.saveImgToPhotosAlbum(e);
+        },
+        handleSetting(e) {
+            const that = this;
+            // 对用户的设置进行判断，如果没有授权，即使用户返回到保存页面，显示的也是“去授权”按钮；同意授权之后才显示保存按钮
+            if (!e.detail.authSetting['scope.writePhotosAlbum']) {
+                wx.showModal({
+                    title: '警告',
+                    content: '若不打开授权，则无法将图片保存在相册中！',
+                    showCancel: false,
+                });
+                that.saveImgBtnHidden = true;
+                that.openSettingBtnHidden = false;
+            } else {
+                wx.showModal({
+                    title: '提示',
+                    content: '您已授权，赶紧将图片保存在相册中吧！',
+                    showCancel: false,
+                });
+                that.saveImgBtnHidden = false;
+                that.openSettingBtnHidden = true;
+            }
         },
         toTempFile1(res) {
             const { tempFilePath } = res.detail;
@@ -68,6 +103,23 @@ export default class choseImageStyle extends wepy.page {
             console.log(this.cardPosImg);
         },
     };
+    saveImgToPhotosAlbum (e) {
+        let path = '';
+        if (e == 1) {
+            console.log(1111111);
+            path = this.cardOppImg;
+        } else if (e == 2) {
+            console.log(2222222);
+            path = this.cardPosImg;
+        }
+        wx.saveImageToPhotosAlbum({
+            filePath: path,
+            success (res) {
+                console.log(res);
+                alert('成功保存图片到相册');
+            },
+        });
+    }
     async onLoad () {
         console.log('onload');
     }
@@ -187,7 +239,8 @@ export default class choseImageStyle extends wepy.page {
                     y: 250,
                     color: '#F1B620',
                     lineHeight: '',
-                    maxWidth: '460',
+                    maxWidth: '340',
+                    ellipsis: true,
                 }, {
                     type: 'text', // 微信text
                     textBaseline: 'top',
@@ -198,7 +251,8 @@ export default class choseImageStyle extends wepy.page {
                     y: 283,
                     color: '#F1B620',
                     lineHeight: '',
-                    maxWidth: '460',
+                    maxWidth: '340',
+                    ellipsis: true,
                 }, {
                     type: 'text', // 地址text
                     textBaseline: 'top',
@@ -209,7 +263,8 @@ export default class choseImageStyle extends wepy.page {
                     y: 317,
                     color: '#F1B620',
                     lineHeight: '',
-                    maxWidth: '460',
+                    maxWidth: '340',
+                    ellipsis: true,
                 }, {
                     type: 'image', // 二维码图片
                     imageResource: that.cardCodeImg,

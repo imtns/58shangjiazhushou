@@ -1235,12 +1235,12 @@ export default class Home extends wepy.page {
       const { data } = await get(CHECK_CANSPREAD, { mpId });
       // 判断是否有推广功能
       this.activeShow = data.activity;
-      if (this.isEmployee === false) {
+      if (this.isEmployee === undefined) {
           // 登录员工首页成功，不展示推广icon
-          this.spreadRPShow = this.activeShow && !this.isEmployee;
+          this.spreadRPShow = this.activeShow;
       } else {
           // 首页初始化进入店长首页，但是此时isEmployee并没有存到缓存里
-          this.spreadRPShow = this.activeShow;
+          this.spreadRPShow = this.activeShow && !this.isEmployee;
       }
       // 当天第一次进入首页或者从推送进来则自动显示推广弹窗
       // 如果当天第一次进入但是从每日一言进入的，则不自动弹窗
