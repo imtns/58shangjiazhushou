@@ -75,6 +75,7 @@ export default class OrderList extends wepy.page {
         SendClickLog('sjzh_click_orderList_onload');
         this.orderList = [];
         this.sendParams.pageNum = 1;
+        if (this.isEmployee) return;
         await this.getOrderList(this.orderType, this.status);
     }
     onLoad() {
