@@ -69,7 +69,8 @@
             </view>
             <view class="item required">
                 <text>预约地址</text>
-                <button class="locate" @tap="setLocation">去填写</button>
+                <view class="locate" @tap="setLocation">去填写</view>
+                <!-- <button class="locate" @tap="setLocation">去填写</button> -->
             </view>
             <view class="location-detail"
                 data-longitude="{{ form.addressLongitude }}"
@@ -574,19 +575,27 @@ view {
             font-size: 30rpx;
         }
 
-        button.locate {
-            width: 110rpx;
-            height: 50rpx;
-            border: 2rpx solid #83abff;
-            border-radius: 4rpx;
+        .locate {
             padding: 0;
             margin: 0;
             font-size: 28rpx;
-            color: #83abff;
+            color: #BDBDBD;
             line-height:50rpx;
             background-color:inherit;
+            position: relative;
+            padding-right: 30rpx;
             &::after {
-                border: none;
+                content: ' ';
+                display: block;
+                width: 15rpx;
+                height: 15rpx;
+                border-right: 3rpx solid #BDBDBD;
+                border-bottom: 3rpx solid #BDBDBD;
+                transform:rotate(45deg);
+                -webkit-transform:rotate(-45deg);
+                position: absolute;
+                right: 0;
+                top: 16rpx;
             }
         }
     }
