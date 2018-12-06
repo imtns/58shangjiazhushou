@@ -604,7 +604,7 @@ button.save {
     z-index: 999;
 
     &.disabled {
-        background-color: #C5C5C5;
+        background-color: #dbdbdb;
     }
 
     &::after {
