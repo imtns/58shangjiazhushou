@@ -1,13 +1,41 @@
 <template>
     <view class="login-container">
-        <view class="login-home" style="left:{{left}}">
-            <image class="logo" src="/pages/assets/logo.png" mode="aspectFit"></image>
-            <view class="input"> <input placeholder-class="phcolor" value="{{mobile}}" style="height:2rem;" @input="inputTap" type="number" maxlength="13" placeholder="请输入手机号" auto-focus/></view>
-            <button class="login-button" @tap="login" disabled="{{disabled}}">登录</button>
-            <button class="login-button home" @tap="gohome">返回首页</button>
+        <view
+            class="login-home"
+            style="left:{{left}}"
+        >
+            <image
+                class="logo"
+                src="/pages/assets/logo.png"
+                mode="aspectFit"
+            ></image>
+            <view class="input"> <input
+                    placeholder-class="phcolor"
+                    value="{{mobile}}"
+                    style="height:2rem;"
+                    @input="inputTap"
+                    type="number"
+                    maxlength="13"
+                    placeholder="请输入手机号"
+                    auto-focus
+                /></view>
+            <button
+                class="login-button"
+                @tap="login"
+                disabled="{{disabled}}"
+            >登录</button>
+            <button
+                class="login-button home"
+                @tap="gohome"
+            >返回首页</button>
         </view>
     </view>
-    <messageBox :show.sync="modalShow" :content.sync="modalContent" :title.sync="modalTitle" :confirmText.sync="modalConfirmText"></messageBox>
+    <messageBox
+        :show.sync="modalShow"
+        :content.sync="modalContent"
+        :title.sync="modalTitle"
+        :confirmText.sync="modalConfirmText"
+    ></messageBox>
 </template>
 
 <script>
@@ -104,8 +132,8 @@ page {
       justify-content: center;
       align-items: center;
       border-bottom: 2rpx solid #f3f3f3;
-      input{
-          height:1.6rem;
+      input {
+        height: 1.6rem;
       }
     }
   }
@@ -120,8 +148,12 @@ page {
     font-size: 32rpx;
     margin-top: 60rpx;
     border-radius: 4px;
-    &.home{
-        margin-top:30rpx;
+    &.home {
+      margin-top: 30rpx;
+      color: #999999;
+      background: white;
+      border: 1px solid #dbdbdb;
+      border-radius: 4px;
     }
   }
   button[disabled] {
@@ -129,7 +161,7 @@ page {
   }
   .phcolor {
     color: #aaaaaa;
-    font-size:40rpx;
+    font-size: 40rpx;
   }
 }
 </style>
