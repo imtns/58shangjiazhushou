@@ -161,7 +161,7 @@ export default class choseImageStyle extends wepy.page {
         const cardId = wepy.getStorageSync('current_cardId');
         const { data } = await get('/share2', {
             cardId,
-            type: 'redPacket',
+            type: 'card',
         });
         this.cardCodeImg = await getTmpFilePath(`https://pic1.58cdn.com.cn${data}`);
     }
@@ -206,10 +206,10 @@ export default class choseImageStyle extends wepy.page {
                 }, {
                     type: 'image', // 二维码图片
                     imageResource: that.cardCodeImg,
-                    dx: 523,
-                    dy: 224,
-                    dWidth: 112,
-                    dHeight: 112,
+                    dx: 518,
+                    dy: 226,
+                    dWidth: 120,
+                    dHeight: 120,
                 },
             ],
         };
@@ -269,9 +269,9 @@ export default class choseImageStyle extends wepy.page {
                     type: 'image', // 二维码图片
                     imageResource: that.cardCodeImg,
                     dx: 539,
-                    dy: 47,
-                    dWidth: 112,
-                    dHeight: 112,
+                    dy: 43,
+                    dWidth: 120,
+                    dHeight: 120,
                 },
             ],
         };
