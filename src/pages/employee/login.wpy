@@ -17,8 +17,7 @@
                     type="number"
                     maxlength="13"
                     placeholder="请输入手机号"
-                    auto-focus
-                /></view>
+                    auto-focus/></view>
             <button
                 class="login-button"
                 @tap="login"

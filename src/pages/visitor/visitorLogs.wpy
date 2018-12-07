@@ -59,7 +59,7 @@
                 </view>
             </repeat>
         </view>
-        <view wx:if="{{visitorList.length == 0}}">
+        <view wx:if="{{visitorList.length == 0 && loaded}}">
             <view class="empty-wrap">
                 <image
                     class="img-no-data"
@@ -91,6 +91,7 @@ export default class visitorLogs extends wepy.page {
       visitorList: [],
       pageSize: 12,
       pageNum: 1,
+      loaded: false,
       allowLoadMore: true,
   };
   methods = {
@@ -131,6 +132,7 @@ export default class visitorLogs extends wepy.page {
           : wepy.getStorageSync('current_cardId');
       console.log('this.allowLoadMore', this.allowLoadMore);
       if (!cardId || !this.allowLoadMore) {
+          this.loaded = true;
           return;
       }
       try {
@@ -158,6 +160,7 @@ export default class visitorLogs extends wepy.page {
           }
           if (status) this.visitorList = [];
           this.visitorList = this.visitorList.concat(formatedList);
+          this.loaded = true;
           this.$apply();
           console.log('onshow');
       } catch (e) {
