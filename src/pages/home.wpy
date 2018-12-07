@@ -551,7 +551,6 @@ export default class Home extends wepy.page {
 
           // globalData.extConfig和current_mpid只需要在load和切换小程序的时候重新设置，所以在load里边要调用loadData
 
-          await this.loadExtJson();
           wepy.setStorageSync('showmodal', true);
           this.storageShowmodal = wepy.getStorageSync('showmodal');
           if (!this.isFollow && wepy.getStorageSync('ppu')) {
@@ -601,6 +600,9 @@ export default class Home extends wepy.page {
           }
           this.setGlobalMpId(this.business.selected.id);
           this.$apply();
+
+          // 必须要确保mpid获取成功再去获取extJson
+          this.loadExtJson();
       } catch (err) {
           console.log(err);
       }
@@ -737,8 +739,13 @@ export default class Home extends wepy.page {
   }
   // 获取当前小程序的extjson
   async loadExtJson() {
+      const sceneKey = wx.getStorageSync('current_mpid');
+      if (!sceneKey) {
+          return;
+      }
+
       const { data } = await get(GET_EXT_JSON, {
-          sceneKey: wx.getStorageSync('current_mpid'),
+          sceneKey,
       });
       globalData.extConfig = data;
   }
