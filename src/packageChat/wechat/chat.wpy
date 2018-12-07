@@ -375,6 +375,7 @@ export default class Chat extends wepy.page {
         });
     }
     toDetail(e) {
+        console.log(e);
         // 点击头像
         const { senderId, senderConsumerId } = e.currentTarget.dataset.item;
         console.log(e.currentTarget.dataset.item);
@@ -388,7 +389,7 @@ export default class Chat extends wepy.page {
             SendClickLog('sjzh_click_chat_consumer_toDetail');
             const cardId = wepy.getStorageSync('current_cardId');
             // 用户的，进访客详情页面
-            url = `/pages/visitorInfo?cardId=${cardId}&consumerId=${senderConsumerId}`;
+            url = `/pages/visitor/visitorInfo?cardId=${cardId}&consumerId=${senderConsumerId}`;
         }
 
         wepy.navigateTo({
