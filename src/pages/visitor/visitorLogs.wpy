@@ -1,44 +1,73 @@
 <template>
     <view class="visitors">
-        <view class="tips" wx:if="{{visitorList.length > 0}}">以下客户访问过您的名片，可联系他们哦</view>
-        <view class="visitor_content" wx:if="{{visitorList.length > 0}}">
-            <repeat for="{{visitorList}}" key="index" index="index" item="item">
+        <view
+            class="tips"
+            wx:if="{{visitorList.length > 0}}"
+        >以下客户访问过您的名片，可联系他们哦</view>
+        <view
+            class="visitor_content"
+            wx:if="{{visitorList.length > 0}}"
+        >
+            <repeat
+                for="{{visitorList}}"
+                key="index"
+                index="index"
+                item="item"
+            >
                 <view class="visitor_item">
-                    <view class="visitor_box" @tap="toVisitorInfo({{item.cardId}}, {{item.consumerId}})">
-                            <view class="visitor_header">
-                                <image mode="aspectFit" src="{{item.portrait}}?w=82&h=82&ss=1"></image>
+                    <view
+                        class="visitor_box"
+                        @tap="toVisitorInfo({{item.cardId}}, {{item.consumerId}})"
+                    >
+                        <view class="visitor_header">
+                            <image
+                                mode="aspectFit"
+                                src="{{item.portrait}}?w=82&h=82&ss=1"
+                            ></image>
+                        </view>
+                        <view class="visitor_info">
+                            <view class="visitor_name">
+                                {{item.nickName || ''}}
+                                <view
+                                    wx:if="{{item.gender}}"
+                                    class="{{item.gender == 1 ? 'male' : 'female'}}"
+                                ></view>
                             </view>
-                            <view class="visitor_info">
-                                <view class="visitor_name">
-                                    {{item.nickName || ''}}
-                                    <view wx:if="{{item.gender}}" class="{{item.gender == 1 ? 'male' : 'female'}}"></view>
-                                </view>
-                                <view class="visitor_status">{{item.remark}}</view>
-                            </view>
-                            <view wx:if="{{item.formWho}}" class="visitor_from">来自 {{item.formWho}} 的分享</view>
+                            <view class="visitor_status">{{item.remark}}</view>
+                        </view>
+                        <view
+                            wx:if="{{item.formWho}}"
+                            class="visitor_from"
+                        >来自 {{item.formWho}} 的分享</view>
                     </view>
                     <view class="visitor_box">
                         <view class="visitor_log">
                             <view class="visitor_count">
                                 访问您的名片
-                                <text class="visitor_num">{{item.visitCount}}</text> 
+                                <text class="visitor_num">{{item.visitCount}}</text>
                                 次
                             </view>
                             <view class="visitor_time">{{item.visitTime}}访问过你</view>
                         </view>
-                        <view class="visitor_tel" wx:if="{{item.mobileSign}}">
-                            <view class="visitor_make_phone" @tap="call('{{item.mobileSign}}')" >拨打电话</view>
+                        <view class="visitor_tel">
+                            <view
+                                class="visitor_make_phone {{item.mobileSign?'active':''}}"
+                                @tap="call('{{item.mobileSign}}')"
+                            >拨打电话</view>
                         </view>
                     </view>
                 </view>
             </repeat>
-        </view>  
+        </view>
         <view wx:if="{{visitorList.length == 0}}">
             <view class="empty-wrap">
-                <image class="img-no-data" src="//img.58cdn.com.cn/lbg/jianzhan/images/empty.png"/>
+                <image
+                    class="img-no-data"
+                    src="//img.58cdn.com.cn/lbg/jianzhan/images/empty.png"
+                />
                 <view class="txt-no-data">暂无访客记录</view>
             </view>
-        </view>  
+        </view>
     </view>
 </template>
 
@@ -46,7 +75,7 @@
 import wepy from 'wepy';
 import { CONSUMER_RECORDS, CALL_VISITOR } from '../../utils/url';
 // import { makeTelCall } from '../../utils/service';
-import { post } from '../../utils/ajax';
+import { post, get } from '../../utils/ajax';
 import { alert } from '../../utils';
 import { formatLogTime } from '../../utils/dateFomate';
 import { SendClickLog } from '../../utils/maidian';
@@ -54,220 +83,226 @@ import Mixin from '../../mixin';
 import { globalData } from '../../utils/globalData';
 
 export default class visitorLogs extends wepy.page {
-    mixins = [Mixin]
-    config = {
-        navigationBarTitleText: '访问记录',
-    }
-    data = {
-        visitorList: [],
-        pageSize: 12,
-        pageNum: 1,
-        allowLoadMore: true,
-    }
-    methods = {
-        toVisitorInfo(cardId, consumerId) {
-            SendClickLog('sjzh_click_visitorLogs_toVisitorInfo');
-            wepy.navigateTo({
-                url: `visitorInfo?cardId=${cardId}&consumerId=${consumerId}`,
-            });
-        },
-        async call(sign) {
-            SendClickLog('sjzh_click_visitorLogs_makecall_btn');
-            try {
-                const { data } = await post(CALL_VISITOR, {
-                    sign,
-                    from: 0,
-                });
-                wx.makePhoneCall({ phoneNumber: data });
-            } catch (err) {
-                console.log(err);
-            }
-        },
-    }
-    onLoad () {
-
-    }
-    onShow () {
-        console.log('onshow');
-        this.loadData();
-    }
-    onHide() {
-        this.visitorList = [];
-        this.allowLoadMore = true;
-        this.pageNum = 1;
-    }
-    onReachBottom() {
-        console.log('onReachBottom');
-        this.loadData();
-    }
-    async loadData() {
-        const cardId = wepy.getStorageSync('isEmployee') ? wepy.getStorageSync('cardId') : wepy.getStorageSync('current_cardId');
-        console.log('this.allowLoadMore', this.allowLoadMore);
-        if (!cardId || !this.allowLoadMore) {
-            return;
-        }
-        try {
-            const visitorList = await post(CONSUMER_RECORDS, {
-                token: globalData.chat.token,
-                cardId,
-                pageNum: this.pageNum,
-                pageSize: this.pageSize,
-            });
-            const formatedList = visitorList.data.map((item) => {
-                const visitor = item;
-                let info = '';
-                if (item.otherInfos) {
-                    info = JSON.parse(item.otherInfos) || '';
-                }
-                visitor.visitTime = formatLogTime(item.visitTime);
-                console.log(visitor.visitTime);
-                visitor.gender = info.gender || '';
-                return visitor;
-            });
-            if (this.pageSize === formatedList.length) {
-                this.pageNum = this.pageNum + 1;
-            } else {
-                this.allowLoadMore = false;
-            }
-            this.visitorList = this.visitorList.concat(formatedList);
-            this.$apply();
-            console.log('onshow');
-        } catch (e) {
-            alert(e);
-        }
-    }
+  mixins = [Mixin];
+  config = {
+      navigationBarTitleText: '访问记录',
+  };
+  data = {
+      visitorList: [],
+      pageSize: 12,
+      pageNum: 1,
+      allowLoadMore: true,
+  };
+  methods = {
+      toVisitorInfo(cardId, consumerId) {
+          SendClickLog('sjzh_click_visitorLogs_toVisitorInfo');
+          wepy.navigateTo({
+              url: `visitorInfo?cardId=${cardId}&consumerId=${consumerId}`,
+          });
+      },
+      async call(sign) {
+          if (!sign) return;
+          SendClickLog('sjzh_click_visitorLogs_makecall_btn');
+          try {
+              const { data } = await get(CALL_VISITOR, {
+                  sign,
+                  from: 0,
+              });
+              wx.makePhoneCall({ phoneNumber: data });
+          } catch (err) {
+              console.log(err);
+          }
+      },
+  };
+  onLoad() {}
+  onShow() {
+      console.log('onshow');
+      this.allowLoadMore = true;
+      this.pageNum = 1;
+      this.loadData('onshow');
+  }
+  onReachBottom() {
+      console.log('onReachBottom');
+      this.loadData();
+  }
+  async loadData(status) {
+      const cardId = wepy.getStorageSync('isEmployee')
+          ? wepy.getStorageSync('cardId')
+          : wepy.getStorageSync('current_cardId');
+      console.log('this.allowLoadMore', this.allowLoadMore);
+      if (!cardId || !this.allowLoadMore) {
+          return;
+      }
+      try {
+          const visitorList = await post(CONSUMER_RECORDS, {
+              token: globalData.chat.token,
+              cardId,
+              pageNum: this.pageNum,
+              pageSize: this.pageSize,
+          });
+          const formatedList = visitorList.data.map(item => {
+              const visitor = item;
+              let info = '';
+              if (item.otherInfos) {
+                  info = JSON.parse(item.otherInfos) || '';
+              }
+              visitor.visitTime = formatLogTime(item.visitTime);
+              console.log(visitor.visitTime);
+              visitor.gender = info.gender || '';
+              return visitor;
+          });
+          if (this.pageSize === formatedList.length) {
+              this.pageNum = this.pageNum + 1;
+          } else {
+              this.allowLoadMore = false;
+          }
+          if (status) this.visitorList = [];
+          this.visitorList = this.visitorList.concat(formatedList);
+          this.$apply();
+          console.log('onshow');
+      } catch (e) {
+          alert(e);
+      }
+  }
 }
 </script>
 
 <style lang="scss">
-page{
-    width: 100%;
-    height: 100%;
-    background: #f9f9f9;
+page {
+  width: 100%;
+  height: 100%;
+  background: #f9f9f9;
 }
-.visitors{
-    .tips{
-        font-size: 24rpx;
-        color: #D38658;
-        line-height: 56rpx;
-        height: 56rpx;
-        font-size: 24rpx;
-        padding-left: 80rpx;
-        background: #FFF9DF url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_log_tips.png') no-repeat 30rpx 50%;
-        background-size: 40rpx 40rpx;
+.visitors {
+  .tips {
+    font-size: 24rpx;
+    color: #d38658;
+    line-height: 56rpx;
+    height: 56rpx;
+    font-size: 24rpx;
+    padding-left: 80rpx;
+    background: #fff9df
+      url('https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_log_tips.png')
+      no-repeat 30rpx 50%;
+    background-size: 40rpx 40rpx;
+  }
+  .visitor_content {
+    .visitor_item {
+      padding: 0 30rpx;
+      margin-bottom: 10rpx;
+      background: #fff;
     }
-    .visitor_content{
-        .visitor_item{
-            padding: 0 30rpx;
-            margin-bottom: 10rpx;
-            background: #fff;
+    .visitor_box {
+      height: 130rpx;
+      padding: 24rpx 0;
+      border-bottom: 1rpx solid #f3f3f3;
+      display: flex;
+      min-width: 0;
+      position: relative;
+      flex-grow: 1;
+      .visitor_header {
+        image {
+          width: 82rpx;
+          height: 82rpx;
+          border-radius: 100%;
         }
-        .visitor_box{
-            height: 130rpx;
-            padding: 24rpx 0;
-            border-bottom: 1rpx solid #F3F3F3;
-            display: flex;
-            min-width: 0;
-            position: relative;
-            flex-grow: 1;
-            .visitor_header{
-                image {
-                    width: 82rpx;
-                    height: 82rpx;
-                    border-radius: 100%;
-                }
-            }
-            .visitor_info{
-                padding-left: 30rpx;
-            }
-            .visitor_name{
-                line-height: 42rpx;
-                font-size: 30rpx;
-                color: #333;
-                position: absolute;
-                width:300rpx;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space:nowrap;
-            }
-            .visitor_status{
-                font-size: 24rpx;
-                color: #93B0D1;
-                background: #EDF3FF;
-                margin-top: 46rpx;
-                line-height: 33rpx;
-                min-width: 20rpx;
-                max-width: 300rpx;
-                overflow: hidden;
-                white-space:nowrap; 
-                text-overflow:ellipsis;
-            }
-            .visitor_time{
-                font-size:24rpx;
-                color:#999999;
-            }
-            .male{
-                display: inline-block;
-                margin: 2rpx 0 0 10rpx;
-                width: 24rpx;
-                height: 24rpx;
-                background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_male.png) no-repeat center;
-                background-size: contain;
-            }
-            .female{
-                display: inline-block;
-                margin: 0 0 0 10rpx;
-                width: 24rpx;
-                height: 24rpx;
-                background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_female.png) no-repeat left center;
-                background-size: contain;
-                vertical-align: middle;
-            }
-            .visitor_from{
-                line-height: 42rpx;
-                font-size: 24rpx;
-                color: #999999;
-                text-align: right;
-                width:250rpx;
-                white-space:wrap;
-                margin-left: auto;
-            }
-            .visitor_count{
-                line-height: 42rpx;
-                font-size: 24rpx;
-                color: #333;
-                padding-right: 30rpx;
-                .visitor_num{
-                    color: #ff552e;
-                }
-            }
-        }
-        .visitor_tel{
-            position:absolute;
-            right:0;
-            top:35rpx;
-        }
-        .visitor_make_phone{
-            font-size: 30rpx;
-            color: #FFF;
-            width: 182rpx;
-            line-height: 60rpx;
-            text-align: center;
-            background: #4E88FF;
-            border-radius: 30rpx;
-        }
-    }
-    .img-no-data {
-        display: block;
-        width: 180rpx;
-        height: 180rpx;
-        margin: 200rpx auto 20rpx;
-    }
-    .txt-no-data {
-        line-height: 88rpx;
-        text-align: center;
+      }
+      .visitor_info {
+        padding-left: 30rpx;
+      }
+      .visitor_name {
+        line-height: 42rpx;
         font-size: 30rpx;
-        color: #ccc;
+        color: #333;
+        position: absolute;
+        width: 300rpx;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .visitor_status {
+        font-size: 24rpx;
+        color: #93b0d1;
+        background: #edf3ff;
+        margin-top: 46rpx;
+        line-height: 33rpx;
+        min-width: 20rpx;
+        max-width: 300rpx;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      .visitor_time {
+        font-size: 24rpx;
+        color: #999999;
+      }
+      .male {
+        display: inline-block;
+        margin: 2rpx 0 0 10rpx;
+        width: 24rpx;
+        height: 24rpx;
+        background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_male.png)
+          no-repeat center;
+        background-size: contain;
+      }
+      .female {
+        display: inline-block;
+        margin: 2rpx 0 0 10rpx;
+        width: 24rpx;
+        height: 24rpx;
+        background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/visitor_gender_female.png)
+          no-repeat left center;
+        background-size: contain;
+        vertical-align: middle;
+      }
+      .visitor_from {
+        line-height: 42rpx;
+        font-size: 24rpx;
+        color: #999999;
+        text-align: right;
+        width: 250rpx;
+        white-space: wrap;
+        margin-left: auto;
+      }
+      .visitor_count {
+        line-height: 42rpx;
+        font-size: 24rpx;
+        color: #333;
+        padding-right: 30rpx;
+        .visitor_num {
+          color: #ff552e;
+        }
+      }
     }
+    .visitor_tel {
+      position: absolute;
+      right: 0;
+      top: 35rpx;
+    }
+    .visitor_make_phone {
+      font-size: 30rpx;
+      color: #fff;
+      width: 182rpx;
+      line-height: 60rpx;
+      text-align: center;
+      background: #bdbdbd;
+      border-radius: 30rpx;
+      &.active {
+        background: #4e88ff;
+      }
+    }
+  }
+  .img-no-data {
+    display: block;
+    width: 180rpx;
+    height: 180rpx;
+    margin: 200rpx auto 20rpx;
+  }
+  .txt-no-data {
+    line-height: 88rpx;
+    text-align: center;
+    font-size: 30rpx;
+    color: #ccc;
+  }
 }
 </style>
