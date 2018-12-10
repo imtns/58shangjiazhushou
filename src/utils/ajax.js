@@ -5,7 +5,7 @@ import loginHelper from '../utils/login';
 const host = 'https://yaofa.58.com';
 
 const http = (method, ...props) => new Promise((resolve, reject) => {
-    const [url, loadingControl] = props;
+    const [url, , , loadingControl] = props;
     let [, data, callback] = props;
     if (typeof data === 'function') {
         callback = data;
@@ -18,7 +18,7 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
     let delay = 0;
     if (loadingControl) {
     // loadingTitle = loadingControl.loadingTitle;
-        delay = loadingControl.delay;
+        ({ delay } = loadingControl);
     }
     // test="test"字段是为切换测试和线上环境的，如果提交审核和发布，将test改为''，标识切换为线上环境
     const sendData = Object.assign({}, data, { test: '' });
@@ -73,7 +73,6 @@ const http = (method, ...props) => new Promise((resolve, reject) => {
                 }
 
                 reject(msg);
-
             } else if (state === 99999) {
                 // 仅用于快速注册，待后续产品更改整个快速注册流程后会删除
                 resolve(response.data);
