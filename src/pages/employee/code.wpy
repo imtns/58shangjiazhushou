@@ -1,19 +1,32 @@
 <template>
     <view class="login-container">
-        <view class="login-code" style="left:{{codeView}}">
+        <view class="login-code"
+              style="left:{{codeView}}">
             <view class="title">请输入验证码</view>
             <view class="tip">验证码已通过短信发送至 {{mobile}}</view>
             <view class="code-block">
-                <repeat for="{{[0,1,2,3]}}" key="index" index="index">
-                    <view class="block" @tap="focus">
-                        <view wx:if="{{code.length === index}}" class="cursor"></view>
+                <repeat for="{{[0,1,2,3]}}"
+                        key="index"
+                        index="index">
+                    <view class="block"
+                          @tap="focus">
+                        <view wx:if="{{code.length === index}}"
+                              class="cursor"></view>
                         <text wx:if="{{code.length >= index + 1}}">{{code[index]}}</text>
                     </view>
                 </repeat>
-                <input type="number" maxlength="4" @blur="blur" @input="inputFocus()" focus='{{focus}}' auto-focus='true' />
+                <input type="number"
+                       maxlength="4"
+                       @blur="blur"
+                       @input="inputFocus()"
+                       focus='{{focus}}'
+                       auto-focus='true' />
             </view>
-            <view class="countdown" wx:if="{{countdown >= 1}}">{{countdown}}秒后可重新获取</view>
-            <view class="countdown" wx:else @tap="getCode">重新获取验证码</view>
+            <view class="countdown"
+                  wx:if="{{countdown >= 1}}">{{countdown}}秒后可重新获取</view>
+            <view class="countdown"
+                  wx:else
+                  @tap="getCode">重新获取验证码</view>
         </view>
     </view>
 </template>
@@ -28,147 +41,147 @@ import { toast, sleep } from '../../utils/index';
 import { EMPLOYEE_LOGIN } from '../../utils/url';
 
 export default class Code extends wepy.page {
-  config = {
-      navigationBarTitleText: '员工登录',
-  };
-  data = {
-      countdown: 60,
-      code: '',
-      focus: true,
-      mobile: '',
-  };
-  methods = {
-      inputFocus(index, e) {
-          this.code = e.detail.value;
-          if (this.code.length >= 4) {
-              this.getCode(this.code);
-          }
-      },
-      focus() {
-          this.focus = true;
-      },
-      blur() {
-          this.focus = false;
-      },
-  };
-  onLoad() {
-      this.mobile = wepy.getStorageSync('mobile');
-      this.countDown();
-  }
-  async getCode(code) {
-      try {
-          const postData = {
-              mobile: this.mobile.replace(/\s+/g, ''),
-          };
-          if (typeof code === 'object') {
-              this.countdown = 60;
-              this.countDown();
-              this.code = '';
-          } else if (code) {
-              Object.assign(postData, { code });
-          }
-          const { data } = await post(EMPLOYEE_LOGIN, postData);
-          if (postData.code) {
-              toast('登录成功');
-              wepy.setStorageSync('isEmployee', true);
-              wepy.setStorageSync('cardSession', data.cardSession);
-              wepy.setStorageSync('isAuto', data.isAuto);
-              wepy.setStorageSync('cardId', data.cardId);
-              //   wepy.setStorageSync('employee', JSON.stringify(data));
-              await sleep(1000);
-              wepy.reLaunch({ url: '/pages/home' });
-          }
-      } catch (err) {
-          toast('验证码错误');
-      }
-  }
-  countDown() {
-      const interval = setInterval(() => {
-          this.countdown = this.countdown - 1;
-          if (this.countdown <= 0) {
-              clearInterval(interval);
-          }
-          this.$apply();
-      }, 1000);
-  }
+    config = {
+        navigationBarTitleText: '员工登录',
+    };
+    data = {
+        countdown: 60,
+        code: '',
+        focus: true,
+        mobile: '',
+    };
+    methods = {
+        inputFocus(index, e) {
+            this.code = e.detail.value;
+            if (this.code.length >= 4) {
+                this.getCode(this.code);
+            }
+        },
+        focus() {
+            this.focus = true;
+        },
+        blur() {
+            this.focus = false;
+        },
+    };
+    onLoad() {
+        this.mobile = wepy.getStorageSync('mobile');
+        this.countDown();
+    }
+    async getCode(code) {
+        try {
+            const postData = {
+                mobile: this.mobile.replace(/\s+/g, ''),
+            };
+            if (typeof code === 'object') {
+                this.countdown = 60;
+                this.countDown();
+                this.code = '';
+            } else if (code) {
+                Object.assign(postData, { code });
+            }
+            const { data } = await post(EMPLOYEE_LOGIN, postData);
+            if (postData.code) {
+                toast('登录成功');
+                wepy.setStorageSync('isEmployee', true);
+                wepy.setStorageSync('cardSession', data.cardSession);
+                wepy.setStorageSync('isAuto', data.isAuto);
+                wepy.setStorageSync('cardId', data.cardId);
+                //   wepy.setStorageSync('employee', JSON.stringify(data));
+                await sleep(1000);
+                wepy.reLaunch({ url: '/pages/home' });
+            }
+        } catch (err) {
+            toast('验证码错误');
+        }
+    }
+    countDown() {
+        const interval = setInterval(() => {
+            this.countdown = this.countdown - 1;
+            if (this.countdown <= 0) {
+                clearInterval(interval);
+            }
+            this.$apply();
+        }, 1000);
+    }
 }
 </script>
 
 <style lang="scss">
 page {
-  background: white;
+    background: white;
 }
 .login-container {
-  padding: 0 30rpx;
-  width: 100%;
-  .login-code {
-    transition: 0.5s;
-    position: absolute;
-    width:690rpx;
-    .title {
-      margin-top: 60rpx;
-      font-size: 46rpx;
-      color: #333;
-    }
-    .tip {
-      font-size: 30rpx;
-      color: #999;
-      margin-top: 20rpx;
-    }
-    .code-block {
-      width: 100%;
-      height: 100rpx;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-top: 60rpx;
-      input {
+    padding: 0 30rpx;
+    width: 100%;
+    .login-code {
+        transition: 0.5s;
         position: absolute;
-        left: -140%;
-      }
-      .block {
-        position: relative;
-        width: 100rpx;
-        height: 100rpx;
-        text-align: center;
-        margin: 0 20rpx;
-        color: #333;
-        font-size: 46rpx;
-        line-height: 100rpx;
-        border-bottom: 2rpx solid #f3f3f3;
-      }
-
-      .cursor {
-        //光标的样式
-        width: 2rpx;
-        height: 76rpx;
-        background-color: #333;
-        animation: focus 0.7s infinite ease-in-out;
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-      }
-
-      /* 光标动画 */
-
-      @keyframes focus {
-        from {
-          opacity: 1;
+        width: 690rpx;
+        .title {
+            margin-top: 60rpx;
+            font-size: 46rpx;
+            color: #333;
         }
-
-        to {
-          opacity: 0;
+        .tip {
+            font-size: 30rpx;
+            color: #999;
+            margin-top: 20rpx;
         }
-      }
+        .code-block {
+            width: 100%;
+            height: 100rpx;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 60rpx;
+            input {
+                position: absolute;
+                left: -140%;
+            }
+            .block {
+                position: relative;
+                width: 100rpx;
+                height: 100rpx;
+                text-align: center;
+                margin: 0 20rpx;
+                color: #333;
+                font-size: 46rpx;
+                line-height: 100rpx;
+                border-bottom: 2rpx solid #f3f3f3;
+            }
+
+            .cursor {
+                //光标的样式
+                width: 2rpx;
+                height: 76rpx;
+                background-color: #333;
+                animation: focus 0.7s infinite ease-in-out;
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            /* 光标动画 */
+
+            @keyframes focus {
+                from {
+                    opacity: 1;
+                }
+
+                to {
+                    opacity: 0;
+                }
+            }
+        }
+        .countdown {
+            font-size: 24rpx;
+            color: #93b0d1;
+            width: 100%;
+            text-align: center;
+            margin-top: 40rpx;
+        }
     }
-    .countdown {
-      font-size: 24rpx;
-      color: #93b0d1;
-      width: 100%;
-      text-align: center;
-      margin-top: 40rpx;
-    }
-  }
 }
 </style>

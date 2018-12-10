@@ -1,40 +1,30 @@
 <template>
-    <view class="login-container">
-        <view
-            class="login-home"
-            style="left:{{left}}"
-        >
-            <image
-                class="logo"
-                src="/pages/assets/logo.png"
-                mode="aspectFit"
-            ></image>
-            <view class="input"> <input
-                    placeholder-class="phcolor"
-                    value="{{mobile}}"
-                    style="height:2rem;"
-                    @input="inputTap"
-                    type="number"
-                    maxlength="13"
-                    placeholder="请输入手机号"
-                    auto-focus/></view>
-            <button
-                class="login-button"
-                @tap="login"
-                disabled="{{disabled}}"
-            >登录</button>
-            <button
-                class="login-button home"
-                @tap="gohome"
-            >返回首页</button>
-        </view>
-    </view>
-    <messageBox
-        :show.sync="modalShow"
-        :content.sync="modalContent"
-        :title.sync="modalTitle"
-        :confirmText.sync="modalConfirmText"
-    ></messageBox>
+	<view class="login-container">
+		<view class="login-home"
+		      style="left:{{left}}">
+			<image class="logo"
+			       src="/pages/assets/logo.png"
+			       mode="aspectFit"></image>
+			<view class="input"> <input placeholder-class="phcolor"
+				       value="{{mobile}}"
+				       style="height:2rem;"
+				       @input="inputTap"
+				       type="number"
+				       maxlength="13"
+				       placeholder="请输入手机号"
+				       auto-focus />
+			</view>
+			<button class="login-button"
+			        @tap="login"
+			        disabled="{{disabled}}">登录</button>
+			<button class="login-button home"
+			        @tap="gohome">返回首页</button>
+		</view>
+	</view>
+	<messageBox :show.sync="modalShow"
+	            :content.sync="modalContent"
+	            :title.sync="modalTitle"
+	            :confirmText.sync="modalConfirmText"></messageBox>
 </template>
 
 <script>
@@ -49,118 +39,123 @@ import MessageBox from '../../components/MessageBox';
 import { SendClickLog } from '../../utils/maidian';
 
 export default class Login extends wepy.page {
-  config = {
-      navigationBarTitleText: '员工登录',
-  };
-  components = {
-      messageBox: MessageBox,
-  };
-  data = {
-      code: [],
-      focus: true,
-      mobile: '',
-      disabled: true,
-      modalShow: false,
-      modalContent: '',
-      modalConfirmText: '确认',
-      modalTitle: '提示',
-  };
-  methods = {
-      inputTap(e) {
-          let mobile = e.detail.value;
-          mobile = mobileSpace(mobile);
-          this.mobile = mobile;
-          this.disabled = this.mobile.length !== 13;
-          wepy.setStorageSync('mobile', this.mobile);
-      },
-      async login() {
-          SendClickLog('sjzh_click_employeeLogin_login_btn');
-          if (!checkMobile(this.mobile)) {
-              toast('手机号格式不正确');
-              return;
-          }
-          try {
-              await post(EMPLOYEE_LOGIN, { mobile: this.mobile.replace(/\s+/g, '') });
-              SendClickLog('sjzh_click_employeeLogin_success_num');
-              wepy.navigateTo({ url: 'code' });
-          } catch (err) {
-              this.modalShow = true;
-              this.modalContent = `当前手机号没有注册哦~
+    config = {
+        navigationBarTitleText: '员工登录',
+    };
+    components = {
+        messageBox: MessageBox,
+    };
+    data = {
+        code: [],
+        focus: true,
+        mobile: '',
+        disabled: true,
+        modalShow: false,
+        modalContent: '',
+        modalConfirmText: '确认',
+        modalTitle: '提示',
+    };
+    methods = {
+        inputTap(e) {
+            let mobile = e.detail.value;
+            mobile = mobileSpace(mobile);
+            this.mobile = mobile;
+            this.disabled = this.mobile.length !== 13;
+            wepy.setStorageSync('mobile', this.mobile);
+        },
+        async login() {
+            SendClickLog('sjzh_click_employeeLogin_login_btn');
+            if (!checkMobile(this.mobile)) {
+                toast('手机号格式不正确');
+                return;
+            }
+            try {
+                await post(EMPLOYEE_LOGIN, {
+                    mobile: this.mobile.replace(/\s+/g, ''),
+                });
+                SendClickLog('sjzh_click_employeeLogin_success_num');
+                wepy.navigateTo({ url: 'code' });
+            } catch (err) {
+                this.modalShow = true;
+                this.modalContent = `当前手机号没有注册哦~
               请联系店长进行注册`;
-              this.$apply();
-          }
-      },
-      gohome() {
-          wepy.setStorageSync('isEmployee', false);
-          wepy.switchTab({ url: '/pages/home' });
-      },
-  };
-  onLoad() {
-      if (wepy.getStorageSync('isEmployee') && wepy.getStorageSync('cardId')) {
-          wepy.reLaunch({ url: '/pages/home' });
-      }
-  }
-  onShow() {}
+                this.$apply();
+            }
+        },
+        gohome() {
+            wepy.setStorageSync('isEmployee', false);
+            wepy.switchTab({ url: '/pages/home' });
+        },
+    };
+    onLoad() {
+        if (
+            wepy.getStorageSync('isEmployee') &&
+            wepy.getStorageSync('cardId')
+        ) {
+            wepy.reLaunch({ url: '/pages/home' });
+        }
+    }
+    onShow() {}
 }
 </script>
 
 <style lang="scss">
 page {
-  background: white;
+    background: white;
 }
 .login-container {
-  padding: 0 30rpx;
-  width: 100%;
+    padding: 0 30rpx;
+    width: 100%;
 
-  .login-home {
-    transition: 0.5s;
-    position: absolute;
-    .logo {
-      width: 120rpx;
-      height: 120rpx;
-      margin: 80rpx auto 86rpx;
-      display: block;
+    .login-home {
+        transition: 0.5s;
+        position: absolute;
+        .logo {
+            width: 120rpx;
+            height: 120rpx;
+            margin: 80rpx auto 86rpx;
+            display: block;
+        }
+        .input {
+            width: 690rpx;
+            height: 130rpx;
+            font-size: 32px;
+            color: #333;
+            display: flex;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 2rpx solid #f3f3f3;
+            input {
+                height: 1.6rem;
+            }
+        }
     }
-    .input {
-      width: 690rpx;
-      height: 130rpx;
-      font-size: 32px;
-      color: #333;
-      display: flex;
-      text-align: center;
-      justify-content: center;
-      align-items: center;
-      border-bottom: 2rpx solid #f3f3f3;
-      input {
-        height: 1.6rem;
-      }
-    }
-  }
 
-  .login-button {
-    width: 690rpx;
-    height: 94rpx;
-    line-height: 94rpx;
-    text-align: center;
-    color: white;
-    background: #4e88ff;
-    font-size: 32rpx;
-    margin-top: 60rpx;
-    border-radius: 4px;
-    &.home {
-      margin-top: 30rpx;
-      color: #999999;
-      background: white;
-      border: 1px solid #dbdbdb;
-      border-radius: 4px;
+    .login-button {
+        width: 690rpx;
+        height: 94rpx;
+        line-height: 94rpx;
+        text-align: center;
+        color: white;
+        background: #4e88ff;
+        font-size: 32rpx;
+        margin-top: 60rpx;
+        border-radius: 4px;
+        &.home {
+            margin-top: 30rpx;
+            color: #999999;
+            background: white;
+            border: 1px solid #dbdbdb;
+            border-radius: 4px;
+        }
     }
-  }
-  button[disabled] {
-    background: #dbdbdb;
-  }
-  .phcolor {
-    color: #aaaaaa;
-    font-size: 40rpx;
-  }
+    button[disabled] {
+        background: #dbdbdb;
+    }
+    .phcolor {
+        color: #aaaaaa;
+        font-size: 40rpx;
+    }
 }
 </style>
