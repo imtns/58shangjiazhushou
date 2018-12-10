@@ -269,7 +269,7 @@ export default class visitorInfo extends wepy.page {
           this.visitInfo.mobile = mobile;
           this.visitInfo.nickName = nickName;
           this.visitInfo.otherInfo = otherInfo;
-          this.visitInfo.fromWho = fromWho ? `${fromWho.length > 3 ? fromWho.substr(0, 3)`...` : fromWho}` : '';
+          this.visitInfo.fromWho = fromWho && fromWho.toString().length > 3 ? `${fromWho.toString().substr(0, 3)}...` : `${fromWho}`;
           this.visitInfo.portrait = portrait;
           this.visitInfo.share = share;
           this.visitInfo.visit = visit;
