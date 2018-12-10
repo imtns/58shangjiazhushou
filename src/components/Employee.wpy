@@ -22,11 +22,11 @@
                     <view class="noViewer" wx:if="{{!card.visitPicList.length}}">暂时还没有访客哦~</view>
                     <view class="viewers" wx:else>
                         <view class="view-number">最近{{card.visitPicList.length}}个人访问过</view>
-                        <navigator url="/pages/employee/logs?cardId={{card.cardId}}" class="viewers-icons">
+                        <view class="viewers-icons" @tap="goVisitors">
                             <repeat for="{{card.visitPicList}}" wx:if="{{index<6}}" key="index" index="index" item="item">
                                 <image mode="aspectFill"  src="{{item}}"></image>
                             </repeat>
-                        </navigator>
+                        </view>
                         <image class="arrow" ode="scaleToFill" src="https://c.58cdn.com.cn/lbg/shangjiaxcxht/img/arrow-right.png?w=15"></image>
                     </view>
                 </view>
@@ -156,6 +156,18 @@ export default class Employee extends wepy.component {
       },
       changeIdentity() {
           this.$emit('changeIdentity');
+      },
+      goVisitors() {
+          const isEmployee = wepy.getStorageSync('isEmployee');
+          if (isEmployee) {
+              wepy.navigateTo({
+                  url: `/pages/visitor/visitorLogs?cardId=${this.card.cardId}`,
+              });
+          } else {
+              wepy.navigateTo({
+                  url: `/pages/employee/logs?cardId=${this.card.cardId}`,
+              });
+          }
       },
   };
 }
