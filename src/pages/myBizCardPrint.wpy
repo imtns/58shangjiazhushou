@@ -67,7 +67,6 @@ export default class choseImageStyle extends wepy.page {
                     }
                 },
             });
-            // this.saveImgToPhotosAlbum(e);
         },
         handleSetting(e) {
             const that = this;
@@ -94,22 +93,18 @@ export default class choseImageStyle extends wepy.page {
             const { tempFilePath } = res.detail;
             this.cardOppImg = tempFilePath;
             this.$apply();
-            console.log(this.cardOppImg);
         },
         toTempFile2(res) {
             const { tempFilePath } = res.detail;
             this.cardPosImg = tempFilePath;
             this.$apply();
-            console.log(this.cardPosImg);
         },
     };
     saveImgToPhotosAlbum (e) {
         let path = '';
-        if (e == 1) {
-            console.log(1111111);
+        if (+e === 1) {
             path = this.cardOppImg;
-        } else if (e == 2) {
-            console.log(2222222);
+        } else if (+e === 2) {
             path = this.cardPosImg;
         }
         wx.saveImageToPhotosAlbum({
@@ -120,8 +115,7 @@ export default class choseImageStyle extends wepy.page {
             },
         });
     }
-    async onLoad () {
-        console.log('onload');
+    onLoad () {
     }
     async onShow () {
         wx.showLoading({
