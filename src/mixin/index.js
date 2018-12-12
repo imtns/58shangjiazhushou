@@ -1,6 +1,6 @@
 // mixins/test.js
 import wepy from 'wepy';
-import { alertP, getCurrentPageUrl } from '../utils';
+import { alertP, getPathName } from '../utils';
 import { get } from '../utils/ajax';
 import { SendTrackLog } from '../utils/maidian';
 
@@ -38,6 +38,6 @@ export default class Mixin extends wepy.mixin {
     }
     onShow() {
         // 每个小程序页面的pv埋点
-        SendTrackLog(getCurrentPageUrl());
+        SendTrackLog(getPathName());
     }
 }
