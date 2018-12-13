@@ -115,14 +115,14 @@ export default class Detail extends wepy.page {
       goVisitors() {
           SendClickLog('sjzh_click_employeeDetail_govisitors_btn');
           const isEmployee = wepy.getStorageSync('isEmployee');
-          if(isEmployee) {
-                wepy.navigateTo({
-                    url: `/pages/visitor/visitorLogs?cardId=${this.cardId}`,
-                });
+          if (isEmployee) {
+              wepy.navigateTo({
+                  url: `/pages/visitor/visitorLogs?cardId=${this.cardId}`,
+              });
           } else {
-                wepy.navigateTo({
-                    url: `logs?cardId=${this.cardId}`,
-                });
+              wepy.navigateTo({
+                  url: `logs?cardId=${this.cardId}`,
+              });
           }
       },
   };
