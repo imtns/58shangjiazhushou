@@ -116,10 +116,12 @@ export default class Chat extends wepy.page {
         remark: '',
     }
     methods = {
+        // 打开上传面板
         showpanel() {
             this.showpanel = true;
             this.$apply();
         },
+        // 关闭上传面板
         closepanel() {
             this.showpanel = false;
             this.$apply();
@@ -209,6 +211,7 @@ export default class Chat extends wepy.page {
         }
         this.$apply();
     }
+    // 卸载页面  取消订阅
     async onUnload() {
         try {
             // 取消订阅
@@ -229,6 +232,7 @@ export default class Chat extends wepy.page {
             console.log(e);
         }
     }
+    // focus的时候
     showKeyBoard(e) {
         console.log(this.msgList.length);
         const { height } = e.detail;
@@ -245,12 +249,14 @@ export default class Chat extends wepy.page {
         console.log(this.scrollHeight);
         this.$apply();
     }
+    // 输入中……
     input(e) {
         SendClickLog('sjzh_click_chat_input');
         this.content = e.detail.value;
         this.canIsend = this.content.trim().length > 0;
         this.$apply();
     }
+    // 发送消息
     async sendMsg(target) {
         SendClickLog('sjzh_click_chat_sendMsg');
         try {
@@ -287,6 +293,7 @@ export default class Chat extends wepy.page {
             console.log(e);
         }
     }
+    // 加载消息列表
     async loadData() {
         try {
             const { contact, token } = this;
@@ -305,6 +312,7 @@ export default class Chat extends wepy.page {
             console.log(e);
         }
     }
+    // 下拉加载更多消息
     async loadMore() {
         if (isEnd) return;
         const { token } = this;
@@ -356,11 +364,13 @@ export default class Chat extends wepy.page {
         });
         return nList;
     }
+    // 清空input
     clearInput() {
         this.content = '';
         this.canIsend = false;
         this.$apply();
     }
+    // 订阅当亲联系人聊天消息
     newMsgs() {
         const { contact } = this;
         // 订阅当前联系人的未读消息
@@ -374,6 +384,7 @@ export default class Chat extends wepy.page {
             });
         });
     }
+    // 点击头像  当前登录人头像 进入商家名片页面 联系人头像 进入访客详情页面
     toDetail(e) {
         console.log(e);
         // 点击头像
@@ -404,6 +415,7 @@ export default class Chat extends wepy.page {
             });
         }
     }
+    // 图片预览
     previewImage(e) {
         const { url } = e.currentTarget.dataset;
         wepy.previewImage({
