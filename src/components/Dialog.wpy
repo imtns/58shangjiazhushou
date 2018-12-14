@@ -40,7 +40,6 @@ export default class Pop extends wepy.component {
             this.$emit('close');
             this.title = '新建分组';
             this.surebtnText = '创建';
-            this.content = '';
             this.$apply();
         },
         async add() {
@@ -53,11 +52,11 @@ export default class Pop extends wepy.component {
                 toast('分组名称过长');
                 return;
             }
+            this.$emit('addGroup', content);
             this.content = '';
             this.$apply();
         },
         input(e) {
-            console.log(e.detail.value);
             this.content = e.detail.value;
             this.$apply();
         },

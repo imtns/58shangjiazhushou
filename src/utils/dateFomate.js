@@ -12,9 +12,9 @@ function formatTime() {
     var second = date.getSeconds();
 
     return (
-        [year, month, day].map(formatNumber).join('-') +
+        [year, month, day].map(autoFixed).join('-') +
         ' ' +
-        [hour, minute, second].map(formatNumber).join(':')
+        [hour, minute, second].map(autoFixed).join(':')
     );
 }
 function formatTimeExtra(time, withYear) {
@@ -29,21 +29,17 @@ function formatTimeExtra(time, withYear) {
 
     if (withYear) {
         return (
-            [year, month, day].map(formatNumber).join('.') +
+            [year, month, day].map(autoFixed).join('.') +
             ' ' +
-            [hour, minute].map(formatNumber).join(':')
+            [hour, minute].map(autoFixed).join(':')
         );
     } else {
         return (
-            [month, day].map(formatNumber).join('.') +
+            [month, day].map(autoFixed).join('.') +
             ' ' +
-            [hour, minute].map(formatNumber).join(':')
+            [hour, minute].map(autoFixed).join(':')
         );
     }
-}
-function formatNumber(n) {
-    n = n.toString();
-    return n[1] ? n : '0' + n;
 }
 function parseTime(dateString) {
     var reg = new RegExp(

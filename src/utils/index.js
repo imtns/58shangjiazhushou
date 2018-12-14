@@ -132,18 +132,15 @@ export const filteremoji = (content) => {
     const emojireg = content.replace(new RegExp(ranges.join('|'), 'g'), '');
     return emojireg;
 };
-
-const formatNumber = (n) => {
-    n = n.toString();
-    return n[1] ? n : `0${n}`;
-};
+// 格式化个位数字补零
+export const autoFixed = (num) => (num <= 9 ? `0${num}` : num);
 
 export const formatTime = (date) => {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();
 
-    return [year, month, day].map(formatNumber).join('-');
+    return [year, month, day].map(autoFixed).join('-');
 };
 
 
@@ -158,8 +155,6 @@ export const withHttp = (list) => {
     });
     return list;
 };
-
-export const autoFixed = (num) => (num <= 9 ? `0${num}` : num);
 
 // 线上图片 下载到本地
 export const getTmpFilePath = (url) => new Promise((resolve, reject) => {
@@ -193,13 +188,6 @@ export const checkMobile = (value) => {
     val = val.replace(/\s+/g, '');
     const reg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1})|(17[0-9]{1}))+\d{8})$/;
     return !!reg.test(val);
-};
-// 获取当前小程序页面url
-export const getCurrentPageUrl = () => {
-    const pages = getCurrentPages(); // 获取加载的页面
-    const currentPage = pages[pages.length - 1]; // 获取当前页面的对象
-    const url = currentPage.route; // 当前页面url
-    return url;
 };
 
 /**
