@@ -4,6 +4,7 @@ import {
     GET_ASSIST_AUTH,
     LOAD_ASSIST_AUTH_LIST,
     REGIST_PRE_CHECK,
+    SESSION,
 } from './url';
 import { picSrcDomain, toast } from './index';
 
@@ -52,10 +53,14 @@ export const getOpenId = async () => {
         return store.openId;
     }
 
-    const res = await getAssistAuth();
-    const { assistInfo = {} } = res;
-    const { wechatOpenId } = assistInfo;
-    return wechatOpenId;
+    // const res = await getAssistAuth();
+    const { code } = await wepy.login();
+    const { data } = await get(SESSION, { code });
+    const { openid } = data;
+    return openid;
+    // const { assistInfo = {} } = res;
+    // const { wechatOpenId } = assistInfo;
+    // return wechatOpenId;
 };
 
 /**
