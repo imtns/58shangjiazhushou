@@ -148,7 +148,7 @@
         <!-- 每日一言弹窗模块 -->
         <everyday-modal  :show.sync="everydayShow" :unread.sync="everydayUnread" />
         <!-- 商家推广模块 -->
-        <spread-modal :userID.sync="spreadUserID" :show.sync="spreadRPShow" :first.sync="spreadRPFirst"></spread-modal>
+        <!-- <spread-modal :userID.sync="spreadUserID" :show.sync="spreadRPShow" :first.sync="spreadRPFirst"></spread-modal> -->
         <!-- 添加到我的小程序步骤提示 -->
         <view class="add-myapp-modal" wx:if="{{showTipModal}}">
             <view class="add-step">
@@ -482,7 +482,7 @@ export default class Home extends wepy.page {
               // 切换小程序，重新登录IM
               await this.chatLogin();
               // 重新判断是否显示推广
-              this.initSpreadRedpacket();
+              //   this.initSpreadRedpacket();
           }
       },
       hideModal() {
@@ -581,7 +581,7 @@ export default class Home extends wepy.page {
           await this.loadData();
           if (!this.userLogin) return;
           // 初始化红包推广活动
-          this.initSpreadRedpacket();
+          //   this.initSpreadRedpacket();
           SendClickLog('sjzh_click_home_onload');
           this.loadCode();
           this.getInfo();
